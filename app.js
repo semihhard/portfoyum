@@ -804,11 +804,11 @@ function openEditSaleModal(symbol) {
     document.getElementById("editSalePrice").value = parseFloat(avgPrice.toFixed(4));
     document.getElementById("editSaleCost").value = parseFloat(avgCost.toFixed(4));
 
-    document.getElementById("editSaleModal").style.display = "flex";
+    document.getElementById("editSaleModal").classList.add("active");
 }
 
 function closeEditSaleModal() {
-    document.getElementById("editSaleModal").style.display = "none";
+    document.getElementById("editSaleModal").classList.remove("active");
     currentEditSaleSymbol = null;
 }
 
