@@ -39,11 +39,11 @@ function loadInitialSampleData() {
 
 // --- Storage Controls ---
 function saveData() {
-    localStorage.setItem("ios_portfolio_state_v3", JSON.stringify(appState));
+    localStorage.setItem("ios_portfolio_state_v4", JSON.stringify(appState));
 }
 
 function loadData() {
-    const saved = localStorage.getItem("ios_portfolio_state_v3");
+    const saved = localStorage.getItem("ios_portfolio_state_v4");
     if (saved) {
         try {
             appState = JSON.parse(saved);
