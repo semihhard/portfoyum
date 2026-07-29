@@ -366,8 +366,6 @@ function renderSalesTab() {
     // Sort by latest sale date (descending)
     aggregatedSales.sort((a, b) => new Date(b.saleDate) - new Date(a.saleDate));
 
-    document.getElementById("salesCount").innerText = `${aggregatedSales.length} Varlık`;
-
     // 1. Render Top 3 Sales Leaderboard (using aggregated data)
     renderTopSalesPodium(aggregatedSales);
 
