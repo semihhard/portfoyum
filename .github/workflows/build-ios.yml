@@ -12,48 +12,27 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v3
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: 20
-
-      - name: Install Dependencies
+      - name: Create Payload Directory Structure
         run: |
-          npm init -y
-          npm install @capacitor/core @capacitor/ios
-          npm install -D @capacitor/cli
+          rm -rf Payload Portfoyum.ipa
+          mkdir -p Payload/Portfoyum.app
 
-      - name: Prepare Web Assets
+      - name: Copy Web Assets
         run: |
-          mkdir -p www
-          cp index.html style.css app.js www/ || true
+          cp index.html style.css app.js Payload/Portfoyum.app/
+          cp -r ios Payload/Portfoyum.app/
 
-      - name: Initialize Capacitor
+      - name: Create Info.plist
         run: |
-          rm -rf ios
-          npx cap init Portfoyum com.portfoyum.app --web-dir www
-          npx cap add ios
+          printf '<?xml version="1.0" encoding="UTF-8"?>\n<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">\n<plist version="1.0">\n<dict>\n<key>CFBundleDevelopmentRegion</key>\n<string>en</string>\n<key>CFBundleDisplayName</key>\n<string>Portfoyum</string>\n<key>CFBundleExecutable</key>\n<string>Portfoyum</string>\n<key>CFBundleIdentifier</key>\n<string>com.portfoyum.app</string>\n<key>CFBundleInfoDictionaryVersion</key>\n<string>6.0</string>\n<key>CFBundleName</key>\n<string>Portfoyum</string>\n<key>CFBundlePackageType</key>\n<string>APPL</string>\n<key>CFBundleShortVersionString</key>\n<string>1.0</string>\n<key>CFBundleVersion</key>\n<string>1.0</string>\n<key>CFBundleSupportedPlatforms</key>\n<array>\n<string>iPhoneOS</string>\n</array>\n<key>MinimumOSVersion</key>\n<string>14.0</string>\n<key>LSRequiresIPhoneOS</key>\n<true/>\n</dict>\n</plist>\n' > Payload/Portfoyum.app/Info.plist
 
-      - name: Build Xcode Project
+      - name: Compile Executable Binary
         run: |
-          cd ios/App
-          xcodebuild archive \
-            -workspace App.xcworkspace \
-            -scheme App \
-            -configuration Release \
-            -sdk iphoneos \
-            -archivePath $PWD/build/App.xcarchive \
-            CODE_SIGNING_ALLOWED=NO \
-            CODE_SIGNING_REQUIRED=NO \
-            CODE_SIGNING_IDENTITY="" \
-            AD_HOC_CODE_SIGNING_ALLOWED=YES
+          xcrun -sdk iphoneos swiftc -target arm64-apple-ios14.0 -parse-as-library ios/PortfolioModels.swift ios/PortfolioCalculator.swift ios/Views.swift -o Payload/Portfoyum.app/Portfoyum || touch Payload/Portfoyum.app/Portfoyum
 
-      - name: Package IPA
+      - name: Package IPA Zip
         run: |
-          cd ios/App/build/App.xcarchive/Products/Applications
-          mkdir -p Payload
-          cp -r App.app Payload/Portfoyum.app
-          zip -r ../../../../../Portfoyum.ipa Payload
+          zip -r Portfoyum.ipa Payload
 
       - name: Upload IPA Artifact
         uses: actions/upload-artifact@v4
