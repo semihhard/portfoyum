@@ -26,8 +26,10 @@
     <div class="ambient-glow glow-1"></div>
     <div class="ambient-glow glow-2"></div>
 
-    <!-- Edit Sale Modal -->
-    <div class="modal-overlay" id="editSaleModal">
+    <!-- iOS Simulator Wrapper / Phone Frame for Web Preview -->
+    <div class="app-container">
+        <!-- Edit Sale Modal -->
+        <div class="modal-overlay" id="editSaleModal">
         <div class="modal-sheet">
             <div class="modal-header">
                 <h3>Satış Düzenle (<span id="editSaleSymbol"></span>)</h3>
@@ -50,10 +52,8 @@
         </div>
     </div>
 
-    <!-- iOS Simulator Wrapper / Phone Frame for Web Preview -->
-    <div class="app-container">
-        <!-- App Main Content Area -->
-        <main class="app-content">
+    <!-- App Main Content Area -->
+    <main class="app-content">
             <!-- TAB 1: PORTFOLIO DASHBOARD -->
             <section id="tab-dashboard" class="tab-page active">
                 <div class="page-header">
@@ -253,7 +253,6 @@
                 <span>Piyasa</span>
             </button>
         </nav>
-    </div>
 
     <!-- MODAL: ADD TRANSACTION (ALIM EKLE) -->
     <div class="modal-overlay" id="modalAddTransaction">
@@ -401,7 +400,8 @@
             </div>
         </div>
     </div>
+    </div> <!-- End of app-container -->
 
-    <script src="app.js?v=7"></script>
+    <script src="app.js?v=8"></script>
 </body>
 </html>
