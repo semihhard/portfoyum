@@ -1,0 +1,6 @@
+{
+  "appId": "com.portfoyum.app",
+  "appName": "Portfoyum",
+  "webDir": "www",
+  "bundledWebRuntime": false
+}
