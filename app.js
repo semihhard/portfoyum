@@ -368,7 +368,12 @@ function renderSalesTab() {
             <div class="sale-card">
                 <div class="sale-top">
                     <span class="sale-symbol">${s.symbol} - ${s.name}</span>
-                    <span class="sale-date">Son Satış: ${s.saleDate}</span>
+                    <div style="display:flex; align-items:center; gap:8px;">
+                        <span class="sale-date">Son: ${s.saleDate}</span>
+                        <button style="background:none; border:none; color:var(--text-muted); cursor:pointer; padding:4px;" onclick="openEditSaleModal('${s.symbol}')">
+                            <i class="fa-solid fa-pen"></i>
+                        </button>
+                    </div>
                 </div>
                 <div class="sale-grid">
                     <div class="sale-cell">
@@ -767,6 +772,100 @@ function simulateMarketFluctuation() {
         const newPrice = Math.max(0.01, h.currentPrice * (1 + changePercent / 100));
         updateMarketPrice(h.symbol, newPrice);
     });
+}
+
+// --- Initial Render ---
+window.onload = () => {
+    loadData();
+    switchTab('holdings');
+};
+
+// --- Edit Sales ---
+let currentEditSaleSymbol = null;
+
+function openEditSaleModal(symbol) {
+    currentEditSaleSymbol = symbol;
+    let saleQty = 0;
+    let totalRev = 0;
+    let totalCost = 0;
+    appState.sales.forEach(s => {
+        if (s.symbol === symbol) {
+            saleQty += s.saleQty;
+            totalRev += (s.saleQty * s.salePrice);
+            totalCost += (s.saleQty * s.costBasisAtSale);
+        }
+    });
+
+    const avgPrice = saleQty > 0 ? totalRev / saleQty : 0;
+    const avgCost = saleQty > 0 ? totalCost / saleQty : 0;
+
+    document.getElementById("editSaleSymbol").innerText = symbol;
+    document.getElementById("editSaleQty").value = parseFloat(saleQty.toFixed(4));
+    document.getElementById("editSalePrice").value = parseFloat(avgPrice.toFixed(4));
+    document.getElementById("editSaleCost").value = parseFloat(avgCost.toFixed(4));
+
+    document.getElementById("editSaleModal").style.display = "flex";
+}
+
+function closeEditSaleModal() {
+    document.getElementById("editSaleModal").style.display = "none";
+    currentEditSaleSymbol = null;
+}
+
+function saveSaleEdit() {
+    if (!currentEditSaleSymbol) return;
+
+    const qty = parseFloat(document.getElementById("editSaleQty").value) || 0;
+    const price = parseFloat(document.getElementById("editSalePrice").value) || 0;
+    const cost = parseFloat(document.getElementById("editSaleCost").value) || 0;
+
+    if (qty <= 0) {
+        alert("Satış adedi 0'dan büyük olmalıdır.");
+        return;
+    }
+
+    // Find original sale to preserve name/category/date
+    let latestDate = "2000-01-01";
+    let repName = "";
+    let repCat = "STOCK";
+    appState.sales.forEach(s => {
+        if (s.symbol === currentEditSaleSymbol) {
+            repName = s.name;
+            repCat = s.category;
+            if (new Date(s.saleDate) > new Date(latestDate)) latestDate = s.saleDate;
+        }
+    });
+
+    // Remove old records
+    appState.sales = appState.sales.filter(s => s.symbol !== currentEditSaleSymbol);
+
+    // Add unified edited record
+    appState.sales.push({
+        id: "s_" + Date.now(),
+        symbol: currentEditSaleSymbol,
+        name: repName,
+        category: repCat,
+        saleDate: latestDate !== "2000-01-01" ? latestDate : new Date().toISOString().split('T')[0],
+        saleQty: qty,
+        salePrice: price,
+        costBasisAtSale: cost,
+        realizedPL: (price - cost) * qty,
+        realizedPLPercent: cost > 0 ? ((price - cost) / cost) * 100 : 0
+    });
+
+    saveData();
+    closeEditSaleModal();
+    renderSalesTab();
+}
+
+function deleteSale() {
+    if (!currentEditSaleSymbol) return;
+    if (confirm(currentEditSaleSymbol + " varlığına ait TÜM satış geçmişi silinecek. Emin misiniz?")) {
+        appState.sales = appState.sales.filter(s => s.symbol !== currentEditSaleSymbol);
+        saveData();
+        closeEditSaleModal();
+        renderSalesTab();
+    }
 }
 
 document.addEventListener("DOMContentLoaded", () => {

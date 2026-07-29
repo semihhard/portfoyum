@@ -26,6 +26,30 @@
     <div class="ambient-glow glow-1"></div>
     <div class="ambient-glow glow-2"></div>
 
+    <!-- Edit Sale Modal -->
+    <div id="editSaleModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Satış Düzenle (<span id="editSaleSymbol"></span>)</h2>
+                <button class="close-btn" onclick="closeEditSaleModal()"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="form-group">
+                <label>Toplam Satılan Adet</label>
+                <input type="number" id="editSaleQty" step="any" placeholder="Örn: 100">
+            </div>
+            <div class="form-group">
+                <label>Ortalama Satış Fiyatı</label>
+                <input type="number" id="editSalePrice" step="any" placeholder="Örn: 25.50">
+            </div>
+            <div class="form-group">
+                <label>Ortalama Maliyet (Satış Anındaki)</label>
+                <input type="number" id="editSaleCost" step="any" placeholder="Örn: 20.00">
+            </div>
+            <button class="btn btn-primary" style="width: 100%; margin-top: 15px;" onclick="saveSaleEdit()">Değişiklikleri Kaydet</button>
+            <button class="btn btn-danger" style="width: 100%; margin-top: 10px; background: rgba(255,50,50,0.1); color: #ff3232; border: 1px solid rgba(255,50,50,0.3);" onclick="deleteSale()">Satış Kaydını Tamamen Sil</button>
+        </div>
+    </div>
+
     <!-- iOS Simulator Wrapper / Phone Frame for Web Preview -->
     <div class="app-container">
         <!-- iOS Status Bar -->
@@ -391,6 +415,6 @@
         </div>
     </div>
 
-    <script src="app.js?v=3"></script>
+    <script src="app.js?v=4"></script>
 </body>
 </html>
