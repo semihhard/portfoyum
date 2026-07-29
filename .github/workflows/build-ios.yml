@@ -17,21 +17,23 @@ jobs:
         with:
           node-version: 20
 
-      - name: Install Capacitor Dependencies
+      - name: Install Capacitor
         run: |
-          npm install
+          npm install @capacitor/core @capacitor/cli @capacitor/ios
 
-      - name: Prepare Web Assets Folder
+      - name: Prepare Web Assets
         run: |
           mkdir -p www
           cp index.html style.css app.js www/
 
-      - name: Add and Sync Capacitor iOS Project
+      - name: Generate Fresh Xcode Project
         run: |
+          rm -rf ios
+          npx cap init Portfoyum com.portfoyum.app --web-dir www
           npx cap add ios
           npx cap sync ios
 
-      - name: Build Authentic Xcode iOS Binary Archive
+      - name: Build Xcode Archive
         run: |
           cd ios/App
           xcodebuild -workspace App.xcworkspace -scheme App -sdk iphoneos -configuration Release -archivePath App.xcarchive archive CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO
