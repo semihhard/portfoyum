@@ -12,62 +12,29 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v3
 
-      - name: Prepare Payload Directory
-        run: |
-          mkdir -p Payload/Portfoyum.app
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
 
-      - name: Copy Web & Model Files
+      - name: Install Capacitor & Dependencies
         run: |
-          cp index.html style.css app.js Payload/Portfoyum.app/
-          cp -r ios Payload/Portfoyum.app/
+          npm init -y
+          npm install @capacitor/core @capacitor/cli @capacitor/ios
 
-      - name: Create Info.plist with Full Platform Metadata
+      - name: Initialize Capacitor iOS App
         run: |
-          cat << 'EOF' > Payload/Portfoyum.app/Info.plist
-          <?xml version="1.0" encoding="UTF-8"?>
-          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-          <plist version="1.0">
-          <dict>
-              <key>CFBundleDevelopmentRegion</key>
-              <string>en</string>
-              <key>CFBundleDisplayName</key>
-              <string>Portfoyum</string>
-              <key>CFBundleExecutable</key>
-              <string>Portfoyum</string>
-              <key>CFBundleIdentifier</key>
-              <string>com.portfoyum.app</string>
-              <key>CFBundleInfoDictionaryVersion</key>
-              <string>6.0</string>
-              <key>CFBundleName</key>
-              <string>Portfoyum</string>
-              <key>CFBundlePackageType</key>
-              <string>APPL</string>
-              <key>CFBundleShortVersionString</key>
-              <string>1.0</string>
-              <key>CFBundleVersion</key>
-              <string>1.0</string>
-              <key>CFBundleSupportedPlatforms</key>
-              <array>
-                  <string>iPhoneOS</string>
-              </array>
-              <key>MinimumOSVersion</key>
-              <string>14.0</string>
-              <key>LSRequiresIPhoneOS</key>
-              <true/>
-              <key>UIRequiredDeviceCapabilities</key>
-              <array>
-                  <string>arm64</string>
-              </array>
-          </dict>
-          </plist>
-          EOF
+          npx cap init Portfoyum com.portfoyum.app --web-dir .
+          npx cap add ios
+          npx cap sync ios
 
-      - name: Compile Native iOS Binary
+      - name: Build Xcode iOS App & Archive IPA
         run: |
-          xcrun -sdk iphoneos swiftc -target arm64-apple-ios14.0 -parse-as-library ios/PortfolioModels.swift ios/PortfolioCalculator.swift ios/Views.swift -o Payload/Portfoyum.app/Portfoyum || touch Payload/Portfoyum.app/Portfoyum
-
-      - name: Package IPA
-        run: |
+          cd ios/App
+          xcodebuild -workspace App.xcworkspace -scheme App -sdk iphoneos -configuration Release -archivePath App.xcarchive archive CODE_SIGNING_ALLOWED=NO
+          mkdir -p ../../Payload
+          cp -r App.xcarchive/Products/Applications/App.app ../../Payload/Portfoyum.app
+          cd ../..
           zip -r Portfoyum.ipa Payload
 
       - name: Upload IPA Artifact
