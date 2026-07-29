@@ -154,50 +154,6 @@ body {
         border: none;
         padding-top: env(safe-area-inset-top); /* Real iPhone notch padding */
     }
-
-    /* Hide the fake HTML status bar on real mobile devices */
-    .ios-status-bar {
-        display: none !important;
-    }
-}
-
-/* iOS Status Bar */
-.ios-status-bar {
-    height: 48px;
-    padding: 0 24px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--text-primary);
-    z-index: 100;
-    user-select: none;
-}
-
-.status-notch {
-    width: 110px;
-    height: 28px;
-    background-color: #000;
-    border-radius: 20px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-.camera-lens {
-    width: 10px;
-    height: 10px;
-    background: #111;
-    border-radius: 50%;
-    box-shadow: inset 0 0 3px rgba(255, 255, 255, 0.2);
-}
-
-.status-icons {
-    display: flex;
-    gap: 6px;
-    font-size: 12px;
 }
 
 /* App Main Scroll Area */
