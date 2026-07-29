@@ -1,0 +1,35 @@
+name: Build iOS IPA Package
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build-ios:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Build Web App Artifacts
+        run: |
+          mkdir -p build
+          cp index.html style.css app.js build/
+
+      - name: Create iOS Bundle & IPA
+        run: |
+          mkdir -p Payload/Portfoyum.app
+          cp -r index.html style.css app.js ios/ Payload/Portfoyum.app/
+          zip -r Portfoyum.ipa Payload
+
+      - name: Upload IPA Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: Portfoyum-iOS-App
+          path: Portfoyum.ipa
