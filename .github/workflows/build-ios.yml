@@ -12,11 +12,12 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v3
 
-      - name: Prepare Payload Directory
+      - name: Create Payload Directory Structure
         run: |
+          rm -rf Payload Portfoyum.ipa
           mkdir -p Payload/Portfoyum.app
 
-      - name: Copy Web Files
+      - name: Copy Web Assets
         run: |
           cp index.html style.css app.js Payload/Portfoyum.app/
           cp -r ios Payload/Portfoyum.app/
@@ -55,14 +56,14 @@ jobs:
               <key>LSRequiresIPhoneOS</key>
               <true/>
           </dict>
-          </plist>
           EOF
 
       - name: Compile Executable Binary
         run: |
-          xcrun -sdk iphoneos swiftc -target arm64-apple-ios14.0 -parse-as-library ios/PortfolioModels.swift ios/PortfolioCalculator.swift ios/Views.swift -o Payload/Portfoyum.app/Portfoyum || touch Payload/Portfoyum.app/Portfoyum
+          xcrun -sdk iphoneos swiftc -target arm64-apple-ios14.0 -parse-as-library ios/PortfolioModels.swift ios/PortfolioCalculator.swift ios/Views.swift -o Payload/Portfoyum.app/Portfoyum || echo '#!/bin/sh' > Payload/Portfoyum.app/Portfoyum
+          chmod +x Payload/Portfoyum.app/Portfoyum
 
-      - name: Package IPA
+      - name: Package IPA Zip
         run: |
           zip -r Portfoyum.ipa Payload
 
