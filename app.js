@@ -930,4 +930,7 @@ document.addEventListener("DOMContentLoaded", () => {
     initNavigation();
     initEvents();
     renderAll();
+    
+    // Automatically fetch live prices on startup
+    fetchLivePrices();
 });
