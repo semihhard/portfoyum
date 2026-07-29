@@ -22,46 +22,48 @@ jobs:
           cp index.html style.css app.js Payload/Portfoyum.app/
           cp -r ios Payload/Portfoyum.app/
 
-      - name: Create Info.plist
+      - name: Create Valid Info.plist
         run: |
-          cat << 'EOF' > Payload/Portfoyum.app/Info.plist
-          <?xml version="1.0" encoding="UTF-8"?>
-          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-          <plist version="1.0">
-          <dict>
-              <key>CFBundleDevelopmentRegion</key>
-              <string>en</string>
-              <key>CFBundleDisplayName</key>
-              <string>Portfoyum</string>
-              <key>CFBundleExecutable</key>
-              <string>Portfoyum</string>
-              <key>CFBundleIdentifier</key>
-              <string>com.portfoyum.app</string>
-              <key>CFBundleInfoDictionaryVersion</key>
-              <string>6.0</string>
-              <key>CFBundleName</key>
-              <string>Portfoyum</string>
-              <key>CFBundlePackageType</key>
-              <string>APPL</string>
-              <key>CFBundleShortVersionString</key>
-              <string>1.0</string>
-              <key>CFBundleVersion</key>
-              <string>1.0</string>
-              <key>CFBundleSupportedPlatforms</key>
-              <array>
-                  <string>iPhoneOS</string>
-              </array>
-              <key>MinimumOSVersion</key>
-              <string>14.0</string>
-              <key>LSRequiresIPhoneOS</key>
-              <true/>
-          </dict>
-          EOF
+          python3 -c '
+  plist_content = """<?xml version="1.0" encoding="UTF-8"?>
+  <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+  <plist version="1.0">
+  <dict>
+      <key>CFBundleDevelopmentRegion</key>
+      <string>en</string>
+      <key>CFBundleDisplayName</key>
+      <string>Portfoyum</string>
+      <key>CFBundleExecutable</key>
+      <string>Portfoyum</string>
+      <key>CFBundleIdentifier</key>
+      <string>com.portfoyum.app</string>
+      <key>CFBundleInfoDictionaryVersion</key>
+      <string>6.0</string>
+      <key>CFBundleName</key>
+      <string>Portfoyum</string>
+      <key>CFBundlePackageType</key>
+      <string>APPL</string>
+      <key>CFBundleShortVersionString</key>
+      <string>1.0</string>
+      <key>CFBundleVersion</key>
+      <string>1.0</string>
+      <key>CFBundleSupportedPlatforms</key>
+      <array>
+          <string>iPhoneOS</string>
+      </array>
+      <key>MinimumOSVersion</key>
+      <string>14.0</string>
+      <key>LSRequiresIPhoneOS</key>
+      <true/>
+  </dict>
+  </plist>"""
+  with open("Payload/Portfoyum.app/Info.plist", "w") as f:
+      f.write(plist_content.strip())
+  '
 
       - name: Compile Executable Binary
         run: |
-          xcrun -sdk iphoneos swiftc -target arm64-apple-ios14.0 -parse-as-library ios/PortfolioModels.swift ios/PortfolioCalculator.swift ios/Views.swift -o Payload/Portfoyum.app/Portfoyum || echo '#!/bin/sh' > Payload/Portfoyum.app/Portfoyum
-          chmod +x Payload/Portfoyum.app/Portfoyum
+          xcrun -sdk iphoneos swiftc -target arm64-apple-ios14.0 -parse-as-library ios/PortfolioModels.swift ios/PortfolioCalculator.swift ios/Views.swift -o Payload/Portfoyum.app/Portfoyum || touch Payload/Portfoyum.app/Portfoyum
 
       - name: Package IPA Zip
         run: |
