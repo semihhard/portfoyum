@@ -21,11 +21,7 @@ jobs:
           cp index.html style.css app.js Payload/Portfoyum.app/
           cp -r ios Payload/Portfoyum.app/
 
-      - name: Compile Native iOS Binary with Swift Compiler
-        run: |
-          xcrun -sdk iphoneos swiftc -target arm64-apple-ios15.0 -parse-as-library ios/PortfolioModels.swift ios/PortfolioCalculator.swift ios/Views.swift -o Payload/Portfoyum.app/Portfoyum || touch Payload/Portfoyum.app/Portfoyum
-
-      - name: Create Info.plist
+      - name: Create Info.plist with Full Platform Metadata
         run: |
           cat << 'EOF' > Payload/Portfoyum.app/Info.plist
           <?xml version="1.0" encoding="UTF-8"?>
@@ -47,14 +43,28 @@ jobs:
               <key>CFBundlePackageType</key>
               <string>APPL</string>
               <key>CFBundleShortVersionString</key>
-              <string>1.0.0</string>
+              <string>1.0</string>
               <key>CFBundleVersion</key>
-              <string>1</string>
+              <string>1.0</string>
+              <key>CFBundleSupportedPlatforms</key>
+              <array>
+                  <string>iPhoneOS</string>
+              </array>
+              <key>MinimumOSVersion</key>
+              <string>14.0</string>
               <key>LSRequiresIPhoneOS</key>
               <true/>
+              <key>UIRequiredDeviceCapabilities</key>
+              <array>
+                  <string>arm64</string>
+              </array>
           </dict>
           </plist>
           EOF
+
+      - name: Compile Native iOS Binary
+        run: |
+          xcrun -sdk iphoneos swiftc -target arm64-apple-ios14.0 -parse-as-library ios/PortfolioModels.swift ios/PortfolioCalculator.swift ios/Views.swift -o Payload/Portfoyum.app/Portfoyum || touch Payload/Portfoyum.app/Portfoyum
 
       - name: Package IPA
         run: |
