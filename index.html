@@ -155,16 +155,23 @@
                     </div>
                 </div>
 
-                <!-- Sales Summary Card -->
-                <div class="summary-box ultra-glass-card">
-                    <div class="summary-item">
-                        <span>Toplam Realize Kâr/Zarar</span>
-                        <h2 id="salesTotalRealized" class="txt-neon-green">₺0,00</h2>
+                <!-- Sales Detailed Stats -->
+                <div class="hero-stats-grid" style="margin-bottom: 24px; margin-top: 10px;">
+                    <div class="stat-item">
+                        <span class="stat-label">Toplam Satış Tutarı</span>
+                        <div class="stat-value"><strong id="salesTotalRevenue">₺0,00</strong></div>
                     </div>
-                    <div class="summary-divider"></div>
-                    <div class="summary-item">
-                        <span>Satış İşlem Adedi</span>
-                        <h2 id="salesCount">0 İşlem</h2>
+                    <div class="stat-item">
+                        <span class="stat-label">Toplam Maliyet</span>
+                        <div class="stat-value"><strong id="salesTotalCost" class="txt-muted">₺0,00</strong></div>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Toplam Kâr / Zarar</span>
+                        <div class="stat-value"><span class="pl-badge neut" id="salesTotalPL">₺0,00 (%0,00)</span></div>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">İşlem Başarı Oranı</span>
+                        <div class="stat-value"><strong id="salesSuccessRate" class="txt-neon-amber">%0,0</strong></div>
                     </div>
                 </div>
 
@@ -402,6 +409,6 @@
     </div>
     </div> <!-- End of app-container -->
 
-    <script src="app.js?v=12"></script>
+    <script src="app.js?v=13"></script>
 </body>
 </html>

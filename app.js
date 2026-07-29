@@ -304,10 +304,33 @@ function renderDashboard() {
 
 // --- Render Sales Tab with Top 3 Podium & "Satılmasaydı Ne Olurdu?" Analysis ---
 function renderSalesTab() {
-    const totalRealized = appState.sales.reduce((sum, s) => sum + s.realizedPL, 0);
-    document.getElementById("salesTotalRealized").innerText = formatCurrency(totalRealized);
-    document.getElementById("salesTotalRealized").className = totalRealized >= 0 ? "txt-neon-green" : "txt-neon-red";
+    let totalRevenue = 0;
+    let totalCost = 0;
+    let totalPL = 0;
+    let winCount = 0;
+    let totalTrades = appState.sales.length;
+
+    appState.sales.forEach(s => {
+        const rev = s.saleQty * s.salePrice;
+        const cost = s.saleQty * s.costBasisAtSale;
+        totalRevenue += rev;
+        totalCost += cost;
+        totalPL += s.realizedPL;
+        if (s.realizedPL > 0) winCount++;
+    });
+
+    const totalPLPercent = totalCost > 0 ? (totalPL / totalCost) * 100 : 0;
+    const successRate = totalTrades > 0 ? (winCount / totalTrades) * 100 : 0;
+
+    document.getElementById("salesTotalRevenue").innerText = formatCurrency(totalRevenue);
+    document.getElementById("salesTotalCost").innerText = formatCurrency(totalCost);
     
+    const plElem = document.getElementById("salesTotalPL");
+    plElem.innerText = `${totalPL >= 0 ? '+' : ''}${formatCurrency(totalPL)} (${formatPercent(totalPLPercent)})`;
+    plElem.className = `pl-badge ${totalPL >= 0 ? 'pos' : 'neg'}`;
+
+    document.getElementById("salesSuccessRate").innerText = `%${successRate.toFixed(1)}`;
+    document.getElementById("salesSuccessRate").className = successRate >= 50 ? "txt-neon-green" : "txt-neon-amber";
     // Group sales by symbol for aggregated view
     const groupedSales = {};
     appState.sales.forEach(s => {
