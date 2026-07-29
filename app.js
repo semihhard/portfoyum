@@ -419,18 +419,10 @@ function renderTopSalesPodium(aggregatedSales) {
     podiumElem.innerHTML = top3.map((s, idx) => `
         <div class="top-sale-card ${rankClasses[idx]}">
             <div class="rank-badge">${rankBadges[idx]}</div>
-            <div class="top-sale-info">
-                <h4>${s.symbol}</h4>
-                <span>${s.name} • Top. Kâr</span>
-            </div>
-            <div class="top-sale-val">
-                <strong class="${s.realizedPL >= 0 ? 'txt-neon-green' : 'txt-neon-red'}">
-                    ${s.realizedPL >= 0 ? '+' : ''}${formatCurrency(s.realizedPL)}
-                </strong>
-                <span class="${s.realizedPLPercent >= 0 ? 'txt-neon-green' : 'txt-neon-red'}">
-                    (${formatPercent(s.realizedPLPercent)})
-                </span>
-            </div>
+            <h4>${s.symbol}</h4>
+            <span class="podium-val ${s.realizedPL >= 0 ? 'txt-neon-green' : 'txt-neon-red'}">
+                ${s.realizedPL >= 0 ? '+' : ''}${formatCurrency(s.realizedPL)}
+            </span>
         </div>
     `).join("");
 }
