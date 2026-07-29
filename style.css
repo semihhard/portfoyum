@@ -611,6 +611,14 @@ body {
     flex-shrink: 0;
 }
 
+.icon-btn.loading i {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    100% { transform: rotate(360deg); }
+}
+
 /* Asset Cards */
 .assets-list, .sales-list, .market-list {
     display: flex;

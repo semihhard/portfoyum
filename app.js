@@ -749,11 +749,11 @@ function initEvents() {
     });
 
     document.getElementById("btnRefreshPrices").addEventListener("click", () => {
-        simulateMarketFluctuation();
+        fetchLivePrices();
     });
 
     document.getElementById("btnSimulateMarket").addEventListener("click", () => {
-        simulateMarketFluctuation();
+        fetchLivePrices();
     });
 }
 
@@ -763,6 +763,78 @@ function simulateMarketFluctuation() {
         const newPrice = Math.max(0.01, h.currentPrice * (1 + changePercent / 100));
         updateMarketPrice(h.symbol, newPrice);
     });
+}
+
+async function fetchLivePrices() {
+    const btn = document.getElementById("btnRefreshPrices");
+    if(btn) btn.classList.add("loading");
+
+    try {
+        const uniqueSymbols = new Set();
+        appState.holdings.forEach(h => {
+            if (h.category === "STOCK") uniqueSymbols.add(h.symbol + ".IS");
+            if (h.category === "FUND") uniqueSymbols.add(h.symbol + ".IS"); // some funds work with .IS
+            if (h.category === "CRYPTO") uniqueSymbols.add(h.symbol + "-USD");
+            if (h.category === "FX" && h.symbol === "USD/TRY") uniqueSymbols.add("USDTRY=X");
+            if (h.category === "FX" && h.symbol === "EUR/TRY") uniqueSymbols.add("EURTRY=X");
+            if (h.category === "FX" && h.symbol === "ALTIN") uniqueSymbols.add("XAUTRY=X"); 
+        });
+
+        if (uniqueSymbols.size === 0) return;
+
+        uniqueSymbols.add("USDTRY=X"); // ALWAYS needed for crypto conversion
+
+        const symbolsParam = Array.from(uniqueSymbols).join(",");
+        const yfUrl = `https://query1.finance.yahoo.com/v7/finance/quote?symbols=${symbolsParam}`;
+        const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(yfUrl)}`;
+
+        const res = await fetch(proxyUrl);
+        const json = await res.json();
+        const data = JSON.parse(json.contents);
+        
+        if (data && data.quoteResponse && data.quoteResponse.result) {
+            const results = data.quoteResponse.result;
+            
+            let usdTryRate = 38.0;
+            const usdTryItem = results.find(r => r.symbol === "USDTRY=X");
+            if (usdTryItem) usdTryRate = usdTryItem.regularMarketPrice;
+
+            results.forEach(quote => {
+                let localSymbol = quote.symbol;
+                let price = quote.regularMarketPrice;
+                let prevClose = quote.regularMarketPreviousClose || quote.regularMarketPrice;
+
+                if (localSymbol.endsWith(".IS")) {
+                    localSymbol = localSymbol.replace(".IS", "");
+                } else if (localSymbol.endsWith("-USD")) {
+                    localSymbol = localSymbol.replace("-USD", "");
+                    price = price * usdTryRate;
+                    prevClose = prevClose * usdTryRate;
+                } else if (localSymbol === "USDTRY=X") {
+                    localSymbol = "USD/TRY";
+                } else if (localSymbol === "EURTRY=X") {
+                    localSymbol = "EUR/TRY";
+                } else if (localSymbol === "XAUTRY=X") {
+                    localSymbol = "ALTIN";
+                }
+
+                if (appState.marketPrices[localSymbol]) {
+                    appState.marketPrices[localSymbol].price = price;
+                    appState.marketPrices[localSymbol].prevClose = prevClose;
+                } else {
+                    appState.marketPrices[localSymbol] = { price: price, prevClose: prevClose, name: localSymbol, category: "UNKNOWN" };
+                }
+            });
+            
+            saveData();
+            renderAll();
+        }
+    } catch (e) {
+        console.error("Fiyatlar güncellenemedi:", e);
+        alert("Fiyatlar güncellenirken proxy hatası oluştu. Varlıklarınızı girip daha sonra tekrar deneyin.");
+    } finally {
+        if(btn) btn.classList.remove("loading");
+    }
 }
 
 // --- Edit Sales ---
