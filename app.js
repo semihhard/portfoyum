@@ -617,7 +617,7 @@ function initNavigation() {
 
 // --- Modals ---
 function openAddModal() {
-    document.getElementById("inputDate").valueAsDate = new Date();
+    document.getElementById("inputDate").value = new Date().toISOString().split('T')[0];
     document.getElementById("modalAddTransaction").classList.add("active");
 }
 
@@ -633,7 +633,7 @@ function openSellModal(holdingId) {
     document.getElementById("sellSymbolName").innerText = `${h.symbol} - ${h.name}`;
     document.getElementById("sellAvailableQty").innerText = `${formatNumber(h.quantity, h.category === 'CRYPTO' ? 4 : 2)} Adet`;
     document.getElementById("sellCurrentCost").innerText = formatCurrency(h.avgCost);
-    document.getElementById("inputSellDate").valueAsDate = new Date();
+    document.getElementById("inputSellDate").value = new Date().toISOString().split('T')[0];
     document.getElementById("inputSellPrice").value = h.currentPrice;
     document.getElementById("inputSellQty").value = "";
 
