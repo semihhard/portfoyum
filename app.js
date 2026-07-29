@@ -604,15 +604,6 @@ function initNavigation() {
     document.getElementById("btnThemeToggle").addEventListener("click", () => {
         cycleTheme();
     });
-
-    const updateTime = () => {
-        const now = new Date();
-        const hrs = String(now.getHours()).padStart(2, '0');
-        const mins = String(now.getMinutes()).padStart(2, '0');
-        document.getElementById("statusTime").innerText = `${hrs}:${mins}`;
-    };
-    updateTime();
-    setInterval(updateTime, 10000);
 }
 
 // --- Modals ---
@@ -773,12 +764,6 @@ function simulateMarketFluctuation() {
         updateMarketPrice(h.symbol, newPrice);
     });
 }
-
-// --- Initial Render ---
-window.onload = () => {
-    loadData();
-    switchTab('holdings');
-};
 
 // --- Edit Sales ---
 let currentEditSaleSymbol = null;
