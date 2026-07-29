@@ -152,6 +152,12 @@ body {
         height: 100vh;
         border-radius: 0;
         border: none;
+        padding-top: env(safe-area-inset-top); /* Real iPhone notch padding */
+    }
+
+    /* Hide the fake HTML status bar on real mobile devices */
+    .ios-status-bar {
+        display: none !important;
     }
 }
 
