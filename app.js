@@ -307,14 +307,50 @@ function renderSalesTab() {
     const totalRealized = appState.sales.reduce((sum, s) => sum + s.realizedPL, 0);
     document.getElementById("salesTotalRealized").innerText = formatCurrency(totalRealized);
     document.getElementById("salesTotalRealized").className = totalRealized >= 0 ? "txt-neon-green" : "txt-neon-red";
-    document.getElementById("salesCount").innerText = `${appState.sales.length} İşlem`;
+    
+    // Group sales by symbol for aggregated view
+    const groupedSales = {};
+    appState.sales.forEach(s => {
+        if (!groupedSales[s.symbol]) {
+            groupedSales[s.symbol] = {
+                symbol: s.symbol,
+                name: s.name,
+                category: s.category,
+                saleQty: 0,
+                totalRevenue: 0,
+                totalCostBasis: 0,
+                realizedPL: 0,
+                saleDate: s.saleDate
+            };
+        }
+        const g = groupedSales[s.symbol];
+        g.saleQty += s.saleQty;
+        g.totalRevenue += (s.saleQty * s.salePrice);
+        g.totalCostBasis += (s.saleQty * s.costBasisAtSale);
+        g.realizedPL += s.realizedPL;
+        if (new Date(s.saleDate) > new Date(g.saleDate)) {
+            g.saleDate = s.saleDate; // Keep latest sale date
+        }
+    });
 
-    // 1. Render Top 3 Sales Leaderboard
-    renderTopSalesPodium();
+    const aggregatedSales = Object.values(groupedSales).map(g => {
+        g.salePrice = g.saleQty > 0 ? g.totalRevenue / g.saleQty : 0;
+        g.costBasisAtSale = g.saleQty > 0 ? g.totalCostBasis / g.saleQty : 0;
+        g.realizedPLPercent = g.totalCostBasis > 0 ? (g.realizedPL / g.totalCostBasis) * 100 : 0;
+        return g;
+    });
+
+    // Sort by latest sale date (descending)
+    aggregatedSales.sort((a, b) => new Date(b.saleDate) - new Date(a.saleDate));
+
+    document.getElementById("salesCount").innerText = `${aggregatedSales.length} Varlık`;
+
+    // 1. Render Top 3 Sales Leaderboard (using aggregated data)
+    renderTopSalesPodium(aggregatedSales);
 
     // 2. Render Full Sales Log with What-If Analysis
     const container = document.getElementById("salesList");
-    if (appState.sales.length === 0) {
+    if (aggregatedSales.length === 0) {
         container.innerHTML = `
             <div class="empty-state">
                 <i class="fa-solid fa-receipt"></i>
@@ -324,7 +360,7 @@ function renderSalesTab() {
         return;
     }
 
-    container.innerHTML = appState.sales.map(s => {
+    container.innerHTML = aggregatedSales.map(s => {
         const isPos = s.realizedPL >= 0;
         const whatIf = calculateWhatIf(s);
 
@@ -332,19 +368,19 @@ function renderSalesTab() {
             <div class="sale-card">
                 <div class="sale-top">
                     <span class="sale-symbol">${s.symbol} - ${s.name}</span>
-                    <span class="sale-date">${s.saleDate}</span>
+                    <span class="sale-date">Son Satış: ${s.saleDate}</span>
                 </div>
                 <div class="sale-grid">
                     <div class="sale-cell">
-                        <span>Satış Miktarı</span>
+                        <span>Toplam Satış</span>
                         <strong>${formatNumber(s.saleQty, s.category === 'CRYPTO' ? 4 : 2)} Adet</strong>
                     </div>
                     <div class="sale-cell">
-                        <span>Satış Fiyatı</span>
+                        <span>Ortalama Fiyat</span>
                         <strong>${formatCurrency(s.salePrice)}</strong>
                     </div>
                     <div class="sale-cell">
-                        <span>Realize Kâr</span>
+                        <span>Toplam Kâr</span>
                         <strong class="${isPos ? 'txt-neon-green' : 'txt-neon-red'}">
                             ${isPos ? '+' : ''}${formatCurrency(s.realizedPL)} (${formatPercent(s.realizedPLPercent)})
                         </strong>
@@ -362,9 +398,9 @@ function renderSalesTab() {
 }
 
 // Render Top 3 Sales Leaderboard
-function renderTopSalesPodium() {
+function renderTopSalesPodium(aggregatedSales) {
     const podiumElem = document.getElementById("topSalesPodium");
-    const sorted = [...appState.sales].sort((a, b) => b.realizedPL - a.realizedPL);
+    const sorted = [...aggregatedSales].sort((a, b) => b.realizedPL - a.realizedPL);
     const top3 = sorted.slice(0, 3);
 
     if (top3.length === 0) {
@@ -380,7 +416,7 @@ function renderTopSalesPodium() {
             <div class="rank-badge">${rankBadges[idx]}</div>
             <div class="top-sale-info">
                 <h4>${s.symbol}</h4>
-                <span>${s.name} • ${s.saleDate}</span>
+                <span>${s.name} • Top. Kâr</span>
             </div>
             <div class="top-sale-val">
                 <strong class="${s.realizedPL >= 0 ? 'txt-neon-green' : 'txt-neon-red'}">
