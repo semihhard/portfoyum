@@ -582,6 +582,56 @@ function renderAll() {
     renderMarketTab();
 }
 
+// --- Data Export (Excel/CSV) ---
+function exportToExcel() {
+    // Türkçe Excel için BOM (UTF-8 işareti) ve noktalı virgül (;) ayırıcı kullanıyoruz.
+    let csv = "\uFEFF"; 
+    
+    // 1. Portföy
+    csv += "--- PORTFOYUM ---\n";
+    csv += "Varlik;Kod;Kategori;Adet;Maliyet;Guncel Fiyat;Toplam Maliyet;Guncel Deger;Kar/Zarar\n";
+    appState.holdings.forEach(h => {
+        const totalCost = h.quantity * h.avgCost;
+        const totalValue = h.quantity * h.currentPrice;
+        const pl = totalValue - totalCost;
+        
+        // Excel'in sayıları doğru okuması için noktayı virgüle çeviriyoruz
+        const qty = h.quantity.toString().replace('.', ',');
+        const avg = h.avgCost.toFixed(4).replace('.', ',');
+        const cur = h.currentPrice.toFixed(4).replace('.', ',');
+        const tCost = totalCost.toFixed(2).replace('.', ',');
+        const tVal = totalValue.toFixed(2).replace('.', ',');
+        const tPl = pl.toFixed(2).replace('.', ',');
+
+        csv += `${h.name};${h.symbol};${h.category};${qty};${avg};${cur};${tCost};${tVal};${tPl}\n`;
+    });
+    
+    csv += "\n--- SATIS GECMISI ---\n";
+    csv += "Tarih;Varlik;Adet;Alis Fiyati;Satis Fiyati;Gerceklesen Kar/Zarar\n";
+    appState.sales.forEach(s => {
+        const buyPrice = s.buyCost / s.qty;
+        
+        const qty = s.qty.toString().replace('.', ',');
+        const bPrice = buyPrice.toFixed(4).replace('.', ',');
+        const sPrice = s.price.toFixed(4).replace('.', ',');
+        const rPl = s.realizedPL.toFixed(2).replace('.', ',');
+
+        csv += `${s.date};${s.symbol};${qty};${bPrice};${sPrice};${rPl}\n`;
+    });
+
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    
+    const today = new Date().toLocaleDateString('tr-TR').replace(/\./g, '-');
+    link.setAttribute("download", `Portfoy_Yedek_${today}.csv`);
+    
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
+
 // --- Navigation ---
 function initNavigation() {
     const tabBtns = document.querySelectorAll(".ios-tab-bar .tab-item[data-tab]");
