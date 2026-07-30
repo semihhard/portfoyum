@@ -860,6 +860,16 @@ async function fetchLivePrices() {
         } catch(e) { console.warn("Google Sheets fetch failed", e); }
 
         if (fetchCount > 0) {
+            // Senkronize et: marketPrices güncellendi, şimdi bunları portföydeki (holdings) varlıklara aktar
+            appState.holdings.forEach(h => {
+                if (appState.marketPrices[h.symbol]) {
+                    // Sadece fiyat gerçekten değişmişse önceki kapanışı güncelle
+                    if (h.currentPrice !== appState.marketPrices[h.symbol].price) {
+                        h.previousClosePrice = h.currentPrice;
+                    }
+                    h.currentPrice = appState.marketPrices[h.symbol].price;
+                }
+            });
             saveData();
             renderAll();
         } else {
