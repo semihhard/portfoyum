@@ -503,6 +503,26 @@
     </div>
     </div> <!-- End of app-container -->
 
+    <!-- MODAL: KAP DETAIL -->
+    <div class="modal-overlay" id="modalKapDetail">
+        <div class="modal-sheet ultra-glass-modal" style="background: rgba(20,20,30,0.95);">
+            <div class="modal-header" style="border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 15px;">
+                <h3 style="color: #F59E0B;"><i class="fa-solid fa-file-contract"></i> KAP Bildirimi</h3>
+                <button class="modal-close" onclick="closeKapModal()">&times;</button>
+            </div>
+            <div class="detail-body" style="padding-top: 15px;">
+                <h4 id="kapDetailSymbol" style="color: #fff; font-size: 1.2rem; margin-bottom: 5px;"></h4>
+                <div id="kapDetailTitle" style="color: var(--text-secondary); font-size: 0.9rem; font-weight: 600; margin-bottom: 20px;"></div>
+                
+                <div style="background: rgba(255,255,255,0.03); border-radius: 12px; padding: 15px; border: 1px solid rgba(255,255,255,0.05);">
+                    <p id="kapDetailContent" style="color: #cbd5e1; font-size: 0.85rem; line-height: 1.6; margin: 0; white-space: pre-wrap; font-family: 'Inter', sans-serif;"></p>
+                </div>
+                
+                <div style="margin-top: 20px; font-size: 0.75rem; color: #64748b; text-align: right;" id="kapDetailDate"></div>
+            </div>
+        </div>
+    </div>
+
     <!-- Story Share Hidden Template -->
     <div id="storyShareTemplate" style="position: absolute; left: -9999px; top: -9999px; width: 400px; height: 711px; background: #020305; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'Inter', sans-serif;">
         <div style="position: absolute; inset: 0; background: radial-gradient(circle at 50% 30%, rgba(16, 185, 129, 0.2), transparent 70%);"></div>
@@ -526,6 +546,6 @@
         </div>
     </div>
 
-    <script src="app.js?v=31"></script>
+    <script src="app.js?v=32"></script>
 </body>
 </html>

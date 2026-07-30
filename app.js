@@ -1501,9 +1501,21 @@ async function fetchNews() {
         // Haberleri zamana göre sırala (en yeni en üstte)
         mockNews.sort((a, b) => b.date - a.date);
 
-        const html = mockNews.map(item => {
+        const html = mockNews.map((item, idx) => {
+            // Encode content for safe HTML attribute injection
+            const safeTitle = item.title.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+            
+            // Create a fake, long, and realistic detailed content for the modal
+            const detailText = `Şirketimiz Yönetim Kurulu'nun ${item.timeStr} tarihli toplantısında;
+            
+Sermaye Piyasası Kurulu'nun (SPK) Seri: II, No: 14.1 sayılı Tebliği hükümleri çerçevesinde hazırlanan finansal tablolarımız ve faaliyet raporlarımız incelenmiş olup, ${item.title} kapsamında belirtilen hususların kamuoyu ile şeffaf bir şekilde paylaşılmasına karar verilmiştir.
+
+Bu kapsamda şirketimizin ilgili dönemdeki faaliyetleri ve stratejik hedefleri doğrultusunda yatırımlarımız planlandığı şekilde devam etmektedir. Detaylı bağımsız denetim raporu ve ek dosyalar KAP sistemine yüklenmiştir.
+
+Yatırımcılarımıza saygıyla duyurulur.`.replace(/'/g, "\\'").replace(/"/g, '&quot;').replace(/\n/g, '\\n');
+
             return `
-                <a href="#" class="news-item highlight" onclick="event.preventDefault()">
+                <a href="#" class="news-item highlight" onclick="openKapModal('${item.symbol}', '${safeTitle}', '${item.timeStr}', '${detailText}'); return false;">
                     <div class="news-tag"><i class="fa-solid fa-bullseye"></i> Portföyünüzdeki Hisse (${item.symbol})</div>
                     <div class="news-title">${item.title}</div>
                     <div class="news-meta">
@@ -1520,4 +1532,19 @@ async function fetchNews() {
         console.error("News fetch error:", err);
         container.innerHTML = `<div class="empty-state"><p>KAP bağlantı hatası.</p></div>`;
     }
+}
+
+function openKapModal(symbol, title, time, content) {
+    document.getElementById("kapDetailSymbol").innerText = symbol;
+    document.getElementById("kapDetailTitle").innerText = title;
+    document.getElementById("kapDetailDate").innerText = `Tarih: Bugün, ${time}`;
+    
+    // Replace \n back to actual newlines for textContent
+    document.getElementById("kapDetailContent").textContent = content.replace(/\\n/g, '\n');
+    
+    document.getElementById("modalKapDetail").classList.add("active");
+}
+
+function closeKapModal() {
+    document.getElementById("modalKapDetail").classList.remove("active");
 }
