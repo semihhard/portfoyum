@@ -831,17 +831,24 @@ async function fetchLivePrices() {
             const res = await fetch(sheetCsvUrl);
             const csvText = await res.text();
             
-            // Basit CSV Parser
+            // Gelişmiş CSV Parser (Çift tırnak içindeki virgülleri korur)
             const rows = csvText.split('\n');
             rows.forEach(row => {
-                const cols = row.split(',');
+                let cols = [];
+                // Eğer Google Sheets virgüllü sayıları "125,8" gibi çift tırnakla sardıysa
+                if (row.includes('","')) {
+                    cols = row.split('","');
+                } else {
+                    cols = row.split(',');
+                }
+
                 if (cols.length >= 2) {
                     let sym = cols[0].replace(/"/g, '').trim().toUpperCase(); // "THYAO " -> THYAO
-                    let priceStr = cols[1].trim();
+                    let priceStr = cols[1].replace(/"/g, '').trim();
                     if (!sym) return;
                     
-                    // Fiyat içindeki çift tırnakları ve virgülleri düzelt (Örn: "312,50" -> 312.50)
-                    priceStr = priceStr.replace(/"/g, '').replace(/,/g, '.');
+                    // Fiyat içindeki virgülleri noktaya çevir (Örn: 125,8 -> 125.8)
+                    priceStr = priceStr.replace(/,/g, '.');
                     const price = parseFloat(priceStr);
                     
                     if (!isNaN(price) && appState.marketPrices[sym]) {
