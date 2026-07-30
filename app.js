@@ -518,23 +518,23 @@ function calculateWhatIf(sale) {
     const diffPct = sale.salePrice > 0 ? ((currentPrice - sale.salePrice) / sale.salePrice) * 100 : 0;
 
     if (currentPrice > sale.salePrice) {
-        // Price went up after selling -> Missed gain
+        // Price went up after selling -> Missed gain (Bad decision, Red)
         return {
-            type: "missed-gain",
+            type: "negative",
             icon: "fa-triangle-exclamation",
             text: `<strong>Satılmasaydı:</strong> Anlık piyasa fiyatı (${formatCurrency(currentPrice)}) ile bu varlık bugün <strong>+${formatCurrency(diff)} (${formatPercent(diffPct)})</strong> daha yüksek değerde olacaktı.`
         };
     } else if (currentPrice < sale.salePrice) {
-        // Price went down after selling -> Good sell decision!
+        // Price went down after selling -> Good sell decision! (Good decision, Green)
         const savedAmount = Math.abs(diff);
         return {
-            type: "good-sell",
+            type: "positive",
             icon: "fa-circle-check",
             text: `<strong>Doğru Zamanlama!</strong> Fiyat geriledi (${formatCurrency(currentPrice)}). Satılmasaydı elinizde kalsaydı <strong>${formatCurrency(savedAmount)} (${formatPercent(diffPct)})</strong> daha az değerde olacaktı.`
         };
     } else {
         return {
-            type: "equal",
+            type: "neutral",
             icon: "fa-equals",
             text: `<strong>Fiyat Değişmedi:</strong> Güncel piyasa fiyatı satış fiyatıyla aynı seviyede (${formatCurrency(currentPrice)}).`
         };
