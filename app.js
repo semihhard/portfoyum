@@ -1447,30 +1447,65 @@ async function shareToStory(symbol, name, percentRaw, profitRaw, isSale = false,
     const pctElem = document.getElementById("storyPercent");
     const moneyElem = document.getElementById("storyMoney");
     const boxLabel = document.getElementById("storyBoxLabel");
-    const bgGradient = document.getElementById("storyGradientBg");
+    const topGlow = document.getElementById("storyTopGlow");
+    const pctIcon = document.getElementById("storyPercentIcon");
+    const bigArrow = document.getElementById("storyBigArrow");
+    const quoteDecor = document.getElementById("storyQuoteDecor");
     
     pctElem.innerText = pctStr;
     moneyElem.innerText = moneyStr;
     
     // Style dynamically based on profit/loss
     if (isPos) {
+        boxLabel.style.background = "rgba(16,185,129,0.15)";
+        boxLabel.style.color = "#10B981";
+        topGlow.style.background = "radial-gradient(circle, rgba(16,185,129,0.2) 0%, transparent 70%)";
         pctElem.style.color = "#10B981";
         moneyElem.style.color = "#10B981";
-        boxLabel.style.color = "#10B981";
-        bgGradient.style.background = "linear-gradient(135deg, #10B981, #047857)";
+        pctIcon.style.color = "#10B981";
+        pctIcon.innerHTML = '<i class="fa-solid fa-arrow-trend-up"></i>';
+        
+        bigArrow.innerHTML = `
+            <svg viewBox="0 0 200 120" style="width: 100%; height: 100%; filter: drop-shadow(0 15px 15px rgba(16,185,129,0.3));">
+                <path d="M10,100 Q40,90 70,60 T120,50 T180,15" fill="none" stroke="#10B981" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+                <polygon points="185,5 155,10 180,35" fill="#10B981"/>
+            </svg>
+        `;
+        
+        quoteDecor.innerHTML = `
+            <div style="width: 12px; height: 20px; background: rgba(16,185,129,0.4); border-radius: 4px;"></div>
+            <div style="width: 12px; height: 35px; background: rgba(16,185,129,0.6); border-radius: 4px;"></div>
+            <div style="width: 12px; height: 50px; background: #10B981; border-radius: 4px; box-shadow: 0 0 15px rgba(16,185,129,0.5);"></div>
+        `;
     } else {
+        boxLabel.style.background = "rgba(239,68,68,0.15)";
+        boxLabel.style.color = "#EF4444";
+        topGlow.style.background = "radial-gradient(circle, rgba(239,68,68,0.2) 0%, transparent 70%)";
         pctElem.style.color = "#EF4444";
         moneyElem.style.color = "#EF4444";
-        boxLabel.style.color = "#EF4444";
-        bgGradient.style.background = "linear-gradient(135deg, #EF4444, #991b1b)";
+        pctIcon.style.color = "#EF4444";
+        pctIcon.innerHTML = '<i class="fa-solid fa-arrow-trend-down"></i>';
+        
+        bigArrow.innerHTML = `
+            <svg viewBox="0 0 200 120" style="width: 100%; height: 100%; filter: drop-shadow(0 15px 15px rgba(239,68,68,0.3));">
+                <path d="M10,20 Q40,30 70,60 T120,70 T180,105" fill="none" stroke="#EF4444" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+                <polygon points="185,115 155,110 180,85" fill="#EF4444"/>
+            </svg>
+        `;
+        
+        quoteDecor.innerHTML = `
+            <div style="width: 12px; height: 50px; background: rgba(239,68,68,0.4); border-radius: 4px;"></div>
+            <div style="width: 12px; height: 35px; background: rgba(239,68,68,0.6); border-radius: 4px;"></div>
+            <div style="width: 12px; height: 20px; background: #EF4444; border-radius: 4px; box-shadow: 0 0 15px rgba(239,68,68,0.5);"></div>
+        `;
     }
 
     const template = document.getElementById("storyShareTemplate");
     
     try {
         const canvas = await html2canvas(template, {
-            scale: 1, // Already 1080x1920
-            backgroundColor: "#ffffff",
+            scale: 2, 
+            backgroundColor: "#080A10",
             logging: false,
             useCORS: true
         });
