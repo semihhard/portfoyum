@@ -114,12 +114,6 @@
                         <h1 class="page-title">Portföyüm</h1>
                     </div>
                     <div class="header-actions">
-                        <div style="position: relative; display: inline-block;">
-                            <button class="icon-btn" onclick="toggleNotificationDrawer()" title="Bildirim Merkezi">
-                                <i class="fa-solid fa-bell"></i>
-                            </button>
-                            <span id="notificationBadge" style="display: none; position: absolute; top: 5px; right: 5px; background: #EF4444; color: white; border-radius: 50%; width: 10px; height: 10px; border: 2px solid #0B0F19;"></span>
-                        </div>
                         <button class="icon-btn" onclick="togglePrivacy()" title="Gizlilik Modu" id="privacyBtn">
                             <i class="fa-solid fa-eye-slash"></i>
                         </button>
@@ -557,123 +551,140 @@
         </div>
     </div>
 
-    <!-- Story Share Hidden Template (Ultra Premium Dark Dashboard) -->
-    <div id="storyShareTemplate" style="position: absolute; left: -9999px; top: -9999px; width: 540px; height: 860px; background: #080A10; overflow: hidden; font-family: 'Inter', sans-serif; display: flex; flex-direction: column; padding: 25px; box-sizing: border-box;">
+    <!-- Story Share Hidden Template (4-Card Ultra Premium Dashboard) -->
+    <div id="storyShareTemplate" style="position: absolute; left: -9999px; top: -9999px; width: 600px; height: 960px; background: #0A0E17; overflow: hidden; font-family: 'Inter', sans-serif; display: flex; flex-direction: column; padding: 25px; box-sizing: border-box; gap: 15px;">
         
-        <!-- Main Top Card (Profit & Arrow) -->
-        <div id="storyMainCard" style="background: linear-gradient(180deg, #121D25 0%, #0F151E 100%); border: 1px solid rgba(255,255,255,0.05); border-radius: 24px; padding: 30px; position: relative; overflow: hidden; margin-bottom: 15px;">
-            <!-- Glow orb behind arrow -->
-            <div id="storyTopGlow" style="position: absolute; top: 0; right: 0; width: 300px; height: 300px; background: radial-gradient(circle, rgba(16,185,129,0.2) 0%, transparent 70%);"></div>
+        <!-- Card 1: Top Profit / Arrow -->
+        <div id="storyMainCard" style="background: #111827; border: 1px solid rgba(255,255,255,0.05); border-radius: 20px; padding: 30px; position: relative; overflow: hidden; flex-shrink: 0;">
+            <!-- Glow -->
+            <div id="storyTopGlow" style="position: absolute; top: 0; right: 0; width: 400px; height: 300px; background: radial-gradient(circle, rgba(16,185,129,0.15) 0%, transparent 70%);"></div>
             
             <div style="position: relative; z-index: 2;">
                 <!-- Tag -->
-                <div id="storyBoxLabel" style="display: inline-block; background: rgba(16,185,129,0.15); color: #10B981; font-size: 0.85rem; font-weight: 700; padding: 6px 14px; border-radius: 8px; margin-bottom: 20px; letter-spacing: 1px;">KÂR</div>
+                <div id="storyBoxLabel" style="display: inline-block; background: rgba(16,185,129,0.15); color: #10B981; font-size: 1rem; font-weight: 700; padding: 6px 16px; border-radius: 8px; margin-bottom: 20px; letter-spacing: 1px;">KÂR</div>
+                
+                <!-- Title -->
+                <div style="color: #94A3B8; font-size: 1.1rem; font-weight: 500; margin-bottom: 5px;">Toplam Kâr</div>
                 
                 <!-- Huge Money -->
-                <div id="storyMoney" style="color: #10B981; font-size: 3.2rem; font-weight: 900; letter-spacing: -1px; margin-bottom: 5px; line-height: 1.1;">+₺1.890,00</div>
-                
-                <!-- Asset Info -->
-                <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 25px;">
-                    <img id="storyIconImg" src="" style="width: 32px; height: 32px; border-radius: 50%; box-shadow: 0 5px 15px rgba(0,0,0,0.3);" />
-                    <div style="display: flex; align-items: baseline; gap: 8px;">
-                        <span id="storySymbol" style="color: #E2E8F0; font-size: 1.1rem; font-weight: 700;">GARAN</span>
-                        <span id="storyName" style="color: #64748B; font-size: 0.9rem; font-weight: 500;">Garanti BBVA</span>
-                    </div>
-                </div>
+                <div id="storyMoney" style="color: #10B981; font-size: 3.5rem; font-weight: 900; letter-spacing: -1.5px; margin-bottom: 20px; line-height: 1;">+₺1.890,00</div>
                 
                 <!-- Percent Pill -->
-                <div style="display: inline-flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); padding: 10px 16px; border-radius: 12px;">
-                    <div id="storyPercentIcon" style="color: #10B981; font-size: 1.2rem;"><i class="fa-solid fa-arrow-trend-up"></i></div>
+                <div id="storyPercentPill" style="display: inline-flex; align-items: center; gap: 12px; background: rgba(16,185,129,0.08); border: 1px solid rgba(16,185,129,0.2); padding: 10px 18px; border-radius: 12px;">
+                    <div id="storyPercentIcon" style="color: #10B981; font-size: 1.4rem;"><i class="fa-solid fa-arrow-trend-up"></i></div>
                     <div>
-                        <div id="storyPercent" style="color: #10B981; font-size: 1.1rem; font-weight: 800; line-height: 1;">%8,45</div>
-                        <div style="color: #64748B; font-size: 0.7rem; font-weight: 500; margin-top: 3px;">Getiri Oranı</div>
+                        <div id="storyPercent" style="color: #10B981; font-size: 1.2rem; font-weight: 800; line-height: 1;">%8,45</div>
+                        <div id="storyPercentLabel" style="color: #94A3B8; font-size: 0.75rem; font-weight: 500; margin-top: 4px;">Getiri Oranı</div>
                     </div>
                 </div>
             </div>
             
-            <!-- Big Decorative Arrow / Chart SVG -->
-            <div id="storyBigArrow" style="position: absolute; right: -20px; top: 20px; width: 280px; height: 180px; z-index: 1;">
-                <svg viewBox="0 0 200 120" style="width: 100%; height: 100%; filter: drop-shadow(0 15px 15px rgba(16,185,129,0.3));">
-                    <path d="M10,100 Q40,90 70,60 T120,50 T180,15" fill="none" stroke="#10B981" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
-                    <polygon points="185,5 155,10 180,35" fill="#10B981"/>
+            <!-- Big Arrow & Bars SVG -->
+            <div id="storyBigArrow" style="position: absolute; right: 0; bottom: 0; width: 400px; height: 220px; z-index: 1;">
+                <svg viewBox="0 0 400 220" style="width: 100%; height: 100%;">
+                    <!-- Bars -->
+                    <rect x="50" y="180" width="15" height="20" fill="rgba(16,185,129,0.1)" rx="2"/>
+                    <rect x="80" y="170" width="15" height="30" fill="rgba(16,185,129,0.15)" rx="2"/>
+                    <rect x="110" y="160" width="15" height="40" fill="rgba(16,185,129,0.2)" rx="2"/>
+                    <rect x="140" y="140" width="15" height="60" fill="rgba(16,185,129,0.25)" rx="2"/>
+                    <rect x="170" y="150" width="15" height="50" fill="rgba(16,185,129,0.3)" rx="2"/>
+                    <rect x="200" y="120" width="15" height="80" fill="rgba(16,185,129,0.35)" rx="2"/>
+                    <rect x="230" y="100" width="15" height="100" fill="rgba(16,185,129,0.4)" rx="2"/>
+                    <rect x="260" y="80" width="15" height="120" fill="rgba(16,185,129,0.5)" rx="2"/>
+                    <rect x="290" y="60" width="15" height="140" fill="rgba(16,185,129,0.6)" rx="2"/>
+                    <rect x="320" y="40" width="15" height="160" fill="rgba(16,185,129,0.7)" rx="2"/>
+                    <rect x="350" y="20" width="15" height="180" fill="rgba(16,185,129,0.8)" rx="2"/>
+                    
+                    <!-- Arrow Line -->
+                    <path d="M 20 180 Q 80 170 120 150 T 220 130 T 360 30" fill="none" stroke="#10B981" stroke-width="12" stroke-linecap="round" stroke-linejoin="round" filter="drop-shadow(0 10px 10px rgba(16,185,129,0.5))"/>
+                    <!-- Arrow Head -->
+                    <polygon points="370,15 340,25 365,50" fill="#10B981" filter="drop-shadow(0 10px 10px rgba(16,185,129,0.5))"/>
                 </svg>
             </div>
         </div>
 
-        <!-- Middle Cards (Prices) -->
-        <div style="display: flex; gap: 15px; margin-bottom: 15px;">
-            <!-- Buy Price Card -->
-            <div style="flex: 1; background: #111620; border: 1px solid rgba(255,255,255,0.04); border-radius: 20px; padding: 20px; display: flex; align-items: center; gap: 15px;">
-                <div style="width: 44px; height: 44px; border-radius: 50%; background: rgba(16,185,129,0.1); display: flex; align-items: center; justify-content: center; color: #10B981; font-size: 1.2rem;">
-                    <i class="fa-solid fa-chart-pie"></i>
-                </div>
-                <div>
-                    <div style="color: #64748B; font-size: 0.8rem; font-weight: 500; margin-bottom: 4px;">Giriş Fiyatı</div>
-                    <div id="storyBuyPrice" style="color: #F8FAFC; font-size: 1.2rem; font-weight: 700;">₺22.350,00</div>
-                    <div style="width: 30px; height: 3px; background: #10B981; border-radius: 3px; margin-top: 8px;"></div>
-                </div>
+        <!-- Card 2: 4 Columns Stats -->
+        <div style="background: #111827; border: 1px solid rgba(255,255,255,0.05); border-radius: 20px; padding: 25px 15px; display: flex; justify-content: space-between; flex-shrink: 0;">
+            <!-- Col 1 -->
+            <div style="flex: 1; text-align: center; border-right: 1px solid rgba(255,255,255,0.05);">
+                <div style="color: #94A3B8; font-size: 0.85rem; font-weight: 500; margin-bottom: 8px;">Alış Maliyeti</div>
+                <i class="fa-solid fa-cart-shopping" style="color: #10B981; font-size: 1.5rem; margin-bottom: 8px; opacity: 0.8;"></i>
+                <div id="storyCol1Val" style="color: #F8FAFC; font-size: 1.1rem; font-weight: 700;">₺0,00</div>
             </div>
-            
-            <!-- Current Price Card -->
-            <div style="flex: 1; background: #111620; border: 1px solid rgba(255,255,255,0.04); border-radius: 20px; padding: 20px; display: flex; align-items: center; gap: 15px;">
-                <div style="width: 44px; height: 44px; border-radius: 50%; background: rgba(56,189,248,0.1); display: flex; align-items: center; justify-content: center; color: #38BDF8; font-size: 1.2rem;">
-                    <i class="fa-solid fa-wallet"></i>
-                </div>
-                <div>
-                    <div id="storyCurrentPriceLabel" style="color: #64748B; font-size: 0.8rem; font-weight: 500; margin-bottom: 4px;">Güncel Fiyat</div>
-                    <div id="storyCurrentPrice" style="color: #F8FAFC; font-size: 1.2rem; font-weight: 700;">₺24.240,00</div>
-                    <div style="width: 30px; height: 3px; background: #38BDF8; border-radius: 3px; margin-top: 8px;"></div>
-                </div>
+            <!-- Col 2 -->
+            <div style="flex: 1; text-align: center; border-right: 1px solid rgba(255,255,255,0.05);">
+                <div style="color: #94A3B8; font-size: 0.85rem; font-weight: 500; margin-bottom: 8px;">Güncel Değer</div>
+                <i class="fa-solid fa-wallet" style="color: #38BDF8; font-size: 1.5rem; margin-bottom: 8px; opacity: 0.8;"></i>
+                <div id="storyCol2Val" style="color: #F8FAFC; font-size: 1.1rem; font-weight: 700;">₺0,00</div>
+            </div>
+            <!-- Col 3 -->
+            <div style="flex: 1; text-align: center; border-right: 1px solid rgba(255,255,255,0.05);">
+                <div style="color: #94A3B8; font-size: 0.85rem; font-weight: 500; margin-bottom: 8px;">Kâr / Zarar</div>
+                <i id="storyCol3Icon" class="fa-solid fa-arrow-trend-up" style="color: #10B981; font-size: 1.5rem; margin-bottom: 8px;"></i>
+                <div id="storyCol3Val" style="color: #10B981; font-size: 1.1rem; font-weight: 700;">+₺0,00</div>
+            </div>
+            <!-- Col 4 -->
+            <div style="flex: 1; text-align: center;">
+                <div style="color: #94A3B8; font-size: 0.85rem; font-weight: 500; margin-bottom: 8px;">Kâr / Zarar %</div>
+                <i id="storyCol4Icon" class="fa-solid fa-percent" style="color: #8B5CF6; font-size: 1.5rem; margin-bottom: 8px; opacity: 0.8;"></i>
+                <div id="storyCol4Val" style="color: #10B981; font-size: 1.1rem; font-weight: 700;">%0,00</div>
             </div>
         </div>
 
-        <!-- Quote Card -->
-        <div style="background: linear-gradient(90deg, #0D171A 0%, #0B1118 100%); border: 1px solid rgba(16,185,129,0.1); border-radius: 20px; padding: 25px; display: flex; align-items: center; gap: 20px; flex: 1; position: relative; overflow: hidden;">
-            <div style="color: #10B981; font-size: 2.5rem; opacity: 0.8;"><i class="fa-solid fa-quote-left"></i></div>
-            <div style="z-index: 2;">
-                <div id="storyQuoteText" style="color: #E2E8F0; font-size: 1rem; line-height: 1.5; font-weight: 400;">
-                    Sabır ve istikrar,<br><strong style="font-weight: 700;">en büyük kazancı getirir.</strong>
+        <!-- Card 3: Line Chart -->
+        <div style="background: #111827; border: 1px solid rgba(255,255,255,0.05); border-radius: 20px; padding: 25px; display: flex; flex-direction: column; flex-shrink: 0; position: relative;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <div id="storyChartTitle" style="color: #F8FAFC; font-size: 1.1rem; font-weight: 700;">Zaman İçindeki Değişim (<span id="storyChartSymbol"></span>)</div>
+                <div style="background: rgba(255,255,255,0.05); color: #94A3B8; font-size: 0.8rem; padding: 5px 12px; border-radius: 12px;">Tüm Zamanlar</div>
+            </div>
+            <div id="storyChartSvgContainer" style="width: 100%; height: 160px;">
+                <!-- Replaced via JS -->
+            </div>
+        </div>
+
+        <!-- Card 4: Donut & Quote -->
+        <div style="display: flex; gap: 15px; flex-shrink: 0;">
+            <!-- Donut -->
+            <div style="background: #111827; border: 1px solid rgba(255,255,255,0.05); border-radius: 20px; padding: 20px; flex: 1; display: flex; align-items: center; gap: 15px;">
+                <div style="position: relative; width: 70px; height: 70px;">
+                    <svg viewBox="0 0 36 36" style="width: 100%; height: 100%;">
+                        <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#1F2937" stroke-width="6"/>
+                        <path id="storyDonutPath" stroke-dasharray="62, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#10B981" stroke-width="6"/>
+                    </svg>
+                </div>
+                <div>
+                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 5px;">
+                        <div id="storyDonutColor" style="width: 8px; height: 8px; border-radius: 50%; background: #10B981;"></div>
+                        <div id="storyDonutLabel" style="color: #94A3B8; font-size: 0.8rem;">Bu Varlık</div>
+                        <div id="storyDonutPct" style="color: #F8FAFC; font-size: 0.85rem; font-weight: 700; margin-left: auto;">%62</div>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div style="width: 8px; height: 8px; border-radius: 50%; background: #1F2937;"></div>
+                        <div style="color: #94A3B8; font-size: 0.8rem;">Diğer</div>
+                        <div id="storyDonutRem" style="color: #F8FAFC; font-size: 0.85rem; font-weight: 700; margin-left: auto;">%38</div>
+                    </div>
                 </div>
             </div>
             
-            <!-- Decorative Right Side (Bars) -->
-            <div id="storyQuoteDecor" style="position: absolute; right: 20px; bottom: 15px; display: flex; align-items: flex-end; gap: 8px; opacity: 0.8;">
-                <div style="width: 12px; height: 20px; background: rgba(16,185,129,0.4); border-radius: 4px;"></div>
-                <div style="width: 12px; height: 35px; background: rgba(16,185,129,0.6); border-radius: 4px;"></div>
-                <div style="width: 12px; height: 50px; background: #10B981; border-radius: 4px; box-shadow: 0 0 15px rgba(16,185,129,0.5);"></div>
+            <!-- Quote -->
+            <div style="background: linear-gradient(90deg, #0A1418 0%, #0B1118 100%); border: 1px solid rgba(16,185,129,0.1); border-radius: 20px; padding: 20px; flex: 1.2; display: flex; align-items: center; gap: 15px;">
+                <div style="color: #10B981; font-size: 2rem; opacity: 0.8;"><i class="fa-solid fa-bullseye"></i></div>
+                <div style="color: #E2E8F0; font-size: 0.95rem; line-height: 1.4;">
+                    Sabır ve istikrar,<br><span style="color: #10B981; font-weight: 700;">en büyük kazancı getirir.</span>
+                </div>
             </div>
         </div>
 
         <!-- Footer -->
-        <div style="text-align: center; margin-top: 25px; padding-bottom: 10px;">
+        <div style="text-align: center; padding-top: 5px;">
             <div style="display: inline-flex; align-items: center; gap: 8px; font-size: 1.1rem; color: #F8FAFC; font-weight: 700;">
                 <i class="fa-solid fa-chart-pie" style="color: #10B981;"></i> Portföyüm App
             </div>
         </div>
     </div>
 
-    <!-- MODAL: NOTIFICATION DRAWER -->
-    <div class="modal-overlay" id="modalNotificationDrawer">
-        <div class="modal-sheet ultra-glass-modal" style="display: flex; flex-direction: column; width: 100%; max-width: 400px; height: 100%; max-height: 100%; border-radius: 0; position: fixed; right: 0; top: 0; transform: translateX(100%); transition: transform 0.3s ease;">
-            <div class="modal-header" style="border-bottom: 1px solid rgba(255,255,255,0.05); padding: 20px;">
-                <div style="display: flex; align-items: center; gap: 10px;">
-                    <i class="fa-solid fa-bell" style="color: #38BDF8;"></i>
-                    <h3 style="margin:0; font-size: 1.2rem;">Bildirim Merkezi</h3>
-                </div>
-                <div style="display: flex; gap: 10px; align-items: center;">
-                    <button class="btn-primary" style="padding: 5px 10px; font-size: 0.8rem; background: rgba(56,189,248,0.2); color: #38BDF8;" onclick="addNotification('Test Bildirimi', 'Sistem bildirimleri başarıyla çalışıyor! 🚀', 'success')">Test Et</button>
-                    <button class="modal-close" onclick="toggleNotificationDrawer()">&times;</button>
-                </div>
-            </div>
-            <div class="detail-body" id="notificationList" style="flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 15px;">
-                <!-- Notifications will be injected here -->
-            </div>
-        </div>
-    </div>
 
-    <!-- TOAST CONTAINER -->
-    <div id="toastContainer" style="position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 10000; display: flex; flex-direction: column; gap: 10px; align-items: center; pointer-events: none;"></div>
 
-    <script src="app.js?v=43"></script>
+    <script src="app.js?v=44"></script>
 </body>
 </html>

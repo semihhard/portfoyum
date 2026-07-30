@@ -208,8 +208,6 @@ function executeSaleTransaction(holdingId, saleQty, salePrice, saleDate) {
     if (h.quantity <= 0.000001) {
         appState.holdings.splice(holdingIndex, 1);
     }
-    
-    showToast(`✅ ${saleQty} adet ${h.symbol} başarıyla satıldı! (${formatCurrency(realizedPL)} kâr/zarar)`, realizedPL >= 0 ? "success" : "error");
 
     saveData();
     renderAll();
@@ -227,27 +225,8 @@ function deleteAsset(holdingId) {
 function updateMarketPrice(symbol, newPrice) {
     const h = appState.holdings.find(item => item.symbol === symbol);
     if (h) {
-        const oldPrice = h.currentPrice;
-        h.previousClosePrice = oldPrice;
+        h.previousClosePrice = h.currentPrice;
         h.currentPrice = newPrice;
-        
-        // --- VOLATILITY ALERT TRIGGER ---
-        if (oldPrice > 0) {
-            const changePct = ((newPrice - oldPrice) / oldPrice) * 100;
-            if (changePct >= 5) {
-                addNotification(
-                    "🚀 Sert Yükseliş", 
-                    `${h.symbol} aniden %${changePct.toFixed(2)} değer kazandı! (${formatCurrency(oldPrice)} ➔ ${formatCurrency(newPrice)})`, 
-                    "success"
-                );
-            } else if (changePct <= -5) {
-                addNotification(
-                    "📉 Sert Düşüş", 
-                    `${h.symbol} aniden %${Math.abs(changePct).toFixed(2)} değer kaybetti! (${formatCurrency(oldPrice)} ➔ ${formatCurrency(newPrice)})`, 
-                    "error"
-                );
-            }
-        }
     }
     if (appState.marketPrices[symbol]) {
         appState.marketPrices[symbol].prevClose = appState.marketPrices[symbol].price;
@@ -441,7 +420,7 @@ function renderSalesTab() {
                     <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px;">
                         <div style="font-size: 0.75rem; color: var(--text-secondary); font-weight: 500;">Son İz: ${s.saleDate}</div>
                         <div style="display: flex; gap: 6px;">
-                            <button style="background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.1); color: #fff; cursor: pointer; padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; display: flex; gap: 5px; align-items: center; transition: background 0.2s;" onclick="shareToStory('${s.symbol}', '${s.name}', ${s.realizedPLPercent}, ${s.realizedPL}, true, ${s.costBasisAtSale}, ${s.salePrice})" onmouseover="this.style.background='rgba(255,255,255,0.15)'" onmouseout="this.style.background='rgba(255,255,255,0.08)'" title="Hikayede Paylaş">
+                            <button style="background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.1); color: #fff; cursor: pointer; padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; display: flex; gap: 5px; align-items: center; transition: background 0.2s;" onclick="shareToStory('${s.symbol}', '${s.name}', ${s.costBasisAtSale * s.saleQty}, ${s.salePrice * s.saleQty}, ${s.realizedPL}, ${s.realizedPLPercent || 0}, 100, true)" onmouseover="this.style.background='rgba(255,255,255,0.15)'" onmouseout="this.style.background='rgba(255,255,255,0.08)'" title="Hikayede Paylaş">
                                 <i class="fa-brands fa-instagram"></i> Paylaş
                             </button>
                             <button style="background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.1); color: #fff; cursor: pointer; padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; display: flex; gap: 5px; align-items: center; transition: background 0.2s;" onclick="openEditSaleModal('${s.symbol}')" onmouseover="this.style.background='rgba(255,255,255,0.15)'" onmouseout="this.style.background='rgba(255,255,255,0.08)'">
@@ -521,7 +500,7 @@ function renderTopSalesPodium(aggregatedSales) {
                 ${s.realizedPL >= 0 ? '+' : ''}${formatCurrency(s.realizedPL)}
             </span>
             
-            <button onclick="shareToStory('${s.symbol}', '${s.name}', ${s.realizedPLPercent}, ${s.realizedPL}, true, ${s.costBasisAtSale}, ${s.salePrice})" style="position: absolute; top: 8px; right: 8px; background: rgba(255,255,255,0.1); border: none; width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; cursor: pointer; transition: 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.2)'" onmouseout="this.style.background='rgba(255,255,255,0.1)'" title="Hikayede Paylaş">
+            <button onclick="shareToStory('${s.symbol}', '${s.name}', ${s.costBasisAtSale * s.saleQty}, ${s.salePrice * s.saleQty}, ${s.realizedPL}, ${s.realizedPLPercent || 0}, 100, true)" style="position: absolute; top: 8px; right: 8px; background: rgba(255,255,255,0.1); border: none; width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; cursor: pointer; transition: 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.2)'" onmouseout="this.style.background='rgba(255,255,255,0.1)'" title="Hikayede Paylaş">
                 <i class="fa-brands fa-instagram" style="font-size: 0.8rem;"></i>
             </button>
         </div>
@@ -958,6 +937,9 @@ function openDetailModal(holdingId) {
         <button class="btn-sm primary neon-glow" onclick="closeDetailModal(); openSellModal('${h.id}');">
             <i class="fa-solid fa-hand-holding-dollar"></i> Satış Yap
         </button>
+        <button class="btn-sm" style="background: rgba(16,185,129,0.15); color: #10B981; border: 1px solid rgba(16,185,129,0.3);" onclick="shareHoldingToStory('${h.id}');">
+            <i class="fa-solid fa-share-nodes"></i> Paylaş
+        </button>
         <button class="btn-sm danger" onclick="closeDetailModal(); deleteAsset('${h.id}');">
             <i class="fa-solid fa-trash"></i> Sil
         </button>
@@ -1141,31 +1123,11 @@ async function fetchLivePrices() {
             // Senkronize et: marketPrices güncellendi, şimdi bunları portföydeki (holdings) varlıklara aktar
             appState.holdings.forEach(h => {
                 if (appState.marketPrices[h.symbol]) {
-                    const newPrice = appState.marketPrices[h.symbol].price;
-                    const oldPrice = h.currentPrice || newPrice;
-                    
                     // Sadece fiyat gerçekten değişmişse önceki kapanışı güncelle
-                    if (oldPrice !== newPrice) {
-                        h.previousClosePrice = oldPrice;
-                        
-                        // --- VOLATILITY ALERT TRIGGER ---
-                        const changePct = ((newPrice - oldPrice) / oldPrice) * 100;
-                        if (changePct >= 5) {
-                            addNotification(
-                                "🚀 Sert Yükseliş", 
-                                `${h.symbol} aniden %${changePct.toFixed(2)} değer kazandı! (${formatCurrency(oldPrice)} ➔ ${formatCurrency(newPrice)})`, 
-                                "success"
-                            );
-                        } else if (changePct <= -5) {
-                            addNotification(
-                                "📉 Sert Düşüş", 
-                                `${h.symbol} aniden %${Math.abs(changePct).toFixed(2)} değer kaybetti! (${formatCurrency(oldPrice)} ➔ ${formatCurrency(newPrice)})`, 
-                                "error"
-                            );
-                        }
+                    if (h.currentPrice !== appState.marketPrices[h.symbol].price) {
+                        h.previousClosePrice = h.currentPrice;
                     }
-                    
-                    h.currentPrice = newPrice;
+                    h.currentPrice = appState.marketPrices[h.symbol].price;
                 }
             });
             saveData();
@@ -1460,87 +1422,143 @@ function generateAvatarBase64(symbol) {
     return canvas.toDataURL("image/png");
 }
 
-async function shareToStory(symbol, name, percentRaw, profitRaw, isSale = false, buyPrice = 0, currentPrice = 0) {
+function shareHoldingToStory(holdingId) {
+    const h = appState.holdings.find(item => item.id === holdingId);
+    if (!h) return;
+    
+    const marketValue = h.quantity * h.currentPrice;
+    const totalPL = marketValue - (h.quantity * h.avgCost);
+    const totalPLPct = h.avgCost > 0 ? ((h.currentPrice - h.avgCost) / h.avgCost) * 100 : 0;
+    
+    const totalPortfolioValue = calculateMetrics().totalNAV;
+    const weightPct = totalPortfolioValue > 0 ? (marketValue / totalPortfolioValue) * 100 : 0;
+
+    shareToStory(
+        h.symbol, 
+        h.name || h.symbol, 
+        h.avgCost * h.quantity, 
+        marketValue, 
+        totalPL, 
+        totalPLPct, 
+        weightPct, 
+        false
+    );
+}
+
+// Ensure old sales also use this function correctly
+// For sales: shareToStory(symbol, name, buyTotal, sellTotal, profit, profitPct, 100, true)
+async function shareToStory(symbol, name, costTotal, currentTotal, profitRaw, percentRaw, weightPct = 100, isSale = false) {
     if (!window.html2canvas) {
         alert("Paylaşım modülü yükleniyor, lütfen biraz bekleyip tekrar deneyin.");
         return;
     }
     
-    // Setup Template
-    document.getElementById("storySymbol").innerText = symbol;
-    document.getElementById("storyName").innerText = name;
-    document.getElementById("storyBoxLabel").innerText = isSale ? "SATIŞ KÂRI" : "NET KÂR";
-    
-    // Dynamic Logo
-    document.getElementById("storyIconImg").src = generateAvatarBase64(symbol);
-    
-    // Prices
-    document.getElementById("storyBuyPrice").innerText = formatCurrency(buyPrice);
-    document.getElementById("storyCurrentPrice").innerText = formatCurrency(currentPrice);
-    document.getElementById("storyCurrentPriceLabel").innerText = isSale ? "Satış Fiyatı" : "Güncel Fiyat";
-    
     const isPos = percentRaw >= 0;
-    const pctStr = formatPercent(percentRaw);
-    
-    // Format money (adding + or -)
     const sign = isPos ? '+' : '';
-    const moneyStr = `${sign}${formatCurrency(profitRaw)}`;
+    const color = isPos ? '#10B981' : '#EF4444';
+    const colorRgba = isPos ? '16,185,129' : '239,68,68';
     
-    const pctElem = document.getElementById("storyPercent");
-    const moneyElem = document.getElementById("storyMoney");
-    const boxLabel = document.getElementById("storyBoxLabel");
-    const topGlow = document.getElementById("storyTopGlow");
-    const pctIcon = document.getElementById("storyPercentIcon");
-    const bigArrow = document.getElementById("storyBigArrow");
-    const quoteDecor = document.getElementById("storyQuoteDecor");
+    // Top Card
+    document.getElementById("storyBoxLabel").innerText = isPos ? "KÂR" : "ZARAR";
+    document.getElementById("storyBoxLabel").style.background = `rgba(${colorRgba},0.15)`;
+    document.getElementById("storyBoxLabel").style.color = color;
     
-    pctElem.innerText = pctStr;
-    moneyElem.innerText = moneyStr;
+    document.getElementById("storyTopGlow").style.background = `radial-gradient(circle, rgba(${colorRgba},0.15) 0%, transparent 70%)`;
     
-    // Style dynamically based on profit/loss
+    document.getElementById("storyMoney").innerText = `${sign}${formatCurrency(profitRaw)}`;
+    document.getElementById("storyMoney").style.color = color;
+    
+    document.getElementById("storyPercentPill").style.background = `rgba(${colorRgba},0.08)`;
+    document.getElementById("storyPercentPill").style.border = `1px solid rgba(${colorRgba},0.2)`;
+    document.getElementById("storyPercentIcon").style.color = color;
+    document.getElementById("storyPercentIcon").innerHTML = isPos ? '<i class="fa-solid fa-arrow-trend-up"></i>' : '<i class="fa-solid fa-arrow-trend-down"></i>';
+    document.getElementById("storyPercent").innerText = `%${Math.abs(percentRaw).toFixed(2).replace('.', ',')}`;
+    document.getElementById("storyPercent").style.color = color;
+    
     if (isPos) {
-        boxLabel.style.background = "rgba(16,185,129,0.15)";
-        boxLabel.style.color = "#10B981";
-        topGlow.style.background = "radial-gradient(circle, rgba(16,185,129,0.2) 0%, transparent 70%)";
-        pctElem.style.color = "#10B981";
-        moneyElem.style.color = "#10B981";
-        pctIcon.style.color = "#10B981";
-        pctIcon.innerHTML = '<i class="fa-solid fa-arrow-trend-up"></i>';
-        
-        bigArrow.innerHTML = `
-            <svg viewBox="0 0 200 120" style="width: 100%; height: 100%; filter: drop-shadow(0 15px 15px rgba(16,185,129,0.3));">
-                <path d="M10,100 Q40,90 70,60 T120,50 T180,15" fill="none" stroke="#10B981" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
-                <polygon points="185,5 155,10 180,35" fill="#10B981"/>
+        document.getElementById("storyBigArrow").innerHTML = `
+            <svg viewBox="0 0 400 220" style="width: 100%; height: 100%;">
+                <rect x="50" y="180" width="15" height="20" fill="rgba(16,185,129,0.1)" rx="2"/>
+                <rect x="80" y="170" width="15" height="30" fill="rgba(16,185,129,0.15)" rx="2"/>
+                <rect x="110" y="160" width="15" height="40" fill="rgba(16,185,129,0.2)" rx="2"/>
+                <rect x="140" y="140" width="15" height="60" fill="rgba(16,185,129,0.25)" rx="2"/>
+                <rect x="170" y="150" width="15" height="50" fill="rgba(16,185,129,0.3)" rx="2"/>
+                <rect x="200" y="120" width="15" height="80" fill="rgba(16,185,129,0.35)" rx="2"/>
+                <rect x="230" y="100" width="15" height="100" fill="rgba(16,185,129,0.4)" rx="2"/>
+                <rect x="260" y="80" width="15" height="120" fill="rgba(16,185,129,0.5)" rx="2"/>
+                <rect x="290" y="60" width="15" height="140" fill="rgba(16,185,129,0.6)" rx="2"/>
+                <rect x="320" y="40" width="15" height="160" fill="rgba(16,185,129,0.7)" rx="2"/>
+                <rect x="350" y="20" width="15" height="180" fill="rgba(16,185,129,0.8)" rx="2"/>
+                <path d="M 20 180 Q 80 170 120 150 T 220 130 T 360 30" fill="none" stroke="#10B981" stroke-width="12" stroke-linecap="round" stroke-linejoin="round" filter="drop-shadow(0 10px 10px rgba(16,185,129,0.5))"/>
+                <polygon points="370,15 340,25 365,50" fill="#10B981" filter="drop-shadow(0 10px 10px rgba(16,185,129,0.5))"/>
             </svg>
-        `;
-        
-        quoteDecor.innerHTML = `
-            <div style="width: 12px; height: 20px; background: rgba(16,185,129,0.4); border-radius: 4px;"></div>
-            <div style="width: 12px; height: 35px; background: rgba(16,185,129,0.6); border-radius: 4px;"></div>
-            <div style="width: 12px; height: 50px; background: #10B981; border-radius: 4px; box-shadow: 0 0 15px rgba(16,185,129,0.5);"></div>
         `;
     } else {
-        boxLabel.style.background = "rgba(239,68,68,0.15)";
-        boxLabel.style.color = "#EF4444";
-        topGlow.style.background = "radial-gradient(circle, rgba(239,68,68,0.2) 0%, transparent 70%)";
-        pctElem.style.color = "#EF4444";
-        moneyElem.style.color = "#EF4444";
-        pctIcon.style.color = "#EF4444";
-        pctIcon.innerHTML = '<i class="fa-solid fa-arrow-trend-down"></i>';
-        
-        bigArrow.innerHTML = `
-            <svg viewBox="0 0 200 120" style="width: 100%; height: 100%; filter: drop-shadow(0 15px 15px rgba(239,68,68,0.3));">
-                <path d="M10,20 Q40,30 70,60 T120,70 T180,105" fill="none" stroke="#EF4444" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
-                <polygon points="185,115 155,110 180,85" fill="#EF4444"/>
+        document.getElementById("storyBigArrow").innerHTML = `
+            <svg viewBox="0 0 400 220" style="width: 100%; height: 100%;">
+                <rect x="50" y="20" width="15" height="180" fill="rgba(239,68,68,0.1)" rx="2"/>
+                <rect x="80" y="40" width="15" height="160" fill="rgba(239,68,68,0.15)" rx="2"/>
+                <rect x="110" y="60" width="15" height="140" fill="rgba(239,68,68,0.2)" rx="2"/>
+                <rect x="140" y="80" width="15" height="120" fill="rgba(239,68,68,0.25)" rx="2"/>
+                <rect x="170" y="100" width="15" height="100" fill="rgba(239,68,68,0.3)" rx="2"/>
+                <rect x="200" y="120" width="15" height="80" fill="rgba(239,68,68,0.35)" rx="2"/>
+                <rect x="230" y="150" width="15" height="50" fill="rgba(239,68,68,0.4)" rx="2"/>
+                <rect x="260" y="140" width="15" height="60" fill="rgba(239,68,68,0.5)" rx="2"/>
+                <rect x="290" y="160" width="15" height="40" fill="rgba(239,68,68,0.6)" rx="2"/>
+                <rect x="320" y="170" width="15" height="30" fill="rgba(239,68,68,0.7)" rx="2"/>
+                <rect x="350" y="180" width="15" height="20" fill="rgba(239,68,68,0.8)" rx="2"/>
+                <path d="M 20 30 Q 80 50 120 70 T 220 90 T 360 180" fill="none" stroke="#EF4444" stroke-width="12" stroke-linecap="round" stroke-linejoin="round" filter="drop-shadow(0 10px 10px rgba(239,68,68,0.5))"/>
+                <polygon points="370,195 340,185 365,160" fill="#EF4444" filter="drop-shadow(0 10px 10px rgba(239,68,68,0.5))"/>
             </svg>
         `;
-        
-        quoteDecor.innerHTML = `
-            <div style="width: 12px; height: 50px; background: rgba(239,68,68,0.4); border-radius: 4px;"></div>
-            <div style="width: 12px; height: 35px; background: rgba(239,68,68,0.6); border-radius: 4px;"></div>
-            <div style="width: 12px; height: 20px; background: #EF4444; border-radius: 4px; box-shadow: 0 0 15px rgba(239,68,68,0.5);"></div>
-        `;
     }
+
+    // Mid Cards
+    document.getElementById("storyCol1Val").innerText = formatCurrency(costTotal);
+    document.getElementById("storyCol2Val").innerText = formatCurrency(currentTotal);
+    document.getElementById("storyCol3Val").innerText = `${sign}${formatCurrency(profitRaw)}`;
+    document.getElementById("storyCol3Val").style.color = color;
+    document.getElementById("storyCol3Icon").style.color = color;
+    document.getElementById("storyCol3Icon").className = isPos ? "fa-solid fa-arrow-trend-up" : "fa-solid fa-arrow-trend-down";
+    
+    document.getElementById("storyCol4Val").innerText = `%${Math.abs(percentRaw).toFixed(2).replace('.', ',')}`;
+    document.getElementById("storyCol4Val").style.color = color;
+    document.getElementById("storyCol4Icon").style.color = color;
+
+    // Line Chart
+    document.getElementById("storyChartSymbol").innerText = symbol;
+    const svgLine = isPos 
+        ? `<svg viewBox="0 0 500 120" style="width:100%; height:100%; overflow:visible;">
+            <defs>
+                <linearGradient id="chartGrad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stop-color="rgba(16,185,129,0.3)"/>
+                    <stop offset="100%" stop-color="rgba(16,185,129,0)"/>
+                </linearGradient>
+            </defs>
+            <path d="M0,100 Q40,90 80,100 T160,80 T240,60 T320,50 T400,30 T500,10 L500,120 L0,120 Z" fill="url(#chartGrad)"/>
+            <path d="M0,100 Q40,90 80,100 T160,80 T240,60 T320,50 T400,30 T500,10" fill="none" stroke="#10B981" stroke-width="4" stroke-linecap="round"/>
+            <circle cx="500" cy="10" r="6" fill="#10B981" filter="drop-shadow(0 0 8px #10B981)"/>
+           </svg>`
+        : `<svg viewBox="0 0 500 120" style="width:100%; height:100%; overflow:visible;">
+            <defs>
+                <linearGradient id="chartGrad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stop-color="rgba(239,68,68,0.3)"/>
+                    <stop offset="100%" stop-color="rgba(239,68,68,0)"/>
+                </linearGradient>
+            </defs>
+            <path d="M0,10 Q40,20 80,10 T160,30 T240,50 T320,60 T400,80 T500,100 L500,120 L0,120 Z" fill="url(#chartGrad)"/>
+            <path d="M0,10 Q40,20 80,10 T160,30 T240,50 T320,60 T400,80 T500,100" fill="none" stroke="#EF4444" stroke-width="4" stroke-linecap="round"/>
+            <circle cx="500" cy="100" r="6" fill="#EF4444" filter="drop-shadow(0 0 8px #EF4444)"/>
+           </svg>`;
+    document.getElementById("storyChartSvgContainer").innerHTML = svgLine;
+
+    // Donut
+    const pctInt = Math.min(100, Math.max(0, Math.round(weightPct)));
+    document.getElementById("storyDonutPath").setAttribute("stroke-dasharray", `${pctInt}, 100`);
+    document.getElementById("storyDonutPath").setAttribute("stroke", color);
+    document.getElementById("storyDonutColor").style.background = color;
+    document.getElementById("storyDonutPct").innerText = `%${pctInt}`;
+    document.getElementById("storyDonutRem").innerText = `%${100 - pctInt}`;
 
     const template = document.getElementById("storyShareTemplate");
     
@@ -1654,13 +1672,6 @@ async function fetchNews() {
 
         // Haberleri zamana göre sırala (en yeni en üstte)
         mockNews.sort((a, b) => b.date - a.date);
-        
-        // --- NOTIFICATION TRIGGER: Send a system notification for the most recent news if any ---
-        if(mockNews.length > 0) {
-            const latest = mockNews[0];
-            // To prevent spamming, we could check if we already notified, but since this is simulated, we'll just fire it.
-            addNotification("Yeni KAP Haberi", latest.title, "warning");
-        }
 
         const html = mockNews.map((item, idx) => {
             // Encode content for safe HTML attribute injection
@@ -1710,170 +1721,4 @@ function closeKapModal() {
     document.getElementById("modalKapDetail").classList.remove("active");
 }
 
-/* ==========================================================================
-   Notifications & Alerts
-   ========================================================================== */
 
-function showToast(message, type = 'info') {
-    const container = document.getElementById("toastContainer");
-    if (!container) return;
-    
-    const toast = document.createElement("div");
-    
-    let icon = "fa-info-circle";
-    let color = "#38BDF8";
-    if(type === 'success') { icon = "fa-check-circle"; color = "#10B981"; }
-    if(type === 'error') { icon = "fa-exclamation-circle"; color = "#EF4444"; }
-    if(type === 'warning') { icon = "fa-exclamation-triangle"; color = "#F59E0B"; }
-
-    toast.style.cssText = `
-        background: rgba(30, 30, 45, 0.95);
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(255,255,255,0.1);
-        border-left: 4px solid ${color};
-        color: #fff;
-        padding: 12px 20px;
-        border-radius: 12px;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        font-size: 0.9rem;
-        transform: translateY(-20px);
-        opacity: 0;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        pointer-events: auto;
-    `;
-    
-    toast.innerHTML = `
-        <i class="fa-solid ${icon}" style="color: ${color}; font-size: 1.2rem;"></i>
-        <span>${message}</span>
-    `;
-    
-    container.appendChild(toast);
-    
-    // Animate in
-    setTimeout(() => {
-        toast.style.transform = "translateY(0)";
-        toast.style.opacity = "1";
-    }, 10);
-    
-    // Animate out
-    setTimeout(() => {
-        toast.style.transform = "translateY(-20px)";
-        toast.style.opacity = "0";
-        setTimeout(() => toast.remove(), 300);
-    }, 4000);
-}
-
-function requestNotificationPermission() {
-    if ("Notification" in window) {
-        if (Notification.permission !== "granted" && Notification.permission !== "denied") {
-            Notification.requestPermission();
-        }
-    }
-}
-
-function addNotification(title, message, type = 'info') {
-    if(!appState.notifications) appState.notifications = [];
-    
-    const notif = {
-        id: Date.now().toString(),
-        title,
-        message,
-        type,
-        date: new Date().toISOString(),
-        isRead: false
-    };
-    
-    appState.notifications.unshift(notif);
-    if(appState.notifications.length > 50) appState.notifications.pop();
-    
-    saveData();
-    updateNotificationBadge();
-    
-    // Show Toast
-    showToast(`${title}: ${message}`, type);
-    
-    // Show System Push Notification
-    if ("Notification" in window && Notification.permission === "granted") {
-        new Notification(title, {
-            body: message
-        });
-    }
-}
-
-function updateNotificationBadge() {
-    const badge = document.getElementById("notificationBadge");
-    if(!badge) return;
-    
-    const unreadCount = (appState.notifications || []).filter(n => !n.isRead).length;
-    
-    if(unreadCount > 0) {
-        badge.style.display = "block";
-    } else {
-        badge.style.display = "none";
-    }
-}
-
-function toggleNotificationDrawer() {
-    const modal = document.getElementById("modalNotificationDrawer");
-    if(modal.classList.contains("active")) {
-        modal.classList.remove("active");
-        const sheet = modal.querySelector(".modal-sheet");
-        if(sheet) sheet.style.transform = "translateX(100%)";
-    } else {
-        requestNotificationPermission(); // Ask permission when user opens drawer
-        modal.classList.add("active");
-        const sheet = modal.querySelector(".modal-sheet");
-        if(sheet) sheet.style.transform = "translateX(0)";
-        
-        // Mark all as read
-        if(appState.notifications) {
-            appState.notifications.forEach(n => n.isRead = true);
-            saveData();
-            updateNotificationBadge();
-        }
-        renderNotificationDrawer();
-    }
-}
-
-function renderNotificationDrawer() {
-    const list = document.getElementById("notificationList");
-    if(!list) return;
-    
-    const notifs = appState.notifications || [];
-    
-    if(notifs.length === 0) {
-        list.innerHTML = `<div class="empty-state" style="padding-top: 50px;"><i class="fa-solid fa-bell-slash" style="font-size:2rem; opacity:0.5; margin-bottom:15px;"></i><p>Henüz bildiriminiz yok.</p></div>`;
-        return;
-    }
-    
-    list.innerHTML = notifs.map(n => {
-        let color = "#38BDF8";
-        let icon = "fa-info-circle";
-        if(n.type === 'success') { color = "#10B981"; icon = "fa-check-circle"; }
-        if(n.type === 'error') { color = "#EF4444"; icon = "fa-exclamation-circle"; }
-        if(n.type === 'warning') { color = "#F59E0B"; icon = "fa-exclamation-triangle"; }
-        
-        const dateStr = new Date(n.date).toLocaleString('tr-TR', { day: '2-digit', month: 'short', hour: '2-digit', minute:'2-digit' });
-        
-        return `
-            <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); border-left: 3px solid ${color}; padding: 15px; border-radius: 10px;">
-                <div style="display: flex; gap: 12px;">
-                    <div style="color: ${color}; font-size: 1.2rem; padding-top: 2px;"><i class="fa-solid ${icon}"></i></div>
-                    <div style="flex: 1;">
-                        <div style="color: #fff; font-weight: 600; font-size: 0.95rem; margin-bottom: 5px;">${n.title}</div>
-                        <div style="color: rgba(255,255,255,0.7); font-size: 0.85rem; line-height: 1.4;">${n.message}</div>
-                        <div style="color: rgba(255,255,255,0.4); font-size: 0.7rem; margin-top: 8px; text-align: right;">${dateStr}</div>
-                    </div>
-                </div>
-            </div>
-        `;
-    }).join("");
-}
-
-// Request permission and setup badge on load
-document.addEventListener('DOMContentLoaded', () => {
-    updateNotificationBadge();
-});
