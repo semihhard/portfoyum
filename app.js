@@ -419,7 +419,7 @@ function renderSalesTab() {
                     <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px;">
                         <div style="font-size: 0.75rem; color: var(--text-secondary); font-weight: 500;">Son İz: ${s.saleDate}</div>
                         <div style="display: flex; gap: 6px;">
-                            <button style="background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.1); color: #fff; cursor: pointer; padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; display: flex; gap: 5px; align-items: center; transition: background 0.2s;" onclick="shareToStory('${s.symbol}', '${s.name}', ${s.realizedPLPercent}, ${s.realizedPL}, true)" onmouseover="this.style.background='rgba(255,255,255,0.15)'" onmouseout="this.style.background='rgba(255,255,255,0.08)'" title="Hikayede Paylaş">
+                            <button style="background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.1); color: #fff; cursor: pointer; padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; display: flex; gap: 5px; align-items: center; transition: background 0.2s;" onclick="shareToStory('${s.symbol}', '${s.name}', ${s.realizedPLPercent}, ${s.realizedPL}, true, ${s.costBasisAtSale}, ${s.salePrice})" onmouseover="this.style.background='rgba(255,255,255,0.15)'" onmouseout="this.style.background='rgba(255,255,255,0.08)'" title="Hikayede Paylaş">
                                 <i class="fa-brands fa-instagram"></i> Paylaş
                             </button>
                             <button style="background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.1); color: #fff; cursor: pointer; padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; display: flex; gap: 5px; align-items: center; transition: background 0.2s;" onclick="openEditSaleModal('${s.symbol}')" onmouseover="this.style.background='rgba(255,255,255,0.15)'" onmouseout="this.style.background='rgba(255,255,255,0.08)'">
@@ -499,7 +499,7 @@ function renderTopSalesPodium(aggregatedSales) {
                 ${s.realizedPL >= 0 ? '+' : ''}${formatCurrency(s.realizedPL)}
             </span>
             
-            <button onclick="shareToStory('${s.symbol}', '${s.name}', ${s.realizedPLPercent}, ${s.realizedPL}, false)" style="position: absolute; top: 8px; right: 8px; background: rgba(255,255,255,0.1); border: none; width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; cursor: pointer; transition: 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.2)'" onmouseout="this.style.background='rgba(255,255,255,0.1)'" title="Hikayede Paylaş">
+            <button onclick="shareToStory('${s.symbol}', '${s.name}', ${s.realizedPLPercent}, ${s.realizedPL}, true, ${s.costBasisAtSale}, ${s.salePrice})" style="position: absolute; top: 8px; right: 8px; background: rgba(255,255,255,0.1); border: none; width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; cursor: pointer; transition: 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.2)'" onmouseout="this.style.background='rgba(255,255,255,0.1)'" title="Hikayede Paylaş">
                 <i class="fa-brands fa-instagram" style="font-size: 0.8rem;"></i>
             </button>
         </div>
@@ -1388,7 +1388,7 @@ document.addEventListener("DOMContentLoaded", () => {
 /* ==========================================================================
    Social Media Story Share
    ========================================================================== */
-async function shareToStory(symbol, name, percentRaw, profitRaw, isSale = false) {
+async function shareToStory(symbol, name, percentRaw, profitRaw, isSale = false, buyPrice = 0, currentPrice = 0) {
     if (!window.html2canvas) {
         alert("Paylaşım modülü yükleniyor, lütfen biraz bekleyip tekrar deneyin.");
         return;
@@ -1398,6 +1398,11 @@ async function shareToStory(symbol, name, percentRaw, profitRaw, isSale = false)
     document.getElementById("storySymbol").innerText = symbol;
     document.getElementById("storyName").innerText = name;
     document.getElementById("storyBoxLabel").innerText = isSale ? "SATIŞ KÂRI" : "NET KÂR";
+    
+    // Prices
+    document.getElementById("storyBuyPrice").innerText = formatCurrency(buyPrice);
+    document.getElementById("storyCurrentPrice").innerText = formatCurrency(currentPrice);
+    document.getElementById("storyCurrentPriceLabel").innerText = isSale ? "Satış Fiyatı" : "Güncel Fiyat";
     
     const isPos = percentRaw >= 0;
     const pctStr = formatPercent(percentRaw); // formatPercent already handles the + sign
@@ -1417,31 +1422,25 @@ async function shareToStory(symbol, name, percentRaw, profitRaw, isSale = false)
     if (isPos) {
         // Green Theme
         pctElem.style.color = "#10B981";
-        pctElem.style.textShadow = "0 0 30px rgba(16, 185, 129, 0.4)";
+        pctElem.style.textShadow = "0 0 40px rgba(16, 185, 129, 0.5)";
         moneyElem.style.color = "#10B981";
         document.getElementById("storyBoxLabel").style.color = "#10B981";
-        document.getElementById("storyAppIcon").style.color = "#10B981";
         
-        pctElem.parentElement.parentElement.style.background = "rgba(16, 185, 129, 0.05)";
-        pctElem.parentElement.parentElement.style.border = "1px solid rgba(16, 185, 129, 0.3)";
-        document.getElementById("storyGradientBg").style.background = "radial-gradient(circle at 50% 0%, rgba(16, 185, 129, 0.15), transparent 70%)";
+        document.getElementById("storyGradientBg").style.background = "radial-gradient(circle at 50% 0%, rgba(16, 185, 129, 0.25), transparent 75%)";
         
         // Upward chart
-        chartSvg.innerHTML = `<path d="M0,30 L10,25 L20,28 L30,15 L40,20 L50,10 L60,18 L70,5 L80,12 L90,2 L100,8 L100,30 Z" fill="rgba(16, 185, 129, 1)"></path>`;
+        chartSvg.innerHTML = `<path d="M0,40 L10,35 L20,38 L30,25 L40,30 L50,15 L60,25 L70,10 L80,18 L90,5 L100,10 L100,40 Z" fill="rgba(16, 185, 129, 1)"></path>`;
     } else {
         // Red Theme
         pctElem.style.color = "#EF4444";
-        pctElem.style.textShadow = "0 0 30px rgba(239, 68, 68, 0.4)";
+        pctElem.style.textShadow = "0 0 40px rgba(239, 68, 68, 0.5)";
         moneyElem.style.color = "#EF4444";
         document.getElementById("storyBoxLabel").style.color = "#EF4444";
-        document.getElementById("storyAppIcon").style.color = "#EF4444";
         
-        pctElem.parentElement.parentElement.style.background = "rgba(239, 68, 68, 0.05)";
-        pctElem.parentElement.parentElement.style.border = "1px solid rgba(239, 68, 68, 0.3)";
-        document.getElementById("storyGradientBg").style.background = "radial-gradient(circle at 50% 0%, rgba(239, 68, 68, 0.15), transparent 70%)";
+        document.getElementById("storyGradientBg").style.background = "radial-gradient(circle at 50% 0%, rgba(239, 68, 68, 0.25), transparent 75%)";
         
         // Downward chart
-        chartSvg.innerHTML = `<path d="M0,0 L10,5 L20,2 L30,15 L40,10 L50,20 L60,12 L70,25 L80,18 L90,28 L100,22 L100,0 Z" fill="rgba(239, 68, 68, 1)"></path>`;
+        chartSvg.innerHTML = `<path d="M0,0 L10,5 L20,2 L30,15 L40,10 L50,25 L60,15 L70,30 L80,22 L90,35 L100,28 L100,0 Z" fill="rgba(239, 68, 68, 1)"></path>`;
     }
 
     const template = document.getElementById("storyShareTemplate");

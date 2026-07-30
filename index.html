@@ -524,39 +524,73 @@
     </div>
 
     <!-- Story Share Hidden Template -->
-    <div id="storyShareTemplate" style="position: absolute; left: -9999px; top: -9999px; width: 400px; height: 711px; background: #0B0E14; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'Inter', sans-serif;">
+    <div id="storyShareTemplate" style="position: absolute; left: -9999px; top: -9999px; width: 400px; height: 711px; background: #0b0e11; overflow: hidden; display: flex; flex-direction: column; font-family: 'Inter', sans-serif;">
         <!-- Dynamic Gradient BG -->
-        <div id="storyGradientBg" style="position: absolute; inset: 0; background: radial-gradient(circle at 50% 0%, rgba(16, 185, 129, 0.15), transparent 70%);"></div>
+        <div id="storyGradientBg" style="position: absolute; inset: 0; background: radial-gradient(circle at 50% 0%, rgba(16, 185, 129, 0.25), transparent 75%);"></div>
         
-        <!-- Grid Pattern Overlay -->
-        <div style="position: absolute; inset: 0; background-image: linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px); background-size: 20px 20px; opacity: 0.5;"></div>
+        <!-- Grid Pattern Overlay using base64 image since html2canvas drops linear-gradient grids -->
+        <div style="position: absolute; inset: 0; background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAKElEQVQ4T2N8//79fwY84Pnz53jFqGAwGkQDBv9oEI0Go2gwMBwMAwA9j0U7v5aWfwAAAABJRU5ErkJggg=='); opacity: 0.15;"></div>
 
-        <div style="z-index: 10; text-align: center; width: 85%; padding: 40px 30px; background: rgba(20, 22, 31, 0.9); border-radius: 30px; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);">
-            <div id="storyIcon" style="font-size: 4rem; margin-bottom: 15px; text-shadow: 0 10px 20px rgba(0,0,0,0.5);">🚀</div>
-            <h2 id="storySymbol" style="color: #fff; font-size: 2.8rem; margin: 0 0 5px 0; font-weight: 900; letter-spacing: 2px;">GARAN</h2>
-            <p id="storyName" style="color: #94a3b8; font-size: 1rem; margin: 0 0 30px 0; font-weight: 500;">Garanti BBVA</p>
+        <!-- Header -->
+        <div style="z-index: 10; display: flex; justify-content: space-between; align-items: center; padding: 30px; margin-top: 10px;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <div style="background: rgba(255,255,255,0.1); padding: 5px 10px; border-radius: 4px; font-size: 0.75rem; color: #fff; font-weight: 700; letter-spacing: 1px;">SPOT</div>
+                <div style="color: rgba(255,255,255,0.5); font-size: 0.9rem; font-weight: 600;">İŞLEM</div>
+            </div>
+            <div style="font-size: 1.5rem; text-shadow: 0 5px 15px rgba(0,0,0,0.5);">🚀</div>
+        </div>
+
+        <!-- Body -->
+        <div style="z-index: 10; padding: 0 30px; flex: 1; display: flex; flex-direction: column; justify-content: center; margin-bottom: 20px;">
+            <div style="display: flex; align-items: baseline; gap: 10px; margin-bottom: 15px;">
+                <h2 id="storySymbol" style="color: #fff; font-size: 3rem; margin: 0; font-weight: 900; letter-spacing: 1px; font-style: italic;">GARAN</h2>
+                <span style="color: rgba(255,255,255,0.4); font-size: 1.2rem; font-weight: 600;">/ TRY</span>
+            </div>
+            <p id="storyName" style="color: #848e9c; font-size: 1rem; margin: 0 0 30px 0; font-weight: 500;">Garanti BBVA</p>
             
-            <div id="storyBox" style="position: relative; background: rgba(16, 185, 129, 0.05); padding: 25px 20px; border-radius: 20px; border: 1px solid rgba(16, 185, 129, 0.3); overflow: hidden;">
-                <!-- Decorative SVG line chart inside box -->
-                <svg id="storyChartSvg" style="position: absolute; bottom: 0; left: 0; width: 100%; height: 50%; opacity: 0.2;" viewBox="0 0 100 30" preserveAspectRatio="none">
-                    <path d="M0,30 L10,25 L20,28 L30,15 L40,20 L50,10 L60,18 L70,5 L80,12 L90,2 L100,8 L100,30 Z" fill="rgba(16, 185, 129, 1)"></path>
-                </svg>
-                
-                <div style="position: relative; z-index: 2;">
-                    <p id="storyBoxLabel" style="color: #10B981; font-size: 0.9rem; margin: 0 0 5px 0; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;">NET KÂR</p>
-                    <div id="storyPercent" style="color: #10B981; font-size: 3rem; font-weight: 900; text-shadow: 0 0 30px rgba(16, 185, 129, 0.4); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.1;">%1131</div>
-                    <div id="storyMoney" style="color: #10B981; font-size: 1.2rem; font-weight: 600; margin-top: 8px; opacity: 0.9;">+₺2,400.00</div>
+            <p id="storyBoxLabel" style="color: #10B981; font-size: 1rem; margin: 0 0 5px 0; font-weight: 700; letter-spacing: 1px;">NET KÂR</p>
+            <div id="storyPercent" style="color: #10B981; font-size: 4.5rem; font-weight: 900; text-shadow: 0 0 40px rgba(16, 185, 129, 0.5); font-style: italic; letter-spacing: -1px; line-height: 1;">%1131</div>
+            <div id="storyMoney" style="color: #10B981; font-size: 1.5rem; font-weight: 700; margin-top: 10px;">+₺2,400.00</div>
+        </div>
+        
+        <!-- Chart Background (SVG) -->
+        <svg id="storyChartSvg" xmlns="http://www.w3.org/2000/svg" style="position: absolute; bottom: 150px; left: 0; width: 100%; height: 250px; opacity: 0.15; z-index: 5;" viewBox="0 0 100 40" preserveAspectRatio="none">
+            <path d="M0,40 L10,35 L20,38 L30,25 L40,30 L50,15 L60,25 L70,10 L80,18 L90,5 L100,10 L100,40 Z" fill="rgba(16, 185, 129, 1)"></path>
+        </svg>
+
+        <!-- Footer Stats -->
+        <div style="z-index: 10; background: rgba(255,255,255,0.03); border-top: 1px solid rgba(255,255,255,0.05); padding: 25px 30px; display: flex; justify-content: space-between; align-items: center; backdrop-filter: blur(10px);">
+            <div style="display: flex; gap: 30px;">
+                <div>
+                    <div style="color: #848e9c; font-size: 0.75rem; font-weight: 600; margin-bottom: 6px;">Giriş Fiyatı</div>
+                    <div id="storyBuyPrice" style="color: #eaecef; font-size: 1.1rem; font-weight: 700;">₺0,00</div>
                 </div>
+                <div>
+                    <div id="storyCurrentPriceLabel" style="color: #848e9c; font-size: 0.75rem; font-weight: 600; margin-bottom: 6px;">Güncel Fiyat</div>
+                    <div id="storyCurrentPrice" style="color: #eaecef; font-size: 1.1rem; font-weight: 700;">₺0,00</div>
+                </div>
+            </div>
+            <!-- Fake QR Code Container -->
+            <div style="width: 50px; height: 50px; background: #fff; padding: 4px; border-radius: 6px; display: flex; flex-wrap: wrap; gap: 2px;">
+                <div style="width: 12px; height: 12px; background: #000; border-radius: 2px;"></div>
+                <div style="width: 12px; height: 12px; background: #000; border-radius: 2px;"></div>
+                <div style="width: 12px; height: 12px; background: #000; border-radius: 2px;"></div>
+                <div style="width: 12px; height: 12px; background: #000; border-radius: 2px;"></div>
+                <div style="width: 12px; height: 12px; background: #000; border-radius: 2px;"></div>
+                <div style="width: 26px; height: 12px; background: #000; border-radius: 2px;"></div>
+                <div style="width: 12px; height: 12px; background: #000; border-radius: 2px;"></div>
+                <div style="width: 26px; height: 12px; background: #000; border-radius: 2px;"></div>
             </div>
         </div>
         
-        <div style="position: absolute; bottom: 40px; text-align: center; z-index: 10;">
-            <div style="font-size: 1.2rem; color: #fff; font-weight: 700; letter-spacing: 1px; display: flex; align-items: center; justify-content: center; gap: 8px; opacity: 0.8;">
-                <i class="fa-solid fa-chart-pie" id="storyAppIcon" style="color: #10B981;"></i> Portföyüm App
+        <!-- App Branding -->
+        <div style="z-index: 10; padding: 15px 30px 25px; text-align: left;">
+            <div style="font-size: 0.9rem; color: rgba(255,255,255,0.7); font-weight: 600; display: flex; align-items: center; gap: 8px;">
+                <i class="fa-solid fa-chart-pie" style="color: #F59E0B;"></i> Portföyüm App
             </div>
         </div>
     </div>
 
-    <script src="app.js?v=35"></script>
+    <script src="app.js?v=36"></script>
 </body>
 </html>
