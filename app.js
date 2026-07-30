@@ -30,6 +30,8 @@ let appState = {
     activeCategory: "ALL",
     theme: "theme-oled-neon",
     pin: null,
+    biometricEnabled: false,
+    biometricCredentialId: null,
     notifications: []
 };
 
@@ -1290,6 +1292,7 @@ function openPinModal() {
     } else {
         document.getElementById("removePinBtn").style.display = "none";
     }
+    updateBiometricButtonState();
 }
 
 function closePinModal() {
@@ -1312,15 +1315,160 @@ function savePin() {
 function removePin() {
     if(confirm("PIN kodunu kaldırmak istediğinize emin misiniz?")) {
         appState.pin = null;
+        appState.biometricEnabled = false;
+        appState.biometricCredentialId = null;
         saveData();
         closePinModal();
-        alert("PIN kaldırıldı.");
+        alert("PIN ve Biyometrik Giriş kaldırıldı.");
+    }
+}
+
+// --- Biometric (WebAuthn) Logic ---
+
+function base64UrlToUint8Array(base64Url) {
+    const padding = '='.repeat((4 - base64Url.length % 4) % 4);
+    const base64 = (base64Url + padding).replace(/-/g, '+').replace(/_/g, '/');
+    const rawData = window.atob(base64);
+    const outputArray = new Uint8Array(rawData.length);
+    for (let i = 0; i < rawData.length; ++i) {
+        outputArray[i] = rawData.charCodeAt(i);
+    }
+    return outputArray;
+}
+
+function uint8ArrayToBase64Url(array) {
+    const base64 = window.btoa(String.fromCharCode(...array));
+    return base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+}
+
+async function toggleBiometric() {
+    if (!appState.pin) {
+        alert("Biyometrik girişi aktif etmeden önce bir PIN belirlemelisiniz.");
+        return;
+    }
+    
+    if (appState.biometricEnabled) {
+        if(confirm("Biyometrik girişi kapatmak istediğinize emin misiniz?")) {
+            appState.biometricEnabled = false;
+            appState.biometricCredentialId = null;
+            saveData();
+            updateBiometricButtonState();
+            alert("Biyometrik giriş kapatıldı.");
+        }
+    } else {
+        await registerBiometric();
+    }
+}
+
+async function registerBiometric() {
+    if (!window.PublicKeyCredential) {
+        alert("Cihazınız veya tarayıcınız Biyometrik Giriş (WebAuthn) desteklemiyor.");
+        return;
+    }
+
+    try {
+        const userId = new Uint8Array(16);
+        window.crypto.getRandomValues(userId);
+        
+        const challenge = new Uint8Array(32);
+        window.crypto.getRandomValues(challenge);
+
+        const publicKey = {
+            challenge: challenge,
+            rp: { name: "Portföyüm App" },
+            user: {
+                id: userId,
+                name: "user@portfoyum.app",
+                displayName: "Portföy Kullanıcısı"
+            },
+            pubKeyCredParams: [{ type: "public-key", alg: -7 }], // ES256
+            authenticatorSelection: {
+                authenticatorAttachment: "platform", // FaceID / TouchID / Windows Hello
+                userVerification: "required"
+            },
+            timeout: 60000,
+            attestation: "none"
+        };
+
+        const credential = await navigator.credentials.create({ publicKey });
+        
+        if (credential) {
+            appState.biometricEnabled = true;
+            appState.biometricCredentialId = uint8ArrayToBase64Url(new Uint8Array(credential.rawId));
+            saveData();
+            updateBiometricButtonState();
+            alert("Harika! Biyometrik Giriş (FaceID/TouchID) başarıyla aktif edildi.");
+        }
+    } catch (err) {
+        console.error("Biometric registration failed:", err);
+        alert("Biyometrik kayıt iptal edildi veya desteklenmiyor.\nDetay: " + err.message);
+    }
+}
+
+async function authenticateBiometric() {
+    if (!appState.biometricEnabled || !appState.biometricCredentialId) return;
+
+    try {
+        const challenge = new Uint8Array(32);
+        window.crypto.getRandomValues(challenge);
+        
+        const credentialIdRaw = base64UrlToUint8Array(appState.biometricCredentialId);
+
+        const publicKey = {
+            challenge: challenge,
+            allowCredentials: [{
+                id: credentialIdRaw,
+                type: "public-key"
+            }],
+            userVerification: "required",
+            timeout: 60000
+        };
+
+        const assertion = await navigator.credentials.get({ publicKey });
+        
+        if (assertion) {
+            // Success! Unlock the app.
+            document.getElementById("pinLockOverlay").style.display = "none";
+            enteredPin = "";
+            updatePinDots();
+            renderAll();
+        }
+    } catch (err) {
+        console.error("Biometric auth failed:", err);
+        // Silently fail to let the user fallback to PIN input
+    }
+}
+
+function updateBiometricButtonState() {
+    const btn = document.getElementById("btnToggleBiometric");
+    if (btn) {
+        if (appState.biometricEnabled) {
+            btn.innerHTML = '<i class="fa-solid fa-fingerprint" style="margin-right: 8px;"></i> Biyometrik Girişi Kapat';
+            btn.style.background = 'linear-gradient(90deg, rgba(239,68,68,0.1) 0%, rgba(239,68,68,0.2) 100%)';
+            btn.style.color = '#EF4444';
+            btn.style.borderColor = 'rgba(239,68,68,0.3)';
+        } else {
+            btn.innerHTML = '<i class="fa-solid fa-fingerprint" style="margin-right: 8px;"></i> Biyometrik Girişi Aktif Et';
+            btn.style.background = 'linear-gradient(90deg, rgba(56,189,248,0.1) 0%, rgba(56,189,248,0.2) 100%)';
+            btn.style.color = '#38BDF8';
+            btn.style.borderColor = 'rgba(56,189,248,0.3)';
+        }
     }
 }
 
 function initPinLock() {
     if (appState.pin) {
         document.getElementById("pinLockOverlay").style.display = "flex";
+        
+        if (appState.biometricEnabled) {
+            document.getElementById("btnTriggerBiometric").style.display = "flex";
+            // Auto-trigger biometric on load
+            setTimeout(() => {
+                authenticateBiometric();
+            }, 500);
+        } else {
+            document.getElementById("btnTriggerBiometric").style.display = "none";
+        }
     }
 }
 

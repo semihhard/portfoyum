@@ -36,9 +36,14 @@
         <div style="font-size: 3rem; color: #fff; margin-bottom: 20px;"><i class="fa-solid fa-lock"></i></div>
         <h2 style="color: #fff; margin-bottom: 10px;">Hoş Geldiniz</h2>
         <p style="color: var(--text-secondary); margin-bottom: 30px;">Portföyünüzü görmek için PIN kodunuzu girin.</p>
-        <div style="display: flex; gap: 10px; margin-bottom: 30px;" id="pinDots">
+        <div style="display: flex; gap: 10px; margin-bottom: 20px;" id="pinDots">
             <div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div>
         </div>
+        
+        <!-- Biometric Trigger Button (Hidden by default, shown if enabled) -->
+        <button id="btnTriggerBiometric" style="display: none; background: rgba(56,189,248,0.1); border: 1px solid rgba(56,189,248,0.3); color: #38BDF8; font-size: 2.5rem; width: 70px; height: 70px; border-radius: 50%; margin-bottom: 20px; cursor: pointer; transition: 0.3s;" onclick="authenticateBiometric()">
+            <i class="fa-solid fa-fingerprint"></i>
+        </button>
         <div class="pin-keypad">
             <button class="pin-key" onclick="pressPin(1)">1</button>
             <button class="pin-key" onclick="pressPin(2)">2</button>
@@ -74,6 +79,12 @@
                     <button class="btn-primary neon-glow" onclick="savePin()" style="flex:1;">Kaydet</button>
                     <button class="btn-primary" onclick="removePin()" style="background: #EF4444; color: #fff; flex:1;" id="removePinBtn">PIN'i Kaldır</button>
                 </div>
+                
+                <hr style="border: none; border-top: 1px solid rgba(255,255,255,0.05); margin: 25px 0;">
+                
+                <button class="btn-block" id="btnToggleBiometric" style="background: linear-gradient(90deg, rgba(56,189,248,0.1) 0%, rgba(56,189,248,0.2) 100%); color: #38BDF8; border: 1px solid rgba(56,189,248,0.3); font-weight: 600;" onclick="toggleBiometric()">
+                    <i class="fa-solid fa-fingerprint" style="margin-right: 8px;"></i> Biyometrik Girişi Aktif Et
+                </button>
             </div>
         </div>
     </div>
@@ -685,6 +696,6 @@
 
 
 
-    <script src="app.js?v=44"></script>
+    <script src="app.js?v=45"></script>
 </body>
 </html>
