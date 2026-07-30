@@ -836,7 +836,7 @@ async function fetchLivePrices() {
             rows.forEach(row => {
                 const cols = row.split(',');
                 if (cols.length >= 2) {
-                    let sym = cols[0].trim().toUpperCase().replace(/"/g, ''); // "THYAO" -> THYAO
+                    let sym = cols[0].replace(/"/g, '').trim().toUpperCase(); // "THYAO " -> THYAO
                     let priceStr = cols[1].trim();
                     if (!sym) return;
                     
