@@ -609,14 +609,13 @@ function exportToExcel() {
     csv += "\n--- SATIS GECMISI ---\n";
     csv += "Tarih;Varlik;Adet;Alis Fiyati;Satis Fiyati;Gerceklesen Kar/Zarar\n";
     appState.sales.forEach(s => {
-        const buyPrice = s.buyCost / s.qty;
-        
-        const qty = s.qty.toString().replace('.', ',');
-        const bPrice = buyPrice.toFixed(4).replace('.', ',');
-        const sPrice = s.price.toFixed(4).replace('.', ',');
-        const rPl = s.realizedPL.toFixed(2).replace('.', ',');
+        const qty = (s.saleQty || 0).toString().replace('.', ',');
+        const bPrice = (s.costBasisAtSale || 0).toFixed(4).replace('.', ',');
+        const sPrice = (s.salePrice || 0).toFixed(4).replace('.', ',');
+        const rPl = (s.realizedPL || 0).toFixed(2).replace('.', ',');
+        const dateStr = s.saleDate || "";
 
-        csv += `${s.date};${s.symbol};${qty};${bPrice};${sPrice};${rPl}\n`;
+        csv += `${dateStr};${s.symbol};${qty};${bPrice};${sPrice};${rPl}\n`;
     });
 
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
