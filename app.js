@@ -743,9 +743,92 @@ async function exportToExcel() {
             btn.style.pointerEvents = "auto";
         }, 1000);
 
-    } catch (e) {
-        console.error("Excel oluşturulurken hata:", e);
-        alert("Excel oluşturulurken bir hata oluştu.");
+    } catch (err) {
+        console.error("Excel Export Error:", err);
+        alert("Excel oluşturulurken hata oluştu. Lütfen konsolu kontrol edin.");
+        btn.innerHTML = originalHtml;
+        btn.style.pointerEvents = "auto";
+    }
+}
+
+// --- Data Import (Restore from .xlsx) ---
+async function importFromExcel(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    try {
+        const reader = new FileReader();
+        reader.onload = async (e) => {
+            const buffer = e.target.result;
+            const workbook = new ExcelJS.Workbook();
+            await workbook.xlsx.load(buffer);
+
+            let newHoldings = [];
+            let newSales = [];
+
+            // Read Holdings
+            const wsHoldings = workbook.getWorksheet('Portföyüm');
+            if (wsHoldings) {
+                wsHoldings.eachRow((row, rowNumber) => {
+                    if (rowNumber > 1) { // Skip header
+                        const symbol = row.getCell(2).value;
+                        if (symbol) {
+                            newHoldings.push({
+                                name: row.getCell(1).value,
+                                symbol: symbol,
+                                category: row.getCell(3).value,
+                                quantity: parseFloat(row.getCell(4).value) || 0,
+                                avgCost: parseFloat(row.getCell(5).value) || 0,
+                                currentPrice: parseFloat(row.getCell(6).value) || 0
+                            });
+                        }
+                    }
+                });
+            }
+
+            // Read Sales
+            const wsSales = workbook.getWorksheet('Satış Geçmişi');
+            if (wsSales) {
+                wsSales.eachRow((row, rowNumber) => {
+                    if (rowNumber > 1) { // Skip header
+                        const symbol = row.getCell(2).value;
+                        if (symbol) {
+                            // Trying to reconstruct missing fields for backward compatibility
+                            const sQty = parseFloat(row.getCell(3).value) || 0;
+                            const buyPrice = parseFloat(row.getCell(4).value) || 0;
+                            const sellPrice = parseFloat(row.getCell(5).value) || 0;
+                            
+                            newSales.push({
+                                saleDate: row.getCell(1).value,
+                                symbol: symbol,
+                                name: symbol, // Best effort
+                                category: "STOCK", // Best effort fallback
+                                saleQty: sQty,
+                                costBasisAtSale: buyPrice,
+                                salePrice: sellPrice,
+                                realizedPL: parseFloat(row.getCell(6).value) || 0
+                            });
+                        }
+                    }
+                });
+            }
+
+            if (newHoldings.length > 0 || newSales.length > 0) {
+                appState.holdings = newHoldings;
+                appState.sales = newSales;
+                saveData();
+                renderAll();
+                alert("Veriler başarıyla yüklendi!");
+            } else {
+                alert("Uygun Excel formatı bulunamadı. Lütfen 'Portföyüm' ve 'Satış Geçmişi' sekmeleri olan orijinal yedek dosyasını yükleyin.");
+            }
+        };
+        reader.readAsArrayBuffer(file);
+    } catch (err) {
+        console.error("Excel Import Error:", err);
+        alert("Excel okunurken hata oluştu. Dosya bozuk veya yanlış formatta olabilir.");
+    } finally {
+        event.target.value = ""; // Reset input
     }
 }
 
@@ -1147,7 +1230,7 @@ document.addEventListener("DOMContentLoaded", () => {
     
     // Automatically fetch live prices on startup
     fetchLivePrices();
-}
+});
 
 /* ==========================================================================
    PIN & Privacy Logic
@@ -1192,7 +1275,7 @@ let enteredPin = "";
 let isPinSetupMode = false;
 
 function openPinModal() {
-    document.getElementById("pinModal").style.display = "flex";
+    document.getElementById("pinModal").classList.add("active");
     if (appState.pin) {
         document.getElementById("removePinBtn").style.display = "block";
     } else {
@@ -1201,7 +1284,7 @@ function openPinModal() {
 }
 
 function closePinModal() {
-    document.getElementById("pinModal").style.display = "none";
+    document.getElementById("pinModal").classList.remove("active");
     document.getElementById("newPinInput").value = "";
 }
 

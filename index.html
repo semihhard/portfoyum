@@ -274,11 +274,19 @@
                 </div>
 
                 <div class="analytics-card ultra-glass-card mt-4">
-                    <h3><i class="fa-solid fa-file-excel"></i> Modern Excel Raporu (.xlsx)</h3>
-                    <p style="color:var(--text-secondary); font-size: 0.85rem; margin-bottom: 15px;">Portföyünüzü ve satış geçmişinizi renklendirilmiş, otomatik hesaplamalı ve özel tasarımlı gerçek bir Excel dosyası olarak indirin.</p>
-                    <button class="btn-primary neon-glow" onclick="exportToExcel()" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; background: linear-gradient(135deg, #10B981, #059669);">
-                        <i class="fa-solid fa-download"></i> Modern Excel İndir (.xlsx)
-                    </button>
+                    <h3><i class="fa-solid fa-file-excel"></i> Veri Yedekleme & Geri Yükleme</h3>
+                    <p style="color:var(--text-secondary); font-size: 0.85rem; margin-bottom: 15px;">Portföyünüzü ve satış geçmişinizi renklendirilmiş, otomatik hesaplamalı ve özel tasarımlı gerçek bir Excel dosyası olarak indirebilir veya daha önce indirdiğiniz dosyayı yükleyerek verilerinizi geri getirebilirsiniz.</p>
+                    
+                    <div style="display: flex; gap: 10px;">
+                        <button class="btn-primary neon-glow" onclick="exportToExcel()" style="flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px; background: linear-gradient(135deg, #10B981, #059669);">
+                            <i class="fa-solid fa-download"></i> İndir
+                        </button>
+                        
+                        <input type="file" id="excelUploadInput" accept=".xlsx" style="display: none;" onchange="importFromExcel(event)">
+                        <button class="btn-primary" onclick="document.getElementById('excelUploadInput').click()" style="flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);">
+                            <i class="fa-solid fa-upload"></i> Geri Yükle
+                        </button>
+                    </div>
                 </div>
             </section>
 
@@ -518,6 +526,6 @@
         </div>
     </div>
 
-    <script src="app.js?v=28"></script>
+    <script src="app.js?v=29"></script>
 </body>
 </html>
