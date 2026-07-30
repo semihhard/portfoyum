@@ -402,38 +402,52 @@ function renderSalesTab() {
         const whatIf = calculateWhatIf(s);
 
         return `
-            <div class="sale-card">
-                <div class="sale-top">
-                    <span class="sale-symbol">${s.symbol} - ${s.name}</span>
-                    <div style="display:flex; align-items:center; gap:8px;">
-                        <span class="sale-date">Son: ${s.saleDate}</span>
-                        <button style="background:none; border:none; color:var(--text-muted); cursor:pointer; padding:4px;" onclick="openEditSaleModal('${s.symbol}')">
-                            <i class="fa-solid fa-pen"></i>
+            <div style="background: rgba(30, 30, 45, 0.4); border: 1px solid rgba(255,255,255,0.04); border-radius: 18px; margin-bottom: 16px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.1); transition: transform 0.2s;">
+                
+                <div style="padding: 16px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.05);">
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <div style="width: 40px; height: 40px; border-radius: 12px; background: rgba(255,255,255,0.06); display: flex; align-items: center; justify-content: center; font-size: 1.1rem; color: #fff;">
+                            <i class="fa-solid fa-money-bill-wave"></i>
+                        </div>
+                        <div>
+                            <div style="font-weight: 700; font-size: 1.1rem; color: #fff;">${s.symbol}</div>
+                            <div style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 2px;">${s.name}</div>
+                        </div>
+                    </div>
+                    
+                    <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px;">
+                        <div style="font-size: 0.75rem; color: var(--text-secondary); font-weight: 500;">Son İz: ${s.saleDate}</div>
+                        <button style="background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.1); color: #fff; cursor: pointer; padding: 4px 12px; border-radius: 6px; font-size: 0.75rem; display: flex; gap: 5px; align-items: center; transition: background 0.2s;" onclick="openEditSaleModal('${s.symbol}')" onmouseover="this.style.background='rgba(255,255,255,0.15)'" onmouseout="this.style.background='rgba(255,255,255,0.08)'">
+                            <i class="fa-solid fa-pen"></i> Düzenle
                         </button>
                     </div>
                 </div>
-                <div class="sale-grid">
-                    <div class="sale-cell">
-                        <span>Toplam Satış</span>
-                        <strong>${formatNumber(s.saleQty, s.category === 'CRYPTO' ? 4 : 2)} Adet</strong>
+
+                <div style="padding: 16px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; text-align: center;">
+                    <div style="background: rgba(0,0,0,0.25); padding: 12px 6px; border-radius: 14px;">
+                        <div style="font-size: 0.65rem; color: var(--text-secondary); margin-bottom: 6px; font-weight: 600; letter-spacing: 0.5px;">TOPLAM SATIŞ</div>
+                        <div style="font-weight: 700; color: #fff; font-size: 0.9rem;">${formatNumber(s.saleQty, s.category === 'CRYPTO' ? 4 : 2)} Adet</div>
                     </div>
-                    <div class="sale-cell">
-                        <span>Ortalama Fiyat</span>
-                        <strong>${formatCurrency(s.salePrice)}</strong>
+                    <div style="background: rgba(0,0,0,0.25); padding: 12px 6px; border-radius: 14px;">
+                        <div style="font-size: 0.65rem; color: var(--text-secondary); margin-bottom: 6px; font-weight: 600; letter-spacing: 0.5px;">ORTALAMA FİYAT</div>
+                        <div style="font-weight: 700; color: #fff; font-size: 0.9rem;">${formatCurrency(s.salePrice)}</div>
                     </div>
-                    <div class="sale-cell">
-                        <span>Toplam Kâr</span>
-                        <strong class="${isPos ? 'txt-neon-green' : 'txt-neon-red'}">
-                            ${isPos ? '+' : ''}${formatCurrency(s.realizedPL)} (${formatPercent(s.realizedPLPercent)})
-                        </strong>
+                    <div style="background: rgba(${isPos ? '16,185,129' : '239,68,68'}, 0.1); padding: 12px 6px; border-radius: 14px; box-shadow: inset 0 0 0 1px rgba(${isPos ? '16,185,129' : '239,68,68'}, 0.3);">
+                        <div style="font-size: 0.65rem; color: ${isPos ? '#10B981' : '#EF4444'}; margin-bottom: 6px; font-weight: 600; letter-spacing: 0.5px;">GERÇEKLEŞEN KÂR</div>
+                        <div style="font-weight: 700; color: ${isPos ? '#10B981' : '#EF4444'}; font-size: 0.9rem;">${isPos ? '+' : ''}${formatCurrency(s.realizedPL)}</div>
+                        <div style="font-size: 0.7rem; color: ${isPos ? '#10B981' : '#EF4444'}; opacity: 0.8; margin-top: 2px;">(${isPos ? '+' : ''}${formatPercent(s.realizedPLPercent)})</div>
                     </div>
                 </div>
 
-                <!-- "Satılmasaydı Ne Olurdu?" Opportunity Cost Banner -->
-                <div class="what-if-box ${whatIf.type}">
-                    <i class="fa-solid ${whatIf.icon}"></i>
-                    <span>${whatIf.text}</span>
+                <div style="padding: 14px 16px; background: ${whatIf.type === 'positive' ? 'rgba(16,185,129,0.05)' : 'rgba(239,68,68,0.05)'}; border-top: 1px solid rgba(255,255,255,0.02); display: flex; gap: 14px; align-items: center;">
+                    <div style="color: ${whatIf.type === 'positive' ? '#10B981' : '#EF4444'}; font-size: 1.4rem; flex-shrink: 0;">
+                        <i class="fa-solid ${whatIf.icon}"></i>
+                    </div>
+                    <div style="font-size: 0.8rem; color: var(--text-secondary); line-height: 1.5;">
+                        ${whatIf.text}
+                    </div>
                 </div>
+
             </div>
         `;
     }).join("");
@@ -450,18 +464,37 @@ function renderTopSalesPodium(aggregatedSales) {
         return;
     }
 
-    const rankClasses = ["rank-1", "rank-2", "rank-3"];
-    const rankBadges = ["🥇 1", "🥈 2", "🥉 3"];
+    const rankColors = ["rgba(255, 215, 0, 0.9)", "rgba(192, 192, 192, 0.9)", "rgba(205, 127, 50, 0.9)"];
+    const rankBgs = ["rgba(255, 215, 0, 0.15)", "rgba(192, 192, 192, 0.15)", "rgba(205, 127, 50, 0.15)"];
+    const rankBadges = ["🥇", "🥈", "🥉"];
 
-    podiumElem.innerHTML = top3.map((s, idx) => `
-        <div class="top-sale-card ${rankClasses[idx]}">
-            <div class="rank-badge">${rankBadges[idx]}</div>
-            <h4>${s.symbol}</h4>
-            <span class="podium-val ${s.realizedPL >= 0 ? 'txt-neon-green' : 'txt-neon-red'}">
+    // Make the podium wrapper a flex container with spacing
+    podiumElem.style.display = "flex";
+    podiumElem.style.justifyContent = "center";
+    podiumElem.style.gap = "15px";
+    podiumElem.style.alignItems = "flex-end";
+    podiumElem.style.marginBottom = "30px";
+    podiumElem.style.marginTop = "10px";
+
+    podiumElem.innerHTML = top3.map((s, idx) => {
+        // First place gets a slightly taller card
+        const heightStr = idx === 0 ? "min-height: 140px;" : "min-height: 120px;";
+        
+        return `
+        <div style="flex: 1; max-width: 33%; ${heightStr} background: rgba(30, 30, 45, 0.6); border-radius: 20px; padding: 16px 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; box-shadow: 0 8px 32px rgba(0,0,0,0.2), inset 0 0 0 1px ${rankColors[idx]}; transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); cursor: pointer;" onmouseover="this.style.transform='translateY(-5px)'" onmouseout="this.style.transform='translateY(0)'">
+            
+            <div style="background: ${rankBgs[idx]}; width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; margin-bottom: 12px; border: 1px solid ${rankColors[idx]}; box-shadow: 0 0 15px ${rankBgs[idx]};">
+                ${rankBadges[idx]}
+            </div>
+            
+            <h4 style="margin:0; font-size: 1.05rem; color: #fff; text-align: center; font-weight: 800; letter-spacing: 0.5px;">${s.symbol}</h4>
+            
+            <span style="font-weight: 800; font-size: 1rem; margin-top: 6px; text-shadow: 0 0 10px rgba(16,185,129,0.3);" class="${s.realizedPL >= 0 ? 'txt-neon-green' : 'txt-neon-red'}">
                 ${s.realizedPL >= 0 ? '+' : ''}${formatCurrency(s.realizedPL)}
             </span>
+            
         </div>
-    `).join("");
+    `}).join("");
 }
 
 // Calculate "Satılmasaydı Ne Olurdu?" Difference
