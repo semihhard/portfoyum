@@ -28,7 +28,8 @@ let appState = {
     marketPrices: { ...DEFAULT_MARKET_PRICES },
     privacyMode: false,
     activeCategory: "ALL",
-    theme: "theme-oled-neon"
+    theme: "theme-oled-neon",
+    pin: null
 };
 
 // --- Initial Sample Data ---
@@ -493,6 +494,9 @@ function renderTopSalesPodium(aggregatedSales) {
                 ${s.realizedPL >= 0 ? '+' : ''}${formatCurrency(s.realizedPL)}
             </span>
             
+            <button onclick="shareToStory('${s.symbol}', '${s.name}', ${s.realizedPLPercent})" style="position: absolute; top: 8px; right: 8px; background: rgba(255,255,255,0.1); border: none; width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; cursor: pointer; transition: 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.2)'" onmouseout="this.style.background='rgba(255,255,255,0.1)'" title="Hikayede Paylaş">
+                <i class="fa-brands fa-instagram" style="font-size: 0.8rem;"></i>
+            </button>
         </div>
     `}).join("");
 }
@@ -759,6 +763,7 @@ function initNavigation() {
 
             if (targetTab === "tab-analytics") renderAnalyticsTab();
             if (targetTab === "tab-sales") renderSalesTab();
+            if (targetTab === "tab-news") fetchNews();
         });
     });
 
@@ -1142,4 +1147,264 @@ document.addEventListener("DOMContentLoaded", () => {
     
     // Automatically fetch live prices on startup
     fetchLivePrices();
+}
+
+/* ==========================================================================
+   PIN & Privacy Logic
+   ========================================================================== */
+function togglePrivacy() {
+    appState.privacyMode = !appState.privacyMode;
+    saveData();
+    applyPrivacyMode();
+}
+
+function applyPrivacyMode() {
+    const btn = document.getElementById("privacyBtn");
+    if (appState.privacyMode) {
+        document.body.classList.add("privacy-active");
+        if(btn) btn.innerHTML = '<i class="fa-solid fa-eye"></i>';
+        
+        // Add blur to all sensitive elements
+        document.querySelectorAll('.asset-val, .h-current, .podium-val, .txt-neon-green, .txt-neon-red, .dashboard-card h3').forEach(el => {
+            if (!el.classList.contains('no-blur') && !el.textContent.includes('%')) {
+                el.classList.add('privacy-blur');
+            }
+        });
+    } else {
+        document.body.classList.remove("privacy-active");
+        if(btn) btn.innerHTML = '<i class="fa-solid fa-eye-slash"></i>';
+        
+        // Remove blur
+        document.querySelectorAll('.privacy-blur').forEach(el => {
+            el.classList.remove('privacy-blur');
+        });
+    }
+}
+
+// Ensure privacy is applied after every render
+const originalRenderAll = renderAll;
+renderAll = function() {
+    originalRenderAll();
+    applyPrivacyMode();
+}
+
+let enteredPin = "";
+let isPinSetupMode = false;
+
+function openPinModal() {
+    document.getElementById("pinModal").style.display = "flex";
+    if (appState.pin) {
+        document.getElementById("removePinBtn").style.display = "block";
+    } else {
+        document.getElementById("removePinBtn").style.display = "none";
+    }
+}
+
+function closePinModal() {
+    document.getElementById("pinModal").style.display = "none";
+    document.getElementById("newPinInput").value = "";
+}
+
+function savePin() {
+    const p = document.getElementById("newPinInput").value;
+    if (p.length === 4) {
+        appState.pin = p;
+        saveData();
+        closePinModal();
+        alert("PIN başarıyla kaydedildi! Bir sonraki girişinizde sorulacaktır.");
+    } else {
+        alert("Lütfen 4 haneli bir PIN girin.");
+    }
+}
+
+function removePin() {
+    if(confirm("PIN kodunu kaldırmak istediğinize emin misiniz?")) {
+        appState.pin = null;
+        saveData();
+        closePinModal();
+        alert("PIN kaldırıldı.");
+    }
+}
+
+function initPinLock() {
+    if (appState.pin) {
+        document.getElementById("pinLockOverlay").style.display = "flex";
+    }
+}
+
+function updatePinDots() {
+    const dots = document.querySelectorAll("#pinDots .pin-dot");
+    dots.forEach((dot, index) => {
+        if (index < enteredPin.length) {
+            dot.classList.add("filled");
+        } else {
+            dot.classList.remove("filled");
+        }
+    });
+}
+
+function pressPin(num) {
+    if (enteredPin.length < 4) {
+        enteredPin += num.toString();
+        updatePinDots();
+        
+        if (enteredPin.length === 4) {
+            setTimeout(verifyPin, 300);
+        }
+    }
+}
+
+function deletePin() {
+    if (enteredPin.length > 0) {
+        enteredPin = enteredPin.slice(0, -1);
+        updatePinDots();
+    }
+}
+
+function verifyPin() {
+    if (enteredPin === appState.pin) {
+        // Unlock
+        document.getElementById("pinLockOverlay").style.display = "none";
+        enteredPin = "";
+        updatePinDots();
+        renderAll();
+    } else {
+        // Wrong PIN
+        const dotsContainer = document.getElementById("pinDots");
+        dotsContainer.style.animation = "shake 0.5s ease";
+        setTimeout(() => {
+            dotsContainer.style.animation = "";
+            enteredPin = "";
+            updatePinDots();
+        }, 500);
+    }
+}
+
+// Add shake animation dynamically
+const style = document.createElement('style');
+style.textContent = `
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-10px); }
+    75% { transform: translateX(10px); }
+}`;
+document.head.appendChild(style);
+
+// Check PIN on load
+document.addEventListener("DOMContentLoaded", () => {
+    if (appState.pin) {
+        initPinLock();
+    }
 });
+
+/* ==========================================================================
+   Social Media Story Share
+   ========================================================================== */
+async function shareToStory(symbol, name, percentRaw) {
+    if (!window.html2canvas) {
+        alert("Paylaşım modülü yükleniyor, lütfen biraz bekleyip tekrar deneyin.");
+        return;
+    }
+    
+    // Setup Template
+    document.getElementById("storySymbol").innerText = symbol;
+    document.getElementById("storyName").innerText = name;
+    
+    const isPos = percentRaw >= 0;
+    const pctStr = (isPos ? '+' : '') + formatPercent(percentRaw);
+    const pctElem = document.getElementById("storyPercent");
+    pctElem.innerText = pctStr;
+    
+    // Style dynamically based on profit/loss
+    if (isPos) {
+        pctElem.style.color = "#10B981";
+        pctElem.style.textShadow = "0 0 20px rgba(16, 185, 129, 0.6)";
+        pctElem.parentElement.style.background = "rgba(16, 185, 129, 0.1)";
+        pctElem.parentElement.style.boxShadow = "inset 0 0 0 2px rgba(16, 185, 129, 0.4)";
+    } else {
+        pctElem.style.color = "#EF4444";
+        pctElem.style.textShadow = "0 0 20px rgba(239, 68, 68, 0.6)";
+        pctElem.parentElement.style.background = "rgba(239, 68, 68, 0.1)";
+        pctElem.parentElement.style.boxShadow = "inset 0 0 0 2px rgba(239, 68, 68, 0.4)";
+    }
+
+    const template = document.getElementById("storyShareTemplate");
+    
+    try {
+        const canvas = await html2canvas(template, {
+            scale: 2, // High quality
+            backgroundColor: "#020305",
+            logging: false
+        });
+        
+        // Convert to image and trigger download
+        const link = document.createElement('a');
+        link.download = `Portfoyum_${symbol}_Story.png`;
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+        
+    } catch (err) {
+        console.error("Story oluşturulamadı:", err);
+        alert("Görsel oluşturulurken bir hata oluştu.");
+    }
+}
+
+/* ==========================================================================
+   News & KAP Radar
+   ========================================================================== */
+async function fetchNews() {
+    const container = document.getElementById("newsList");
+    if (!container) return;
+    
+    // Sadece bir kere yükle
+    if (container.children.length > 1 || (container.children[0] && !container.children[0].classList.contains('empty-state'))) {
+        return;
+    }
+
+    try {
+        // Fetch from a public RSS feed converted to JSON via rss2json
+        const rssUrl = "https://www.trthaber.com/ekonomi_articles.rss";
+        const apiUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(rssUrl)}`;
+        
+        const res = await fetch(apiUrl);
+        const data = await res.json();
+        
+        if (data.status === 'ok' && data.items) {
+            // Get user's current holdings symbols to highlight relevant news
+            const mySymbols = appState.holdings.map(h => h.symbol.toLowerCase());
+            
+            const html = data.items.map(item => {
+                const titleLower = item.title.toLowerCase();
+                let isRelevant = false;
+                
+                // Check if any holding symbol is mentioned in the title
+                for (let sym of mySymbols) {
+                    if (titleLower.includes(sym)) {
+                        isRelevant = true;
+                        break;
+                    }
+                }
+                
+                const pubDate = new Date(item.pubDate).toLocaleDateString('tr-TR', { hour: '2-digit', minute: '2-digit' });
+                
+                return `
+                    <a href="${item.link}" target="_blank" class="news-item ${isRelevant ? 'highlight' : ''}">
+                        ${isRelevant ? '<div class="news-tag"><i class="fa-solid fa-bullseye"></i> Portföyünüzle İlgili</div>' : ''}
+                        <div class="news-title">${item.title}</div>
+                        <div class="news-meta">
+                            <span>TRT Haber Ekonomi</span>
+                            <span>${pubDate}</span>
+                        </div>
+                    </a>
+                `;
+            }).join('');
+            
+            container.innerHTML = html;
+        } else {
+            container.innerHTML = `<div class="empty-state"><p>Haberler yüklenemedi.</p></div>`;
+        }
+    } catch (err) {
+        console.error("News fetch error:", err);
+        container.innerHTML = `<div class="empty-state"><p>Bağlantı hatası.</p></div>`;
+    }
+}

@@ -22,12 +22,61 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- ExcelJS for Modern Excel Export -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     <link rel="stylesheet" href="style.css?v=5">
 </head>
 <body class="theme-oled-neon">
     <!-- Ambient Background Glow Orbs -->
-    <div class="ambient-glow glow-1"></div>
-    <div class="ambient-glow glow-2"></div>
+    <div class="bg-orb orb-1"></div>
+    <div class="bg-orb orb-2"></div>
+    <div class="bg-orb orb-3"></div>
+
+    <!-- PIN Lock Overlay -->
+    <div id="pinLockOverlay" style="display: none; position: fixed; inset: 0; background: rgba(10,10,15,0.95); backdrop-filter: blur(20px); z-index: 9999; flex-direction: column; align-items: center; justify-content: center;">
+        <div style="font-size: 3rem; color: #fff; margin-bottom: 20px;"><i class="fa-solid fa-lock"></i></div>
+        <h2 style="color: #fff; margin-bottom: 10px;">Hoş Geldiniz</h2>
+        <p style="color: var(--text-secondary); margin-bottom: 30px;">Portföyünüzü görmek için PIN kodunuzu girin.</p>
+        <div style="display: flex; gap: 10px; margin-bottom: 30px;" id="pinDots">
+            <div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div>
+        </div>
+        <div class="pin-keypad">
+            <button class="pin-key" onclick="pressPin(1)">1</button>
+            <button class="pin-key" onclick="pressPin(2)">2</button>
+            <button class="pin-key" onclick="pressPin(3)">3</button>
+            <button class="pin-key" onclick="pressPin(4)">4</button>
+            <button class="pin-key" onclick="pressPin(5)">5</button>
+            <button class="pin-key" onclick="pressPin(6)">6</button>
+            <button class="pin-key" onclick="pressPin(7)">7</button>
+            <button class="pin-key" onclick="pressPin(8)">8</button>
+            <button class="pin-key" onclick="pressPin(9)">9</button>
+            <button class="pin-key" style="background: transparent; box-shadow: none; pointer-events: none;"></button>
+            <button class="pin-key" onclick="pressPin(0)">0</button>
+            <button class="pin-key" onclick="deletePin()"><i class="fa-solid fa-delete-left"></i></button>
+        </div>
+    </div>
+
+    <!-- PIN Settings Modal -->
+    <div class="modal-overlay" id="pinModal">
+        <div class="modal-content ultra-glass-card">
+            <div class="modal-header">
+                <h2><i class="fa-solid fa-key"></i> PIN Ayarları</h2>
+                <button class="btn-close" onclick="closePinModal()"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal-body">
+                <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 20px;">Uygulamanızı başkalarından gizlemek için 4 haneli bir PIN belirleyin.</p>
+                
+                <div class="form-group">
+                    <label>Yeni PIN Kodu</label>
+                    <input type="password" id="newPinInput" maxlength="4" placeholder="Örn: 1234" class="form-input" style="text-align: center; letter-spacing: 10px; font-size: 1.5rem;">
+                </div>
+
+                <div style="display: flex; gap: 10px; margin-top: 20px;">
+                    <button class="btn-primary neon-glow" onclick="savePin()" style="flex:1;">Kaydet</button>
+                    <button class="btn-primary" onclick="removePin()" style="background: #EF4444; color: #fff; flex:1;" id="removePinBtn">PIN'i Kaldır</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- iOS Simulator Wrapper / Phone Frame for Web Preview -->
     <div class="app-container">
@@ -65,6 +114,12 @@
                         <h1 class="page-title">Portföyüm</h1>
                     </div>
                     <div class="header-actions">
+                        <button class="icon-btn" onclick="togglePrivacy()" title="Gizlilik Modu" id="privacyBtn">
+                            <i class="fa-solid fa-eye-slash"></i>
+                        </button>
+                        <button class="icon-btn" onclick="openPinModal()" title="Şifre (PIN) Ayarları">
+                            <i class="fa-solid fa-lock"></i>
+                        </button>
                         <!-- Theme Toggle Button -->
                         <button class="icon-btn theme-switcher" id="btnThemeToggle" title="Temayı Değiştir">
                             <i class="fa-solid fa-palette"></i>
@@ -243,6 +298,22 @@
                     <!-- Dynamic Market feeds rendered by JS -->
                 </div>
             </section>
+            <!-- TAB 5: NEWS & KAP RADAR -->
+            <section id="tab-news" class="tab-page">
+                <div class="page-header">
+                    <div>
+                        <div class="badge-online" style="color: #6366F1; background: rgba(99,102,241,0.1); border-color: rgba(99,102,241,0.3);"><i class="fa-solid fa-satellite-dish"></i> RADAR AKTİF</div>
+                        <h1 class="page-title">Haberler & KAP</h1>
+                    </div>
+                </div>
+
+                <div class="news-list" id="newsList" style="display: flex; flex-direction: column; gap: 12px;">
+                    <div class="empty-state">
+                        <i class="fa-solid fa-spinner fa-spin"></i>
+                        <p>Haberler Yükleniyor...</p>
+                    </div>
+                </div>
+            </section>
         </main>
 
         <!-- iOS Bottom Navigation Bar with Glowing Pill -->
@@ -265,6 +336,10 @@
             <button class="tab-item" data-tab="tab-analytics">
                 <i class="fa-solid fa-chart-line"></i>
                 <span>Analiz</span>
+            </button>
+            <button class="tab-item" data-tab="tab-news">
+                <i class="fa-solid fa-satellite-dish"></i>
+                <span>Haberler</span>
             </button>
             <button class="tab-item" data-tab="tab-market">
                 <i class="fa-solid fa-globe"></i>
@@ -420,6 +495,29 @@
     </div>
     </div> <!-- End of app-container -->
 
-    <script src="app.js?v=27"></script>
+    <!-- Story Share Hidden Template -->
+    <div id="storyShareTemplate" style="position: absolute; left: -9999px; top: -9999px; width: 400px; height: 711px; background: #020305; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'Inter', sans-serif;">
+        <div style="position: absolute; inset: 0; background: radial-gradient(circle at 50% 30%, rgba(16, 185, 129, 0.2), transparent 70%);"></div>
+        <div style="position: absolute; top: -50px; left: -50px; width: 200px; height: 200px; background: rgba(16, 185, 129, 0.3); filter: blur(80px); border-radius: 50%;"></div>
+        
+        <div style="z-index: 10; text-align: center; width: 80%; padding: 40px; background: rgba(30, 30, 45, 0.6); border-radius: 30px; box-shadow: 0 20px 50px rgba(0,0,0,0.5), inset 0 0 0 1px rgba(16, 185, 129, 0.5); backdrop-filter: blur(10px);">
+            <div style="font-size: 4rem; margin-bottom: 10px;">🚀</div>
+            <h2 id="storySymbol" style="color: #fff; font-size: 2.5rem; margin: 0 0 5px 0; font-weight: 900; letter-spacing: 2px;">GARAN</h2>
+            <p id="storyName" style="color: rgba(255,255,255,0.6); font-size: 1rem; margin: 0 0 30px 0;">Garanti BBVA</p>
+            
+            <div style="background: rgba(16, 185, 129, 0.1); padding: 20px; border-radius: 20px; box-shadow: inset 0 0 0 2px rgba(16, 185, 129, 0.4);">
+                <p style="color: #10B981; font-size: 1.2rem; margin: 0 0 5px 0; font-weight: 700;">NET KÂR</p>
+                <div id="storyPercent" style="color: #10B981; font-size: 3.5rem; font-weight: 900; text-shadow: 0 0 20px rgba(16, 185, 129, 0.6);">+%1131</div>
+            </div>
+        </div>
+        
+        <div style="position: absolute; bottom: 40px; text-align: center; z-index: 10;">
+            <div style="font-size: 1.5rem; color: #fff; font-weight: 800; letter-spacing: 1px; display: flex; align-items: center; justify-content: center; gap: 10px;">
+                <i class="fa-solid fa-chart-pie" style="color: #10B981;"></i> Portföyüm App
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js?v=28"></script>
 </body>
 </html>

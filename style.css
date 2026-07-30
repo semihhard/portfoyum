@@ -102,6 +102,97 @@ body.theme-titanium-light {
     -webkit-tap-highlight-color: transparent;
 }
 
+/* ==========================================================================
+   Print / PDF Report Styles
+   ========================================================================== */
+@media print {
+    body {
+        background: #ffffff !important;
+        color: #000000 !important;
+    }
+    .ios-tab-bar, .app-header, .page-header button, .btn-primary {
+        display: none !important;
+    }
+    .ultra-glass-card {
+        background: #f8f9fa !important;
+        border: 1px solid #dee2e6 !important;
+        box-shadow: none !important;
+        break-inside: avoid;
+        color: #000 !important;
+    }
+    .ultra-glass-card h3, .ultra-glass-card span, .ultra-glass-card p {
+        color: #000 !important;
+    }
+    .chart-container {
+        height: 300px !important;
+    }
+    #app {
+        max-width: 100% !important;
+        padding: 0 !important;
+    }
+    .tab-page {
+        display: block !important;
+    }
+    .page-title {
+        color: #000 !important;
+    }
+}
+
+/* ==========================================================================
+   Privacy & PIN Styles
+   ========================================================================== */
+.privacy-blur {
+    filter: blur(8px);
+    opacity: 0.6;
+    user-select: none;
+    pointer-events: none;
+    transition: filter 0.3s ease, opacity 0.3s ease;
+}
+
+.pin-keypad {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+    max-width: 280px;
+    margin: 0 auto;
+}
+
+.pin-key {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #fff;
+    font-size: 1.8rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    transition: all 0.15s ease;
+}
+
+.pin-key:active {
+    background: rgba(255, 255, 255, 0.3);
+    transform: scale(0.95);
+}
+
+.pin-dot {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.pin-dot.filled {
+    background: #10B981;
+    transform: scale(1.2);
+    box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+}
+
 body {
     font-family: var(--font-sans);
     background-color: #020305;
@@ -1187,40 +1278,113 @@ input:focus, select:focus {
     opacity: 0.4;
 }
 
- / *   = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = 
-       P r i n t   /   P D F   R e p o r t   S t y l e s 
-       = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =   * / 
- @ m e d i a   p r i n t   { 
-         b o d y   { 
-                 b a c k g r o u n d :   # f f f f f f   ! i m p o r t a n t ; 
-                 c o l o r :   # 0 0 0 0 0 0   ! i m p o r t a n t ; 
-         } 
-         . i o s - t a b - b a r ,   . a p p - h e a d e r ,   . p a g e - h e a d e r   b u t t o n ,   . b t n - p r i m a r y   { 
-                 d i s p l a y :   n o n e   ! i m p o r t a n t ; 
-         } 
-         . u l t r a - g l a s s - c a r d   { 
-                 b a c k g r o u n d :   # f 8 f 9 f a   ! i m p o r t a n t ; 
-                 b o r d e r :   1 p x   s o l i d   # d e e 2 e 6   ! i m p o r t a n t ; 
-                 b o x - s h a d o w :   n o n e   ! i m p o r t a n t ; 
-                 b r e a k - i n s i d e :   a v o i d ; 
-                 c o l o r :   # 0 0 0   ! i m p o r t a n t ; 
-         } 
-         . u l t r a - g l a s s - c a r d   h 3 ,   . u l t r a - g l a s s - c a r d   s p a n ,   . u l t r a - g l a s s - c a r d   p   { 
-                 c o l o r :   # 0 0 0   ! i m p o r t a n t ; 
-         } 
-         . c h a r t - c o n t a i n e r   { 
-                 h e i g h t :   3 0 0 p x   ! i m p o r t a n t ; 
-         } 
-         # a p p   { 
-                 m a x - w i d t h :   1 0 0 %   ! i m p o r t a n t ; 
-                 p a d d i n g :   0   ! i m p o r t a n t ; 
-         } 
-         . t a b - p a g e   { 
-                 d i s p l a y :   b l o c k   ! i m p o r t a n t ; 
-         } 
-         . p a g e - t i t l e   { 
-                 c o l o r :   # 0 0 0   ! i m p o r t a n t ; 
-         } 
- } 
-  
- 
+/* ==========================================================================
+   Print / PDF Report Styles
+   ========================================================================== */
+@media print {
+    body { background: #ffffff !important; color: #000000 !important; }
+    .ios-tab-bar, .app-header, .page-header button, .btn-primary { display: none !important; }
+    .ultra-glass-card { background: #f8f9fa !important; border: 1px solid #dee2e6 !important; box-shadow: none !important; break-inside: avoid; color: #000 !important; }
+    .ultra-glass-card h3, .ultra-glass-card span, .ultra-glass-card p { color: #000 !important; }
+    .chart-container { height: 300px !important; }
+    #app { max-width: 100% !important; padding: 0 !important; }
+    .tab-page { display: block !important; }
+    .page-title { color: #000 !important; }
+}
+
+/* ==========================================================================
+   Privacy & PIN Styles
+   ========================================================================== */
+.privacy-blur {
+    filter: blur(8px);
+    opacity: 0.6;
+    user-select: none;
+    pointer-events: none;
+    transition: filter 0.3s ease, opacity 0.3s ease;
+}
+
+.pin-keypad {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+    max-width: 280px;
+    margin: 0 auto;
+}
+
+.pin-key {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #fff;
+    font-size: 1.8rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    transition: all 0.15s ease;
+}
+
+.pin-key:active { background: rgba(255, 255, 255, 0.3); transform: scale(0.95); }
+
+.pin-dot {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.pin-dot.filled {
+    background: #10B981;
+    transform: scale(1.2);
+    box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+}
+
+/* ==========================================================================
+   News Tab Styles
+   ========================================================================== */
+.news-item {
+    background: rgba(30, 30, 45, 0.4);
+    border: 1px solid rgba(255,255,255,0.05);
+    border-radius: 16px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    transition: transform 0.2s, background 0.2s;
+    text-decoration: none;
+    color: inherit;
+}
+.news-item:hover {
+    background: rgba(30, 30, 45, 0.6);
+    transform: translateY(-2px);
+}
+.news-item.highlight {
+    border: 1px solid rgba(99, 102, 241, 0.5);
+    background: rgba(99, 102, 241, 0.15);
+    box-shadow: 0 4px 15px rgba(99, 102, 241, 0.2);
+}
+.news-title {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #fff;
+    line-height: 1.4;
+}
+.news-meta {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    display: flex;
+    justify-content: space-between;
+}
+.news-tag {
+    background: rgba(99, 102, 241, 0.2);
+    color: #818cf8;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    font-weight: 700;
+}
