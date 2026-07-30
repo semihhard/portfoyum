@@ -824,24 +824,33 @@ async function fetchLivePrices() {
             });
         } catch(e) { console.warn("Crypto fetch failed", e); }
 
-        // 3. Fetch BIST Stocks (Bigpara API via proxy)
+        // 3. Fetch BIST Stocks (Google Sheets Database)
         try {
-            const bistUrl = "https://bigpara.hurriyet.com.tr/api/v1/hisse/list";
-            const proxyBist = `https://api.allorigins.win/get?url=${encodeURIComponent(bistUrl)}`;
-            const res = await fetch(proxyBist);
-            const json = await res.json();
-            const data = JSON.parse(json.contents);
+            // Kullanıcının sağladığı Google Sheet CSV linki (Dışa aktarma formatı)
+            const sheetCsvUrl = "https://docs.google.com/spreadsheets/d/11wcKvLgzw6Aaek5nOWP7daGBJbaSXXEqZVE55IciEzY/export?format=csv";
+            const res = await fetch(sheetCsvUrl);
+            const csvText = await res.text();
             
-            if (data && data.data) {
-                data.data.forEach(stock => {
-                    const sym = stock.sembol;
-                    if (appState.marketPrices[sym]) {
-                        appState.marketPrices[sym].price = stock.kapanis;
+            // Basit CSV Parser
+            const rows = csvText.split('\n');
+            rows.forEach(row => {
+                const cols = row.split(',');
+                if (cols.length >= 2) {
+                    let sym = cols[0].trim().toUpperCase();
+                    let priceStr = cols[1].trim();
+                    if (!sym) return;
+                    
+                    // Fiyat içindeki çift tırnakları ve virgülleri düzelt (Örn: "312,50" -> 312.50)
+                    priceStr = priceStr.replace(/"/g, '').replace(/,/g, '.');
+                    const price = parseFloat(priceStr);
+                    
+                    if (!isNaN(price) && appState.marketPrices[sym]) {
+                        appState.marketPrices[sym].price = price;
                         fetchCount++;
                     }
-                });
-            }
-        } catch(e) { console.warn("BIST fetch failed", e); }
+                }
+            });
+        } catch(e) { console.warn("Google Sheets fetch failed", e); }
 
         if (fetchCount > 0) {
             saveData();
