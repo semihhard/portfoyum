@@ -826,8 +826,8 @@ async function fetchLivePrices() {
 
         // 3. Fetch BIST Stocks (Google Sheets Database)
         try {
-            // Kullanıcının sağladığı Google Sheet CSV linki (Dışa aktarma formatı)
-            const sheetCsvUrl = "https://docs.google.com/spreadsheets/d/11wcKvLgzw6Aaek5nOWP7daGBJbaSXXEqZVE55IciEzY/export?format=csv";
+            // Kullanıcının paylaştığı Google Sheet CSV gviz linki
+            const sheetCsvUrl = "https://docs.google.com/spreadsheets/d/11wcKvLgzw6Aaek5nOWP7daGBJbaSXXEqZVE55IciEzY/gviz/tq?tqx=out:csv";
             const res = await fetch(sheetCsvUrl);
             const csvText = await res.text();
             
@@ -836,7 +836,7 @@ async function fetchLivePrices() {
             rows.forEach(row => {
                 const cols = row.split(',');
                 if (cols.length >= 2) {
-                    let sym = cols[0].trim().toUpperCase();
+                    let sym = cols[0].trim().toUpperCase().replace(/"/g, ''); // "THYAO" -> THYAO
                     let priceStr = cols[1].trim();
                     if (!sym) return;
                     
