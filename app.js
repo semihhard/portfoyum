@@ -582,53 +582,118 @@ function renderAll() {
     renderMarketTab();
 }
 
-// --- Data Export (Excel/CSV) ---
-function exportToExcel() {
-    // Türkçe Excel için BOM (UTF-8 işareti) ve noktalı virgül (;) ayırıcı kullanıyoruz.
-    let csv = "\uFEFF"; 
-    
-    // 1. Portföy
-    csv += "--- PORTFOYUM ---\n";
-    csv += "Varlik;Kod;Kategori;Adet;Maliyet;Guncel Fiyat;Toplam Maliyet;Guncel Deger;Kar/Zarar\n";
-    appState.holdings.forEach(h => {
-        const totalCost = h.quantity * h.avgCost;
-        const totalValue = h.quantity * h.currentPrice;
-        const pl = totalValue - totalCost;
+// --- Data Export (Modern Excel .xlsx) ---
+async function exportToExcel() {
+    try {
+        const btn = event.currentTarget;
+        const originalHtml = btn.innerHTML;
+        btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Hazırlanıyor...`;
+        btn.style.pointerEvents = "none";
+
+        const workbook = new ExcelJS.Workbook();
+        workbook.creator = 'Portföyüm App';
         
-        // Excel'in sayıları doğru okuması için noktayı virgüle çeviriyoruz
-        const qty = h.quantity.toString().replace('.', ',');
-        const avg = h.avgCost.toFixed(4).replace('.', ',');
-        const cur = h.currentPrice.toFixed(4).replace('.', ',');
-        const tCost = totalCost.toFixed(2).replace('.', ',');
-        const tVal = totalValue.toFixed(2).replace('.', ',');
-        const tPl = pl.toFixed(2).replace('.', ',');
+        // --- Tab 1: Portföy ---
+        const ws1 = workbook.addWorksheet('Portföyüm');
+        ws1.columns = [
+            { header: 'Varlık Adı', key: 'name', width: 25 },
+            { header: 'Sembol', key: 'symbol', width: 12 },
+            { header: 'Kategori', key: 'cat', width: 15 },
+            { header: 'Adet', key: 'qty', width: 12 },
+            { header: 'Ort. Maliyet', key: 'avgCost', width: 15 },
+            { header: 'Güncel Fiyat', key: 'curPrice', width: 15 },
+            { header: 'Toplam Maliyet', key: 'tCost', width: 18 },
+            { header: 'Güncel Değer', key: 'tVal', width: 18 },
+            { header: 'Kâr/Zarar (₺)', key: 'pl', width: 18 }
+        ];
 
-        csv += `${h.name};${h.symbol};${h.category};${qty};${avg};${cur};${tCost};${tVal};${tPl}\n`;
-    });
-    
-    csv += "\n--- SATIS GECMISI ---\n";
-    csv += "Tarih;Varlik;Adet;Alis Fiyati;Satis Fiyati;Gerceklesen Kar/Zarar\n";
-    appState.sales.forEach(s => {
-        const qty = (s.saleQty || 0).toString().replace('.', ',');
-        const bPrice = (s.costBasisAtSale || 0).toFixed(4).replace('.', ',');
-        const sPrice = (s.salePrice || 0).toFixed(4).replace('.', ',');
-        const rPl = (s.realizedPL || 0).toFixed(2).replace('.', ',');
-        const dateStr = s.saleDate || "";
+        // Header Style
+        ws1.getRow(1).font = { bold: true, color: { argb: 'FFFFFFFF' } };
+        ws1.getRow(1).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF8B5CF6' } };
+        ws1.getRow(1).alignment = { vertical: 'middle', horizontal: 'center' };
 
-        csv += `${dateStr};${s.symbol};${qty};${bPrice};${sPrice};${rPl}\n`;
-    });
+        appState.holdings.forEach(h => {
+            const totalCost = h.quantity * h.avgCost;
+            const totalValue = h.quantity * h.currentPrice;
+            const pl = totalValue - totalCost;
 
-    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.setAttribute("href", url);
-    
-    const today = new Date().toLocaleDateString('tr-TR').replace(/\./g, '-');
-    link.setAttribute("download", `Portfoy_Yedek_${today}.csv`);
-    
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+            const row = ws1.addRow({
+                name: h.name, symbol: h.symbol, cat: h.category,
+                qty: h.quantity, avgCost: h.avgCost, curPrice: h.currentPrice,
+                tCost: totalCost, tVal: totalValue, pl: pl
+            });
+
+            // Format numbers
+            row.getCell('qty').numFmt = '#,##0.00';
+            row.getCell('avgCost').numFmt = '₺#,##0.00';
+            row.getCell('curPrice').numFmt = '₺#,##0.00';
+            row.getCell('tCost').numFmt = '₺#,##0.00';
+            row.getCell('tVal').numFmt = '₺#,##0.00';
+            
+            const plCell = row.getCell('pl');
+            plCell.numFmt = '₺#,##0.00';
+            if (pl > 0) plCell.font = { color: { argb: 'FF10B981' }, bold: true };
+            else if (pl < 0) plCell.font = { color: { argb: 'FFEF4444' }, bold: true };
+        });
+
+        // --- Tab 2: Satış Geçmişi ---
+        const ws2 = workbook.addWorksheet('Satış Geçmişi');
+        ws2.columns = [
+            { header: 'Tarih', key: 'date', width: 15 },
+            { header: 'Sembol', key: 'symbol', width: 12 },
+            { header: 'Satış Adedi', key: 'qty', width: 15 },
+            { header: 'Alış Fiyatı', key: 'buyPrice', width: 15 },
+            { header: 'Satış Fiyatı', key: 'sellPrice', width: 15 },
+            { header: 'Gerçekleşen Kâr/Zarar', key: 'rPl', width: 22 }
+        ];
+
+        // Header Style
+        ws2.getRow(1).font = { bold: true, color: { argb: 'FFFFFFFF' } };
+        ws2.getRow(1).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF0EA5E9' } };
+        ws2.getRow(1).alignment = { vertical: 'middle', horizontal: 'center' };
+
+        appState.sales.forEach(s => {
+            const row = ws2.addRow({
+                date: s.saleDate, symbol: s.symbol, qty: s.saleQty,
+                buyPrice: s.costBasisAtSale || 0, sellPrice: s.salePrice, rPl: s.realizedPL
+            });
+
+            row.getCell('qty').numFmt = '#,##0.00';
+            row.getCell('buyPrice').numFmt = '₺#,##0.00';
+            row.getCell('sellPrice').numFmt = '₺#,##0.00';
+            
+            const plCell = row.getCell('rPl');
+            plCell.numFmt = '₺#,##0.00';
+            if (s.realizedPL > 0) plCell.font = { color: { argb: 'FF10B981' }, bold: true };
+            else if (s.realizedPL < 0) plCell.font = { color: { argb: 'FFEF4444' }, bold: true };
+        });
+
+        // Generate .xlsx Blob
+        const buffer = await workbook.xlsx.writeBuffer();
+        const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+        
+        // Download
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        const today = new Date().toLocaleDateString('tr-TR').replace(/\./g, '-');
+        link.download = `Portfoy_Modern_Rapor_${today}.xlsx`;
+        
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+
+        // Reset Button
+        setTimeout(() => {
+            btn.innerHTML = originalHtml;
+            btn.style.pointerEvents = "auto";
+        }, 1000);
+
+    } catch (e) {
+        console.error("Excel oluşturulurken hata:", e);
+        alert("Excel oluşturulurken bir hata oluştu.");
+    }
 }
 
 // --- Navigation ---

@@ -20,6 +20,8 @@
     <!-- Chart.js for analytics -->
     <!-- Chart.js for Graphics -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- ExcelJS for Modern Excel Export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
     <link rel="stylesheet" href="style.css?v=5">
 </head>
 <body class="theme-oled-neon">
@@ -217,18 +219,10 @@
                 </div>
 
                 <div class="analytics-card ultra-glass-card mt-4">
-                    <h3><i class="fa-solid fa-file-pdf"></i> Grafiksel Rapor (PDF)</h3>
-                    <p style="color:var(--text-secondary); font-size: 0.85rem; margin-bottom: 15px;">Tüm portföy özetinizi, pasta grafiklerinizi ve analizlerinizi modern bir PDF olarak kaydedin.</p>
-                    <button class="btn-primary neon-glow" onclick="window.print()" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; background: linear-gradient(135deg, #FF922B, #F59E0B);">
-                        <i class="fa-solid fa-file-pdf"></i> Görsel Raporu İndir (PDF)
-                    </button>
-                </div>
-
-                <div class="analytics-card ultra-glass-card mt-4">
-                    <h3><i class="fa-solid fa-file-excel"></i> Ham Veri (Excel CSV)</h3>
-                    <p style="color:var(--text-secondary); font-size: 0.85rem; margin-bottom: 15px;">Portföyünüzü ve geçmiş işlemlerinizi hesaplama yapmak için ham veri (Excel) olarak indirin.</p>
+                    <h3><i class="fa-solid fa-file-excel"></i> Modern Excel Raporu (.xlsx)</h3>
+                    <p style="color:var(--text-secondary); font-size: 0.85rem; margin-bottom: 15px;">Portföyünüzü ve satış geçmişinizi renklendirilmiş, otomatik hesaplamalı ve özel tasarımlı gerçek bir Excel dosyası olarak indirin.</p>
                     <button class="btn-primary neon-glow" onclick="exportToExcel()" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; background: linear-gradient(135deg, #10B981, #059669);">
-                        <i class="fa-solid fa-file-csv"></i> Sadece Verileri İndir (CSV)
+                        <i class="fa-solid fa-download"></i> Modern Excel İndir (.xlsx)
                     </button>
                 </div>
             </section>
@@ -426,6 +420,6 @@
     </div>
     </div> <!-- End of app-container -->
 
-    <script src="app.js?v=24"></script>
+    <script src="app.js?v=25"></script>
 </body>
 </html>
