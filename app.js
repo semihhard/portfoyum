@@ -1394,7 +1394,7 @@ async function shareToStory(symbol, name, percentRaw) {
     document.getElementById("storyName").innerText = name;
     
     const isPos = percentRaw >= 0;
-    const pctStr = (isPos ? '+' : '') + formatPercent(percentRaw);
+    const pctStr = formatPercent(percentRaw); // formatPercent already handles the + sign
     const pctElem = document.getElementById("storyPercent");
     pctElem.innerText = pctStr;
     
@@ -1403,12 +1403,12 @@ async function shareToStory(symbol, name, percentRaw) {
         pctElem.style.color = "#10B981";
         pctElem.style.textShadow = "0 0 20px rgba(16, 185, 129, 0.6)";
         pctElem.parentElement.style.background = "rgba(16, 185, 129, 0.1)";
-        pctElem.parentElement.style.boxShadow = "inset 0 0 0 2px rgba(16, 185, 129, 0.4)";
+        pctElem.parentElement.style.border = "2px solid rgba(16, 185, 129, 0.4)";
     } else {
         pctElem.style.color = "#EF4444";
         pctElem.style.textShadow = "0 0 20px rgba(239, 68, 68, 0.6)";
         pctElem.parentElement.style.background = "rgba(239, 68, 68, 0.1)";
-        pctElem.parentElement.style.boxShadow = "inset 0 0 0 2px rgba(239, 68, 68, 0.4)";
+        pctElem.parentElement.style.border = "2px solid rgba(239, 68, 68, 0.4)";
     }
 
     const template = document.getElementById("storyShareTemplate");
