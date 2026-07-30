@@ -275,27 +275,43 @@ function renderDashboard() {
         const totalPL = marketValue - (h.quantity * h.avgCost);
         const totalPLPct = h.avgCost > 0 ? ((h.currentPrice - h.avgCost) / h.avgCost) * 100 : 0;
         const isPos = totalPL >= 0;
+
+        const dailyDiff = h.previousClosePrice ? (h.currentPrice - h.previousClosePrice) * h.quantity : 0;
+        const dailyPct = h.previousClosePrice ? ((h.currentPrice - h.previousClosePrice) / h.previousClosePrice) * 100 : 0;
+        const isDailyPos = dailyDiff >= 0;
+
         const categoryLabels = { STOCK: "Hisse", FUND: "Fon", FX: "Döviz", CRYPTO: "Kripto" };
         const iconClasses = { STOCK: "stock fa-chart-line", FUND: "fund fa-vault", FX: "fx fa-coins", CRYPTO: "crypto fa-bitcoin" };
+        
+        // CSS Sınıfından ikon ismini çıkartma (Örn: "stock fa-chart-line" -> "fa-chart-line")
+        const iconClassStr = iconClasses[h.category] || "stock fa-coins";
+        const iconName = iconClassStr.split(' ').find(c => c.startsWith('fa-')) || "fa-coins";
 
         return `
-            <div class="asset-card" onclick="openDetailModal('${h.id}')">
-                <div class="asset-left">
-                    <div class="asset-icon ${iconClasses[h.category] || 'stock fa-coins'}">
-                        <i class="fa-solid fa-${iconClasses[h.category].split(' ')[1]}"></i>
+            <div class="asset-card" onclick="openDetailModal('${h.id}')" style="display:grid; grid-template-columns: 45px 1fr auto; gap: 15px; align-items: center; padding: 16px; background: rgba(30, 30, 45, 0.4); border: 1px solid rgba(255,255,255,0.04); border-radius: 18px; margin-bottom: 12px; cursor: pointer; transition: all 0.2s ease-out; box-shadow: 0 4px 20px rgba(0,0,0,0.1);">
+                <div class="asset-icon" style="width:45px; height:45px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size: 1.25rem; background:rgba(255,255,255,0.06); color: #fff;">
+                    <i class="fa-solid ${iconName}"></i>
+                </div>
+                
+                <div class="asset-details" style="display:flex; flex-direction:column; gap:4px;">
+                    <div style="font-weight:700; font-size:1.1rem; color:#fff; display:flex; align-items:center; gap:6px;">
+                        ${h.symbol}
+                        <span style="font-size:0.65rem; background:rgba(255,255,255,0.1); padding:2px 6px; border-radius:4px; font-weight:normal; letter-spacing: 0.5px;">${categoryLabels[h.category]}</span>
                     </div>
-                    <div class="asset-details">
-                        <h4>${h.symbol} <span class="asset-cat-tag">${categoryLabels[h.category]}</span></h4>
-                        <div class="asset-sub">
-                            ${formatNumber(h.quantity, h.category === 'CRYPTO' ? 4 : 2)} Adet • Ort: ${formatCurrency(h.avgCost)}
-                        </div>
+                    <div style="font-size:0.8rem; color:var(--text-secondary);">
+                        ${formatNumber(h.quantity, h.category === 'CRYPTO' ? 4 : 2)} Adet &bull; Ort: ${formatCurrency(h.avgCost)}
+                    </div>
+                    <div style="font-size:0.8rem; font-weight: 500; margin-top:2px;">
+                        <span class="${isPos ? 'txt-neon-green' : 'txt-neon-red'}">${isPos ? '▲' : '▼'} Toplam: ${isPos ? '+' : ''}${formatCurrency(totalPL)}</span>
                     </div>
                 </div>
-                <div class="asset-right">
-                    <div class="asset-val">${formatCurrency(marketValue)}</div>
-                    <div class="asset-pl ${isPos ? 'txt-neon-green' : 'txt-neon-red'}">
-                        ${isPos ? '+' : ''}${formatCurrency(totalPL)} (${formatPercent(totalPLPct)})
+                
+                <div class="asset-right" style="display:flex; flex-direction:column; align-items:flex-end; gap:4px;">
+                    <div style="font-weight:700; font-size:1.15rem; color:#fff;">${formatCurrency(h.currentPrice)}</div>
+                    <div style="padding:4px 8px; border-radius:6px; font-size:0.85rem; font-weight:700; display:flex; align-items:center; justify-content:center; min-width: 75px; background: ${isDailyPos ? 'rgba(16,185,129,0.15)' : 'rgba(239,68,68,0.15)'}; color: ${isDailyPos ? '#10B981' : '#EF4444'}; box-shadow: inset 0 0 0 1px ${isDailyPos ? 'rgba(16,185,129,0.3)' : 'rgba(239,68,68,0.3)'};">
+                        ${isDailyPos ? '+' : ''}${formatPercent(dailyPct)}
                     </div>
+                    <div style="font-size:0.75rem; color:var(--text-secondary); margin-top:2px;">G. Kâr: ${isDailyPos ? '+' : ''}${formatCurrency(dailyDiff)}</div>
                 </div>
             </div>
         `;
