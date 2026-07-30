@@ -1388,6 +1388,36 @@ document.addEventListener("DOMContentLoaded", () => {
 /* ==========================================================================
    Social Media Story Share
    ========================================================================== */
+function generateAvatarBase64(symbol) {
+    const canvas = document.createElement("canvas");
+    canvas.width = 128;
+    canvas.height = 128;
+    const ctx = canvas.getContext("2d");
+    
+    // Background
+    ctx.fillStyle = "#1e222d"; // Dark background
+    ctx.beginPath();
+    ctx.arc(64, 64, 64, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Border
+    ctx.lineWidth = 4;
+    ctx.strokeStyle = "rgba(255, 255, 255, 0.1)";
+    ctx.stroke();
+    
+    // Text
+    ctx.font = "bold 56px Inter, sans-serif";
+    ctx.fillStyle = "#ffffff";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    
+    // Get up to first 2 letters
+    const initials = symbol.substring(0, 2).toUpperCase();
+    ctx.fillText(initials, 64, 68);
+    
+    return canvas.toDataURL("image/png");
+}
+
 async function shareToStory(symbol, name, percentRaw, profitRaw, isSale = false, buyPrice = 0, currentPrice = 0) {
     if (!window.html2canvas) {
         alert("Paylaşım modülü yükleniyor, lütfen biraz bekleyip tekrar deneyin.");
@@ -1398,6 +1428,9 @@ async function shareToStory(symbol, name, percentRaw, profitRaw, isSale = false,
     document.getElementById("storySymbol").innerText = symbol;
     document.getElementById("storyName").innerText = name;
     document.getElementById("storyBoxLabel").innerText = isSale ? "SATIŞ KÂRI" : "NET KÂR";
+    
+    // Dynamic Logo
+    document.getElementById("storyIconImg").src = generateAvatarBase64(symbol);
     
     // Prices
     document.getElementById("storyBuyPrice").innerText = formatCurrency(buyPrice);
