@@ -1438,11 +1438,6 @@ async function shareToStory(symbol, name, percentRaw) {
 async function fetchNews() {
     const container = document.getElementById("newsList");
     if (!container) return;
-    
-    // Sadece bir kere yükle
-    if (container.children.length > 1 || (container.children[0] && !container.children[0].classList.contains('empty-state'))) {
-        return;
-    }
 
     try {
         container.innerHTML = `<div class="empty-state"><i class="fa-solid fa-spinner fa-spin"></i><p>KAP Verileri Taranıyor...</p></div>`;
