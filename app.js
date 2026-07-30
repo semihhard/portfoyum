@@ -1438,7 +1438,7 @@ async function shareToStory(symbol, name, percentRaw, profitRaw, isSale = false,
     document.getElementById("storyCurrentPriceLabel").innerText = isSale ? "Satış Fiyatı" : "Güncel Fiyat";
     
     const isPos = percentRaw >= 0;
-    const pctStr = formatPercent(percentRaw); // formatPercent already handles the + sign
+    const pctStr = formatPercent(percentRaw);
     
     // Format money (adding + or -)
     const sign = isPos ? '+' : '';
@@ -1446,56 +1446,73 @@ async function shareToStory(symbol, name, percentRaw, profitRaw, isSale = false,
     
     const pctElem = document.getElementById("storyPercent");
     const moneyElem = document.getElementById("storyMoney");
-    const chartSvg = document.getElementById("storyChartSvg");
+    const boxLabel = document.getElementById("storyBoxLabel");
+    const bgGradient = document.getElementById("storyGradientBg");
     
     pctElem.innerText = pctStr;
     moneyElem.innerText = moneyStr;
     
     // Style dynamically based on profit/loss
     if (isPos) {
-        // Green Theme
         pctElem.style.color = "#10B981";
-        pctElem.style.textShadow = "0 0 40px rgba(16, 185, 129, 0.5)";
         moneyElem.style.color = "#10B981";
-        document.getElementById("storyBoxLabel").style.color = "#10B981";
-        
-        document.getElementById("storyGradientBg").style.background = "radial-gradient(circle at 50% 0%, rgba(16, 185, 129, 0.25), transparent 75%)";
-        
-        // Upward chart
-        chartSvg.innerHTML = `<path d="M0,40 L10,35 L20,38 L30,25 L40,30 L50,15 L60,25 L70,10 L80,18 L90,5 L100,10 L100,40 Z" fill="rgba(16, 185, 129, 1)"></path>`;
+        boxLabel.style.color = "#10B981";
+        bgGradient.style.background = "linear-gradient(135deg, #10B981, #047857)";
     } else {
-        // Red Theme
         pctElem.style.color = "#EF4444";
-        pctElem.style.textShadow = "0 0 40px rgba(239, 68, 68, 0.5)";
         moneyElem.style.color = "#EF4444";
-        document.getElementById("storyBoxLabel").style.color = "#EF4444";
-        
-        document.getElementById("storyGradientBg").style.background = "radial-gradient(circle at 50% 0%, rgba(239, 68, 68, 0.25), transparent 75%)";
-        
-        // Downward chart
-        chartSvg.innerHTML = `<path d="M0,0 L10,5 L20,2 L30,15 L40,10 L50,25 L60,15 L70,30 L80,22 L90,35 L100,28 L100,0 Z" fill="rgba(239, 68, 68, 1)"></path>`;
+        boxLabel.style.color = "#EF4444";
+        bgGradient.style.background = "linear-gradient(135deg, #EF4444, #991b1b)";
     }
 
     const template = document.getElementById("storyShareTemplate");
     
     try {
         const canvas = await html2canvas(template, {
-            scale: 2, // High quality
-            backgroundColor: "#020305",
-            logging: false
+            scale: 1, // Already 1080x1920
+            backgroundColor: "#ffffff",
+            logging: false,
+            useCORS: true
         });
         
-        // Convert to image and trigger download
-        const link = document.createElement('a');
-        link.download = `Portfoyum_${symbol}_Story.png`;
-        link.href = canvas.toDataURL('image/png');
-        link.click();
+        const dataUrl = canvas.toDataURL("image/png");
         
+        // Show Preview Modal
+        const previewImg = document.getElementById("sharePreviewImage");
+        previewImg.src = dataUrl;
+        
+        const modal = document.getElementById("modalSharePreview");
+        modal.classList.add("active");
+        
+        // Native Share Setup
+        const btnShare = document.getElementById("btnNativeShare");
+        btnShare.onclick = async () => {
+            if (navigator.share) {
+                canvas.toBlob(async (blob) => {
+                    const file = new File([blob], `Portfoy_${symbol}.png`, { type: "image/png" });
+                    try {
+                        await navigator.share({
+                            title: "Portföyüm Kâr/Zarar",
+                            files: [file]
+                        });
+                    } catch (e) {
+                        console.log("Share cancelled or failed", e);
+                    }
+                });
+            } else {
+                alert("Cihazınız bu paylaşım yöntemini desteklemiyor. Görsele basılı tutarak kaydedebilirsiniz.");
+            }
+        };
+
     } catch (err) {
-        console.error("Story oluşturulamadı:", err);
+        console.error("html2canvas error:", err);
         alert("Görsel oluşturulurken bir hata oluştu.");
     }
 }
+
+document.getElementById("btnCloseShareModal").addEventListener("click", () => {
+    document.getElementById("modalSharePreview").classList.remove("active");
+});
 
 /* ==========================================================================
    News & KAP Radar
