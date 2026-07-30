@@ -29,7 +29,8 @@ let appState = {
     privacyMode: false,
     activeCategory: "ALL",
     theme: "theme-oled-neon",
-    pin: null
+    pin: null,
+    notifications: []
 };
 
 // --- Initial Sample Data ---
@@ -207,6 +208,8 @@ function executeSaleTransaction(holdingId, saleQty, salePrice, saleDate) {
     if (h.quantity <= 0.000001) {
         appState.holdings.splice(holdingIndex, 1);
     }
+    
+    showToast(`✅ ${saleQty} adet ${h.symbol} başarıyla satıldı! (${formatCurrency(realizedPL)} kâr/zarar)`, realizedPL >= 0 ? "success" : "error");
 
     saveData();
     renderAll();
@@ -224,8 +227,27 @@ function deleteAsset(holdingId) {
 function updateMarketPrice(symbol, newPrice) {
     const h = appState.holdings.find(item => item.symbol === symbol);
     if (h) {
-        h.previousClosePrice = h.currentPrice;
+        const oldPrice = h.currentPrice;
+        h.previousClosePrice = oldPrice;
         h.currentPrice = newPrice;
+        
+        // --- VOLATILITY ALERT TRIGGER ---
+        if (oldPrice > 0) {
+            const changePct = ((newPrice - oldPrice) / oldPrice) * 100;
+            if (changePct >= 5) {
+                addNotification(
+                    "🚀 Sert Yükseliş", 
+                    `${h.symbol} aniden %${changePct.toFixed(2)} değer kazandı! (${formatCurrency(oldPrice)} ➔ ${formatCurrency(newPrice)})`, 
+                    "success"
+                );
+            } else if (changePct <= -5) {
+                addNotification(
+                    "📉 Sert Düşüş", 
+                    `${h.symbol} aniden %${Math.abs(changePct).toFixed(2)} değer kaybetti! (${formatCurrency(oldPrice)} ➔ ${formatCurrency(newPrice)})`, 
+                    "error"
+                );
+            }
+        }
     }
     if (appState.marketPrices[symbol]) {
         appState.marketPrices[symbol].prevClose = appState.marketPrices[symbol].price;
@@ -1119,11 +1141,31 @@ async function fetchLivePrices() {
             // Senkronize et: marketPrices güncellendi, şimdi bunları portföydeki (holdings) varlıklara aktar
             appState.holdings.forEach(h => {
                 if (appState.marketPrices[h.symbol]) {
+                    const newPrice = appState.marketPrices[h.symbol].price;
+                    const oldPrice = h.currentPrice || newPrice;
+                    
                     // Sadece fiyat gerçekten değişmişse önceki kapanışı güncelle
-                    if (h.currentPrice !== appState.marketPrices[h.symbol].price) {
-                        h.previousClosePrice = h.currentPrice;
+                    if (oldPrice !== newPrice) {
+                        h.previousClosePrice = oldPrice;
+                        
+                        // --- VOLATILITY ALERT TRIGGER ---
+                        const changePct = ((newPrice - oldPrice) / oldPrice) * 100;
+                        if (changePct >= 5) {
+                            addNotification(
+                                "🚀 Sert Yükseliş", 
+                                `${h.symbol} aniden %${changePct.toFixed(2)} değer kazandı! (${formatCurrency(oldPrice)} ➔ ${formatCurrency(newPrice)})`, 
+                                "success"
+                            );
+                        } else if (changePct <= -5) {
+                            addNotification(
+                                "📉 Sert Düşüş", 
+                                `${h.symbol} aniden %${Math.abs(changePct).toFixed(2)} değer kaybetti! (${formatCurrency(oldPrice)} ➔ ${formatCurrency(newPrice)})`, 
+                                "error"
+                            );
+                        }
                     }
-                    h.currentPrice = appState.marketPrices[h.symbol].price;
+                    
+                    h.currentPrice = newPrice;
                 }
             });
             saveData();
@@ -1612,6 +1654,13 @@ async function fetchNews() {
 
         // Haberleri zamana göre sırala (en yeni en üstte)
         mockNews.sort((a, b) => b.date - a.date);
+        
+        // --- NOTIFICATION TRIGGER: Send a system notification for the most recent news if any ---
+        if(mockNews.length > 0) {
+            const latest = mockNews[0];
+            // To prevent spamming, we could check if we already notified, but since this is simulated, we'll just fire it.
+            addNotification("Yeni KAP Haberi", latest.title, "warning");
+        }
 
         const html = mockNews.map((item, idx) => {
             // Encode content for safe HTML attribute injection
@@ -1660,3 +1709,171 @@ function openKapModal(symbol, title, time, content) {
 function closeKapModal() {
     document.getElementById("modalKapDetail").classList.remove("active");
 }
+
+/* ==========================================================================
+   Notifications & Alerts
+   ========================================================================== */
+
+function showToast(message, type = 'info') {
+    const container = document.getElementById("toastContainer");
+    if (!container) return;
+    
+    const toast = document.createElement("div");
+    
+    let icon = "fa-info-circle";
+    let color = "#38BDF8";
+    if(type === 'success') { icon = "fa-check-circle"; color = "#10B981"; }
+    if(type === 'error') { icon = "fa-exclamation-circle"; color = "#EF4444"; }
+    if(type === 'warning') { icon = "fa-exclamation-triangle"; color = "#F59E0B"; }
+
+    toast.style.cssText = `
+        background: rgba(30, 30, 45, 0.95);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255,255,255,0.1);
+        border-left: 4px solid ${color};
+        color: #fff;
+        padding: 12px 20px;
+        border-radius: 12px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-size: 0.9rem;
+        transform: translateY(-20px);
+        opacity: 0;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        pointer-events: auto;
+    `;
+    
+    toast.innerHTML = `
+        <i class="fa-solid ${icon}" style="color: ${color}; font-size: 1.2rem;"></i>
+        <span>${message}</span>
+    `;
+    
+    container.appendChild(toast);
+    
+    // Animate in
+    setTimeout(() => {
+        toast.style.transform = "translateY(0)";
+        toast.style.opacity = "1";
+    }, 10);
+    
+    // Animate out
+    setTimeout(() => {
+        toast.style.transform = "translateY(-20px)";
+        toast.style.opacity = "0";
+        setTimeout(() => toast.remove(), 300);
+    }, 4000);
+}
+
+function requestNotificationPermission() {
+    if ("Notification" in window) {
+        if (Notification.permission !== "granted" && Notification.permission !== "denied") {
+            Notification.requestPermission();
+        }
+    }
+}
+
+function addNotification(title, message, type = 'info') {
+    if(!appState.notifications) appState.notifications = [];
+    
+    const notif = {
+        id: Date.now().toString(),
+        title,
+        message,
+        type,
+        date: new Date().toISOString(),
+        isRead: false
+    };
+    
+    appState.notifications.unshift(notif);
+    if(appState.notifications.length > 50) appState.notifications.pop();
+    
+    saveData();
+    updateNotificationBadge();
+    
+    // Show Toast
+    showToast(`${title}: ${message}`, type);
+    
+    // Show System Push Notification
+    if ("Notification" in window && Notification.permission === "granted") {
+        new Notification(title, {
+            body: message
+        });
+    }
+}
+
+function updateNotificationBadge() {
+    const badge = document.getElementById("notificationBadge");
+    if(!badge) return;
+    
+    const unreadCount = (appState.notifications || []).filter(n => !n.isRead).length;
+    
+    if(unreadCount > 0) {
+        badge.style.display = "block";
+    } else {
+        badge.style.display = "none";
+    }
+}
+
+function toggleNotificationDrawer() {
+    const modal = document.getElementById("modalNotificationDrawer");
+    if(modal.classList.contains("active")) {
+        modal.classList.remove("active");
+        const sheet = modal.querySelector(".modal-sheet");
+        if(sheet) sheet.style.transform = "translateX(100%)";
+    } else {
+        requestNotificationPermission(); // Ask permission when user opens drawer
+        modal.classList.add("active");
+        const sheet = modal.querySelector(".modal-sheet");
+        if(sheet) sheet.style.transform = "translateX(0)";
+        
+        // Mark all as read
+        if(appState.notifications) {
+            appState.notifications.forEach(n => n.isRead = true);
+            saveData();
+            updateNotificationBadge();
+        }
+        renderNotificationDrawer();
+    }
+}
+
+function renderNotificationDrawer() {
+    const list = document.getElementById("notificationList");
+    if(!list) return;
+    
+    const notifs = appState.notifications || [];
+    
+    if(notifs.length === 0) {
+        list.innerHTML = `<div class="empty-state" style="padding-top: 50px;"><i class="fa-solid fa-bell-slash" style="font-size:2rem; opacity:0.5; margin-bottom:15px;"></i><p>Henüz bildiriminiz yok.</p></div>`;
+        return;
+    }
+    
+    list.innerHTML = notifs.map(n => {
+        let color = "#38BDF8";
+        let icon = "fa-info-circle";
+        if(n.type === 'success') { color = "#10B981"; icon = "fa-check-circle"; }
+        if(n.type === 'error') { color = "#EF4444"; icon = "fa-exclamation-circle"; }
+        if(n.type === 'warning') { color = "#F59E0B"; icon = "fa-exclamation-triangle"; }
+        
+        const dateStr = new Date(n.date).toLocaleString('tr-TR', { day: '2-digit', month: 'short', hour: '2-digit', minute:'2-digit' });
+        
+        return `
+            <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); border-left: 3px solid ${color}; padding: 15px; border-radius: 10px;">
+                <div style="display: flex; gap: 12px;">
+                    <div style="color: ${color}; font-size: 1.2rem; padding-top: 2px;"><i class="fa-solid ${icon}"></i></div>
+                    <div style="flex: 1;">
+                        <div style="color: #fff; font-weight: 600; font-size: 0.95rem; margin-bottom: 5px;">${n.title}</div>
+                        <div style="color: rgba(255,255,255,0.7); font-size: 0.85rem; line-height: 1.4;">${n.message}</div>
+                        <div style="color: rgba(255,255,255,0.4); font-size: 0.7rem; margin-top: 8px; text-align: right;">${dateStr}</div>
+                    </div>
+                </div>
+            </div>
+        `;
+    }).join("");
+}
+
+// Request permission and setup badge on load
+document.addEventListener('DOMContentLoaded', () => {
+    updateNotificationBadge();
+});
