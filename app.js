@@ -783,72 +783,75 @@ async function fetchLivePrices() {
     if(btn) btn.classList.add("loading");
 
     try {
-        const uniqueSymbols = new Set();
-        appState.holdings.forEach(h => {
-            if (h.category === "STOCK") uniqueSymbols.add(h.symbol + ".IS");
-            if (h.category === "FUND") uniqueSymbols.add(h.symbol + ".IS"); // some funds work with .IS
-            if (h.category === "CRYPTO") uniqueSymbols.add(h.symbol + "-USD");
-            if (h.category === "FX" && h.symbol === "USD/TRY") uniqueSymbols.add("USDTRY=X");
-            if (h.category === "FX" && h.symbol === "EUR/TRY") uniqueSymbols.add("EURTRY=X");
-            if (h.category === "FX" && h.symbol === "ALTIN") uniqueSymbols.add("XAUTRY=X"); 
-        });
+        let fetchCount = 0;
+        let usdTryRate = 38.0; // Default fallback
 
-        if (uniqueSymbols.size === 0) return;
-
-        uniqueSymbols.add("USDTRY=X"); // ALWAYS needed for crypto conversion
-
-        const symbolsParam = Array.from(uniqueSymbols).join(",");
-        const yfUrl = `https://query1.finance.yahoo.com/v7/finance/quote?symbols=${symbolsParam}`;
-        const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(yfUrl)}`;
-
-        const res = await fetch(proxyUrl);
-        const json = await res.json();
-        const data = JSON.parse(json.contents);
-        
-        if (data && data.quoteResponse && data.quoteResponse.result) {
-            const results = data.quoteResponse.result;
+        // 1. Fetch FX & Gold (Truncgil API - No CORS, Free, Fast)
+        try {
+            const res = await fetch("https://finans.truncgil.com/today.json");
+            const data = await res.json();
             
-            let usdTryRate = 38.0;
-            const usdTryItem = results.find(r => r.symbol === "USDTRY=X");
-            if (usdTryItem) usdTryRate = usdTryItem.regularMarketPrice;
-
-            results.forEach(quote => {
-                let localSymbol = quote.symbol;
-                let price = quote.regularMarketPrice;
-                let prevClose = quote.regularMarketPreviousClose || quote.regularMarketPrice;
-
-                if (localSymbol.endsWith(".IS")) {
-                    localSymbol = localSymbol.replace(".IS", "");
-                } else if (localSymbol.endsWith("-USD")) {
-                    localSymbol = localSymbol.replace("-USD", "");
-                    price = price * usdTryRate;
-                    prevClose = prevClose * usdTryRate;
-                } else if (localSymbol === "USDTRY=X") {
-                    localSymbol = "USD/TRY";
-                } else if (localSymbol === "EURTRY=X") {
-                    localSymbol = "EUR/TRY";
-                } else if (localSymbol === "XAUTRY=X") {
-                    localSymbol = "ALTIN";
+            if (data["USD"]) {
+                usdTryRate = parseFloat(data["USD"].Satış.replace(',', '.'));
+                if (appState.marketPrices["USD/TRY"]) {
+                    appState.marketPrices["USD/TRY"].price = usdTryRate;
+                    fetchCount++;
                 }
+            }
+            if (data["EUR"] && appState.marketPrices["EUR/TRY"]) {
+                appState.marketPrices["EUR/TRY"].price = parseFloat(data["EUR"].Satış.replace(',', '.'));
+                fetchCount++;
+            }
+            if (data["Gram Altın"] && appState.marketPrices["ALTIN"]) {
+                appState.marketPrices["ALTIN"].price = parseFloat(data["Gram Altın"].Satış.replace(',', '.'));
+                fetchCount++;
+            }
+        } catch(e) { console.warn("FX fetch failed", e); }
 
-                if (appState.marketPrices[localSymbol]) {
-                    appState.marketPrices[localSymbol].price = price;
-                    appState.marketPrices[localSymbol].prevClose = prevClose;
-                } else {
-                    appState.marketPrices[localSymbol] = { price: price, prevClose: prevClose, name: localSymbol, category: "UNKNOWN" };
+        // 2. Fetch Crypto (Binance API - No CORS, Free, Fast)
+        try {
+            const res = await fetch("https://api.binance.com/api/v3/ticker/price");
+            const data = await res.json();
+            
+            data.forEach(coin => {
+                if (coin.symbol.endsWith("USDT")) {
+                    const sym = coin.symbol.replace("USDT", "");
+                    if (appState.marketPrices[sym] && appState.marketPrices[sym].category === "CRYPTO") {
+                        appState.marketPrices[sym].price = parseFloat(coin.price) * usdTryRate;
+                        fetchCount++;
+                    }
                 }
             });
+        } catch(e) { console.warn("Crypto fetch failed", e); }
+
+        // 3. Fetch BIST Stocks (Bigpara API via proxy)
+        try {
+            const bistUrl = "https://bigpara.hurriyet.com.tr/api/v1/hisse/list";
+            const proxyBist = `https://api.allorigins.win/get?url=${encodeURIComponent(bistUrl)}`;
+            const res = await fetch(proxyBist);
+            const json = await res.json();
+            const data = JSON.parse(json.contents);
             
+            if (data && data.data) {
+                data.data.forEach(stock => {
+                    const sym = stock.sembol;
+                    if (appState.marketPrices[sym]) {
+                        appState.marketPrices[sym].price = stock.kapanis;
+                        fetchCount++;
+                    }
+                });
+            }
+        } catch(e) { console.warn("BIST fetch failed", e); }
+
+        if (fetchCount > 0) {
             saveData();
             renderAll();
         } else {
-            throw new Error("Invalid data format from proxy");
+            throw new Error("Tüm servisler yanıt vermedi");
         }
     } catch (e) {
         console.error("Fiyatlar güncellenemedi, simülasyona geçiliyor:", e);
-        // Fallback to simulation so the UI does something
         simulateMarketFluctuation();
-        // Sadece çok inatçı hatalarda kullanıcıyı uyarmak için alert'i kaldırıyoruz
     } finally {
         if(btn) btn.classList.remove("loading");
     }
