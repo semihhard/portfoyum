@@ -328,17 +328,18 @@ function renderDashboard() {
                     <div style="font-size:0.8rem; color:var(--text-secondary);">
                         ${formatNumber(h.quantity, h.category === 'CRYPTO' ? 4 : 2)} Adet &bull; Ort: ${formatCurrency(h.avgCost)}
                     </div>
-                    <div style="font-size:0.8rem; font-weight: 500; margin-top:2px;">
-                        <span class="${isPos ? 'txt-neon-green' : 'txt-neon-red'}">${isPos ? '▲' : '▼'} T.Kâr: ${isPos ? '+' : ''}${formatCurrency(totalPL)} (${isPos ? '+' : ''}${formatPercent(totalPLPct)})</span>
+                    <div style="font-size:0.8rem; font-weight: 500; margin-top:2px; display: flex; flex-direction: column; gap: 2px;">
+                        <span style="color:var(--text-secondary); font-size:0.7rem; text-transform:uppercase; letter-spacing:0.5px;">Toplam Kâr/Zarar</span>
+                        <span class="${isPos ? 'txt-neon-green' : 'txt-neon-red'}">${isPos ? '▲' : '▼'} ${isPos ? '+' : ''}${formatCurrency(totalPL)} (${isPos ? '+' : ''}${formatPercent(totalPLPct)})</span>
                     </div>
                 </div>
                 
                 <div class="asset-right" style="display:flex; flex-direction:column; align-items:flex-end; gap:4px;">
                     <div style="font-weight:700; font-size:1.15rem; color:#fff;">${formatCurrency(h.currentPrice)}</div>
-                    <div style="padding:4px 8px; border-radius:6px; font-size:0.85rem; font-weight:700; display:flex; align-items:center; justify-content:center; min-width: 75px; background: ${isDailyPos ? 'rgba(16,185,129,0.15)' : 'rgba(239,68,68,0.15)'}; color: ${isDailyPos ? '#10B981' : '#EF4444'}; box-shadow: inset 0 0 0 1px ${isDailyPos ? 'rgba(16,185,129,0.3)' : 'rgba(239,68,68,0.3)'};" title="Günlük Kâr / Zarar Yüzdesi">
-                        G: ${isDailyPos ? '+' : ''}${formatPercent(dailyPct)}
+                    <div style="padding:4px 8px; border-radius:6px; font-size:0.85rem; font-weight:700; display:flex; align-items:center; justify-content:center; min-width: 75px; background: ${isDailyPos ? 'rgba(16,185,129,0.15)' : 'rgba(239,68,68,0.15)'}; color: ${isDailyPos ? '#10B981' : '#EF4444'}; box-shadow: inset 0 0 0 1px ${isDailyPos ? 'rgba(16,185,129,0.3)' : 'rgba(239,68,68,0.3)'};" title="Günlük Değişim Yüzdesi">
+                        ${isDailyPos ? '+' : ''}${formatPercent(dailyPct)}
                     </div>
-                    <div style="font-size:0.75rem; color:var(--text-secondary); margin-top:2px;" title="Günlük Kâr / Zarar (₺)">${isDailyPos ? '+' : ''}${formatCurrency(dailyDiff)}</div>
+                    <div style="font-size:0.75rem; color:var(--text-secondary); margin-top:2px;" title="Günlük Kâr/Zarar Toplamı">${isDailyPos ? '+' : ''}${formatCurrency(dailyDiff)}</div>
                 </div>
             </div>
         `;
