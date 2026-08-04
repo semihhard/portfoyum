@@ -329,16 +329,16 @@ function renderDashboard() {
                         ${formatNumber(h.quantity, h.category === 'CRYPTO' ? 4 : 2)} Adet &bull; Ort: ${formatCurrency(h.avgCost)}
                     </div>
                     <div style="font-size:0.8rem; font-weight: 500; margin-top:2px;">
-                        <span class="${isPos ? 'txt-neon-green' : 'txt-neon-red'}">${isPos ? '▲' : '▼'} Toplam: ${isPos ? '+' : ''}${formatCurrency(totalPL)}</span>
+                        <span class="${isPos ? 'txt-neon-green' : 'txt-neon-red'}">${isPos ? '▲' : '▼'} T.Kâr: ${isPos ? '+' : ''}${formatCurrency(totalPL)} (${isPos ? '+' : ''}${formatPercent(totalPLPct)})</span>
                     </div>
                 </div>
                 
                 <div class="asset-right" style="display:flex; flex-direction:column; align-items:flex-end; gap:4px;">
                     <div style="font-weight:700; font-size:1.15rem; color:#fff;">${formatCurrency(h.currentPrice)}</div>
-                    <div style="padding:4px 8px; border-radius:6px; font-size:0.85rem; font-weight:700; display:flex; align-items:center; justify-content:center; min-width: 75px; background: ${isDailyPos ? 'rgba(16,185,129,0.15)' : 'rgba(239,68,68,0.15)'}; color: ${isDailyPos ? '#10B981' : '#EF4444'}; box-shadow: inset 0 0 0 1px ${isDailyPos ? 'rgba(16,185,129,0.3)' : 'rgba(239,68,68,0.3)'};">
-                        ${isDailyPos ? '+' : ''}${formatPercent(dailyPct)}
+                    <div style="padding:4px 8px; border-radius:6px; font-size:0.85rem; font-weight:700; display:flex; align-items:center; justify-content:center; min-width: 75px; background: ${isDailyPos ? 'rgba(16,185,129,0.15)' : 'rgba(239,68,68,0.15)'}; color: ${isDailyPos ? '#10B981' : '#EF4444'}; box-shadow: inset 0 0 0 1px ${isDailyPos ? 'rgba(16,185,129,0.3)' : 'rgba(239,68,68,0.3)'};" title="Günlük Kâr / Zarar Yüzdesi">
+                        G: ${isDailyPos ? '+' : ''}${formatPercent(dailyPct)}
                     </div>
-                    <div style="font-size:0.75rem; color:var(--text-secondary); margin-top:2px;">G. Kâr: ${isDailyPos ? '+' : ''}${formatCurrency(dailyDiff)}</div>
+                    <div style="font-size:0.75rem; color:var(--text-secondary); margin-top:2px;" title="Günlük Kâr / Zarar (₺)">${isDailyPos ? '+' : ''}${formatCurrency(dailyDiff)}</div>
                 </div>
             </div>
         `;
@@ -1151,7 +1151,7 @@ async function fetchLivePrices() {
                 }
             });
             
-            // Fetch Previous Close from Yahoo Finance for BIST stocks
+            // Fetch Current Price & Previous Close from Yahoo Finance for BIST stocks
             const bistSymbols = Object.keys(appState.marketPrices).filter(sym => appState.marketPrices[sym].category === "STOCK");
             if (bistSymbols.length > 0) {
                 const queryStr = bistSymbols.map(s => s + ".IS").join(",");
@@ -1167,8 +1167,14 @@ async function fetchLivePrices() {
                             const sym = item.symbol.replace(".IS", "");
                             if (appState.marketPrices[sym] && item.response[0].meta) {
                                 const prevClose = item.response[0].meta.chartPreviousClose || item.response[0].meta.previousClose;
+                                const currPrice = item.response[0].meta.regularMarketPrice;
+                                
                                 if (prevClose) {
                                     appState.marketPrices[sym].prevClose = prevClose;
+                                }
+                                if (currPrice) {
+                                    appState.marketPrices[sym].price = currPrice;
+                                    fetchCount++;
                                 }
                             }
                         });
