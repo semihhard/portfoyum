@@ -1078,6 +1078,7 @@ async function fetchLivePrices() {
 
     try {
         let fetchCount = 0;
+        const sheetUpdatedSymbols = new Set(); // Track symbols updated from Google Sheets C column
         let usdTryRate = 38.0; // Default fallback
 
         // 1. Fetch FX & Gold (Truncgil API - No CORS, Free, Fast)
