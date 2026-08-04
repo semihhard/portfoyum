@@ -1144,9 +1144,30 @@ async function fetchLivePrices() {
                     priceStr = priceStr.replace(/,/g, '.');
                     const price = parseFloat(priceStr);
                     
-                    if (!isNaN(price) && appState.marketPrices[sym]) {
-                        appState.marketPrices[sym].price = price;
-                        fetchCount++;
+                    if (!isNaN(price)) {
+                        // Ensure it exists in marketPrices if they have it in their holdings
+                        if (!appState.marketPrices[sym] && appState.holdings.some(h => h.symbol === sym)) {
+                            appState.marketPrices[sym] = { price: price, prevClose: price, name: sym, category: "STOCK" };
+                        }
+
+                        if (appState.marketPrices[sym]) {
+                            appState.marketPrices[sym].price = price;
+                            
+                            // C Sütunu: Günlük Değişim Yüzdesi (Örn: 1,18 -> %1.18)
+                            if (cols.length >= 3 && cols[2].trim() !== '') {
+                                let pctStr = cols[2].replace(/"/g, '').trim().replace(/,/g, '.');
+                                const dailyPct = parseFloat(pctStr);
+                                if (!isNaN(dailyPct)) {
+                                    // Tersine mühendislik ile dünkü kapanışı bul:
+                                    // prevClose = currentPrice / (1 + (dailyPct / 100))
+                                    const prevClose = price / (1 + (dailyPct / 100));
+                                    appState.marketPrices[sym].prevClose = prevClose;
+                                    sheetUpdatedSymbols.add(sym); // Mark as updated via Sheet
+                                }
+                            }
+                            
+                            fetchCount++;
+                        }
                     }
                 }
             });
@@ -1169,10 +1190,11 @@ async function fetchLivePrices() {
                                 const prevClose = item.response[0].meta.chartPreviousClose || item.response[0].meta.previousClose;
                                 const currPrice = item.response[0].meta.regularMarketPrice;
                                 
-                                if (prevClose) {
+                                // Only overwrite if Google Sheets didn't provide a C-column percentage
+                                if (prevClose && !sheetUpdatedSymbols.has(sym)) {
                                     appState.marketPrices[sym].prevClose = prevClose;
                                 }
-                                if (currPrice) {
+                                if (currPrice && !sheetUpdatedSymbols.has(sym)) {
                                     appState.marketPrices[sym].price = currPrice;
                                     fetchCount++;
                                 }
