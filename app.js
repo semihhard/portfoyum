@@ -1155,8 +1155,11 @@ async function fetchLivePrices() {
             const bistSymbols = Object.keys(appState.marketPrices).filter(sym => appState.marketPrices[sym].category === "STOCK");
             if (bistSymbols.length > 0) {
                 const queryStr = bistSymbols.map(s => s + ".IS").join(",");
+                const targetUrl = `https://query1.finance.yahoo.com/v7/finance/spark?symbols=${queryStr}`;
+                const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`;
+                
                 try {
-                    const yfRes = await fetch(`https://query1.finance.yahoo.com/v7/finance/spark?symbols=${queryStr}`);
+                    const yfRes = await fetch(proxyUrl);
                     const yfData = await yfRes.json();
                     
                     if (yfData && yfData.spark && yfData.spark.result) {
@@ -1170,7 +1173,7 @@ async function fetchLivePrices() {
                             }
                         });
                     }
-                } catch(e) { console.warn("Yahoo Finance fetch failed", e); }
+                } catch(e) { console.warn("Yahoo Finance fetch failed (CORS/Proxy)", e); }
             }
             
         } catch(e) { console.warn("Google Sheets fetch failed", e); }
