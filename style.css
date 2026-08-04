@@ -1,32 +1,33 @@
 /* ==========================================================================
-   iOS Portfolio Tracker - OLED Cyber Fintech & Multi-Theme System
+   iOS Portfolio Tracker - Premium Institutional Theme
    ========================================================================== */
 
-/* --- Theme 1: OLED Siyah & Neon Cyber Fintech (Default) --- */
+/* --- Theme 1: Premium Institutional Dark (Default) --- */
 body.theme-oled-neon {
-    --bg-main: #04060A;
-    --bg-card: rgba(14, 19, 28, 0.7);
-    --bg-card-hover: rgba(22, 30, 44, 0.85);
-    --bg-hero: linear-gradient(135deg, rgba(20, 28, 42, 0.95) 0%, rgba(8, 12, 20, 0.98) 100%);
-    --bg-modal: rgba(12, 16, 25, 0.96);
+    --bg-main: #06090F; /* Deep institutional slate */
+    --bg-card: rgba(16, 22, 34, 0.85); /* Slightly lighter for contrast */
+    --bg-card-hover: rgba(22, 30, 46, 0.95);
+    --bg-hero: linear-gradient(135deg, rgba(14, 21, 33, 0.98) 0%, rgba(8, 12, 19, 1) 100%);
+    --bg-modal: rgba(10, 14, 22, 0.98);
     
-    --border-glass: rgba(255, 255, 255, 0.1);
-    --border-glass-glow: rgba(0, 245, 160, 0.3);
+    --border-glass: rgba(255, 255, 255, 0.06);
+    --border-glass-glow: rgba(255, 255, 255, 0.1);
     
-    --text-primary: #FFFFFF;
+    --text-primary: #F8FAFC;
     --text-secondary: #94A3B8;
     --text-muted: #64748B;
     
-    --neon-green: #00F5A0;
-    --neon-green-glow: rgba(0, 245, 160, 0.25);
-    --neon-red: #FF3366;
-    --neon-red-glow: rgba(255, 51, 102, 0.25);
-    --neon-cyan: #00E5FF;
-    --neon-purple: #D946EF;
+    /* Institutional Accent Colors (Less Neon, More Solid) */
+    --neon-green: #10B981; /* Solid emerald green */
+    --neon-green-glow: rgba(16, 185, 129, 0.15);
+    --neon-red: #EF4444; /* Solid crimson red */
+    --neon-red-glow: rgba(239, 68, 68, 0.15);
+    --neon-cyan: #0EA5E9; /* Corporate Blue */
+    --neon-purple: #8B5CF6;
     --neon-amber: #F59E0B;
     
-    --glow-orb-1: radial-gradient(circle, rgba(0, 245, 160, 0.12) 0%, transparent 65%);
-    --glow-orb-2: radial-gradient(circle, rgba(0, 229, 255, 0.1) 0%, transparent 65%);
+    --glow-orb-1: radial-gradient(circle, rgba(14, 165, 233, 0.05) 0%, transparent 65%);
+    --glow-orb-2: radial-gradient(circle, rgba(16, 185, 129, 0.03) 0%, transparent 65%);
 }
 
 /* --- Theme 2: Midnight Violet & Electric Blue --- */
@@ -37,23 +38,23 @@ body.theme-midnight-violet {
     --bg-hero: linear-gradient(135deg, rgba(46, 32, 84, 0.9) 0%, rgba(16, 12, 32, 0.98) 100%);
     --bg-modal: rgba(18, 14, 34, 0.96);
     
-    --border-glass: rgba(191, 90, 242, 0.2);
-    --border-glass-glow: rgba(191, 90, 242, 0.4);
+    --border-glass: rgba(191, 90, 242, 0.15);
+    --border-glass-glow: rgba(191, 90, 242, 0.25);
     
     --text-primary: #F8FAFC;
     --text-secondary: #A78BFA;
     --text-muted: #6D28D9;
     
     --neon-green: #10B981;
-    --neon-green-glow: rgba(16, 185, 129, 0.25);
+    --neon-green-glow: rgba(16, 185, 129, 0.15);
     --neon-red: #F43F5E;
-    --neon-red-glow: rgba(244, 63, 94, 0.25);
+    --neon-red-glow: rgba(244, 63, 94, 0.15);
     --neon-cyan: #38BDF8;
     --neon-purple: #C084FC;
     --neon-amber: #FBBF24;
     
-    --glow-orb-1: radial-gradient(circle, rgba(168, 85, 247, 0.15) 0%, transparent 65%);
-    --glow-orb-2: radial-gradient(circle, rgba(59, 130, 246, 0.12) 0%, transparent 65%);
+    --glow-orb-1: radial-gradient(circle, rgba(168, 85, 247, 0.08) 0%, transparent 65%);
+    --glow-orb-2: radial-gradient(circle, rgba(59, 130, 246, 0.08) 0%, transparent 65%);
 }
 
 /* --- Theme 3: Apple Card & Titanyum Minimalist --- */
@@ -64,31 +65,31 @@ body.theme-titanium-light {
     --bg-hero: linear-gradient(135deg, #1E293B 0%, #0F172A 100%);
     --bg-modal: rgba(15, 23, 42, 0.96);
     
-    --border-glass: rgba(255, 255, 255, 0.12);
-    --border-glass-glow: rgba(56, 189, 248, 0.3);
+    --border-glass: rgba(255, 255, 255, 0.08);
+    --border-glass-glow: rgba(255, 255, 255, 0.15);
     
     --text-primary: #F1F5F9;
     --text-secondary: #94A3B8;
     --text-muted: #64748B;
     
     --neon-green: #34D399;
-    --neon-green-glow: rgba(52, 211, 153, 0.2);
+    --neon-green-glow: rgba(52, 211, 153, 0.15);
     --neon-red: #FB7185;
-    --neon-red-glow: rgba(251, 113, 133, 0.2);
+    --neon-red-glow: rgba(251, 113, 133, 0.15);
     --neon-cyan: #38BDF8;
     --neon-purple: #A78BFA;
     --neon-amber: #FBBF24;
     
-    --glow-orb-1: radial-gradient(circle, rgba(56, 189, 248, 0.12) 0%, transparent 65%);
-    --glow-orb-2: radial-gradient(circle, rgba(167, 139, 250, 0.1) 0%, transparent 65%);
+    --glow-orb-1: radial-gradient(circle, rgba(56, 189, 248, 0.08) 0%, transparent 65%);
+    --glow-orb-2: radial-gradient(circle, rgba(167, 139, 250, 0.06) 0%, transparent 65%);
 }
 
 :root {
     --font-sans: 'Plus Jakarta Sans', -apple-system, sans-serif;
     --font-mono: 'Space Grotesk', monospace;
-    --radius-sm: 12px;
-    --radius-md: 18px;
-    --radius-lg: 26px;
+    --radius-sm: 8px; /* Sharper, more corporate */
+    --radius-md: 14px;
+    --radius-lg: 20px;
     --radius-full: 9999px;
     
     --transition-fast: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
@@ -383,17 +384,17 @@ body {
     border: 1px solid var(--border-glass);
     border-radius: var(--radius-lg);
     padding: 22px;
-    box-shadow: 0 16px 40px -10px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 12px 32px -8px rgba(0, 0, 0, 0.7);
     position: relative;
     overflow: hidden;
 }
 
-/* Revolut Ultra Hero Card */
+/* Institutional Hero Card */
 .hero-card {
     background: var(--bg-hero);
-    border: 1px solid rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.1);
     margin-bottom: 22px;
-    box-shadow: 0 20px 50px -12px rgba(0, 0, 0, 0.7);
+    box-shadow: 0 16px 40px -12px rgba(0, 0, 0, 0.8);
 }
 
 .hero-card-shine {
@@ -402,7 +403,7 @@ body {
     left: -50%;
     width: 200%;
     height: 200%;
-    background: radial-gradient(circle, rgba(255,255,255,0.06) 0%, transparent 60%);
+    background: radial-gradient(circle, rgba(255,255,255,0.03) 0%, transparent 50%);
     pointer-events: none;
 }
 
@@ -745,7 +746,7 @@ body {
 
 .asset-card {
     background: var(--bg-card);
-    backdrop-filter: blur(18px);
+    backdrop-filter: blur(20px);
     border: 1px solid var(--border-glass);
     border-radius: var(--radius-md);
     padding: 16px 18px;
@@ -758,9 +759,9 @@ body {
 
 .asset-card:hover {
     background: var(--bg-card-hover);
-    border-color: rgba(255, 255, 255, 0.25);
+    border-color: rgba(255, 255, 255, 0.15);
     transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
 }
 
 .asset-left {
@@ -950,18 +951,18 @@ body {
     width: 52px;
     height: 52px;
     border-radius: 50%;
-    background: linear-gradient(135deg, var(--neon-green) 0%, #00C853 100%);
-    color: #03060A;
+    background: linear-gradient(135deg, var(--neon-cyan) 0%, #0284C7 100%);
+    color: #FFFFFF;
     display: flex;
     justify-content: center;
     align-items: center;
     font-size: 22px;
-    border: 4px solid var(--bg-main);
+    border: 3px solid var(--bg-main);
     transition: var(--transition-fast);
 }
 
 .add-circle.neon-pulse {
-    box-shadow: 0 6px 20px var(--neon-green-glow);
+    box-shadow: 0 6px 16px rgba(14, 165, 233, 0.4);
 }
 
 .tab-item.add-action:hover .add-circle {
