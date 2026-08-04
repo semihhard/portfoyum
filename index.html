@@ -23,13 +23,32 @@
     <!-- ExcelJS for Modern Excel Export -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
-    <link rel="stylesheet" href="style.css?v=5">
+    <link rel="stylesheet" href="style.css?v=5">    <style>
+        /* Refresh Button Loading Animation */
+        .icon-btn.loading i {
+            animation: spin 1s linear infinite;
+            color: #38BDF8;
+            filter: drop-shadow(0 0 8px rgba(56,189,248,0.8));
+        }
+        @keyframes spin {
+            100% { transform: rotate(360deg); }
+        }
+    </style>
 </head>
 <body class="theme-oled-neon">
     <!-- Ambient Background Glow Orbs -->
     <div class="bg-orb orb-1"></div>
     <div class="bg-orb orb-2"></div>
     <div class="bg-orb orb-3"></div>
+
+    <!-- Live Update Loading Overlay -->
+    <div id="liveUpdateOverlay" style="display: none; position: fixed; inset: 0; background: rgba(10,10,15,0.85); backdrop-filter: blur(10px); z-index: 9999; flex-direction: column; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s ease;">
+        <i class="fa-solid fa-arrows-rotate fa-spin" style="font-size: 3.5rem; color: #38BDF8; margin-bottom: 20px; filter: drop-shadow(0 0 15px rgba(56,189,248,0.8));"></i>
+        <div style="color: #fff; font-size: 1.4rem; font-weight: 700; letter-spacing: 1px; margin-bottom: 8px;">Piyasalar Senkronize Ediliyor</div>
+        <div style="color: var(--text-secondary); font-size: 0.95rem; display: flex; align-items: center; gap: 8px;">
+            <i class="fa-solid fa-file-excel" style="color: #10B981;"></i> Google Sheets & Canlı Veriler (API)
+        </div>
+    </div>
 
     <!-- PIN Lock Overlay -->
     <div id="pinLockOverlay" style="display: none; position: fixed; inset: 0; background: rgba(10,10,15,0.95); backdrop-filter: blur(20px); z-index: 9999; flex-direction: column; align-items: center; justify-content: center;">
@@ -696,6 +715,6 @@
 
 
 
-    <script src="app.js?v=46"></script>
+    <script src="app.js?v=47"></script>
 </body>
 </html>

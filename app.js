@@ -1065,7 +1065,15 @@ function simulateMarketFluctuation() {
 
 async function fetchLivePrices() {
     const btn = document.getElementById("btnRefreshPrices");
+    const overlay = document.getElementById("liveUpdateOverlay");
+    
     if(btn) btn.classList.add("loading");
+    if(overlay) {
+        overlay.style.display = "flex";
+        // Force reflow for fade in
+        void overlay.offsetWidth;
+        overlay.style.opacity = "1";
+    }
 
     try {
         let fetchCount = 0;
@@ -1166,6 +1174,12 @@ async function fetchLivePrices() {
         simulateMarketFluctuation();
     } finally {
         if(btn) btn.classList.remove("loading");
+        if(overlay) {
+            overlay.style.opacity = "0";
+            setTimeout(() => {
+                overlay.style.display = "none";
+            }, 300);
+        }
     }
 }
 
