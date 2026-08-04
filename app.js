@@ -32,6 +32,7 @@ let appState = {
     pin: null,
     biometricEnabled: false,
     biometricCredentialId: null,
+    lastCloseUpdateDate: null,
     notifications: []
 };
 
@@ -224,14 +225,36 @@ function deleteAsset(holdingId) {
     }
 }
 
+function checkAndRolloverDailyPrices() {
+    const todayStr = new Date().toISOString().split('T')[0];
+    
+    // If it's a new day, rollover the current prices to previous close
+    if (appState.lastCloseUpdateDate && appState.lastCloseUpdateDate !== todayStr) {
+        appState.holdings.forEach(h => {
+            h.previousClosePrice = h.currentPrice;
+        });
+        Object.keys(appState.marketPrices).forEach(sym => {
+            if (appState.marketPrices[sym].price) {
+                appState.marketPrices[sym].prevClose = appState.marketPrices[sym].price;
+            }
+        });
+        console.log("Daily Rollover Triggered for:", todayStr);
+    }
+    
+    appState.lastCloseUpdateDate = todayStr;
+}
+
 function updateMarketPrice(symbol, newPrice) {
+    checkAndRolloverDailyPrices(); // Ensure daily rollover before updating
+
     const h = appState.holdings.find(item => item.symbol === symbol);
     if (h) {
-        h.previousClosePrice = h.currentPrice;
+        // If it's a brand new holding with no previous close, initialize it
+        if (!h.previousClosePrice) h.previousClosePrice = h.currentPrice;
         h.currentPrice = newPrice;
     }
     if (appState.marketPrices[symbol]) {
-        appState.marketPrices[symbol].prevClose = appState.marketPrices[symbol].price;
+        if (!appState.marketPrices[symbol].prevClose) appState.marketPrices[symbol].prevClose = appState.marketPrices[symbol].price;
         appState.marketPrices[symbol].price = newPrice;
     }
     saveData();
@@ -1122,13 +1145,14 @@ async function fetchLivePrices() {
         } catch(e) { console.warn("Google Sheets fetch failed", e); }
 
         if (fetchCount > 0) {
+            checkAndRolloverDailyPrices(); // Ensure daily rollover before updating
+
             // Senkronize et: marketPrices güncellendi, şimdi bunları portföydeki (holdings) varlıklara aktar
             appState.holdings.forEach(h => {
                 if (appState.marketPrices[h.symbol]) {
-                    // Sadece fiyat gerçekten değişmişse önceki kapanışı güncelle
-                    if (h.currentPrice !== appState.marketPrices[h.symbol].price) {
-                        h.previousClosePrice = h.currentPrice;
-                    }
+                    // Initialize if missing
+                    if (!h.previousClosePrice) h.previousClosePrice = h.currentPrice;
+                    
                     h.currentPrice = appState.marketPrices[h.symbol].price;
                 }
             });
