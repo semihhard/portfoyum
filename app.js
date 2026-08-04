@@ -1150,6 +1150,29 @@ async function fetchLivePrices() {
                     }
                 }
             });
+            
+            // Fetch Previous Close from Yahoo Finance for BIST stocks
+            const bistSymbols = Object.keys(appState.marketPrices).filter(sym => appState.marketPrices[sym].category === "STOCK");
+            if (bistSymbols.length > 0) {
+                const queryStr = bistSymbols.map(s => s + ".IS").join(",");
+                try {
+                    const yfRes = await fetch(`https://query1.finance.yahoo.com/v7/finance/spark?symbols=${queryStr}`);
+                    const yfData = await yfRes.json();
+                    
+                    if (yfData && yfData.spark && yfData.spark.result) {
+                        yfData.spark.result.forEach(item => {
+                            const sym = item.symbol.replace(".IS", "");
+                            if (appState.marketPrices[sym] && item.response[0].meta) {
+                                const prevClose = item.response[0].meta.chartPreviousClose || item.response[0].meta.previousClose;
+                                if (prevClose) {
+                                    appState.marketPrices[sym].prevClose = prevClose;
+                                }
+                            }
+                        });
+                    }
+                } catch(e) { console.warn("Yahoo Finance fetch failed", e); }
+            }
+            
         } catch(e) { console.warn("Google Sheets fetch failed", e); }
 
         if (fetchCount > 0) {
@@ -1158,10 +1181,14 @@ async function fetchLivePrices() {
             // Senkronize et: marketPrices güncellendi, şimdi bunları portföydeki (holdings) varlıklara aktar
             appState.holdings.forEach(h => {
                 if (appState.marketPrices[h.symbol]) {
-                    // Initialize if missing
-                    if (!h.previousClosePrice) h.previousClosePrice = h.currentPrice;
-                    
                     h.currentPrice = appState.marketPrices[h.symbol].price;
+                    
+                    // Use accurate prevClose if available (e.g., from Yahoo Finance)
+                    if (appState.marketPrices[h.symbol].prevClose) {
+                        h.previousClosePrice = appState.marketPrices[h.symbol].prevClose;
+                    } else if (!h.previousClosePrice) {
+                        h.previousClosePrice = h.currentPrice;
+                    }
                 }
             });
             saveData();
