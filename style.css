@@ -84,6 +84,87 @@ body.theme-titanium-light {
     --glow-orb-2: radial-gradient(circle, rgba(167, 139, 250, 0.06) 0%, transparent 65%);
 }
 
+/* --- Theme 4: Private Banking (Zümrüt & Şampanya Altın) --- */
+body.theme-emerald-wealth {
+    --bg-main: #04100C;
+    --bg-card: rgba(8, 28, 20, 0.75);
+    --bg-card-hover: rgba(14, 42, 30, 0.85);
+    --bg-hero: linear-gradient(135deg, rgba(12, 38, 28, 0.95) 0%, rgba(4, 16, 12, 1) 100%);
+    --bg-modal: rgba(6, 20, 14, 0.98);
+    
+    --border-glass: rgba(16, 185, 129, 0.15);
+    --border-glass-glow: rgba(245, 158, 11, 0.25);
+    
+    --text-primary: #F8FAFC;
+    --text-secondary: #6EE7B7;
+    --text-muted: #059669;
+    
+    --neon-green: #10B981;
+    --neon-green-glow: rgba(16, 185, 129, 0.2);
+    --neon-red: #F43F5E;
+    --neon-red-glow: rgba(244, 63, 94, 0.2);
+    --neon-cyan: #34D399;
+    --neon-purple: #F59E0B;
+    --neon-amber: #D97706;
+    
+    --glow-orb-1: radial-gradient(circle, rgba(16, 185, 129, 0.08) 0%, transparent 65%);
+    --glow-orb-2: radial-gradient(circle, rgba(245, 158, 11, 0.06) 0%, transparent 65%);
+}
+
+/* --- Theme 5: Bloomberg Pro (Terminal Amber & Charcoal) --- */
+body.theme-bloomberg-amber {
+    --bg-main: #0B0C0E;
+    --bg-card: rgba(18, 20, 24, 0.85);
+    --bg-card-hover: rgba(28, 30, 36, 0.95);
+    --bg-hero: linear-gradient(135deg, #181A20 0%, #0B0C0E 100%);
+    --bg-modal: rgba(14, 15, 18, 0.98);
+    
+    --border-glass: rgba(245, 158, 11, 0.15);
+    --border-glass-glow: rgba(245, 158, 11, 0.3);
+    
+    --text-primary: #FFFFFF;
+    --text-secondary: #FBBF24;
+    --text-muted: #9CA3AF;
+    
+    --neon-green: #22C55E;
+    --neon-green-glow: rgba(34, 197, 94, 0.15);
+    --neon-red: #EF4444;
+    --neon-red-glow: rgba(239, 68, 68, 0.15);
+    --neon-cyan: #F59E0B;
+    --neon-purple: #FB923C;
+    --neon-amber: #F59E0B;
+    
+    --glow-orb-1: radial-gradient(circle, rgba(245, 158, 11, 0.08) 0%, transparent 65%);
+    --glow-orb-2: radial-gradient(circle, rgba(239, 68, 68, 0.04) 0%, transparent 65%);
+}
+
+/* --- Theme 6: Apple Clean Light (Gündüz Modu) --- */
+body.theme-pure-light {
+    --bg-main: #F1F5F9;
+    --bg-card: rgba(255, 255, 255, 0.9);
+    --bg-card-hover: #FFFFFF;
+    --bg-hero: linear-gradient(135deg, #FFFFFF 0%, #E2E8F0 100%);
+    --bg-modal: rgba(255, 255, 255, 0.98);
+    
+    --border-glass: rgba(0, 0, 0, 0.08);
+    --border-glass-glow: rgba(0, 0, 0, 0.15);
+    
+    --text-primary: #0F172A;
+    --text-secondary: #475569;
+    --text-muted: #94A3B8;
+    
+    --neon-green: #059669;
+    --neon-green-glow: rgba(5, 150, 105, 0.12);
+    --neon-red: #DC2626;
+    --neon-red-glow: rgba(220, 38, 38, 0.12);
+    --neon-cyan: #0284C7;
+    --neon-purple: #7C3AED;
+    --neon-amber: #D97706;
+    
+    --glow-orb-1: radial-gradient(circle, rgba(14, 165, 233, 0.06) 0%, transparent 65%);
+    --glow-orb-2: radial-gradient(circle, rgba(16, 185, 129, 0.04) 0%, transparent 65%);
+}
+
 :root {
     --font-sans: 'Plus Jakarta Sans', -apple-system, sans-serif;
     --font-mono: 'Space Grotesk', monospace;
@@ -1587,5 +1668,166 @@ input:focus, select:focus {
     color: var(--text-muted);
     line-height: 1.2;
 }
+
+/* ==========================================================================
+   Layout Modes: Standard, Compact, Grid
+   ========================================================================== */
+/* Compact List Mode */
+.layout-compact #portfolioList .asset-card {
+    padding: 10px 14px;
+    border-radius: 14px;
+    margin-bottom: 8px;
+}
+.layout-compact #portfolioList .asset-icon {
+    width: 34px;
+    height: 34px;
+    font-size: 0.85rem;
+}
+.layout-compact #portfolioList .asset-details h4 {
+    font-size: 0.9rem;
+}
+.layout-compact #portfolioList .asset-sub {
+    font-size: 0.72rem;
+}
+.layout-compact #portfolioList .asset-val {
+    font-size: 0.95rem;
+}
+.layout-compact #portfolioList .asset-pl {
+    font-size: 0.75rem;
+}
+
+/* 2-Column Grid Mode */
+.layout-grid #portfolioList {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+.layout-grid #portfolioList .asset-card {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 12px;
+    gap: 10px;
+    margin-bottom: 0;
+}
+.layout-grid #portfolioList .asset-left {
+    width: 100%;
+    justify-content: flex-start;
+    gap: 8px;
+}
+.layout-grid #portfolioList .asset-right {
+    width: 100%;
+    align-items: flex-start;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    padding-top: 8px;
+}
+
+/* ==========================================================================
+   Theme & Design Studio Modal Styles
+   ========================================================================== */
+.theme-grid-selector {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.theme-option-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 2px solid rgba(255, 255, 255, 0.08);
+    border-radius: 14px;
+    padding: 10px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.theme-option-card:hover {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.2);
+    transform: translateY(-1px);
+}
+
+.theme-option-card.active {
+    border-color: var(--neon-cyan);
+    background: rgba(56, 189, 248, 0.08);
+    box-shadow: 0 0 15px rgba(56, 189, 248, 0.2);
+}
+
+.theme-preview-swatch {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    flex-shrink: 0;
+}
+
+.swatch-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+}
+
+.theme-option-info {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+}
+
+.theme-option-info strong {
+    font-size: 0.82rem;
+    color: var(--text-primary);
+}
+
+.theme-option-info small {
+    font-size: 0.68rem;
+    color: var(--text-secondary);
+}
+
+.layout-selector-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
+}
+
+.layout-btn {
+    background: rgba(255, 255, 255, 0.03);
+    border: 2px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 12px 6px;
+    color: var(--text-secondary);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.layout-btn i {
+    font-size: 1.2rem;
+}
+
+.layout-btn span {
+    font-size: 0.72rem;
+    font-weight: 600;
+}
+
+.layout-btn:hover {
+    background: rgba(255, 255, 255, 0.06);
+    color: var(--text-primary);
+}
+
+.layout-btn.active {
+    border-color: var(--neon-cyan);
+    background: rgba(56, 189, 248, 0.1);
+    color: #fff;
+    box-shadow: 0 0 12px rgba(56, 189, 248, 0.2);
+}
+
 
 

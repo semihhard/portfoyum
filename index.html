@@ -108,8 +108,116 @@
         </div>
     </div>
 
+    <!-- Theme & Design Studio Modal -->
+    <div class="modal-overlay" id="themeStudioModal">
+        <div class="modal-content ultra-glass-card" style="max-width: 440px;">
+            <div class="modal-header">
+                <h2><i class="fa-solid fa-wand-magic-sparkles" style="color: #38BDF8;"></i> Tasarım Stüdyosu</h2>
+                <button class="btn-close" onclick="closeThemeStudioModal()"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal-body" style="display: flex; flex-direction: column; gap: 18px;">
+                <!-- Theme Palette Selector -->
+                <div>
+                    <label style="font-size: 0.78rem; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; display: block;">Renk & Atmosfer Teması</label>
+                    <div class="theme-grid-selector">
+                        <!-- Theme Card 1: OLED Neon -->
+                        <div class="theme-option-card" onclick="selectTheme('theme-oled-neon')" data-theme="theme-oled-neon">
+                            <div class="theme-preview-swatch" style="background: linear-gradient(135deg, #06090F, #0EA5E9);">
+                                <span class="swatch-dot" style="background: #10B981;"></span>
+                                <span class="swatch-dot" style="background: #0EA5E9;"></span>
+                            </div>
+                            <div class="theme-option-info">
+                                <strong>OLED Neon</strong>
+                                <small>Cyberpunk & Cam</small>
+                            </div>
+                        </div>
+
+                        <!-- Theme Card 2: Emerald Wealth -->
+                        <div class="theme-option-card" onclick="selectTheme('theme-emerald-wealth')" data-theme="theme-emerald-wealth">
+                            <div class="theme-preview-swatch" style="background: linear-gradient(135deg, #04100C, #059669);">
+                                <span class="swatch-dot" style="background: #F59E0B;"></span>
+                                <span class="swatch-dot" style="background: #10B981;"></span>
+                            </div>
+                            <div class="theme-option-info">
+                                <strong>Private Banking</strong>
+                                <small>Zümrüt & Altın</small>
+                            </div>
+                        </div>
+
+                        <!-- Theme Card 3: Bloomberg Terminal -->
+                        <div class="theme-option-card" onclick="selectTheme('theme-bloomberg-amber')" data-theme="theme-bloomberg-amber">
+                            <div class="theme-preview-swatch" style="background: linear-gradient(135deg, #0B0C0E, #D97706);">
+                                <span class="swatch-dot" style="background: #F59E0B;"></span>
+                                <span class="swatch-dot" style="background: #EF4444;"></span>
+                            </div>
+                            <div class="theme-option-info">
+                                <strong>Bloomberg Pro</strong>
+                                <small>Terminal Amber</small>
+                            </div>
+                        </div>
+
+                        <!-- Theme Card 4: Midnight Violet -->
+                        <div class="theme-option-card" onclick="selectTheme('theme-midnight-violet')" data-theme="theme-midnight-violet">
+                            <div class="theme-preview-swatch" style="background: linear-gradient(135deg, #090814, #7C3AED);">
+                                <span class="swatch-dot" style="background: #C084FC;"></span>
+                                <span class="swatch-dot" style="background: #38BDF8;"></span>
+                            </div>
+                            <div class="theme-option-info">
+                                <strong>Midnight Violet</strong>
+                                <small>Kozmik Mor</small>
+                            </div>
+                        </div>
+
+                        <!-- Theme Card 5: Titanium Slate -->
+                        <div class="theme-option-card" onclick="selectTheme('theme-titanium-light')" data-theme="theme-titanium-light">
+                            <div class="theme-preview-swatch" style="background: linear-gradient(135deg, #0F172A, #334155);">
+                                <span class="swatch-dot" style="background: #94A3B8;"></span>
+                                <span class="swatch-dot" style="background: #38BDF8;"></span>
+                            </div>
+                            <div class="theme-option-info">
+                                <strong>Titanium Slate</strong>
+                                <small>Apple Minimalist</small>
+                            </div>
+                        </div>
+
+                        <!-- Theme Card 6: Pure Clean Light -->
+                        <div class="theme-option-card" onclick="selectTheme('theme-pure-light')" data-theme="theme-pure-light">
+                            <div class="theme-preview-swatch" style="background: linear-gradient(135deg, #F8FAFC, #CBD5E1);">
+                                <span class="swatch-dot" style="background: #0284C7;"></span>
+                                <span class="swatch-dot" style="background: #10B981;"></span>
+                            </div>
+                            <div class="theme-option-info">
+                                <strong>Apple Clean Light</strong>
+                                <small>Gündüz Modu</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Layout Style Selector -->
+                <div>
+                    <label style="font-size: 0.78rem; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; display: block;">Kart Düzeni (Görünüm)</label>
+                    <div class="layout-selector-row">
+                        <button class="layout-btn" onclick="selectLayout('layout-standard')" id="btnLayoutStandard">
+                            <i class="fa-solid fa-table-cells-large"></i>
+                            <span>Geniş Kart</span>
+                        </button>
+                        <button class="layout-btn" onclick="selectLayout('layout-compact')" id="btnLayoutCompact">
+                            <i class="fa-solid fa-list"></i>
+                            <span>Kompakt</span>
+                        </button>
+                        <button class="layout-btn" onclick="selectLayout('layout-grid')" id="btnLayoutGrid">
+                            <i class="fa-solid fa-grip"></i>
+                            <span>2'li Izgara</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- iOS Simulator Wrapper / Phone Frame for Web Preview -->
-    <div class="app-container">
+    <div class="app-container" id="appContainer">
         <!-- Edit Sale Modal -->
         <div class="modal-overlay" id="editSaleModal">
         <div class="modal-sheet">

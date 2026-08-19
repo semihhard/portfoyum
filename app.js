@@ -26,8 +26,15 @@ try {
     console.warn("BIST catalog cache load failed", e);
 }
 
-// --- Theme List ---
-const THEMES = ["theme-oled-neon", "theme-midnight-violet", "theme-titanium-light"];
+// --- Theme & Layout List ---
+const THEMES = [
+    "theme-oled-neon", 
+    "theme-emerald-wealth", 
+    "theme-bloomberg-amber", 
+    "theme-midnight-violet", 
+    "theme-titanium-light", 
+    "theme-pure-light"
+];
 let currentThemeIndex = 0;
 
 // --- State Object ---
@@ -38,6 +45,7 @@ let appState = {
     privacyMode: false,
     activeCategory: "ALL",
     theme: "theme-oled-neon",
+    layout: "layout-standard",
     pin: null,
     biometricEnabled: false,
     biometricCredentialId: null,
@@ -71,19 +79,74 @@ function loadData() {
         saveData();
     }
     applyTheme(appState.theme || "theme-oled-neon");
+    applyLayout(appState.layout || "layout-standard");
 }
 
 function applyTheme(themeClass) {
+    if (!THEMES.includes(themeClass)) themeClass = "theme-oled-neon";
     document.body.className = themeClass;
     appState.theme = themeClass;
     currentThemeIndex = THEMES.indexOf(themeClass);
     if (currentThemeIndex < 0) currentThemeIndex = 0;
+    
+    // Update theme card active state in Theme Studio modal
+    document.querySelectorAll(".theme-option-card").forEach(el => {
+        if (el.getAttribute("data-theme") === themeClass) {
+            el.classList.add("active");
+        } else {
+            el.classList.remove("active");
+        }
+    });
+
     saveData();
 }
 
+function selectTheme(themeClass) {
+    applyTheme(themeClass);
+}
+
+function applyLayout(layoutClass) {
+    const validLayouts = ["layout-standard", "layout-compact", "layout-grid"];
+    if (!validLayouts.includes(layoutClass)) layoutClass = "layout-standard";
+    
+    const container = document.getElementById("appContainer");
+    if (container) {
+        container.classList.remove("layout-standard", "layout-compact", "layout-grid");
+        container.classList.add(layoutClass);
+    }
+    
+    appState.layout = layoutClass;
+
+    // Update layout buttons
+    const btnStandard = document.getElementById("btnLayoutStandard");
+    const btnCompact = document.getElementById("btnLayoutCompact");
+    const btnGrid = document.getElementById("btnLayoutGrid");
+
+    if (btnStandard) btnStandard.classList.toggle("active", layoutClass === "layout-standard");
+    if (btnCompact) btnCompact.classList.toggle("active", layoutClass === "layout-compact");
+    if (btnGrid) btnGrid.classList.toggle("active", layoutClass === "layout-grid");
+
+    saveData();
+}
+
+function selectLayout(layoutClass) {
+    applyLayout(layoutClass);
+}
+
+function openThemeStudioModal() {
+    applyTheme(appState.theme || "theme-oled-neon");
+    applyLayout(appState.layout || "layout-standard");
+    const modal = document.getElementById("themeStudioModal");
+    if (modal) modal.classList.add("active");
+}
+
+function closeThemeStudioModal() {
+    const modal = document.getElementById("themeStudioModal");
+    if (modal) modal.classList.remove("active");
+}
+
 function cycleTheme() {
-    currentThemeIndex = (currentThemeIndex + 1) % THEMES.length;
-    applyTheme(THEMES[currentThemeIndex]);
+    openThemeStudioModal();
 }
 
 // --- Format Utilities ---
