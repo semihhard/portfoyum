@@ -46,7 +46,7 @@
         <i class="fa-solid fa-arrows-rotate fa-spin" style="font-size: 3.5rem; color: #38BDF8; margin-bottom: 20px; filter: drop-shadow(0 0 15px rgba(56,189,248,0.8));"></i>
         <div style="color: #fff; font-size: 1.4rem; font-weight: 700; letter-spacing: 1px; margin-bottom: 8px;">Piyasalar Senkronize Ediliyor</div>
         <div style="color: var(--text-secondary); font-size: 0.95rem; display: flex; align-items: center; gap: 8px;">
-            <i class="fa-solid fa-file-excel" style="color: #10B981;"></i> Google Sheets & Canlı Veriler (API)
+            <i class="fa-solid fa-bolt" style="color: #38BDF8;"></i> TradingView & Canlı Piyasa API
         </div>
     </div>
 
@@ -410,9 +410,10 @@
                     </div>
                 </div>
 
-                <div class="form-group">
+                <div class="form-group" style="position: relative;">
                     <label for="inputSymbol">Varlık Kodu / Sembol</label>
-                    <input type="text" id="inputSymbol" placeholder="Örn: THYAO, GARAN, BTC, USD/TRY, TI1" required>
+                    <input type="text" id="inputSymbol" placeholder="Örn: THYAO, GARAN, BTC, USD/TRY, TI1" required autocomplete="off">
+                    <div id="symbolSuggestions" class="symbol-suggestions-dropdown"></div>
                 </div>
 
                 <div class="form-group">

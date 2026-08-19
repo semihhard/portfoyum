@@ -17,6 +17,15 @@ const DEFAULT_MARKET_PRICES = {
     "ETH":   { price: 128000.00, prevClose: 131000.00, name: "Ethereum", category: "CRYPTO" }
 };
 
+// --- BIST Stocks Catalog (TradingView Live Feed) ---
+let bistCatalog = [];
+try {
+    const cachedBist = localStorage.getItem("bist_catalog_cache");
+    if (cachedBist) bistCatalog = JSON.parse(cachedBist);
+} catch (e) {
+    console.warn("BIST catalog cache load failed", e);
+}
+
 // --- Theme List ---
 const THEMES = ["theme-oled-neon", "theme-midnight-violet", "theme-titanium-light"];
 let currentThemeIndex = 0;
@@ -133,13 +142,23 @@ function calculateMetrics() {
 // --- Buy Action Logic ---
 function addBuyTransaction(category, symbol, name, quantity, price, date, fee) {
     symbol = symbol.toUpperCase().trim();
-    name = name ? name.trim() : (appState.marketPrices[symbol]?.name || symbol);
+    const catalogItem = bistCatalog.find(item => item.symbol === symbol);
+    
+    if (!name || name.trim() === '') {
+        name = catalogItem?.name || appState.marketPrices[symbol]?.name || symbol;
+    } else {
+        name = name.trim();
+    }
 
     let currentPrice = price;
     let prevClose = price;
     if (appState.marketPrices[symbol]) {
         currentPrice = appState.marketPrices[symbol].price;
         prevClose = appState.marketPrices[symbol].prevClose;
+    } else if (catalogItem) {
+        currentPrice = catalogItem.price;
+        prevClose = catalogItem.prevClose;
+        appState.marketPrices[symbol] = { price: catalogItem.price, prevClose: catalogItem.prevClose, name, category };
     } else {
         appState.marketPrices[symbol] = { price, prevClose: price, name, category };
     }
@@ -634,11 +653,13 @@ function renderAnalyticsTab() {
 
 function renderMarketTab() {
     const container = document.getElementById("marketList");
+    if (!container) return;
     const items = Object.entries(appState.marketPrices);
 
     container.innerHTML = items.map(([symbol, data]) => {
-        const diff = data.price - data.prevClose;
-        const pct = (diff / data.prevClose) * 100;
+        const prev = data.prevClose || data.price;
+        const diff = data.price - prev;
+        const pct = prev > 0 ? (diff / prev) * 100 : 0;
         const isPos = diff >= 0;
 
         return `
@@ -646,13 +667,13 @@ function renderMarketTab() {
                 <div class="asset-left">
                     <div class="asset-details">
                         <h4>${symbol}</h4>
-                        <div class="asset-sub">${data.name}</div>
+                        <div class="asset-sub">${data.name || symbol}</div>
                     </div>
                 </div>
                 <div class="asset-right">
                     <div class="asset-val">${formatCurrency(data.price)}</div>
                     <div class="asset-pl ${isPos ? 'txt-neon-green' : 'txt-neon-red'}">
-                        ${isPos ? '+' : ''}${formatPercent(pct)}
+                        ${isPos ? '+' : ''}${pct.toFixed(2)}%
                     </div>
                 </div>
             </div>
@@ -905,10 +926,20 @@ function initNavigation() {
 // --- Modals ---
 function openAddModal() {
     document.getElementById("inputDate").value = new Date().toISOString().split('T')[0];
+    const suggestionsBox = document.getElementById("symbolSuggestions");
+    if (suggestionsBox) {
+        suggestionsBox.classList.remove("active");
+        suggestionsBox.innerHTML = "";
+    }
     document.getElementById("modalAddTransaction").classList.add("active");
 }
 
 function closeAddModal() {
+    const suggestionsBox = document.getElementById("symbolSuggestions");
+    if (suggestionsBox) {
+        suggestionsBox.classList.remove("active");
+        suggestionsBox.innerHTML = "";
+    }
     document.getElementById("modalAddTransaction").classList.remove("active");
 }
 
@@ -998,12 +1029,185 @@ function updateEstimatedRealizedPL() {
     }
 }
 
+function setupSymbolAutocomplete() {
+    const inputSymbol = document.getElementById("inputSymbol");
+    const inputName = document.getElementById("inputName");
+    const inputPrice = document.getElementById("inputPrice");
+    const suggestionsBox = document.getElementById("symbolSuggestions");
+    if (!inputSymbol || !suggestionsBox) return;
+
+    let selectedIndex = -1;
+    let currentMatches = [];
+
+    function renderSuggestions(matches) {
+        currentMatches = matches;
+        selectedIndex = -1;
+        if (!matches || matches.length === 0) {
+            suggestionsBox.innerHTML = "";
+            suggestionsBox.classList.remove("active");
+            return;
+        }
+
+        suggestionsBox.innerHTML = matches.map((item, idx) => {
+            const isPos = item.change >= 0;
+            const changeStr = item.change !== undefined && item.change !== null ? `${isPos ? '+' : ''}${item.change.toFixed(2)}%` : '';
+            return `
+                <div class="suggestion-item" data-idx="${idx}">
+                    <div class="suggestion-item-left">
+                        <div class="suggestion-item-symbol">${item.symbol}</div>
+                        <div class="suggestion-item-name" title="${item.name}">${item.name}</div>
+                    </div>
+                    <div class="suggestion-item-right">
+                        <div class="suggestion-item-price">${formatCurrency(item.price)}</div>
+                        ${changeStr ? `<div class="suggestion-item-change ${isPos ? 'txt-neon-green' : 'txt-neon-red'}">${changeStr}</div>` : ''}
+                    </div>
+                </div>
+            `;
+        }).join("");
+
+        suggestionsBox.classList.add("active");
+
+        suggestionsBox.querySelectorAll(".suggestion-item").forEach(el => {
+            el.addEventListener("mousedown", (e) => {
+                e.preventDefault(); // Prevent blur from firing before click
+                const idx = parseInt(el.getAttribute("data-idx"));
+                selectSuggestion(currentMatches[idx]);
+            });
+        });
+    }
+
+    function selectSuggestion(item) {
+        if (!item) return;
+        inputSymbol.value = item.symbol;
+        if (inputName) inputName.value = item.name;
+        if (inputPrice) inputPrice.value = item.price;
+        suggestionsBox.classList.remove("active");
+        suggestionsBox.innerHTML = "";
+    }
+
+    inputSymbol.addEventListener("input", () => {
+        const query = inputSymbol.value.trim().toUpperCase();
+        const category = document.querySelector('input[name="assetCategory"]:checked')?.value || "STOCK";
+
+        if (!query) {
+            renderSuggestions([]);
+            return;
+        }
+
+        if (category === "STOCK") {
+            if (bistCatalog.length === 0 && appState.marketPrices) {
+                const matches = Object.entries(appState.marketPrices)
+                    .filter(([sym, data]) => data.category === "STOCK" && (sym.includes(query) || (data.name && data.name.toUpperCase().includes(query))))
+                    .slice(0, 15)
+                    .map(([sym, data]) => ({
+                        symbol: sym,
+                        name: data.name || sym,
+                        price: data.price,
+                        change: data.prevClose ? ((data.price - data.prevClose) / data.prevClose) * 100 : 0
+                    }));
+                renderSuggestions(matches);
+                return;
+            }
+
+            const queryLower = query.toLocaleLowerCase('tr-TR');
+            const filtered = bistCatalog.filter(item => {
+                return item.symbol.includes(query) || 
+                       (item.name && item.name.toLocaleLowerCase('tr-TR').includes(queryLower));
+            });
+
+            filtered.sort((a, b) => {
+                if (a.symbol === query) return -1;
+                if (b.symbol === query) return 1;
+                if (a.symbol.startsWith(query) && !b.symbol.startsWith(query)) return -1;
+                if (!a.symbol.startsWith(query) && b.symbol.startsWith(query)) return 1;
+                return a.symbol.localeCompare(b.symbol);
+            });
+
+            renderSuggestions(filtered.slice(0, 15));
+        } else {
+            const matches = Object.entries(appState.marketPrices)
+                .filter(([sym, data]) => (data.category === category || category === "ALL") && (sym.includes(query) || (data.name && data.name.toUpperCase().includes(query))))
+                .slice(0, 10)
+                .map(([sym, data]) => ({
+                    symbol: sym,
+                    name: data.name || sym,
+                    price: data.price,
+                    change: data.prevClose ? ((data.price - data.prevClose) / data.prevClose) * 100 : 0
+                }));
+            renderSuggestions(matches);
+        }
+    });
+
+    inputSymbol.addEventListener("keydown", (e) => {
+        if (!suggestionsBox.classList.contains("active") || currentMatches.length === 0) return;
+
+        const items = suggestionsBox.querySelectorAll(".suggestion-item");
+        if (e.key === "ArrowDown") {
+            e.preventDefault();
+            selectedIndex = (selectedIndex + 1) % items.length;
+            updateHighlight(items);
+        } else if (e.key === "ArrowUp") {
+            e.preventDefault();
+            selectedIndex = (selectedIndex - 1 + items.length) % items.length;
+            updateHighlight(items);
+        } else if (e.key === "Enter" && selectedIndex >= 0) {
+            e.preventDefault();
+            selectSuggestion(currentMatches[selectedIndex]);
+        } else if (e.key === "Escape") {
+            suggestionsBox.classList.remove("active");
+        }
+    });
+
+    function updateHighlight(items) {
+        items.forEach((item, idx) => {
+            if (idx === selectedIndex) {
+                item.classList.add("active");
+                item.scrollIntoView({ block: "nearest" });
+            } else {
+                item.classList.remove("active");
+            }
+        });
+    }
+
+    inputSymbol.addEventListener("blur", () => {
+        setTimeout(() => {
+            suggestionsBox.classList.remove("active");
+            
+            const sym = inputSymbol.value.trim().toUpperCase();
+            if (sym) {
+                const found = bistCatalog.find(s => s.symbol === sym) || 
+                              (appState.marketPrices[sym] ? { symbol: sym, name: appState.marketPrices[sym].name, price: appState.marketPrices[sym].price } : null);
+                if (found) {
+                    if (inputName && !inputName.value) inputName.value = found.name;
+                    if (inputPrice && (!inputPrice.value || parseFloat(inputPrice.value) === 0)) inputPrice.value = found.price;
+                }
+            }
+        }, 200);
+    });
+
+    document.querySelectorAll('input[name="assetCategory"]').forEach(radio => {
+        radio.addEventListener("change", () => {
+            suggestionsBox.classList.remove("active");
+            suggestionsBox.innerHTML = "";
+            inputSymbol.dispatchEvent(new Event("input"));
+        });
+    });
+
+    document.addEventListener("click", (e) => {
+        if (!e.target.closest("#inputSymbol") && !e.target.closest("#symbolSuggestions")) {
+            suggestionsBox.classList.remove("active");
+        }
+    });
+}
+
 function initEvents() {
     document.getElementById("btnQuickAdd").addEventListener("click", openAddModal);
     document.getElementById("btnNavAdd").addEventListener("click", openAddModal);
     document.getElementById("btnCloseAddModal").addEventListener("click", closeAddModal);
     document.getElementById("btnCloseSellModal").addEventListener("click", closeSellModal);
     document.getElementById("btnCloseDetailModal").addEventListener("click", closeDetailModal);
+
+    setupSymbolAutocomplete();
 
     document.getElementById("formAddTransaction").addEventListener("submit", (e) => {
         e.preventDefault();
@@ -1071,152 +1275,186 @@ async function fetchLivePrices() {
     if(btn) btn.classList.add("loading");
     if(overlay) {
         overlay.style.display = "flex";
-        // Force reflow for fade in
         void overlay.offsetWidth;
         overlay.style.opacity = "1";
     }
 
     try {
         let fetchCount = 0;
-        const sheetUpdatedSymbols = new Set(); // Track symbols updated from Google Sheets C column
-        let usdTryRate = 38.0; // Default fallback
+        let usdTryRate = 47.90; // Current market default baseline
 
-        // 1. Fetch FX & Gold (Truncgil API - No CORS, Free, Fast)
+        // 1. Fetch FX Rates (Open Exchange Rates API - 100% Free, CORS-friendly, Global)
         try {
-            const res = await fetch("https://finans.truncgil.com/today.json");
-            const data = await res.json();
-            
-            if (data["USD"]) {
-                usdTryRate = parseFloat(data["USD"].Satış.replace(',', '.'));
-                if (appState.marketPrices["USD/TRY"]) {
-                    appState.marketPrices["USD/TRY"].price = usdTryRate;
-                    fetchCount++;
-                }
-            }
-            if (data["EUR"] && appState.marketPrices["EUR/TRY"]) {
-                appState.marketPrices["EUR/TRY"].price = parseFloat(data["EUR"].Satış.replace(',', '.'));
-                fetchCount++;
-            }
-            if (data["Gram Altın"] && appState.marketPrices["ALTIN"]) {
-                appState.marketPrices["ALTIN"].price = parseFloat(data["Gram Altın"].Satış.replace(',', '.'));
-                fetchCount++;
-            }
-        } catch(e) { console.warn("FX fetch failed", e); }
-
-        // 2. Fetch Crypto (Binance API - No CORS, Free, Fast)
-        try {
-            const res = await fetch("https://api.binance.com/api/v3/ticker/price");
-            const data = await res.json();
-            
-            data.forEach(coin => {
-                if (coin.symbol.endsWith("USDT")) {
-                    const sym = coin.symbol.replace("USDT", "");
-                    if (appState.marketPrices[sym] && appState.marketPrices[sym].category === "CRYPTO") {
-                        appState.marketPrices[sym].price = parseFloat(coin.price) * usdTryRate;
+            const fxRes = await fetch("https://open.er-api.com/v6/latest/USD");
+            if (fxRes.ok) {
+                const fxData = await fxRes.json();
+                if (fxData && fxData.rates && fxData.rates.TRY) {
+                    usdTryRate = fxData.rates.TRY;
+                    if (appState.marketPrices["USD/TRY"]) {
+                        appState.marketPrices["USD/TRY"].price = usdTryRate;
+                        fetchCount++;
+                    }
+                    if (fxData.rates.EUR && appState.marketPrices["EUR/TRY"]) {
+                        appState.marketPrices["EUR/TRY"].price = usdTryRate / fxData.rates.EUR;
                         fetchCount++;
                     }
                 }
-            });
-        } catch(e) { console.warn("Crypto fetch failed", e); }
+            }
+        } catch(e) {
+            console.warn("Open ER API failed, trying Truncgil", e);
+            try {
+                const res = await fetch("https://finans.truncgil.com/today.json");
+                const data = await res.json();
+                if (data["USD"] && data["USD"].Satış) {
+                    usdTryRate = parseFloat(data["USD"].Satış.replace(/\./g, '').replace(',', '.'));
+                    if (appState.marketPrices["USD/TRY"]) {
+                        appState.marketPrices["USD/TRY"].price = usdTryRate;
+                        fetchCount++;
+                    }
+                }
+                if (data["EUR"] && data["EUR"].Satış && appState.marketPrices["EUR/TRY"]) {
+                    appState.marketPrices["EUR/TRY"].price = parseFloat(data["EUR"].Satış.replace(/\./g, '').replace(',', '.'));
+                    fetchCount++;
+                }
+            } catch(tErr) { console.warn("FX fetch fallback failed", tErr); }
+        }
 
-        // 3. Fetch BIST Stocks (Google Sheets Database)
+        // 2. Fetch Crypto & Gold (Binance API - No CORS, Fast, Live)
         try {
-            // Kullanıcının paylaştığı Google Sheet CSV gviz linki
-            const sheetCsvUrl = "https://docs.google.com/spreadsheets/d/11wcKvLgzw6Aaek5nOWP7daGBJbaSXXEqZVE55IciEzY/gviz/tq?tqx=out:csv";
-            const res = await fetch(sheetCsvUrl);
-            const csvText = await res.text();
-            
-            // Gelişmiş CSV Parser (Çift tırnak içindeki virgülleri korur)
-            const rows = csvText.split('\n');
-            rows.forEach(row => {
-                let cols = [];
-                // Eğer Google Sheets virgüllü sayıları "125,8" gibi çift tırnakla sardıysa
-                if (row.includes('","')) {
-                    cols = row.split('","');
-                } else {
-                    cols = row.split(',');
+            const res = await fetch("https://api.binance.com/api/v3/ticker/price");
+            if (res.ok) {
+                const data = await res.json();
+                
+                // PAXG (Physical Gold Ounce Token) -> Convert to Gram Gold (TL)
+                const paxg = data.find(c => c.symbol === "PAXGUSDT");
+                if (paxg && appState.marketPrices["ALTIN"]) {
+                    const gramGoldTL = (parseFloat(paxg.price) * usdTryRate) / 31.1034768;
+                    appState.marketPrices["ALTIN"].price = gramGoldTL;
+                    fetchCount++;
                 }
 
-                if (cols.length >= 2) {
-                    let sym = cols[0].replace(/"/g, '').trim().toUpperCase(); // "THYAO " -> THYAO
-                    let priceStr = cols[1].replace(/"/g, '').trim();
-                    if (!sym) return;
-                    
-                    // Fiyat içindeki virgülleri noktaya çevir (Örn: 125,8 -> 125.8)
-                    priceStr = priceStr.replace(/,/g, '.');
-                    const price = parseFloat(priceStr);
-                    
-                    if (!isNaN(price)) {
-                        // Ensure it exists in marketPrices if they have it in their holdings
-                        if (!appState.marketPrices[sym] && appState.holdings.some(h => h.symbol === sym)) {
-                            appState.marketPrices[sym] = { price: price, prevClose: price, name: sym, category: "STOCK" };
-                        }
-
-                        if (appState.marketPrices[sym]) {
-                            appState.marketPrices[sym].price = price;
-                            
-                            // C Sütunu: Günlük Değişim Yüzdesi (Örn: 1,18 -> %1.18)
-                            if (cols.length >= 3 && cols[2].trim() !== '') {
-                                let pctStr = cols[2].replace(/"/g, '').trim().replace(/,/g, '.');
-                                const dailyPct = parseFloat(pctStr);
-                                if (!isNaN(dailyPct)) {
-                                    // Tersine mühendislik ile dünkü kapanışı bul:
-                                    // prevClose = currentPrice / (1 + (dailyPct / 100))
-                                    const prevClose = price / (1 + (dailyPct / 100));
-                                    appState.marketPrices[sym].prevClose = prevClose;
-                                    sheetUpdatedSymbols.add(sym); // Mark as updated via Sheet
-                                }
-                            }
-                            
+                data.forEach(coin => {
+                    if (coin.symbol.endsWith("USDT")) {
+                        const sym = coin.symbol.replace("USDT", "");
+                        if (appState.marketPrices[sym] && appState.marketPrices[sym].category === "CRYPTO") {
+                            appState.marketPrices[sym].price = parseFloat(coin.price) * usdTryRate;
                             fetchCount++;
                         }
                     }
-                }
+                });
+            }
+        } catch(e) { console.warn("Crypto fetch failed", e); }
+
+        // 3. Fetch BIST Stocks (TradingView Scanner API - Realtime, All 640+ Stocks + New IPOs)
+        try {
+            // Using text/plain Content-Type to completely avoid browser CORS preflight (OPTIONS) rejection
+            const tvRes = await fetch("https://scanner.tradingview.com/turkey/scan", {
+                method: "POST",
+                headers: { "Content-Type": "text/plain" },
+                body: JSON.stringify({
+                    symbols: { query: { types: [] }, tickers: [] },
+                    columns: ["name", "description", "close", "change", "change_abs"],
+                    range: [0, 1000]
+                })
             });
-            
-            // Fetch Current Price & Previous Close from Yahoo Finance for BIST stocks
-            const bistSymbols = Object.keys(appState.marketPrices).filter(sym => appState.marketPrices[sym].category === "STOCK");
-            if (bistSymbols.length > 0) {
-                const queryStr = bistSymbols.map(s => s + ".IS").join(",");
-                const targetUrl = `https://query1.finance.yahoo.com/v7/finance/spark?symbols=${queryStr}`;
-                const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`;
-                
-                try {
-                    const yfRes = await fetch(proxyUrl);
-                    const yfData = await yfRes.json();
-                    
-                    if (yfData && yfData.spark && yfData.spark.result) {
-                        yfData.spark.result.forEach(item => {
-                            const sym = item.symbol.replace(".IS", "");
-                            if (appState.marketPrices[sym] && item.response[0].meta) {
-                                const prevClose = item.response[0].meta.chartPreviousClose || item.response[0].meta.previousClose;
-                                const currPrice = item.response[0].meta.regularMarketPrice;
-                                
-                                // Only overwrite if Google Sheets didn't provide a C-column percentage
-                                if (prevClose && !sheetUpdatedSymbols.has(sym)) {
-                                    appState.marketPrices[sym].prevClose = prevClose;
-                                }
-                                if (currPrice && !sheetUpdatedSymbols.has(sym)) {
-                                    appState.marketPrices[sym].price = currPrice;
-                                    fetchCount++;
+
+            if (tvRes.ok) {
+                const tvData = await tvRes.json();
+                if (tvData && tvData.data && Array.isArray(tvData.data)) {
+                    bistCatalog = [];
+                    tvData.data.forEach(item => {
+                        const d = item.d;
+                        if (d && d.length >= 4) {
+                            const sym = (d[0] || "").trim().toUpperCase();
+                            const desc = (d[1] || sym).trim();
+                            const closePrice = parseFloat(d[2]);
+                            const changePct = parseFloat(d[3]) || 0;
+                            const changeAbs = d[4] !== undefined && d[4] !== null ? parseFloat(d[4]) : 0;
+                            
+                            if (sym && !isNaN(closePrice)) {
+                                const prevClose = changeAbs !== 0 
+                                    ? (closePrice - changeAbs) 
+                                    : (closePrice / (1 + (changePct / 100)));
+
+                                bistCatalog.push({
+                                    symbol: sym,
+                                    name: desc,
+                                    price: closePrice,
+                                    prevClose: prevClose,
+                                    change: changePct,
+                                    category: "STOCK"
+                                });
+
+                                // Update marketPrices if symbol exists in tracked list or holdings
+                                if (appState.marketPrices[sym] || appState.holdings.some(h => h.symbol === sym)) {
+                                    appState.marketPrices[sym] = {
+                                        price: closePrice,
+                                        prevClose: prevClose,
+                                        name: desc,
+                                        category: "STOCK"
+                                    };
                                 }
                             }
-                        });
+                        }
+                    });
+
+                    if (bistCatalog.length > 0) {
+                        fetchCount += bistCatalog.length;
+                        try {
+                            localStorage.setItem("bist_catalog_cache", JSON.stringify(bistCatalog));
+                        } catch(e) {}
+                        console.log(`TradingView Scanner: ${bistCatalog.length} BIST hissesi başarıyla yüklendi.`);
                     }
-                } catch(e) { console.warn("Yahoo Finance fetch failed (CORS/Proxy)", e); }
+                }
+            } else {
+                throw new Error("TradingView scanner HTTP " + tvRes.status);
             }
-            
-        } catch(e) { console.warn("Google Sheets fetch failed", e); }
+        } catch(e) {
+            console.warn("TradingView Scanner direct fetch failed, trying Google Sheets fallback", e);
+            try {
+                const sheetCsvUrl = "https://docs.google.com/spreadsheets/d/11wcKvLgzw6Aaek5nOWP7daGBJbaSXXEqZVE55IciEzY/gviz/tq?tqx=out:csv";
+                const res = await fetch(sheetCsvUrl);
+                const csvText = await res.text();
+                const rows = csvText.split('\n');
+                rows.forEach(row => {
+                    let cols = row.includes('","') ? row.split('","') : row.split(',');
+                    if (cols.length >= 2) {
+                        let sym = cols[0].replace(/"/g, '').trim().toUpperCase();
+                        let priceStr = cols[1].replace(/"/g, '').trim().replace(/,/g, '.');
+                        const price = parseFloat(priceStr);
+                        if (sym && !isNaN(price)) {
+                            if (!appState.marketPrices[sym] && appState.holdings.some(h => h.symbol === sym)) {
+                                appState.marketPrices[sym] = { price: price, prevClose: price, name: sym, category: "STOCK" };
+                            }
+                            if (appState.marketPrices[sym]) {
+                                appState.marketPrices[sym].price = price;
+                                fetchCount++;
+                            }
+                        }
+                    }
+                });
+            } catch(sheetErr) {
+                console.warn("Google Sheets fallback failed", sheetErr);
+            }
+        }
 
         if (fetchCount > 0) {
             checkAndRolloverDailyPrices(); // Ensure daily rollover before updating
 
-            // Senkronize et: marketPrices güncellendi, şimdi bunları portföydeki (holdings) varlıklara aktar
+            // Synchronize all holdings with fresh market prices
             appState.holdings.forEach(h => {
-                if (appState.marketPrices[h.symbol]) {
+                const catalogMatch = bistCatalog.find(b => b.symbol === h.symbol);
+                if (catalogMatch) {
+                    h.currentPrice = catalogMatch.price;
+                    h.previousClosePrice = catalogMatch.prevClose || h.currentPrice;
+                    appState.marketPrices[h.symbol] = {
+                        price: catalogMatch.price,
+                        prevClose: catalogMatch.prevClose,
+                        name: catalogMatch.name,
+                        category: h.category || "STOCK"
+                    };
+                } else if (appState.marketPrices[h.symbol]) {
                     h.currentPrice = appState.marketPrices[h.symbol].price;
-                    
-                    // Use accurate prevClose if available (e.g., from Yahoo Finance)
                     if (appState.marketPrices[h.symbol].prevClose) {
                         h.previousClosePrice = appState.marketPrices[h.symbol].prevClose;
                     } else if (!h.previousClosePrice) {
@@ -1224,6 +1462,7 @@ async function fetchLivePrices() {
                     }
                 }
             });
+
             saveData();
             renderAll();
         } else {
