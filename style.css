@@ -166,6 +166,27 @@ body.theme-pure-light {
 }
 
 :root {
+    --bg-main: #06090F;
+    --bg-card: rgba(16, 22, 34, 0.85);
+    --bg-card-hover: rgba(22, 30, 46, 0.95);
+    --bg-hero: linear-gradient(135deg, rgba(14, 21, 33, 0.98) 0%, rgba(8, 12, 19, 1) 100%);
+    --bg-modal: rgba(10, 14, 22, 0.98);
+    
+    --border-glass: rgba(255, 255, 255, 0.06);
+    --border-glass-glow: rgba(255, 255, 255, 0.1);
+    
+    --text-primary: #F8FAFC;
+    --text-secondary: #94A3B8;
+    --text-muted: #64748B;
+    
+    --neon-green: #10B981;
+    --neon-green-glow: rgba(16, 185, 129, 0.15);
+    --neon-red: #EF4444;
+    --neon-red-glow: rgba(239, 68, 68, 0.15);
+    --neon-cyan: #0EA5E9;
+    --neon-purple: #8B5CF6;
+    --neon-amber: #F59E0B;
+
     --font-sans: 'Plus Jakarta Sans', -apple-system, sans-serif;
     --font-mono: 'Space Grotesk', monospace;
     --radius-sm: 14px;
@@ -182,6 +203,15 @@ body.theme-pure-light {
     padding: 0;
     box-sizing: border-box;
     -webkit-tap-highlight-color: transparent;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    color: var(--text-primary);
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
 }
 
 /* ==========================================================================
@@ -275,8 +305,6 @@ body.theme-pure-light {
     box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
 }
 
-body {
-    font-family: var(--font-sans);
 html, body {
     width: 100%;
     min-height: 100%;
@@ -289,6 +317,7 @@ html, body {
     overscroll-behavior: none;
     background-color: #020305;
     color: var(--text-primary);
+    font-family: var(--font-sans);
     display: flex;
     justify-content: center;
     align-items: center;
