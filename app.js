@@ -2466,4 +2466,33 @@ function closeKapModal() {
     document.getElementById("modalKapDetail").classList.remove("active");
 }
 
+// --- iOS Safari Gesture & Double-Tap Zoom Prevention ---
+(function initTouchZoomPrevention() {
+    // Prevent pinch-to-zoom gestures
+    document.addEventListener('gesturestart', function (e) {
+        e.preventDefault();
+    });
+    document.addEventListener('gesturechange', function (e) {
+        e.preventDefault();
+    });
+    document.addEventListener('gestureend', function (e) {
+        e.preventDefault();
+    });
+
+    // Prevent double-tap to zoom
+    let lastTouchTime = 0;
+    document.addEventListener('touchend', function (event) {
+        const now = Date.now();
+        if (now - lastTouchTime <= 300) {
+            event.preventDefault();
+        }
+        lastTouchTime = now;
+    }, { passive: false });
+
+    // Prevent dblclick zoom
+    document.addEventListener('dblclick', function (e) {
+        e.preventDefault();
+    }, { passive: false });
+})();
+
 
