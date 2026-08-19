@@ -1672,53 +1672,134 @@ input:focus, select:focus {
 /* ==========================================================================
    Layout Modes: Standard, Compact, Grid
    ========================================================================== */
-/* Compact List Mode */
-.layout-compact #portfolioList .asset-card {
-    padding: 10px 14px;
-    border-radius: 14px;
-    margin-bottom: 8px;
-}
-.layout-compact #portfolioList .asset-icon {
-    width: 34px;
-    height: 34px;
-    font-size: 0.85rem;
-}
-.layout-compact #portfolioList .asset-details h4 {
-    font-size: 0.9rem;
-}
-.layout-compact #portfolioList .asset-sub {
-    font-size: 0.72rem;
-}
-.layout-compact #portfolioList .asset-val {
-    font-size: 0.95rem;
-}
-.layout-compact #portfolioList .asset-pl {
-    font-size: 0.75rem;
+/* Mode 1: Standard (Default) */
+.layout-standard #assetsList {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }
 
-/* 2-Column Grid Mode */
-.layout-grid #portfolioList {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-}
-.layout-grid #portfolioList .asset-card {
+/* Mode 2: Compact List */
+.layout-compact #assetsList {
+    display: flex;
     flex-direction: column;
-    align-items: flex-start;
-    padding: 12px;
-    gap: 10px;
-    margin-bottom: 0;
+    gap: 6px !important;
 }
-.layout-grid #portfolioList .asset-left {
-    width: 100%;
-    justify-content: flex-start;
-    gap: 8px;
+
+.layout-compact #assetsList .asset-card {
+    padding: 8px 12px !important;
+    border-radius: 12px !important;
+    margin-bottom: 0 !important;
 }
-.layout-grid #portfolioList .asset-right {
-    width: 100%;
-    align-items: flex-start;
-    border-top: 1px solid rgba(255, 255, 255, 0.05);
-    padding-top: 8px;
+
+.layout-compact #assetsList .asset-icon {
+    width: 32px !important;
+    height: 32px !important;
+    font-size: 14px !important;
+    border-radius: 8px !important;
+}
+
+.layout-compact #assetsList .asset-symbol {
+    font-size: 0.92rem !important;
+}
+
+.layout-compact #assetsList .asset-sub {
+    font-size: 0.72rem !important;
+}
+
+.layout-compact #assetsList .asset-pl-summary {
+    display: none !important;
+}
+
+.layout-compact #assetsList .asset-val {
+    font-size: 0.95rem !important;
+}
+
+.layout-compact #assetsList .daily-badge {
+    font-size: 0.72rem !important;
+    padding: 2px 6px !important;
+    min-width: 58px !important;
+}
+
+.layout-compact #assetsList .daily-diff-val {
+    display: none !important;
+}
+
+/* Mode 3: 2-Column Grid */
+.layout-grid #assetsList {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 10px !important;
+}
+
+.layout-grid #assetsList .asset-card {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    padding: 12px !important;
+    gap: 10px !important;
+    margin-bottom: 0 !important;
+    border-radius: 16px !important;
+}
+
+.layout-grid #assetsList .asset-left {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    width: 100% !important;
+}
+
+.layout-grid #assetsList .asset-icon {
+    width: 34px !important;
+    height: 34px !important;
+    font-size: 14px !important;
+    border-radius: 10px !important;
+}
+
+.layout-grid #assetsList .asset-symbol {
+    font-size: 0.92rem !important;
+}
+
+.layout-grid #assetsList .asset-cat-tag {
+    display: none !important;
+}
+
+.layout-grid #assetsList .asset-sub {
+    font-size: 0.7rem !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    max-width: 90px !important;
+}
+
+.layout-grid #assetsList .asset-pl-summary {
+    display: none !important;
+}
+
+.layout-grid #assetsList .asset-right {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    width: 100% !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.06) !important;
+    padding-top: 8px !important;
+    margin-top: 2px !important;
+}
+
+.layout-grid #assetsList .asset-val {
+    font-size: 0.92rem !important;
+    font-weight: 700 !important;
+}
+
+.layout-grid #assetsList .daily-badge {
+    font-size: 0.7rem !important;
+    padding: 2px 5px !important;
+    min-width: 52px !important;
+}
+
+.layout-grid #assetsList .daily-diff-val {
+    display: none !important;
 }
 
 /* ==========================================================================
