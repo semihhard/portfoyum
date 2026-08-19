@@ -963,6 +963,135 @@ function closeSellModal() {
     document.getElementById("modalSellAsset").classList.remove("active");
 }
 
+// --- Financial Health Score & Fundamental Analysis Engine ---
+function calculateHealthScore(stock) {
+    if (!stock) return null;
+
+    const pe = stock.pe;
+    const pb = stock.pb;
+    const debt = stock.debtToEquity;
+    const roe = stock.roe;
+
+    let points = 0;
+    let maxPoints = 0;
+
+    let peText = "Bilanço Bekleniyor";
+    let pbText = "Hesaplanamadı";
+    let debtText = "Bilinmiyor";
+    let roeText = "Hesaplanamadı";
+
+    // 1. F/K Değerlendirmesi (Max 30 Puan)
+    if (pe !== null && pe !== undefined && !isNaN(pe)) {
+        maxPoints += 30;
+        if (pe > 0 && pe <= 12) {
+            points += 30;
+            peText = "İskontolu / Cazip Çarpan";
+        } else if (pe > 12 && pe <= 22) {
+            points += 22;
+            peText = "Makul Piyasa Seviyesi";
+        } else if (pe > 22 && pe <= 45) {
+            points += 14;
+            peText = "Büyüme / Primli Fiyat";
+        } else if (pe > 45) {
+            points += 6;
+            peText = "Yüksek Çarpan (Primli)";
+        } else {
+            points += 4;
+            peText = "Zararda (Negatif Kâr)";
+        }
+    }
+
+    // 2. PD/DD Değerlendirmesi (Max 25 Puan)
+    if (pb !== null && pb !== undefined && !isNaN(pb)) {
+        maxPoints += 25;
+        if (pb > 0 && pb <= 1.5) {
+            points += 25;
+            pbText = "Defter Değerinde / Ucuz";
+        } else if (pb > 1.5 && pb <= 3.5) {
+            points += 18;
+            pbText = "Dengeli Piyasa Değeri";
+        } else if (pb > 3.5 && pb <= 7.0) {
+            points += 12;
+            pbText = "Primli Değerleme";
+        } else if (pb > 7.0) {
+            points += 5;
+            pbText = "Yüksek Defter Primi";
+        } else {
+            points += 5;
+            pbText = "Negatif Özkaynak";
+        }
+    }
+
+    // 3. Borçluluk (Debt to Equity) Değerlendirmesi (Max 25 Puan)
+    if (debt !== null && debt !== undefined && !isNaN(debt)) {
+        maxPoints += 25;
+        if (debt >= 0 && debt <= 0.40) {
+            points += 25;
+            debtText = "Çok Düşük Borç (Güvenli)";
+        } else if (debt > 0.40 && debt <= 1.0) {
+            points += 20;
+            debtText = "Dengeli / Sağlam Borç";
+        } else if (debt > 1.0 && debt <= 2.0) {
+            points += 12;
+            debtText = "Yüksek Kaldıraç / Dikkat";
+        } else {
+            points += 5;
+            debtText = "Aşırı Borçlu Yapı";
+        }
+    }
+
+    // 4. Özkaynak Kârlılığı (ROE) Değerlendirmesi (Max 20 Puan)
+    if (roe !== null && roe !== undefined && !isNaN(roe)) {
+        maxPoints += 20;
+        if (roe >= 30) {
+            points += 20;
+            roeText = "Çok Yüksek Sermaye Kârı";
+        } else if (roe >= 15 && roe < 30) {
+            points += 16;
+            roeText = "Güçlü Sermaye Kârı";
+        } else if (roe > 0 && roe < 15) {
+            points += 10;
+            roeText = "Pozitif Kâr";
+        } else {
+            points += 3;
+            roeText = "Negatif Kârlılık (Zarar)";
+        }
+    }
+
+    let finalScore = maxPoints > 0 ? Math.round((points / maxPoints) * 100) : 60;
+    
+    let label = "Dengeli Finansal Yapı";
+    let colorClass = "score-cyan";
+
+    if (finalScore >= 80) {
+        label = "Mükemmel & Sağlam";
+        colorClass = "score-green";
+    } else if (finalScore >= 65) {
+        label = "Güçlü & İskontolu";
+        colorClass = "score-cyan";
+    } else if (finalScore >= 50) {
+        label = "Orta / Büyüme Hissesi";
+        colorClass = "score-amber";
+    } else {
+        label = "Yüksek Riskli / Dikkat";
+        colorClass = "score-red";
+    }
+
+    return {
+        score: finalScore,
+        label,
+        colorClass,
+        peVal: pe !== null && pe !== undefined && !isNaN(pe) ? `${pe.toFixed(2)}x` : "—",
+        peDesc: peText,
+        pbVal: pb !== null && pb !== undefined && !isNaN(pb) ? `${pb.toFixed(2)}x` : "—",
+        pbDesc: pbText,
+        debtVal: debt !== null && debt !== undefined && !isNaN(debt) ? `%${(debt * 100).toFixed(1)}` : "—",
+        debtDesc: debtText,
+        roeVal: roe !== null && roe !== undefined && !isNaN(roe) ? `%${roe.toFixed(1)}` : "—",
+        roeDesc: roeText
+    };
+}
+
 let activeDetailHoldingId = null;
 
 function openDetailModal(holdingId) {
@@ -980,6 +1109,42 @@ function openDetailModal(holdingId) {
     document.getElementById("detailTotalVal").innerText = formatCurrency(mVal);
     document.getElementById("detailPL").innerText = `${pl >= 0 ? '+' : ''}${formatCurrency(pl)}`;
     document.getElementById("detailPL").className = pl >= 0 ? "txt-neon-green" : "txt-neon-red";
+
+    // Render Company Fundamentals & Health Scorecard for Stocks
+    const fundamentalsCard = document.getElementById("companyFundamentalsCard");
+    if (fundamentalsCard) {
+        if (h.category === "STOCK") {
+            const stockData = bistCatalog.find(b => b.symbol === h.symbol) || appState.marketPrices[h.symbol] || {};
+            const health = calculateHealthScore(stockData);
+            
+            if (health) {
+                const badge = document.getElementById("fundamentalHealthBadge");
+                if (badge) {
+                    badge.className = `health-score-badge ${health.colorClass}`;
+                }
+                document.getElementById("fundamentalHealthScore").innerText = `${health.score}/100`;
+                document.getElementById("fundamentalHealthLabel").innerText = health.label;
+
+                document.getElementById("fundamentalPE").innerText = health.peVal;
+                document.getElementById("fundamentalPEDesc").innerText = health.peDesc;
+
+                document.getElementById("fundamentalPB").innerText = health.pbVal;
+                document.getElementById("fundamentalPBDesc").innerText = health.pbDesc;
+
+                document.getElementById("fundamentalDebt").innerText = health.debtVal;
+                document.getElementById("fundamentalDebtDesc").innerText = health.debtDesc;
+
+                document.getElementById("fundamentalROE").innerText = health.roeVal;
+                document.getElementById("fundamentalROEDesc").innerText = health.roeDesc;
+
+                fundamentalsCard.style.display = "block";
+            } else {
+                fundamentalsCard.style.display = "none";
+            }
+        } else {
+            fundamentalsCard.style.display = "none";
+        }
+    }
 
     const historyList = document.getElementById("detailHistoryList");
     historyList.innerHTML = h.transactions.map(t => `
@@ -1353,7 +1518,18 @@ async function fetchLivePrices() {
                 headers: { "Content-Type": "text/plain" },
                 body: JSON.stringify({
                     symbols: { query: { types: [] }, tickers: [] },
-                    columns: ["name", "description", "close", "change", "change_abs"],
+                    columns: [
+                        "name", 
+                        "description", 
+                        "close", 
+                        "change", 
+                        "change_abs",
+                        "price_earnings_ttm",
+                        "price_book_fq",
+                        "debt_to_equity_fq",
+                        "return_on_equity_fq",
+                        "market_cap_basic"
+                    ],
                     range: [0, 1000]
                 })
             });
@@ -1371,6 +1547,12 @@ async function fetchLivePrices() {
                             const changePct = parseFloat(d[3]) || 0;
                             const changeAbs = d[4] !== undefined && d[4] !== null ? parseFloat(d[4]) : 0;
                             
+                            const pe = (d[5] !== undefined && d[5] !== null && !isNaN(d[5])) ? parseFloat(d[5]) : null;
+                            const pb = (d[6] !== undefined && d[6] !== null && !isNaN(d[6])) ? parseFloat(d[6]) : null;
+                            const debtToEquity = (d[7] !== undefined && d[7] !== null && !isNaN(d[7])) ? parseFloat(d[7]) : null;
+                            const roe = (d[8] !== undefined && d[8] !== null && !isNaN(d[8])) ? parseFloat(d[8]) : null;
+                            const marketCap = (d[9] !== undefined && d[9] !== null && !isNaN(d[9])) ? parseFloat(d[9]) : null;
+
                             if (sym && !isNaN(closePrice)) {
                                 const prevClose = changeAbs !== 0 
                                     ? (closePrice - changeAbs) 
@@ -1382,7 +1564,12 @@ async function fetchLivePrices() {
                                     price: closePrice,
                                     prevClose: prevClose,
                                     change: changePct,
-                                    category: "STOCK"
+                                    category: "STOCK",
+                                    pe: pe,
+                                    pb: pb,
+                                    debtToEquity: debtToEquity,
+                                    roe: roe,
+                                    marketCap: marketCap
                                 });
 
                                 // Update marketPrices if symbol exists in tracked list or holdings
@@ -1391,7 +1578,12 @@ async function fetchLivePrices() {
                                         price: closePrice,
                                         prevClose: prevClose,
                                         name: desc,
-                                        category: "STOCK"
+                                        category: "STOCK",
+                                        pe: pe,
+                                        pb: pb,
+                                        debtToEquity: debtToEquity,
+                                        roe: roe,
+                                        marketCap: marketCap
                                     };
                                 }
                             }

@@ -1479,3 +1479,113 @@ input:focus, select:focus {
     font-weight: 500;
 }
 
+/* ==========================================================================
+   Company Fundamentals & Health Scorecard
+   ========================================================================== */
+.fundamentals-card {
+    background: rgba(255, 255, 255, 0.025);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 18px;
+    padding: 16px;
+    margin: 16px 0;
+    backdrop-filter: blur(10px);
+}
+
+.fundamentals-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+}
+
+.fundamentals-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: #fff;
+}
+
+.health-score-badge {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border-radius: 10px;
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+.health-score-badge span {
+    font-size: 0.85rem;
+    font-family: var(--font-mono);
+}
+
+.health-score-badge small {
+    font-size: 0.7rem;
+    font-weight: 600;
+    opacity: 0.9;
+}
+
+.health-score-badge.score-green {
+    background: rgba(16, 185, 129, 0.15);
+    color: #10B981;
+    border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.health-score-badge.score-cyan {
+    background: rgba(14, 165, 233, 0.15);
+    color: #38BDF8;
+    border: 1px solid rgba(14, 165, 233, 0.3);
+}
+
+.health-score-badge.score-amber {
+    background: rgba(245, 158, 11, 0.15);
+    color: #F59E0B;
+    border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.health-score-badge.score-red {
+    background: rgba(239, 68, 68, 0.15);
+    color: #EF4444;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.fundamentals-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+}
+
+.fundamental-metric-box {
+    background: rgba(0, 0, 0, 0.25);
+    border: 1px solid rgba(255, 255, 255, 0.04);
+    border-radius: 12px;
+    padding: 10px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.fundamental-metric-box .metric-lbl {
+    font-size: 0.7rem;
+    color: var(--text-secondary);
+    font-weight: 600;
+}
+
+.fundamental-metric-box .metric-val {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #fff;
+    font-family: var(--font-mono);
+    letter-spacing: 0.5px;
+}
+
+.fundamental-metric-box .metric-desc {
+    font-size: 0.68rem;
+    color: var(--text-muted);
+    line-height: 1.2;
+}
+
+

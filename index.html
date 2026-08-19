@@ -521,6 +521,43 @@
                     </div>
                 </div>
 
+                <!-- Company Fundamental Analysis & Health Scorecard -->
+                <div id="companyFundamentalsCard" class="fundamentals-card" style="display: none;">
+                    <div class="fundamentals-header">
+                        <div class="fundamentals-title">
+                            <i class="fa-solid fa-chart-pie" style="color: #38BDF8;"></i>
+                            <span>Şirket Sağlık Karnesi</span>
+                        </div>
+                        <div id="fundamentalHealthBadge" class="health-score-badge score-green">
+                            <span id="fundamentalHealthScore">--</span>
+                            <small id="fundamentalHealthLabel">Hesaplanıyor</small>
+                        </div>
+                    </div>
+
+                    <div class="fundamentals-grid">
+                        <div class="fundamental-metric-box">
+                            <div class="metric-lbl">F/K Oranı</div>
+                            <div class="metric-val" id="fundamentalPE">--</div>
+                            <div class="metric-desc" id="fundamentalPEDesc">Fiyat / Kazanç</div>
+                        </div>
+                        <div class="fundamental-metric-box">
+                            <div class="metric-lbl">PD/DD Oranı</div>
+                            <div class="metric-val" id="fundamentalPB">--</div>
+                            <div class="metric-desc" id="fundamentalPBDesc">Piyasa / Defter</div>
+                        </div>
+                        <div class="fundamental-metric-box">
+                            <div class="metric-lbl">Borçluluk</div>
+                            <div class="metric-val" id="fundamentalDebt">--</div>
+                            <div class="metric-desc" id="fundamentalDebtDesc">Borç / Özkaynak</div>
+                        </div>
+                        <div class="fundamental-metric-box">
+                            <div class="metric-lbl">Özkaynak Kârı</div>
+                            <div class="metric-val" id="fundamentalROE">--</div>
+                            <div class="metric-desc" id="fundamentalROEDesc">Yıllık ROE</div>
+                        </div>
+                    </div>
+                </div>
+
                 <h4>Alım Geçmişi</h4>
                 <div class="history-list" id="detailHistoryList">
                     <!-- History items -->
