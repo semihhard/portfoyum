@@ -2059,27 +2059,43 @@ function updateBiometricButtonState() {
 
 function initPinLock() {
     if (appState.pin) {
-        document.getElementById("pinLockOverlay").style.display = "flex";
+        const overlay = document.getElementById("pinLockOverlay");
+        if (overlay) {
+            overlay.style.display = "flex";
+            overlay.style.opacity = "1";
+        }
         
-        if (appState.biometricEnabled) {
-            document.getElementById("btnTriggerBiometric").style.display = "flex";
-            // Auto-trigger biometric on load
-            setTimeout(() => {
-                authenticateBiometric();
-            }, 500);
-        } else {
-            document.getElementById("btnTriggerBiometric").style.display = "none";
+        const bioBtn = document.getElementById("btnKeypadBiometric");
+        if (bioBtn) {
+            if (appState.biometricEnabled) {
+                bioBtn.style.display = "flex";
+                // Auto-trigger biometric on load
+                setTimeout(() => {
+                    authenticateBiometric();
+                }, 400);
+            } else {
+                bioBtn.style.opacity = "0.3";
+            }
         }
     }
 }
 
 function updatePinDots() {
     const dots = document.querySelectorAll("#pinDots .pin-dot");
+    const errorMsg = document.getElementById("pinErrorMessage");
+    if (errorMsg && enteredPin.length > 0) {
+        errorMsg.style.display = "none";
+    }
+    
     dots.forEach((dot, index) => {
         if (index < enteredPin.length) {
             dot.classList.add("filled");
         } else {
             dot.classList.remove("filled");
+            dot.classList.remove("error");
+            dot.style.background = "";
+            dot.style.borderColor = "";
+            dot.style.boxShadow = "";
         }
     });
 }
@@ -2090,7 +2106,7 @@ function pressPin(num) {
         updatePinDots();
         
         if (enteredPin.length === 4) {
-            setTimeout(verifyPin, 300);
+            setTimeout(verifyPin, 180);
         }
     }
 }
@@ -2104,20 +2120,61 @@ function deletePin() {
 
 function verifyPin() {
     if (enteredPin === appState.pin) {
-        // Unlock
-        document.getElementById("pinLockOverlay").style.display = "none";
+        // Unlock with smooth emerald green feedback and fade out
+        const dots = document.querySelectorAll("#pinDots .pin-dot");
+        dots.forEach(d => {
+            d.style.background = "linear-gradient(135deg, #10B981 0%, #059669 100%)";
+            d.style.borderColor = "#10B981";
+            d.style.boxShadow = "0 0 16px rgba(16, 185, 129, 0.9)";
+        });
+
+        setTimeout(() => {
+            const overlay = document.getElementById("pinLockOverlay");
+            if (overlay) {
+                overlay.style.opacity = "0";
+                overlay.style.transition = "opacity 0.25s ease-out";
+                setTimeout(() => {
+                    overlay.style.display = "none";
+                    overlay.style.opacity = "1";
+                    enteredPin = "";
+                    updatePinDots();
+                    renderAll();
+                }, 250);
+            }
+        }, 150);
+    } else {
+        // Wrong PIN: shake & turn red
+        const dots = document.querySelectorAll("#pinDots .pin-dot");
+        dots.forEach(d => d.classList.add("error"));
+
+        const errorMsg = document.getElementById("pinErrorMessage");
+        if (errorMsg) errorMsg.style.display = "flex";
+
+        const dotsContainer = document.getElementById("pinDots");
+        if (dotsContainer) {
+            dotsContainer.style.animation = "shake 0.45s cubic-bezier(0.36, 0.07, 0.19, 0.97) both";
+        }
+
+        setTimeout(() => {
+            if (dotsContainer) dotsContainer.style.animation = "";
+            dots.forEach(d => d.classList.remove("error"));
+            enteredPin = "";
+            updatePinDots();
+        }, 600);
+    }
+}
+
+function promptForgotPin() {
+    if (confirm("PIN kodunuzu unuttuysanız sıfırlamak istiyor musunuz?\n\nGüvenlik nedeniyle PIN kilidi kaldırılacak ve portföyünüze doğrudan erişebileceksiniz.")) {
+        delete appState.pin;
+        delete appState.biometricEnabled;
+        saveData();
+        const overlay = document.getElementById("pinLockOverlay");
+        if (overlay) overlay.style.display = "none";
         enteredPin = "";
         updatePinDots();
         renderAll();
-    } else {
-        // Wrong PIN
-        const dotsContainer = document.getElementById("pinDots");
-        dotsContainer.style.animation = "shake 0.5s ease";
-        setTimeout(() => {
-            dotsContainer.style.animation = "";
-            enteredPin = "";
-            updatePinDots();
-        }, 500);
+        alert("PIN kodu başarıyla sıfırlandı. İstediğiniz zaman Ayarlar menüsünden yeni bir PIN belirleyebilirsiniz.");
     }
 }
 
@@ -2126,8 +2183,8 @@ const style = document.createElement('style');
 style.textContent = `
 @keyframes shake {
     0%, 100% { transform: translateX(0); }
-    25% { transform: translateX(-10px); }
-    75% { transform: translateX(10px); }
+    20%, 60% { transform: translateX(-10px); }
+    40%, 80% { transform: translateX(10px); }
 }`;
 document.head.appendChild(style);
 

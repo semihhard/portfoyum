@@ -50,32 +50,89 @@
         </div>
     </div>
 
-    <!-- PIN Lock Overlay -->
-    <div id="pinLockOverlay" style="display: none; position: fixed; inset: 0; background: rgba(10,10,15,0.95); backdrop-filter: blur(20px); z-index: 9999; flex-direction: column; align-items: center; justify-content: center;">
-        <div style="font-size: 3rem; color: #fff; margin-bottom: 20px;"><i class="fa-solid fa-lock"></i></div>
-        <h2 style="color: #fff; margin-bottom: 10px;">Hoş Geldiniz</h2>
-        <p style="color: var(--text-secondary); margin-bottom: 30px;">Portföyünüzü görmek için PIN kodunuzu girin.</p>
-        <div style="display: flex; gap: 10px; margin-bottom: 20px;" id="pinDots">
-            <div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div>
-        </div>
-        
-        <!-- Biometric Trigger Button (Hidden by default, shown if enabled) -->
-        <button id="btnTriggerBiometric" style="display: none; background: rgba(56,189,248,0.1); border: 1px solid rgba(56,189,248,0.3); color: #38BDF8; font-size: 2.5rem; width: 70px; height: 70px; border-radius: 50%; margin-bottom: 20px; cursor: pointer; transition: 0.3s;" onclick="authenticateBiometric()">
-            <i class="fa-solid fa-fingerprint"></i>
-        </button>
-        <div class="pin-keypad">
-            <button class="pin-key" onclick="pressPin(1)">1</button>
-            <button class="pin-key" onclick="pressPin(2)">2</button>
-            <button class="pin-key" onclick="pressPin(3)">3</button>
-            <button class="pin-key" onclick="pressPin(4)">4</button>
-            <button class="pin-key" onclick="pressPin(5)">5</button>
-            <button class="pin-key" onclick="pressPin(6)">6</button>
-            <button class="pin-key" onclick="pressPin(7)">7</button>
-            <button class="pin-key" onclick="pressPin(8)">8</button>
-            <button class="pin-key" onclick="pressPin(9)">9</button>
-            <button class="pin-key" style="background: transparent; box-shadow: none; pointer-events: none;"></button>
-            <button class="pin-key" onclick="pressPin(0)">0</button>
-            <button class="pin-key" onclick="deletePin()"><i class="fa-solid fa-delete-left"></i></button>
+    <!-- PIN Lock Overlay (iOS Ultra-Glass Security) -->
+    <div id="pinLockOverlay" class="pin-lock-screen" style="display: none;">
+        <div class="pin-bg-glow glow-top"></div>
+        <div class="pin-bg-glow glow-bottom"></div>
+
+        <div class="pin-lock-container">
+            <div class="pin-shield-badge">
+                <div class="shield-icon-circle">
+                    <i class="fa-solid fa-shield-halved"></i>
+                </div>
+            </div>
+            
+            <h2 class="pin-title">Portföyüm Güvenlik</h2>
+            <p class="pin-subtitle">Devam etmek için 4 haneli PIN kodunuzu girin</p>
+
+            <div class="pin-dots-row" id="pinDots">
+                <div class="pin-dot"></div>
+                <div class="pin-dot"></div>
+                <div class="pin-dot"></div>
+                <div class="pin-dot"></div>
+            </div>
+
+            <div id="pinErrorMessage" class="pin-error-msg" style="display: none;">
+                <i class="fa-solid fa-triangle-exclamation"></i> Hatalı PIN kodu, tekrar deneyin
+            </div>
+
+            <div class="pin-keypad">
+                <button class="pin-key" onclick="pressPin(1)" type="button">
+                    <span class="key-num">1</span>
+                    <span class="key-sub">&nbsp;</span>
+                </button>
+                <button class="pin-key" onclick="pressPin(2)" type="button">
+                    <span class="key-num">2</span>
+                    <span class="key-sub">ABC</span>
+                </button>
+                <button class="pin-key" onclick="pressPin(3)" type="button">
+                    <span class="key-num">3</span>
+                    <span class="key-sub">DEF</span>
+                </button>
+
+                <button class="pin-key" onclick="pressPin(4)" type="button">
+                    <span class="key-num">4</span>
+                    <span class="key-sub">GHI</span>
+                </button>
+                <button class="pin-key" onclick="pressPin(5)" type="button">
+                    <span class="key-num">5</span>
+                    <span class="key-sub">JKL</span>
+                </button>
+                <button class="pin-key" onclick="pressPin(6)" type="button">
+                    <span class="key-num">6</span>
+                    <span class="key-sub">MNO</span>
+                </button>
+
+                <button class="pin-key" onclick="pressPin(7)" type="button">
+                    <span class="key-num">7</span>
+                    <span class="key-sub">PQRS</span>
+                </button>
+                <button class="pin-key" onclick="pressPin(8)" type="button">
+                    <span class="key-num">8</span>
+                    <span class="key-sub">TUV</span>
+                </button>
+                <button class="pin-key" onclick="pressPin(9)" type="button">
+                    <span class="key-num">9</span>
+                    <span class="key-sub">WXYZ</span>
+                </button>
+
+                <button class="pin-key key-action" id="btnKeypadBiometric" onclick="authenticateBiometric()" type="button" title="Biyometrik Giriş">
+                    <i class="fa-solid fa-fingerprint"></i>
+                </button>
+                <button class="pin-key" onclick="pressPin(0)" type="button">
+                    <span class="key-num">0</span>
+                    <span class="key-sub">+</span>
+                </button>
+                <button class="pin-key key-action" onclick="deletePin()" type="button" title="Geri Al">
+                    <i class="fa-solid fa-delete-left"></i>
+                </button>
+            </div>
+
+            <div class="pin-footer-actions">
+                <button class="pin-forgot-btn" onclick="promptForgotPin()" type="button">
+                    <i class="fa-solid fa-key"></i> Şifremi Unuttum / Sıfırla
+                </button>
+            </div>
         </div>
     </div>
 
