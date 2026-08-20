@@ -411,9 +411,9 @@ function renderDashboard() {
                             ${formatNumber(h.quantity, h.category === 'CRYPTO' ? 4 : 2)} Adet &bull; Ort: ${formatCurrency(h.avgCost)}
                         </div>
                         <div class="asset-pl-summary">
-                            <span class="asset-pl-lbl">Toplam K/Z</span>
+                            <span class="pl-tag total">Toplam:</span>
                             <span class="asset-pl-val ${isPos ? 'txt-neon-green' : 'txt-neon-red'}">
-                                ${isPos ? '▲ +' : '▼ '}${formatCurrency(totalPL)} (${isPos ? '+' : ''}${formatPercent(totalPLPct)})
+                                ${isPos ? '+' : ''}${formatCurrency(totalPL)} (${formatPercent(totalPLPct)})
                             </span>
                         </div>
                     </div>
@@ -421,10 +421,13 @@ function renderDashboard() {
                 
                 <div class="asset-right">
                     <div class="asset-val">${formatCurrency(h.currentPrice)}</div>
-                    <div class="daily-badge ${isDailyPos ? 'pos' : 'neg'}" title="Günlük Değişim Yüzdesi">
-                        ${isDailyPos ? '+' : ''}${formatPercent(dailyPct)}
+                    <div class="daily-badge-container">
+                        <span class="pl-tag daily">Bugün:</span>
+                        <div class="daily-badge ${isDailyPos ? 'pos' : 'neg'}" title="Bugünkü Değişim">
+                            ${formatPercent(dailyPct)}
+                        </div>
                     </div>
-                    <div class="daily-diff-val ${isDailyPos ? 'txt-neon-green' : 'txt-neon-red'}" title="Günlük K/Z Toplamı">
+                    <div class="daily-diff-val ${isDailyPos ? 'txt-neon-green' : 'txt-neon-red'}" title="Bugünkü Tutar">
                         ${isDailyPos ? '+' : ''}${formatCurrency(dailyDiff)}
                     </div>
                 </div>
@@ -555,7 +558,7 @@ function renderSalesTab() {
                     <div style="background: rgba(${isPos ? '16,185,129' : '239,68,68'}, 0.1); padding: 12px 6px; border-radius: 14px; box-shadow: inset 0 0 0 1px rgba(${isPos ? '16,185,129' : '239,68,68'}, 0.3);">
                         <div style="font-size: 0.65rem; color: ${isPos ? '#10B981' : '#EF4444'}; margin-bottom: 6px; font-weight: 600; letter-spacing: 0.5px;">GERÇEKLEŞEN KÂR</div>
                         <div style="font-weight: 700; color: ${isPos ? '#10B981' : '#EF4444'}; font-size: 0.9rem;">${isPos ? '+' : ''}${formatCurrency(s.realizedPL)}</div>
-                        <div style="font-size: 0.7rem; color: ${isPos ? '#10B981' : '#EF4444'}; opacity: 0.8; margin-top: 2px;">(${isPos ? '+' : ''}${formatPercent(s.realizedPLPercent)})</div>
+                        <div style="font-size: 0.7rem; color: ${isPos ? '#10B981' : '#EF4444'}; opacity: 0.8; margin-top: 2px;">(${formatPercent(s.realizedPLPercent)})</div>
                     </div>
                 </div>
 
@@ -679,7 +682,7 @@ function renderAnalyticsTab() {
             return `
                 <div class="top-item">
                     <span><strong>${h.symbol}</strong> - ${h.name}</span>
-                    <span class="${isPos ? 'txt-neon-green' : 'txt-neon-red'}"><strong>${isPos ? '+' : ''}${formatPercent(pct)}</strong></span>
+                    <span class="${isPos ? 'txt-neon-green' : 'txt-neon-red'}"><strong>${formatPercent(pct)}</strong></span>
                 </div>
             `;
         }).join("");
@@ -741,7 +744,7 @@ function renderMarketTab() {
                 <div class="asset-right">
                     <div class="asset-val">${formatCurrency(data.price)}</div>
                     <div class="asset-pl ${isPos ? 'txt-neon-green' : 'txt-neon-red'}">
-                        ${isPos ? '+' : ''}${pct.toFixed(2)}%
+                        ${formatPercent(pct)}
                     </div>
                 </div>
             </div>
@@ -1174,8 +1177,9 @@ function openDetailModal(holdingId) {
     
     const mVal = h.quantity * h.currentPrice;
     const pl = mVal - (h.quantity * h.avgCost);
+    const plPct = h.avgCost > 0 ? ((h.currentPrice - h.avgCost) / h.avgCost) * 100 : 0;
     document.getElementById("detailTotalVal").innerText = formatCurrency(mVal);
-    document.getElementById("detailPL").innerText = `${pl >= 0 ? '+' : ''}${formatCurrency(pl)}`;
+    document.getElementById("detailPL").innerText = `${pl >= 0 ? '+' : ''}${formatCurrency(pl)} (${formatPercent(plPct)})`;
     document.getElementById("detailPL").className = pl >= 0 ? "txt-neon-green" : "txt-neon-red";
 
     // Render Company Fundamentals & Health Scorecard for Stocks
