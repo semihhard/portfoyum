@@ -2120,30 +2120,38 @@ function deletePin() {
 
 function verifyPin() {
     if (enteredPin === appState.pin) {
-        // Unlock with smooth emerald green feedback and fade out
+        // Unlock with smooth emerald green transformation and holographic burst
         const dots = document.querySelectorAll("#pinDots .pin-dot");
-        dots.forEach(d => {
-            d.style.background = "linear-gradient(135deg, #10B981 0%, #059669 100%)";
-            d.style.borderColor = "#10B981";
-            d.style.boxShadow = "0 0 16px rgba(16, 185, 129, 0.9)";
-        });
+        dots.forEach(d => d.classList.add("success"));
+
+        const shield = document.getElementById("pinShieldIcon");
+        if (shield) {
+            shield.classList.add("unlocked");
+            shield.innerHTML = '<i class="fa-solid fa-lock-open"></i>';
+        }
 
         setTimeout(() => {
             const overlay = document.getElementById("pinLockOverlay");
             if (overlay) {
                 overlay.style.opacity = "0";
-                overlay.style.transition = "opacity 0.25s ease-out";
+                overlay.style.transform = "scale(1.05)";
+                overlay.style.transition = "all 0.35s cubic-bezier(0.4, 0, 0.2, 1)";
                 setTimeout(() => {
                     overlay.style.display = "none";
                     overlay.style.opacity = "1";
+                    overlay.style.transform = "scale(1)";
+                    if (shield) {
+                        shield.classList.remove("unlocked");
+                        shield.innerHTML = '<i class="fa-solid fa-shield-halved"></i>';
+                    }
                     enteredPin = "";
                     updatePinDots();
                     renderAll();
-                }, 250);
+                }, 350);
             }
-        }, 150);
+        }, 300);
     } else {
-        // Wrong PIN: shake & turn red
+        // Wrong PIN: shake & turn red with glitch effect
         const dots = document.querySelectorAll("#pinDots .pin-dot");
         dots.forEach(d => d.classList.add("error"));
 
@@ -2155,8 +2163,14 @@ function verifyPin() {
             dotsContainer.style.animation = "shake 0.45s cubic-bezier(0.36, 0.07, 0.19, 0.97) both";
         }
 
+        const shield = document.getElementById("pinShieldIcon");
+        if (shield) {
+            shield.style.animation = "shake 0.45s cubic-bezier(0.36, 0.07, 0.19, 0.97) both";
+        }
+
         setTimeout(() => {
             if (dotsContainer) dotsContainer.style.animation = "";
+            if (shield) shield.style.animation = "shieldFloat 4s ease-in-out infinite";
             dots.forEach(d => d.classList.remove("error"));
             enteredPin = "";
             updatePinDots();

@@ -257,6 +257,13 @@ a {
     filter: blur(8px);
     opacity: 0.6;
     user-select: none;
+/* ==========================================================================
+   Privacy & PIN Styles (Ultra-Animated Holographic Cyber Lock Screen)
+   ========================================================================== */
+.privacy-blur {
+    filter: blur(8px);
+    opacity: 0.6;
+    user-select: none;
     pointer-events: none;
     transition: filter 0.3s ease, opacity 0.3s ease;
 }
@@ -267,42 +274,103 @@ a {
     width: 100vw;
     height: 100vh;
     height: 100dvh;
-    background: radial-gradient(circle at 50% 30%, rgba(14, 22, 38, 0.98) 0%, rgba(4, 7, 12, 1) 100%);
-    backdrop-filter: blur(35px) saturate(180%);
-    -webkit-backdrop-filter: blur(35px) saturate(180%);
+    background: radial-gradient(ellipse at 50% 25%, #0B111E 0%, #03060B 100%);
+    backdrop-filter: blur(40px) saturate(190%);
+    -webkit-backdrop-filter: blur(40px) saturate(190%);
     z-index: 10000;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: calc(20px + env(safe-area-inset-top, 0px)) 20px calc(20px + env(safe-area-inset-bottom, 0px)) 20px;
+    padding: calc(15px + env(safe-area-inset-top, 0px)) 20px calc(15px + env(safe-area-inset-bottom, 0px)) 20px;
     user-select: none;
     -webkit-user-select: none;
     overflow: hidden;
+    transition: opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1), transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-.pin-bg-glow {
+/* Perspective Cyber Grid Background */
+.pin-cyber-grid {
     position: absolute;
-    width: 350px;
-    height: 350px;
-    border-radius: 50%;
-    filter: blur(80px);
+    inset: 0;
+    background-image: 
+        linear-gradient(to right, rgba(56, 189, 248, 0.04) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(56, 189, 248, 0.04) 1px, transparent 1px);
+    background-size: 32px 32px;
+    mask-image: radial-gradient(circle at 50% 50%, black 30%, transparent 75%);
+    -webkit-mask-image: radial-gradient(circle at 50% 50%, black 30%, transparent 75%);
     pointer-events: none;
-    opacity: 0.25;
-    z-index: 0;
+    animation: gridDrift 20s linear infinite;
 }
 
-.pin-bg-glow.glow-top {
-    top: -100px;
+@keyframes gridDrift {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(32px); }
+}
+
+/* Futuristic Scanning Laser Line */
+.pin-scanner-line {
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent 0%, rgba(56, 189, 248, 0.8) 50%, transparent 100%);
+    box-shadow: 0 0 15px #38BDF8, 0 0 30px #0EA5E9;
+    opacity: 0.6;
+    pointer-events: none;
+    z-index: 2;
+    animation: scanBeam 4.5s ease-in-out infinite;
+}
+
+@keyframes scanBeam {
+    0% { top: 5%; opacity: 0; }
+    15% { opacity: 0.8; }
+    85% { opacity: 0.8; }
+    100% { top: 95%; opacity: 0; }
+}
+
+/* Animated Ambient Light Spheres */
+.pin-floating-orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(75px);
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0.35;
+    animation: floatOrb 9s ease-in-out infinite alternate;
+}
+
+.pin-floating-orb.orb-1 {
+    width: 280px;
+    height: 280px;
+    top: -50px;
     left: 50%;
     transform: translateX(-50%);
-    background: radial-gradient(circle, #0EA5E9 0%, rgba(14, 165, 233, 0) 70%);
+    background: radial-gradient(circle, #0EA5E9 0%, transparent 70%);
 }
 
-.pin-bg-glow.glow-bottom {
-    bottom: -100px;
-    right: 10%;
-    background: radial-gradient(circle, #10B981 0%, rgba(16, 185, 129, 0) 70%);
+.pin-floating-orb.orb-2 {
+    width: 240px;
+    height: 240px;
+    bottom: -40px;
+    right: -20px;
+    background: radial-gradient(circle, #10B981 0%, transparent 70%);
+    animation-delay: -3s;
+}
+
+.pin-floating-orb.orb-3 {
+    width: 200px;
+    height: 200px;
+    bottom: 20%;
+    left: -40px;
+    background: radial-gradient(circle, #8B5CF6 0%, transparent 70%);
+    animation-delay: -6s;
+}
+
+@keyframes floatOrb {
+    0% { transform: translateY(0) scale(1); }
+    50% { transform: translateY(-25px) scale(1.15); }
+    100% { transform: translateY(15px) scale(0.95); }
 }
 
 .pin-lock-container {
@@ -315,28 +383,90 @@ a {
     max-width: 340px;
 }
 
-.pin-shield-badge {
-    margin-bottom: 12px;
+/* Holographic Rings & Shield Badge */
+.pin-shield-wrapper {
+    position: relative;
+    width: 90px;
+    height: 90px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 14px;
+}
+
+.holo-ring {
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+.holo-ring-1 {
+    width: 90px;
+    height: 90px;
+    border: 1.5px dashed rgba(56, 189, 248, 0.4);
+    box-shadow: 0 0 15px rgba(56, 189, 248, 0.2);
+    animation: rotateHoloClockwise 10s linear infinite;
+}
+
+.holo-ring-2 {
+    width: 76px;
+    height: 76px;
+    border: 1.5px dotted rgba(16, 185, 129, 0.45);
+    box-shadow: 0 0 12px rgba(16, 185, 129, 0.2);
+    animation: rotateHoloCounter 7s linear infinite;
+}
+
+.holo-ring-3 {
+    width: 64px;
+    height: 64px;
+    border: 1px solid rgba(139, 92, 246, 0.3);
+    animation: pulseRing 3s ease-in-out infinite;
+}
+
+@keyframes rotateHoloClockwise {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+@keyframes rotateHoloCounter {
+    from { transform: rotate(360deg); }
+    to { transform: rotate(0deg); }
+}
+
+@keyframes pulseRing {
+    0%, 100% { transform: scale(1); opacity: 0.3; }
+    50% { transform: scale(1.12); opacity: 0.8; }
 }
 
 .shield-icon-circle {
-    width: 60px;
-    height: 60px;
+    width: 58px;
+    height: 58px;
     border-radius: 20px;
-    background: linear-gradient(135deg, rgba(14, 165, 233, 0.2) 0%, rgba(16, 185, 129, 0.15) 100%);
-    border: 1px solid rgba(56, 189, 248, 0.35);
-    box-shadow: 0 10px 25px rgba(14, 165, 233, 0.25), inset 0 1px 1px rgba(255, 255, 255, 0.2);
+    background: linear-gradient(135deg, rgba(14, 165, 233, 0.25) 0%, rgba(16, 185, 129, 0.2) 100%);
+    border: 1.5px solid rgba(56, 189, 248, 0.5);
+    box-shadow: 0 10px 25px rgba(14, 165, 233, 0.3), inset 0 1px 2px rgba(255, 255, 255, 0.3);
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 24px;
     color: #38BDF8;
-    animation: shieldPulse 3s infinite ease-in-out;
+    position: relative;
+    z-index: 5;
+    transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+    animation: shieldFloat 4s ease-in-out infinite;
 }
 
-@keyframes shieldPulse {
-    0%, 100% { transform: scale(1); box-shadow: 0 10px 25px rgba(14, 165, 233, 0.25); }
-    50% { transform: scale(1.04); box-shadow: 0 15px 35px rgba(14, 165, 233, 0.45); }
+@keyframes shieldFloat {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-4px); }
+}
+
+.shield-icon-circle.unlocked {
+    background: linear-gradient(135deg, #10B981 0%, #059669 100%) !important;
+    border-color: #34D399 !important;
+    color: #FFFFFF !important;
+    box-shadow: 0 0 30px rgba(16, 185, 129, 0.9), inset 0 2px 4px rgba(255, 255, 255, 0.8) !important;
+    transform: scale(1.2) rotate(360deg) !important;
 }
 
 .pin-title {
@@ -345,6 +475,7 @@ a {
     color: #FFFFFF;
     margin-bottom: 4px;
     letter-spacing: -0.3px;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
 }
 
 .pin-subtitle {
@@ -355,90 +486,122 @@ a {
     line-height: 1.3;
 }
 
+/* Animated PIN Dots */
 .pin-dots-row {
     display: flex;
     gap: 16px;
     margin-bottom: 16px;
     align-items: center;
     justify-content: center;
-    height: 24px;
+    height: 26px;
 }
 
 .pin-dot {
     width: 15px;
     height: 15px;
     border-radius: 50%;
-    background: rgba(255, 255, 255, 0.1);
-    border: 1.5px solid rgba(255, 255, 255, 0.3);
-    transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
-    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.4);
+    background: rgba(255, 255, 255, 0.08);
+    border: 1.5px solid rgba(255, 255, 255, 0.25);
+    transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.5);
+    position: relative;
 }
 
 .pin-dot.filled {
     background: linear-gradient(135deg, #38BDF8 0%, #0284C7 100%);
     border-color: #38BDF8;
-    transform: scale(1.25);
-    box-shadow: 0 0 14px rgba(56, 189, 248, 0.8), inset 0 1px 2px rgba(255, 255, 255, 0.6);
+    transform: scale(1.3);
+    box-shadow: 0 0 18px rgba(56, 189, 248, 0.9), inset 0 1px 2px rgba(255, 255, 255, 0.7);
+    animation: dotPulse 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes dotPulse {
+    0% { transform: scale(0.8); }
+    50% { transform: scale(1.45); }
+    100% { transform: scale(1.3); }
+}
+
+.pin-dot.success {
+    background: linear-gradient(135deg, #10B981 0%, #059669 100%) !important;
+    border-color: #10B981 !important;
+    box-shadow: 0 0 20px rgba(16, 185, 129, 1) !important;
+    transform: scale(1.35) !important;
 }
 
 .pin-dot.error {
     background: #EF4444 !important;
     border-color: #EF4444 !important;
-    box-shadow: 0 0 14px rgba(239, 68, 68, 0.8) !important;
+    box-shadow: 0 0 18px rgba(239, 68, 68, 0.9) !important;
 }
 
 .pin-error-msg {
     color: #EF4444;
     font-size: 0.78rem;
-    font-weight: 600;
+    font-weight: 700;
     margin-bottom: 10px;
     display: flex;
     align-items: center;
     gap: 6px;
+    animation: fadeInDown 0.25s ease;
 }
 
+@keyframes fadeInDown {
+    from { opacity: 0; transform: translateY(-6px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Keypad Grid & Interactive Tactile Ripple */
 .pin-keypad {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 12px 18px;
     width: 100%;
     max-width: 280px;
-    margin-bottom: 12px;
+    margin-bottom: 10px;
 }
 
 .pin-key {
     width: 68px;
     height: 68px;
     border-radius: 50%;
-    background: rgba(255, 255, 255, 0.07);
+    background: rgba(255, 255, 255, 0.06);
     border: 1px solid rgba(255, 255, 255, 0.12);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
     color: #FFFFFF;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
-    transition: all 0.15s cubic-bezier(0.2, 0.8, 0.2, 1);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.1);
+    transition: all 0.18s cubic-bezier(0.2, 0.8, 0.2, 1);
     -webkit-tap-highlight-color: transparent;
+    position: relative;
+    overflow: hidden;
     padding: 0;
     margin: 0 auto;
 }
 
-.pin-key:active {
-    background: rgba(255, 255, 255, 0.22);
-    border-color: rgba(56, 189, 248, 0.4);
-    transform: scale(0.92);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+.pin-key:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(56, 189, 248, 0.35);
+    box-shadow: 0 8px 24px rgba(14, 165, 233, 0.25);
+}
+
+.pin-key:active, .pin-key.pressed {
+    background: rgba(56, 189, 248, 0.25) !important;
+    border-color: #38BDF8 !important;
+    transform: scale(0.9);
+    box-shadow: 0 0 20px rgba(56, 189, 248, 0.6) !important;
 }
 
 .pin-key .key-num {
-    font-size: 1.6rem;
+    font-size: 1.65rem;
     font-weight: 700;
     line-height: 1.1;
     font-family: var(--font-sans);
+    pointer-events: none;
 }
 
 .pin-key .key-sub {
@@ -447,6 +610,7 @@ a {
     color: var(--text-secondary);
     letter-spacing: 1.5px;
     line-height: 1;
+    pointer-events: none;
 }
 
 .pin-key.key-action {
@@ -457,10 +621,15 @@ a {
     color: var(--text-secondary);
 }
 
+.pin-key.key-action:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: #38BDF8;
+}
+
 .pin-key.key-action:active {
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(56, 189, 248, 0.2);
     color: #FFFFFF;
-    transform: scale(0.92);
+    transform: scale(0.9);
 }
 
 .pin-footer-actions {
@@ -468,8 +637,8 @@ a {
 }
 
 .pin-forgot-btn {
-    background: transparent;
-    border: none;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
     color: var(--text-muted);
     font-size: 0.78rem;
     font-weight: 600;
@@ -477,14 +646,18 @@ a {
     display: flex;
     align-items: center;
     gap: 6px;
-    padding: 6px 12px;
+    padding: 6px 14px;
     border-radius: 20px;
-    transition: all 0.2s ease;
+    transition: all 0.25s ease;
+    backdrop-filter: blur(10px);
 }
 
 .pin-forgot-btn:hover {
     color: #38BDF8;
-    background: rgba(56, 189, 248, 0.08);
+    background: rgba(56, 189, 248, 0.12);
+    border-color: rgba(56, 189, 248, 0.35);
+    box-shadow: 0 4px 15px rgba(14, 165, 233, 0.2);
+    transform: translateY(-1px);
 }
 
 html, body {
