@@ -251,13 +251,6 @@ a {
 }
 
 /* ==========================================================================
-   Privacy & PIN Styles (iOS Ultra-Glass Lock Screen)
-   ========================================================================== */
-.privacy-blur {
-    filter: blur(8px);
-    opacity: 0.6;
-    user-select: none;
-/* ==========================================================================
    Privacy & PIN Styles (Ultra-Animated Holographic Cyber Lock Screen)
    ========================================================================== */
 .privacy-blur {
@@ -282,10 +275,11 @@ a {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: calc(15px + env(safe-area-inset-top, 0px)) 20px calc(15px + env(safe-area-inset-bottom, 0px)) 20px;
+    padding: calc(10px + env(safe-area-inset-top, 0px)) 16px calc(10px + env(safe-area-inset-bottom, 0px)) 16px;
     user-select: none;
     -webkit-user-select: none;
-    overflow: hidden;
+    overflow-y: auto;
+    overflow-x: hidden;
     transition: opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1), transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
@@ -380,18 +374,19 @@ a {
     flex-direction: column;
     align-items: center;
     width: 100%;
-    max-width: 340px;
+    max-width: 320px;
+    margin: auto;
 }
 
 /* Holographic Rings & Shield Badge */
 .pin-shield-wrapper {
     position: relative;
-    width: 90px;
-    height: 90px;
+    width: 76px;
+    height: 76px;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: 14px;
+    margin-bottom: 10px;
 }
 
 .holo-ring {
@@ -401,24 +396,24 @@ a {
 }
 
 .holo-ring-1 {
-    width: 90px;
-    height: 90px;
+    width: 76px;
+    height: 76px;
     border: 1.5px dashed rgba(56, 189, 248, 0.4);
     box-shadow: 0 0 15px rgba(56, 189, 248, 0.2);
     animation: rotateHoloClockwise 10s linear infinite;
 }
 
 .holo-ring-2 {
-    width: 76px;
-    height: 76px;
+    width: 64px;
+    height: 64px;
     border: 1.5px dotted rgba(16, 185, 129, 0.45);
     box-shadow: 0 0 12px rgba(16, 185, 129, 0.2);
     animation: rotateHoloCounter 7s linear infinite;
 }
 
 .holo-ring-3 {
-    width: 64px;
-    height: 64px;
+    width: 54px;
+    height: 54px;
     border: 1px solid rgba(139, 92, 246, 0.3);
     animation: pulseRing 3s ease-in-out infinite;
 }
@@ -439,16 +434,16 @@ a {
 }
 
 .shield-icon-circle {
-    width: 58px;
-    height: 58px;
-    border-radius: 20px;
+    width: 50px;
+    height: 50px;
+    border-radius: 18px;
     background: linear-gradient(135deg, rgba(14, 165, 233, 0.25) 0%, rgba(16, 185, 129, 0.2) 100%);
     border: 1.5px solid rgba(56, 189, 248, 0.5);
     box-shadow: 0 10px 25px rgba(14, 165, 233, 0.3), inset 0 1px 2px rgba(255, 255, 255, 0.3);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 24px;
+    font-size: 22px;
     color: #38BDF8;
     position: relative;
     z-index: 5;
@@ -470,18 +465,18 @@ a {
 }
 
 .pin-title {
-    font-size: 1.3rem;
+    font-size: 1.25rem;
     font-weight: 800;
     color: #FFFFFF;
-    margin-bottom: 4px;
+    margin-bottom: 2px;
     letter-spacing: -0.3px;
     text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
 }
 
 .pin-subtitle {
-    font-size: 0.8rem;
+    font-size: 0.78rem;
     color: var(--text-secondary);
-    margin-bottom: 20px;
+    margin-bottom: 14px;
     text-align: center;
     line-height: 1.3;
 }
@@ -489,16 +484,16 @@ a {
 /* Animated PIN Dots */
 .pin-dots-row {
     display: flex;
-    gap: 16px;
-    margin-bottom: 16px;
+    gap: 14px;
+    margin-bottom: 12px;
     align-items: center;
     justify-content: center;
-    height: 26px;
+    height: 24px;
 }
 
 .pin-dot {
-    width: 15px;
-    height: 15px;
+    width: 14px;
+    height: 14px;
     border-radius: 50%;
     background: rgba(255, 255, 255, 0.08);
     border: 1.5px solid rgba(255, 255, 255, 0.25);
@@ -554,15 +549,15 @@ a {
 .pin-keypad {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 12px 18px;
+    gap: 10px 16px;
     width: 100%;
-    max-width: 280px;
-    margin-bottom: 10px;
+    max-width: 270px;
+    margin-bottom: 8px;
 }
 
 .pin-key {
-    width: 68px;
-    height: 68px;
+    width: 62px;
+    height: 62px;
     border-radius: 50%;
     background: rgba(255, 255, 255, 0.06);
     border: 1px solid rgba(255, 255, 255, 0.12);
@@ -597,7 +592,7 @@ a {
 }
 
 .pin-key .key-num {
-    font-size: 1.65rem;
+    font-size: 1.55rem;
     font-weight: 700;
     line-height: 1.1;
     font-family: var(--font-sans);
@@ -605,7 +600,7 @@ a {
 }
 
 .pin-key .key-sub {
-    font-size: 0.58rem;
+    font-size: 0.55rem;
     font-weight: 700;
     color: var(--text-secondary);
     letter-spacing: 1.5px;
@@ -659,7 +654,6 @@ a {
     box-shadow: 0 4px 15px rgba(14, 165, 233, 0.2);
     transform: translateY(-1px);
 }
-
 html, body {
     width: 100%;
     min-height: 100%;

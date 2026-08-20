@@ -146,30 +146,26 @@
 
     <!-- PIN Settings Modal -->
     <div class="modal-overlay" id="pinModal">
-        <div class="modal-content ultra-glass-card">
+        <div class="modal-sheet ultra-glass-modal">
             <div class="modal-header">
-                <h2><i class="fa-solid fa-key"></i> PIN Ayarları</h2>
-                <button class="btn-close" onclick="closePinModal()"><i class="fa-solid fa-xmark"></i></button>
+                <h3><i class="fa-solid fa-key" style="color: #38BDF8;"></i> PIN & Güvenlik Ayarları</h3>
+                <button class="modal-close" onclick="closePinModal()">&times;</button>
             </div>
-            <div class="modal-body">
-                <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 20px;">Uygulamanızı başkalarından gizlemek için 4 haneli bir PIN belirleyin.</p>
-                
-                <div class="form-group">
-                    <label>Yeni PIN Kodu</label>
-                    <input type="password" id="newPinInput" maxlength="4" placeholder="Örn: 1234" class="form-input" style="text-align: center; letter-spacing: 10px; font-size: 1.5rem;">
-                </div>
+            <div class="form-group" style="margin-top: 15px;">
+                <label>Yeni 4 Haneli PIN Kodu</label>
+                <input type="password" id="newPinInput" maxlength="4" placeholder="••••" class="form-input" style="text-align: center; letter-spacing: 12px; font-size: 1.6rem; font-weight: 700;">
+            </div>
 
-                <div style="display: flex; gap: 10px; margin-top: 20px;">
-                    <button class="btn-primary neon-glow" onclick="savePin()" style="flex:1;">Kaydet</button>
-                    <button class="btn-primary" onclick="removePin()" style="background: #EF4444; color: #fff; flex:1;" id="removePinBtn">PIN'i Kaldır</button>
-                </div>
-                
-                <hr style="border: none; border-top: 1px solid rgba(255,255,255,0.05); margin: 25px 0;">
-                
-                <button class="btn-block" id="btnToggleBiometric" style="background: linear-gradient(90deg, rgba(56,189,248,0.1) 0%, rgba(56,189,248,0.2) 100%); color: #38BDF8; border: 1px solid rgba(56,189,248,0.3); font-weight: 600;" onclick="toggleBiometric()">
-                    <i class="fa-solid fa-fingerprint" style="margin-right: 8px;"></i> Biyometrik Girişi Aktif Et
-                </button>
+            <div style="display: flex; gap: 10px; margin-top: 20px;">
+                <button class="btn primary neon-glow" onclick="savePin()" style="flex: 1;">Kaydet</button>
+                <button class="btn secondary" onclick="removePin()" style="background: rgba(239,68,68,0.15); border-color: rgba(239,68,68,0.4); color: #EF4444; flex: 1;" id="removePinBtn">PIN'i Kaldır</button>
             </div>
+            
+            <hr style="border: none; border-top: 1px solid rgba(255,255,255,0.06); margin: 20px 0;">
+            
+            <button class="btn secondary" id="btnToggleBiometric" style="width: 100%; background: linear-gradient(90deg, rgba(56,189,248,0.1) 0%, rgba(56,189,248,0.2) 100%); color: #38BDF8; border: 1px solid rgba(56,189,248,0.3); font-weight: 600;" onclick="toggleBiometric()">
+                <i class="fa-solid fa-fingerprint" style="margin-right: 8px;"></i> Biyometrik Girişi Aktif Et
+            </button>
         </div>
     </div>
 
