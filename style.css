@@ -165,6 +165,33 @@ body.theme-pure-light {
     --glow-orb-2: radial-gradient(circle, rgba(16, 185, 129, 0.04) 0%, transparent 65%);
 }
 
+/* --- Theme 7: Neo-Brutalism (Modern Pop Fintech) --- */
+body.theme-neo-brutalism {
+    --bg-main: #FDFBF7; /* Warm Pop Canvas */
+    --bg-card: #FFFFFF;
+    --bg-card-hover: #FFF9E6;
+    --bg-hero: #FFE600; /* Signature Pop Yellow */
+    --bg-modal: #FFFFFF;
+    
+    --border-glass: #000000;
+    --border-glass-glow: #000000;
+    
+    --text-primary: #000000;
+    --text-secondary: #2D3748;
+    --text-muted: #718096;
+    
+    --neon-green: #00B368;
+    --neon-green-glow: rgba(0, 179, 104, 0.2);
+    --neon-red: #E53E3E;
+    --neon-red-glow: rgba(229, 62, 62, 0.2);
+    --neon-cyan: #0052FF;
+    --neon-purple: #7928CA;
+    --neon-amber: #D97706;
+    
+    --glow-orb-1: radial-gradient(circle, rgba(255, 230, 0, 0.2) 0%, transparent 65%);
+    --glow-orb-2: radial-gradient(circle, rgba(0, 229, 153, 0.15) 0%, transparent 65%);
+}
+
 :root {
     --bg-main: #06090F;
     --bg-card: rgba(16, 22, 34, 0.85);
@@ -2577,6 +2604,352 @@ input:focus, select:focus {
     background: rgba(56, 189, 248, 0.1);
     color: #fff;
     box-shadow: 0 0 12px rgba(56, 189, 248, 0.2);
+}
+
+/* ==========================================================================
+   Neo-Brutalism Theme Overrides (Modern Pop Fintech)
+   ========================================================================== */
+body.theme-neo-brutalism {
+    background-color: #FDFBF7 !important;
+}
+
+body.theme-neo-brutalism .page-title {
+    background: none !important;
+    -webkit-background-clip: unset !important;
+    -webkit-text-fill-color: #000000 !important;
+    color: #000000 !important;
+    font-weight: 900 !important;
+    letter-spacing: -0.5px;
+}
+
+body.theme-neo-brutalism .badge-online {
+    background: #FFE600 !important;
+    color: #000000 !important;
+    border: 2px solid #000000 !important;
+    box-shadow: 2px 2px 0px #000000 !important;
+    font-weight: 800 !important;
+}
+
+body.theme-neo-brutalism .icon-btn {
+    background: #FFFFFF !important;
+    border: 2.5px solid #000000 !important;
+    box-shadow: 3px 3px 0px #000000 !important;
+    color: #000000 !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
+
+body.theme-neo-brutalism .icon-btn:hover {
+    transform: translate(-2px, -2px) !important;
+    box-shadow: 5px 5px 0px #000000 !important;
+    background: #FFF9E6 !important;
+}
+
+body.theme-neo-brutalism .icon-btn:active {
+    transform: translate(2px, 2px) !important;
+    box-shadow: 1px 1px 0px #000000 !important;
+}
+
+body.theme-neo-brutalism .icon-btn.primary {
+    background: #25F496 !important;
+    color: #000000 !important;
+    border: 2.5px solid #000000 !important;
+    box-shadow: 3px 3px 0px #000000 !important;
+}
+
+body.theme-neo-brutalism .hero-card {
+    background: #FFE600 !important;
+    border: 3px solid #000000 !important;
+    border-radius: 22px !important;
+    box-shadow: 6px 6px 0px #000000 !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
+
+body.theme-neo-brutalism .hero-card-shine {
+    display: none !important;
+}
+
+body.theme-neo-brutalism .hero-label {
+    color: #000000 !important;
+    font-weight: 800 !important;
+}
+
+body.theme-neo-brutalism .live-dot-pill {
+    background: #000000 !important;
+    color: #FFE600 !important;
+    border: 2px solid #000000 !important;
+    font-weight: 800 !important;
+}
+
+body.theme-neo-brutalism .visibility-toggle {
+    background: #FFFFFF !important;
+    border: 2px solid #000000 !important;
+    box-shadow: 2px 2px 0px #000000 !important;
+    color: #000000 !important;
+}
+
+body.theme-neo-brutalism .hero-value {
+    background: none !important;
+    -webkit-background-clip: unset !important;
+    -webkit-text-fill-color: #000000 !important;
+    color: #000000 !important;
+    font-weight: 900 !important;
+}
+
+body.theme-neo-brutalism .hero-stats-grid {
+    background: #FFFFFF !important;
+    border: 2.5px solid #000000 !important;
+    border-radius: 16px !important;
+    box-shadow: 4px 4px 0px #000000 !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
+
+body.theme-neo-brutalism .stat-label {
+    color: #4A5568 !important;
+    font-weight: 700 !important;
+}
+
+body.theme-neo-brutalism .pl-badge {
+    border: 2px solid #000000 !important;
+    border-radius: 8px !important;
+    box-shadow: 2px 2px 0px #000000 !important;
+    font-weight: 800 !important;
+}
+
+body.theme-neo-brutalism .pl-badge.pos {
+    background: #25F496 !important;
+    color: #000000 !important;
+}
+
+body.theme-neo-brutalism .pl-badge.neg {
+    background: #FF5376 !important;
+    color: #000000 !important;
+}
+
+body.theme-neo-brutalism .pl-badge.neut {
+    background: #E2E8F0 !important;
+    color: #000000 !important;
+}
+
+body.theme-neo-brutalism .hero-footer-stats {
+    background: #FFFFFF !important;
+    border: 2.5px solid #000000 !important;
+    border-radius: 14px !important;
+    box-shadow: 4px 4px 0px #000000 !important;
+    color: #000000 !important;
+}
+
+body.theme-neo-brutalism .mini-stat .lbl {
+    color: #718096 !important;
+}
+
+body.theme-neo-brutalism .mini-stat strong {
+    color: #000000 !important;
+}
+
+body.theme-neo-brutalism .mini-stat-divider {
+    background: #000000 !important;
+    width: 2px !important;
+}
+
+body.theme-neo-brutalism .chip-btn {
+    background: #FFFFFF !important;
+    border: 2px solid #000000 !important;
+    color: #000000 !important;
+    box-shadow: 3px 3px 0px #000000 !important;
+    border-radius: 12px !important;
+    font-weight: 700 !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
+
+body.theme-neo-brutalism .chip-btn:hover {
+    background: #FFF9E6 !important;
+    transform: translate(-1px, -1px) !important;
+    box-shadow: 4px 4px 0px #000000 !important;
+}
+
+body.theme-neo-brutalism .chip-btn:active {
+    transform: translate(2px, 2px) !important;
+    box-shadow: 1px 1px 0px #000000 !important;
+}
+
+body.theme-neo-brutalism .chip-btn.active {
+    background: #000000 !important;
+    color: #FFFFFF !important;
+    border-color: #000000 !important;
+    box-shadow: 3px 3px 0px #000000 !important;
+}
+
+body.theme-neo-brutalism .section-header h2 {
+    color: #000000 !important;
+    font-weight: 800 !important;
+}
+
+body.theme-neo-brutalism .sort-info {
+    color: #718096 !important;
+    font-weight: 700 !important;
+}
+
+body.theme-neo-brutalism .asset-card {
+    background: #FFFFFF !important;
+    border: 2.5px solid #000000 !important;
+    border-radius: 18px !important;
+    box-shadow: 5px 5px 0px #000000 !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    transition: all 0.15s ease !important;
+}
+
+body.theme-neo-brutalism .asset-card:hover {
+    transform: translate(-2px, -2px) !important;
+    box-shadow: 7px 7px 0px #000000 !important;
+    background: #FFFDF5 !important;
+}
+
+body.theme-neo-brutalism .asset-card:active {
+    transform: translate(2px, 2px) !important;
+    box-shadow: 2px 2px 0px #000000 !important;
+}
+
+body.theme-neo-brutalism .asset-icon {
+    border: 2px solid #000000 !important;
+    box-shadow: 2px 2px 0px #000000 !important;
+    border-radius: 12px !important;
+}
+
+body.theme-neo-brutalism .asset-icon.stock { background: #67E8F9 !important; color: #000000 !important; }
+body.theme-neo-brutalism .asset-icon.fund { background: #C4B5FD !important; color: #000000 !important; }
+body.theme-neo-brutalism .asset-icon.fx { background: #FDE047 !important; color: #000000 !important; }
+body.theme-neo-brutalism .asset-icon.crypto { background: #FDBA74 !important; color: #000000 !important; }
+
+body.theme-neo-brutalism .asset-symbol {
+    color: #000000 !important;
+    font-weight: 800 !important;
+}
+
+body.theme-neo-brutalism .asset-cat-tag {
+    background: #F1F5F9 !important;
+    color: #000000 !important;
+    border: 1.5px solid #000000 !important;
+    font-weight: 800 !important;
+    border-radius: 6px !important;
+}
+
+body.theme-neo-brutalism .asset-sub {
+    color: #4A5568 !important;
+    font-weight: 600 !important;
+}
+
+body.theme-neo-brutalism .asset-val {
+    color: #000000 !important;
+    font-weight: 900 !important;
+}
+
+body.theme-neo-brutalism .asset-unit-price {
+    color: #718096 !important;
+    font-weight: 600 !important;
+}
+
+body.theme-neo-brutalism .daily-badge {
+    border: 2px solid #000000 !important;
+    box-shadow: 2px 2px 0px #000000 !important;
+    font-weight: 800 !important;
+    border-radius: 6px !important;
+}
+
+body.theme-neo-brutalism .daily-badge.pos {
+    background: #25F496 !important;
+    color: #000000 !important;
+}
+
+body.theme-neo-brutalism .daily-badge.neg {
+    background: #FF5376 !important;
+    color: #000000 !important;
+}
+
+body.theme-neo-brutalism .daily-diff-val.txt-neon-green {
+    color: #00B368 !important;
+    font-weight: 800 !important;
+}
+
+body.theme-neo-brutalism .daily-diff-val.txt-neon-red {
+    color: #E53E3E !important;
+    font-weight: 800 !important;
+}
+
+body.theme-neo-brutalism .pl-tag.total {
+    background: #EDF2F7 !important;
+    color: #000000 !important;
+    border: 1px solid #000000 !important;
+    font-weight: 700 !important;
+}
+
+body.theme-neo-brutalism .pl-tag.daily {
+    background: #FFE600 !important;
+    color: #000000 !important;
+    border: 1px solid #000000 !important;
+    font-weight: 700 !important;
+}
+
+body.theme-neo-brutalism .bottom-nav {
+    background: #FFFFFF !important;
+    border-top: 3px solid #000000 !important;
+    box-shadow: 0 -4px 0px #000000 !important;
+}
+
+body.theme-neo-brutalism .nav-item {
+    color: #718096 !important;
+}
+
+body.theme-neo-brutalism .nav-item.active {
+    color: #000000 !important;
+    font-weight: 800 !important;
+}
+
+body.theme-neo-brutalism .modal-sheet,
+body.theme-neo-brutalism .modal-content {
+    background: #FFFFFF !important;
+    border: 3px solid #000000 !important;
+    box-shadow: 8px 8px 0px #000000 !important;
+    border-radius: 20px !important;
+    color: #000000 !important;
+}
+
+body.theme-neo-brutalism .theme-option-card {
+    border: 2px solid #000000 !important;
+    box-shadow: 3px 3px 0px #000000 !important;
+    border-radius: 14px !important;
+    background: #FFFFFF !important;
+}
+
+body.theme-neo-brutalism .theme-option-card.active {
+    border: 2.5px solid #000000 !important;
+    box-shadow: 4px 4px 0px #000000 !important;
+    background: #FFF9E6 !important;
+}
+
+body.theme-neo-brutalism .btn.primary {
+    background: #25F496 !important;
+    color: #000000 !important;
+    border: 2.5px solid #000000 !important;
+    box-shadow: 3px 3px 0px #000000 !important;
+    font-weight: 800 !important;
+}
+
+body.theme-neo-brutalism .btn.primary:hover {
+    transform: translate(-1px, -1px) !important;
+    box-shadow: 5px 5px 0px #000000 !important;
+}
+
+body.theme-neo-brutalism .btn.secondary {
+    background: #FFFFFF !important;
+    color: #000000 !important;
+    border: 2.5px solid #000000 !important;
+    box-shadow: 3px 3px 0px #000000 !important;
+    font-weight: 800 !important;
 }
 
 

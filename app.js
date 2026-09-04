@@ -33,7 +33,8 @@ const THEMES = [
     "theme-bloomberg-amber", 
     "theme-midnight-violet", 
     "theme-titanium-light", 
-    "theme-pure-light"
+    "theme-pure-light",
+    "theme-neo-brutalism"
 ];
 let currentThemeIndex = 0;
 
