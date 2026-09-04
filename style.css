@@ -2952,5 +2952,347 @@ body.theme-neo-brutalism .btn.secondary {
     font-weight: 800 !important;
 }
 
+/* ==========================================================================
+   Bento Grid Modular Dashboard & Asset Weight Styles
+   ========================================================================== */
+
+/* Asset Weight Allocation Tag & Bar */
+.asset-weight-tag {
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 7px;
+    border-radius: 6px;
+    background: rgba(56, 189, 248, 0.12);
+    color: #38BDF8;
+    border: 1px solid rgba(56, 189, 248, 0.25);
+    letter-spacing: 0.3px;
+}
+
+.asset-weight-bar-bg {
+    width: 100%;
+    height: 3px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 3px;
+    margin-top: 6px;
+    overflow: hidden;
+}
+
+.asset-weight-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #38BDF8 0%, #10B981 100%);
+    border-radius: 3px;
+    transition: width 0.4s ease;
+}
+
+/* Bento Grid Switch Logic */
+#bentoDashboardGrid {
+    display: none;
+}
+
+#classicHeroCard {
+    display: block;
+}
+
+.layout-bento #classicHeroCard {
+    display: none !important;
+}
+
+.layout-bento #bentoDashboardGrid {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 22px;
+}
+
+/* Bento Box General Styles */
+.bento-box {
+    background: var(--bg-card);
+    backdrop-filter: blur(32px) saturate(180%);
+    -webkit-backdrop-filter: blur(32px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.09);
+    border-radius: 20px;
+    padding: 16px;
+    box-shadow: 0 8px 24px -4px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.bento-box:hover {
+    transform: translateY(-2px);
+    border-color: rgba(255, 255, 255, 0.18);
+    box-shadow: 0 14px 32px -4px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+}
+
+/* Box 1: Main Balance Box (Spans 2 columns) */
+.bento-balance-box {
+    grid-column: span 2;
+    background: var(--bg-hero);
+    padding: 20px 22px;
+    border-radius: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: 0 16px 40px -10px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+}
+
+.bento-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.bento-header-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.bento-label {
+    font-size: 11.5px;
+    font-weight: 700;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.bento-balance-val {
+    font-family: var(--font-mono);
+    font-size: 34px;
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -1px;
+    line-height: 1.15;
+    background: linear-gradient(180deg, #FFFFFF 0%, #E2E8F0 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 12px;
+}
+
+.bento-balance-sub {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+.bento-dot-sep {
+    color: var(--text-muted);
+}
+
+.bento-balance-sub strong {
+    color: var(--text-primary);
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+}
+
+/* Box 2 & 3: Stat Boxes */
+.bento-box-title {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-bottom: 8px;
+}
+
+.bento-stat-num {
+    font-family: var(--font-mono);
+    font-size: 18px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.3px;
+    color: var(--text-primary);
+    margin-bottom: 6px;
+}
+
+.bento-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 8px;
+    border-radius: 8px;
+    font-size: 11.5px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    width: fit-content;
+}
+
+.bento-pill.pos {
+    background: rgba(16, 185, 129, 0.14);
+    color: #34D399;
+    border: 1px solid rgba(52, 211, 153, 0.28);
+}
+
+.bento-pill.neg {
+    background: rgba(239, 68, 68, 0.14);
+    color: #F87171;
+    border: 1px solid rgba(248, 113, 113, 0.28);
+}
+
+.bento-pill.neut {
+    background: rgba(255, 255, 255, 0.07);
+    color: var(--text-secondary);
+}
+
+/* Box 4: Top Performer Star Box */
+.bento-star-body {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 6px;
+    margin: 4px 0;
+}
+
+.bento-star-sym {
+    font-size: 19px;
+    font-weight: 800;
+    letter-spacing: -0.4px;
+    color: var(--text-primary);
+}
+
+.bento-star-pct {
+    font-size: 13px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+}
+
+.bento-star-pct.pos { color: #34D399; }
+.bento-star-pct.neg { color: #F87171; }
+.bento-star-pct.neut { color: var(--text-muted); }
+
+.bento-star-name {
+    font-size: 11px;
+    color: var(--text-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Box 5: Quick Actions Box */
+.bento-action-btns {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-top: 4px;
+}
+
+.bento-act-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 8px 10px;
+    border-radius: 10px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: var(--text-primary);
+    transition: all 0.2s ease;
+}
+
+.bento-act-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.18);
+    transform: scale(1.02);
+}
+
+.bento-act-btn:active {
+    transform: scale(0.96);
+}
+
+.bento-act-btn.primary {
+    background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+    color: #FFFFFF;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Neo-Brutalism Overrides for Bento Grid */
+body.theme-neo-brutalism .bento-box {
+    background: #FFFFFF !important;
+    border: 2.5px solid #000000 !important;
+    box-shadow: 4px 4px 0px #000000 !important;
+    border-radius: 16px !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
+
+body.theme-neo-brutalism .bento-balance-box {
+    background: #FFE600 !important;
+    border: 3px solid #000000 !important;
+    box-shadow: 5px 5px 0px #000000 !important;
+}
+
+body.theme-neo-brutalism .bento-balance-val {
+    background: none !important;
+    -webkit-background-clip: unset !important;
+    -webkit-text-fill-color: #000000 !important;
+    color: #000000 !important;
+}
+
+body.theme-neo-brutalism .bento-label,
+body.theme-neo-brutalism .bento-balance-sub strong {
+    color: #000000 !important;
+}
+
+body.theme-neo-brutalism .bento-box-title {
+    color: #4A5568 !important;
+    font-weight: 700 !important;
+}
+
+body.theme-neo-brutalism .bento-stat-num,
+body.theme-neo-brutalism .bento-star-sym {
+    color: #000000 !important;
+    font-weight: 800 !important;
+}
+
+body.theme-neo-brutalism .bento-pill {
+    border: 1.5px solid #000000 !important;
+    box-shadow: 2px 2px 0px #000000 !important;
+}
+
+body.theme-neo-brutalism .bento-act-btn {
+    background: #FFFFFF !important;
+    border: 2px solid #000000 !important;
+    box-shadow: 2px 2px 0px #000000 !important;
+    color: #000000 !important;
+    font-weight: 700 !important;
+}
+
+body.theme-neo-brutalism .bento-act-btn.primary {
+    background: #25F496 !important;
+}
+
+body.theme-neo-brutalism .asset-weight-tag {
+    background: #FFE600 !important;
+    color: #000000 !important;
+    border: 1.5px solid #000000 !important;
+    font-weight: 800 !important;
+}
+
+body.theme-neo-brutalism .asset-weight-bar-bg {
+    background: #E2E8F0 !important;
+    border: 1px solid #000000 !important;
+    height: 4px !important;
+}
+
+body.theme-neo-brutalism .asset-weight-bar-fill {
+    background: #000000 !important;
+}
+
 
 

@@ -107,12 +107,12 @@ function selectTheme(themeClass) {
 }
 
 function applyLayout(layoutClass) {
-    const validLayouts = ["layout-standard", "layout-compact", "layout-grid"];
+    const validLayouts = ["layout-standard", "layout-compact", "layout-grid", "layout-bento"];
     if (!validLayouts.includes(layoutClass)) layoutClass = "layout-standard";
     
     const container = document.getElementById("appContainer");
     if (container) {
-        container.classList.remove("layout-standard", "layout-compact", "layout-grid");
+        container.classList.remove("layout-standard", "layout-compact", "layout-grid", "layout-bento");
         container.classList.add(layoutClass);
     }
     
@@ -122,10 +122,12 @@ function applyLayout(layoutClass) {
     const btnStandard = document.getElementById("btnLayoutStandard");
     const btnCompact = document.getElementById("btnLayoutCompact");
     const btnGrid = document.getElementById("btnLayoutGrid");
+    const btnBento = document.getElementById("btnLayoutBento");
 
     if (btnStandard) btnStandard.classList.toggle("active", layoutClass === "layout-standard");
     if (btnCompact) btnCompact.classList.toggle("active", layoutClass === "layout-compact");
     if (btnGrid) btnGrid.classList.toggle("active", layoutClass === "layout-grid");
+    if (btnBento) btnBento.classList.toggle("active", layoutClass === "layout-bento");
 
     saveData();
 }
@@ -348,19 +350,85 @@ function updateMarketPrice(symbol, newPrice) {
 function renderDashboard() {
     const m = calculateMetrics();
 
-    document.getElementById("totalNAV").innerText = formatCurrency(m.totalNAV);
-    document.getElementById("totalCost").innerText = formatCurrency(m.totalCost);
-    document.getElementById("totalRealizedPL").innerText = formatCurrency(m.totalRealizedPL);
+    // Classic Hero Elements
+    const classicNAV = document.getElementById("totalNAV");
+    if (classicNAV) classicNAV.innerText = formatCurrency(m.totalNAV);
 
-    const dailyElem = document.getElementById("dailyPL");
+    const classicCost = document.getElementById("totalCost");
+    if (classicCost) classicCost.innerText = formatCurrency(m.totalCost);
+
+    const classicRealized = document.getElementById("totalRealizedPL");
+    if (classicRealized) classicRealized.innerText = formatCurrency(m.totalRealizedPL);
+
     const dailyClass = m.dailyPL > 0 ? "pos" : (m.dailyPL < 0 ? "neg" : "neut");
     const dailySign = m.dailyPL > 0 ? "+" : "";
-    dailyElem.innerHTML = `<span class="pl-badge ${dailyClass}">${dailySign}${formatCurrency(m.dailyPL)} (${formatPercent(m.dailyPLPct)})</span>`;
+    const dailyElem = document.getElementById("dailyPL");
+    if (dailyElem) {
+        dailyElem.innerHTML = `<span class="pl-badge ${dailyClass}">${dailySign}${formatCurrency(m.dailyPL)} (${formatPercent(m.dailyPLPct)})</span>`;
+    }
 
-    const totalPLElem = document.getElementById("totalPL");
     const totalPLClass = m.totalUnrealizedPL > 0 ? "pos" : (m.totalUnrealizedPL < 0 ? "neg" : "neut");
     const totalPLSign = m.totalUnrealizedPL > 0 ? "+" : "";
-    totalPLElem.innerHTML = `<span class="pl-badge ${totalPLClass}">${totalPLSign}${formatCurrency(m.totalUnrealizedPL)} (${formatPercent(m.totalUnrealizedPLPct)})</span>`;
+    const totalPLElem = document.getElementById("totalPL");
+    if (totalPLElem) {
+        totalPLElem.innerHTML = `<span class="pl-badge ${totalPLClass}">${totalPLSign}${formatCurrency(m.totalUnrealizedPL)} (${formatPercent(m.totalUnrealizedPLPct)})</span>`;
+    }
+
+    // Bento Modular Grid Widgets
+    const bentoNav = document.getElementById("bentoTotalNAV");
+    if (bentoNav) bentoNav.innerText = formatCurrency(m.totalNAV);
+
+    const bentoCost = document.getElementById("bentoTotalCost");
+    if (bentoCost) bentoCost.innerText = formatCurrency(m.totalCost);
+
+    const bentoRealized = document.getElementById("bentoRealizedPL");
+    if (bentoRealized) bentoRealized.innerText = formatCurrency(m.totalRealizedPL);
+
+    const bentoDailyPLElem = document.getElementById("bentoDailyPL");
+    if (bentoDailyPLElem) bentoDailyPLElem.innerText = `${dailySign}${formatCurrency(m.dailyPL)}`;
+
+    const bentoDailyBadgeElem = document.getElementById("bentoDailyBadge");
+    if (bentoDailyBadgeElem) {
+        bentoDailyBadgeElem.className = `bento-pill ${dailyClass}`;
+        bentoDailyBadgeElem.innerHTML = `<i class="fa-solid ${m.dailyPL >= 0 ? 'fa-arrow-trend-up' : 'fa-arrow-trend-down'}"></i> ${formatPercent(m.dailyPLPct)}`;
+    }
+
+    const bentoTotalPLElem = document.getElementById("bentoTotalPL");
+    if (bentoTotalPLElem) bentoTotalPLElem.innerText = `${totalPLSign}${formatCurrency(m.totalUnrealizedPL)}`;
+
+    const bentoTotalBadgeElem = document.getElementById("bentoTotalBadge");
+    if (bentoTotalBadgeElem) {
+        bentoTotalBadgeElem.className = `bento-pill ${totalPLClass}`;
+        bentoTotalBadgeElem.innerHTML = `<i class="fa-solid ${m.totalUnrealizedPL >= 0 ? 'fa-arrow-trend-up' : 'fa-arrow-trend-down'}"></i> ${formatPercent(m.totalUnrealizedPLPct)}`;
+    }
+
+    // Top Performer of the Day (Günün Yıldızı)
+    let topHolding = null;
+    let topPct = -Infinity;
+    appState.holdings.forEach(h => {
+        const pct = h.previousClosePrice ? ((h.currentPrice - h.previousClosePrice) / h.previousClosePrice) * 100 : 0;
+        if (pct > topPct) {
+            topPct = pct;
+            topHolding = { ...h, pct };
+        }
+    });
+
+    const bentoStarSym = document.getElementById("bentoStarSymbol");
+    const bentoStarPct = document.getElementById("bentoStarChange");
+    const bentoStarName = document.getElementById("bentoStarName");
+    if (bentoStarSym && bentoStarPct && bentoStarName) {
+        if (topHolding && appState.holdings.length > 0) {
+            bentoStarSym.innerText = topHolding.symbol;
+            bentoStarPct.className = `bento-star-pct ${topHolding.pct >= 0 ? 'pos' : 'neg'}`;
+            bentoStarPct.innerHTML = `<i class="fa-solid ${topHolding.pct >= 0 ? 'fa-arrow-trend-up' : 'fa-arrow-trend-down'}"></i> ${formatPercent(topHolding.pct)}`;
+            bentoStarName.innerText = topHolding.name || topHolding.symbol;
+        } else {
+            bentoStarSym.innerText = "---";
+            bentoStarPct.className = "bento-star-pct neut";
+            bentoStarPct.innerText = "%0,00";
+            bentoStarName.innerText = "Varlık bekleniyor";
+        }
+    }
 
     const listContainer = document.getElementById("assetsList");
     const filteredHoldings = appState.activeCategory === "ALL" 
@@ -390,6 +458,8 @@ function renderDashboard() {
         const dailyPct = h.previousClosePrice ? ((h.currentPrice - h.previousClosePrice) / h.previousClosePrice) * 100 : 0;
         const isDailyPos = dailyDiff >= 0;
 
+        const weightPct = m.totalNAV > 0 ? (marketValue / m.totalNAV) * 100 : 0;
+
         const categoryLabels = { STOCK: "Hisse", FUND: "Fon", FX: "Döviz", CRYPTO: "Kripto" };
         const iconClasses = { STOCK: "stock fa-chart-line", FUND: "fund fa-vault", FX: "fx fa-coins", CRYPTO: "crypto fa-bitcoin" };
         
@@ -407,6 +477,7 @@ function renderDashboard() {
                         <div class="asset-title-row">
                             <span class="asset-symbol">${h.symbol}</span>
                             <span class="asset-cat-tag">${categoryLabels[h.category] || 'Hisse'}</span>
+                            <span class="asset-weight-tag" title="Portföydeki Ağırlığı">%${weightPct.toFixed(1)} Pay</span>
                         </div>
                         <div class="asset-sub">
                             ${formatNumber(h.quantity, h.category === 'CRYPTO' ? 4 : 2)} Adet &bull; Ort: ${formatCurrency(h.avgCost)}
@@ -416,6 +487,9 @@ function renderDashboard() {
                             <span class="asset-pl-val ${isPos ? 'txt-neon-green' : 'txt-neon-red'}">
                                 ${isPos ? '+' : ''}${formatCurrency(totalPL)} (${formatPercent(totalPLPct)})
                             </span>
+                        </div>
+                        <div class="asset-weight-bar-bg" title="Portföy Payı: %${weightPct.toFixed(1)}">
+                            <div class="asset-weight-bar-fill" style="width: ${Math.min(weightPct, 100).toFixed(1)}%;"></div>
                         </div>
                     </div>
                 </div>
