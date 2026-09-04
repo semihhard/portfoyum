@@ -817,19 +817,45 @@ function renderAnalyticsTab() {
     });
 
     const topContainer = document.getElementById("topPerformersList");
+    const rankBadges = ["🥇", "🥈", "🥉", "⭐"];
     if (sorted.length === 0) {
         topContainer.innerHTML = "<p class='txt-muted'>Portföyde varlık bulunmuyor.</p>";
     } else {
-        topContainer.innerHTML = sorted.slice(0, 4).map(h => {
+        topContainer.innerHTML = sorted.slice(0, 4).map((h, idx) => {
             const pct = ((h.currentPrice - h.avgCost) / h.avgCost) * 100;
             const isPos = pct >= 0;
             return `
                 <div class="top-item">
-                    <span><strong>${h.symbol}</strong> - ${h.name}</span>
-                    <span class="${isPos ? 'txt-neon-green' : 'txt-neon-red'}"><strong>${formatPercent(pct)}</strong></span>
+                    <div class="top-item-left">
+                        <span class="top-rank-badge">${rankBadges[idx] || '⭐'}</span>
+                        <div class="top-info">
+                            <span class="top-sym">${h.symbol}</span>
+                            <span class="top-name">${h.name || h.symbol}</span>
+                        </div>
+                    </div>
+                    <span class="top-val ${isPos ? 'txt-neon-green' : 'txt-neon-red'}">
+                        <strong>${isPos ? '+' : ''}${formatPercent(pct)}</strong>
+                    </span>
                 </div>
             `;
         }).join("");
+    }
+
+    // Populate Analytics Bento Insight Metrics
+    const topWinnerElem = document.getElementById("analyticsTopWinner");
+    if (topWinnerElem) {
+        if (sorted.length > 0) {
+            const topPct = ((sorted[0].currentPrice - sorted[0].avgCost) / sorted[0].avgCost) * 100;
+            topWinnerElem.innerHTML = `<span class="sym">${sorted[0].symbol}</span> <span class="pct ${topPct >= 0 ? 'txt-neon-green' : 'txt-neon-red'}">${topPct >= 0 ? '+' : ''}${formatPercent(topPct)}</span>`;
+        } else {
+            topWinnerElem.innerText = "---";
+        }
+    }
+
+    const activeClassesElem = document.getElementById("analyticsActiveClasses");
+    if (activeClassesElem) {
+        const activeCats = new Set(appState.holdings.map(h => h.category));
+        activeClassesElem.innerHTML = `<span class="classes-num">${activeCats.size} Sınıf</span> <small class="txt-muted">(${appState.holdings.length} Varlık)</small>`;
     }
 
     const categoryTotals = { STOCK: 0, FUND: 0, FX: 0, CRYPTO: 0 };
