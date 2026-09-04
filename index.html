@@ -395,55 +395,117 @@
 
                 <!-- Bento Grid Modular Dashboard Widgets (Active in layout-bento mode) -->
                 <div class="bento-dashboard-grid" id="bentoDashboardGrid">
-                    <!-- Box 1: Ana Portföy Bakiyesi (Spans 2 columns) -->
-                    <div class="bento-box bento-balance-box">
+                    <!-- Box 1: Master Vault / Ana Portföy Kasası (Spans 2 columns) -->
+                    <div class="bento-box bento-vault-card">
+                        <div class="bento-mesh-glow"></div>
                         <div class="bento-header">
                             <div class="bento-header-left">
-                                <span class="bento-label"><i class="fa-solid fa-vault"></i> Toplam Portföyüm</span>
-                                <span class="live-dot-pill"><span class="pulse-dot"></span> Canlı</span>
+                                <span class="bento-radar-badge"><span class="bento-radar-ping"></span> CANLI HAVUZ</span>
+                                <span class="bento-vault-tag">Ana Portföy Kasası</span>
                             </div>
-                            <button class="visibility-toggle" onclick="togglePrivacy()" title="Değerleri Gizle/Göster">
+                            <button class="bento-eye-btn" onclick="togglePrivacy()" title="Değerleri Gizle/Göster">
                                 <i class="fa-solid fa-eye"></i>
                             </button>
                         </div>
-                        <div class="bento-balance-val" id="bentoTotalNAV">₺0,00</div>
-                        <div class="bento-balance-sub">
-                            <span>Maliyet: <strong id="bentoTotalCost">₺0,00</strong></span>
-                            <span class="bento-dot-sep">•</span>
-                            <span>Realize: <strong id="bentoRealizedPL" class="txt-neon-green">₺0,00</strong></span>
+
+                        <div class="bento-balance-display">
+                            <span class="bento-balance-val" id="bentoTotalNAV">₺0,00</span>
+                        </div>
+
+                        <!-- Live Multi-Asset Allocation Ribbon inside Balance Box -->
+                        <div class="bento-alloc-ribbon">
+                            <div class="bento-alloc-bar">
+                                <div class="bento-alloc-seg stock" id="bentoSegStock" style="width: 0%;" title="Hisseler"></div>
+                                <div class="bento-alloc-seg fund" id="bentoSegFund" style="width: 0%;" title="Fonlar"></div>
+                                <div class="bento-alloc-seg fx" id="bentoSegFx" style="width: 0%;" title="Döviz/Altın"></div>
+                                <div class="bento-alloc-seg crypto" id="bentoSegCrypto" style="width: 0%;" title="Kripto"></div>
+                            </div>
+                            <div class="bento-alloc-legend" id="bentoAllocLegend">
+                                <!-- Populated dynamically via JS -->
+                            </div>
+                        </div>
+
+                        <div class="bento-vault-chips">
+                            <div class="bento-mini-chip">
+                                <span class="bento-chip-lbl"><i class="fa-solid fa-receipt"></i> Maliyet:</span>
+                                <strong id="bentoTotalCost">₺0,00</strong>
+                            </div>
+                            <div class="bento-mini-chip">
+                                <span class="bento-chip-lbl"><i class="fa-solid fa-circle-check"></i> Realize Kâr:</span>
+                                <strong id="bentoRealizedPL" class="txt-neon-green">₺0,00</strong>
+                            </div>
                         </div>
                     </div>
 
-                    <!-- Box 2: Günlük Değişim Widget'ı -->
-                    <div class="bento-box bento-stat-box">
-                        <div class="bento-box-title"><i class="fa-solid fa-calendar-day" style="color: #38BDF8;"></i> Bugün</div>
-                        <div class="bento-stat-num" id="bentoDailyPL">₺0,00</div>
-                        <div class="bento-pill neut" id="bentoDailyBadge">%0,00</div>
+                    <!-- Box 2: Piyasa Nabzı (Günlük Değişim Widget'ı) -->
+                    <div class="bento-box bento-pulse-card" id="bentoPulseCard">
+                        <div class="bento-card-corner-glow"></div>
+                        <div class="bento-box-title">
+                            <span class="bento-icon-badge cyan"><i class="fa-solid fa-bolt"></i></span>
+                            <span>GÜNLÜK NABIZ</span>
+                        </div>
+                        <div class="bento-stat-main">
+                            <div class="bento-stat-num" id="bentoDailyPL">₺0,00</div>
+                            <div class="bento-pill neut" id="bentoDailyBadge">%0,00</div>
+                        </div>
+                        <div class="bento-sub-metric-lbl">24s Net Değişim</div>
                     </div>
 
-                    <!-- Box 3: Toplam Getiri Widget'ı -->
-                    <div class="bento-box bento-stat-box">
-                        <div class="bento-box-title"><i class="fa-solid fa-chart-line" style="color: #10B981;"></i> Toplam K/Z</div>
-                        <div class="bento-stat-num" id="bentoTotalPL">₺0,00</div>
-                        <div class="bento-pill neut" id="bentoTotalBadge">%0,00</div>
+                    <!-- Box 3: Toplam Getiri & Sermaye Çarpanı Widget'ı -->
+                    <div class="bento-box bento-yield-card" id="bentoYieldCard">
+                        <div class="bento-card-corner-glow"></div>
+                        <div class="bento-box-title">
+                            <span class="bento-icon-badge emerald"><i class="fa-solid fa-chart-line"></i></span>
+                            <span>TOPLAM GETİRİ</span>
+                        </div>
+                        <div class="bento-stat-main">
+                            <div class="bento-stat-num" id="bentoTotalPL">₺0,00</div>
+                            <div class="bento-pill neut" id="bentoTotalBadge">%0,00</div>
+                        </div>
+                        <div class="bento-sub-metric-lbl" id="bentoMultiplierLbl">Sermaye Çarpanı: 1.00x</div>
                     </div>
 
                     <!-- Box 4: Günün Yıldızı (Top Performer) -->
-                    <div class="bento-box bento-star-box">
-                        <div class="bento-box-title"><i class="fa-solid fa-crown txt-neon-amber"></i> Günün Lideri</div>
-                        <div class="bento-star-body">
-                            <div class="bento-star-sym" id="bentoStarSymbol">---</div>
+                    <div class="bento-box bento-star-card">
+                        <div class="bento-card-corner-glow"></div>
+                        <div class="bento-box-title">
+                            <span class="bento-icon-badge amber"><i class="fa-solid fa-crown"></i></span>
+                            <span>GÜNÜN LİDERİ</span>
+                        </div>
+                        <div class="bento-star-hero">
+                            <div class="bento-star-symbol-badge" id="bentoStarSymbol">---</div>
                             <div class="bento-star-pct" id="bentoStarChange">%0,00</div>
                         </div>
                         <div class="bento-star-name" id="bentoStarName">Varlık bekleniyor</div>
                     </div>
 
-                    <!-- Box 5: Hızlı Kontrol Adası -->
-                    <div class="bento-box bento-actions-box">
-                        <div class="bento-box-title"><i class="fa-solid fa-bolt" style="color: #F59E0B;"></i> Hızlı İşlemler</div>
-                        <div class="bento-action-btns">
-                            <button class="bento-act-btn primary" onclick="openAddModal()"><i class="fa-solid fa-plus"></i> Ekle</button>
-                            <button class="bento-act-btn" onclick="document.getElementById('btnRefreshPrices').click()"><i class="fa-solid fa-arrows-rotate"></i> Yenile</button>
+                    <!-- Box 5: Hızlı Kontrol İstasyonu (Quick Command Dock) -->
+                    <div class="bento-box bento-action-card">
+                        <div class="bento-box-title">
+                            <span class="bento-icon-badge violet"><i class="fa-solid fa-wand-magic-sparkles"></i></span>
+                            <span>KONTROL ADASI</span>
+                        </div>
+                        <div class="bento-action-grid">
+                            <button class="bento-dock-btn primary" onclick="openAddModal()">
+                                <i class="fa-solid fa-plus"></i> Varlık Ekle
+                            </button>
+                            <button class="bento-dock-btn" onclick="document.getElementById('btnRefreshPrices').click()">
+                                <i class="fa-solid fa-arrows-rotate"></i> Yenile
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Box 6: Portföy Çeşitlilik & Dağılım Özeti (Spans 2 columns) -->
+                    <div class="bento-box bento-diversify-card">
+                        <div class="bento-box-title" style="margin-bottom: 10px;">
+                            <div style="display: flex; align-items: center; gap: 6px;">
+                                <span class="bento-icon-badge blue"><i class="fa-solid fa-pie-chart"></i></span>
+                                <span>PORTFÖY ÇEŞİTLİLİK & DAĞILIM</span>
+                            </div>
+                            <span class="bento-asset-count-pill" id="bentoActiveCount">0 Varlık</span>
+                        </div>
+                        <div class="bento-cat-chips-row" id="bentoCatChipsRow">
+                            <!-- Populated via JS: Stock, Fund, FX, Crypto metric badges -->
                         </div>
                     </div>
                 </div>

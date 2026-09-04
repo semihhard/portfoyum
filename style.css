@@ -3122,6 +3122,37 @@ body.theme-neo-brutalism .btn.secondary {
     border-radius: 3px;
     transition: width 0.4s ease;
 }
+/* ==========================================================================
+   Bento Grid Modular Dashboard & Next-Gen Widget System
+   ========================================================================== */
+
+/* Asset Weight Allocation Tag & Bar */
+.asset-weight-tag {
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 7px;
+    border-radius: 6px;
+    background: rgba(56, 189, 248, 0.12);
+    color: #38BDF8;
+    border: 1px solid rgba(56, 189, 248, 0.25);
+    letter-spacing: 0.3px;
+}
+
+.asset-weight-bar-bg {
+    width: 100%;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 4px;
+    margin-top: 6px;
+    overflow: hidden;
+}
+
+.asset-weight-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #38BDF8 0%, #10B981 100%);
+    border-radius: 4px;
+    transition: width 0.4s ease;
+}
 
 /* Bento Grid Switch Logic */
 #bentoDashboardGrid {
@@ -3139,117 +3170,306 @@ body.theme-neo-brutalism .btn.secondary {
 .layout-bento #bentoDashboardGrid {
     display: grid !important;
     grid-template-columns: 1fr 1fr;
-    gap: 12px;
-    margin-bottom: 22px;
+    gap: 14px;
+    margin-bottom: 24px;
 }
 
-/* Bento Box General Styles */
+/* Bento Box Core Glass & HUD Style */
 .bento-box {
     background: var(--bg-card);
-    backdrop-filter: blur(32px) saturate(180%);
-    -webkit-backdrop-filter: blur(32px) saturate(180%);
-    border: 1px solid rgba(255, 255, 255, 0.09);
-    border-radius: 20px;
+    backdrop-filter: blur(36px) saturate(200%);
+    -webkit-backdrop-filter: blur(36px) saturate(200%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 22px;
     padding: 16px;
-    box-shadow: 0 8px 24px -4px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    box-shadow: 0 10px 28px -6px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.12);
     position: relative;
     overflow: hidden;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.bento-box::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.04) 1px, transparent 0);
+    background-size: 16px 16px;
+    pointer-events: none;
+    opacity: 0.8;
 }
 
 .bento-box:hover {
-    transform: translateY(-2px);
-    border-color: rgba(255, 255, 255, 0.18);
-    box-shadow: 0 14px 32px -4px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+    transform: translateY(-3px);
+    border-color: rgba(255, 255, 255, 0.2);
+    box-shadow: 0 16px 36px -6px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.18);
 }
 
-/* Box 1: Main Balance Box (Spans 2 columns) */
-.bento-balance-box {
+/* Box Corner Glow */
+.bento-card-corner-glow {
+    position: absolute;
+    top: -24px;
+    right: -24px;
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(56, 189, 248, 0.15) 0%, transparent 70%);
+    pointer-events: none;
+    transition: all 0.3s ease;
+}
+
+/* Module 1: Master Vault Card (Spans 2 columns) */
+.bento-vault-card {
     grid-column: span 2;
-    background: var(--bg-hero);
+    background: linear-gradient(135deg, rgba(16, 24, 40, 0.95) 0%, rgba(8, 14, 26, 0.98) 100%);
+    border: 1px solid rgba(56, 189, 248, 0.22);
     padding: 20px 22px;
-    border-radius: 24px;
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    box-shadow: 0 16px 40px -10px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+    border-radius: 26px;
+    box-shadow: 0 16px 44px -10px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.18), 0 0 20px rgba(56, 189, 248, 0.08);
+}
+
+.bento-mesh-glow {
+    position: absolute;
+    top: -50px;
+    right: -50px;
+    width: 180px;
+    height: 180px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(14, 165, 233, 0.25) 0%, rgba(16, 185, 129, 0.12) 50%, transparent 70%);
+    filter: blur(25px);
+    pointer-events: none;
 }
 
 .bento-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 10px;
+    margin-bottom: 12px;
+    position: relative;
+    z-index: 2;
 }
 
 .bento-header-left {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
 }
 
-.bento-label {
+.bento-radar-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 9px;
+    border-radius: 20px;
+    background: rgba(16, 185, 129, 0.14);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    color: #34D399;
+    font-size: 10.5px;
+    font-weight: 800;
+    letter-spacing: 0.6px;
+}
+
+.bento-radar-ping {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #10B981;
+    box-shadow: 0 0 8px #10B981;
+    animation: bentoPing 1.8s infinite;
+}
+
+@keyframes bentoPing {
+    0% { transform: scale(0.95); opacity: 0.8; }
+    50% { transform: scale(1.3); opacity: 1; box-shadow: 0 0 12px #10B981; }
+    100% { transform: scale(0.95); opacity: 0.8; }
+}
+
+.bento-vault-tag {
     font-size: 11.5px;
     font-weight: 700;
     color: var(--text-secondary);
     text-transform: uppercase;
     letter-spacing: 0.8px;
+}
+
+.bento-eye-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.07);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: var(--text-secondary);
     display: flex;
     align-items: center;
-    gap: 6px;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 12px;
+    transition: all 0.2s ease;
+}
+
+.bento-eye-btn:hover {
+    background: rgba(255, 255, 255, 0.15);
+    color: var(--text-primary);
+    transform: scale(1.08);
+}
+
+.bento-balance-display {
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+    margin-bottom: 14px;
+    position: relative;
+    z-index: 2;
 }
 
 .bento-balance-val {
     font-family: var(--font-mono);
-    font-size: 34px;
-    font-weight: 800;
+    font-size: 36px;
+    font-weight: 900;
     font-variant-numeric: tabular-nums;
-    letter-spacing: -1px;
-    line-height: 1.15;
+    letter-spacing: -1.2px;
+    line-height: 1.1;
     background: linear-gradient(180deg, #FFFFFF 0%, #E2E8F0 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    margin-bottom: 12px;
 }
 
-.bento-balance-sub {
+/* Bento Live Multi-Asset Allocation Ribbon */
+.bento-alloc-ribbon {
+    margin-bottom: 14px;
+    position: relative;
+    z-index: 2;
+}
+
+.bento-alloc-bar {
+    width: 100%;
+    height: 7px;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.08);
     display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 12px;
+    overflow: hidden;
+    gap: 2px;
+}
+
+.bento-alloc-seg {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.bento-alloc-seg.stock { background: #38BDF8; box-shadow: 0 0 8px rgba(56, 189, 248, 0.4); }
+.bento-alloc-seg.fund { background: #C084FC; box-shadow: 0 0 8px rgba(192, 132, 252, 0.4); }
+.bento-alloc-seg.fx { background: #FBBF24; box-shadow: 0 0 8px rgba(251, 191, 36, 0.4); }
+.bento-alloc-seg.crypto { background: #FB923C; box-shadow: 0 0 8px rgba(251, 146, 60, 0.4); }
+
+.bento-alloc-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 6px;
+    font-size: 11px;
+    font-weight: 600;
     color: var(--text-secondary);
 }
 
-.bento-dot-sep {
-    color: var(--text-muted);
-}
-
-.bento-balance-sub strong {
-    color: var(--text-primary);
-    font-family: var(--font-mono);
-    font-variant-numeric: tabular-nums;
-}
-
-/* Box 2 & 3: Stat Boxes */
-.bento-box-title {
-    font-size: 11px;
-    font-weight: 600;
-    color: var(--text-muted);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    display: flex;
+.bento-leg-item {
+    display: inline-flex;
     align-items: center;
     gap: 5px;
-    margin-bottom: 8px;
+}
+
+.bento-leg-item .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+}
+
+.bento-leg-item.stock .dot { background: #38BDF8; }
+.bento-leg-item.fund .dot { background: #C084FC; }
+.bento-leg-item.fx .dot { background: #FBBF24; }
+.bento-leg-item.crypto .dot { background: #FB923C; }
+
+.bento-vault-chips {
+    display: flex;
+    gap: 10px;
+    position: relative;
+    z-index: 2;
+}
+
+.bento-mini-chip {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 7px 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 11.5px;
+}
+
+.bento-chip-lbl {
+    color: var(--text-muted);
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.bento-mini-chip strong {
+    font-family: var(--font-mono);
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    color: var(--text-primary);
+}
+
+/* Module Titles & Icons */
+.bento-box-title {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.7px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+    margin-bottom: 10px;
+    position: relative;
+    z-index: 2;
+}
+
+.bento-icon-badge {
+    width: 26px;
+    height: 26px;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+}
+
+.bento-icon-badge.cyan { background: rgba(56, 189, 248, 0.15); color: #38BDF8; }
+.bento-icon-badge.emerald { background: rgba(16, 185, 129, 0.15); color: #34D399; }
+.bento-icon-badge.amber { background: rgba(245, 158, 11, 0.15); color: #FBBF24; }
+.bento-icon-badge.violet { background: rgba(139, 92, 246, 0.15); color: #A78BFA; }
+.bento-icon-badge.blue { background: rgba(59, 130, 246, 0.15); color: #60A5FA; }
+
+/* Stat Numbers & Pill */
+.bento-stat-main {
+    margin: 4px 0 8px 0;
+    position: relative;
+    z-index: 2;
 }
 
 .bento-stat-num {
     font-family: var(--font-mono);
-    font-size: 18px;
-    font-weight: 700;
+    font-size: 20px;
+    font-weight: 800;
     font-variant-numeric: tabular-nums;
-    letter-spacing: -0.3px;
+    letter-spacing: -0.4px;
     color: var(--text-primary);
     margin-bottom: 6px;
 }
@@ -3257,8 +3477,8 @@ body.theme-neo-brutalism .btn.secondary {
 .bento-pill {
     display: inline-flex;
     align-items: center;
-    gap: 4px;
-    padding: 3px 8px;
+    gap: 5px;
+    padding: 3px 9px;
     border-radius: 8px;
     font-size: 11.5px;
     font-weight: 700;
@@ -3267,45 +3487,78 @@ body.theme-neo-brutalism .btn.secondary {
 }
 
 .bento-pill.pos {
-    background: rgba(16, 185, 129, 0.14);
+    background: rgba(16, 185, 129, 0.15);
     color: #34D399;
-    border: 1px solid rgba(52, 211, 153, 0.28);
+    border: 1px solid rgba(52, 211, 153, 0.3);
 }
 
 .bento-pill.neg {
-    background: rgba(239, 68, 68, 0.14);
+    background: rgba(239, 68, 68, 0.15);
     color: #F87171;
-    border: 1px solid rgba(248, 113, 113, 0.28);
+    border: 1px solid rgba(248, 113, 113, 0.3);
 }
 
 .bento-pill.neut {
-    background: rgba(255, 255, 255, 0.07);
+    background: rgba(255, 255, 255, 0.08);
     color: var(--text-secondary);
 }
 
-/* Box 4: Top Performer Star Box */
-.bento-star-body {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: 6px;
-    margin: 4px 0;
+.bento-sub-metric-lbl {
+    font-size: 10.5px;
+    color: var(--text-muted);
+    font-weight: 500;
+    position: relative;
+    z-index: 2;
 }
 
-.bento-star-sym {
-    font-size: 19px;
-    font-weight: 800;
-    letter-spacing: -0.4px;
+.bento-sub-metric-lbl strong {
     color: var(--text-primary);
+    font-family: var(--font-mono);
+}
+
+/* Dynamic Glow Classes */
+.bento-pulse-card.glow-pos .bento-card-corner-glow {
+    background: radial-gradient(circle, rgba(16, 185, 129, 0.25) 0%, transparent 70%);
+}
+.bento-pulse-card.glow-neg .bento-card-corner-glow {
+    background: radial-gradient(circle, rgba(239, 68, 68, 0.25) 0%, transparent 70%);
+}
+.bento-yield-card.glow-pos .bento-card-corner-glow {
+    background: radial-gradient(circle, rgba(16, 185, 129, 0.25) 0%, transparent 70%);
+}
+.bento-yield-card.glow-neg .bento-card-corner-glow {
+    background: radial-gradient(circle, rgba(239, 68, 68, 0.25) 0%, transparent 70%);
+}
+
+/* Module 4: Star Performer Card */
+.bento-star-hero {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin: 6px 0;
+    position: relative;
+    z-index: 2;
+}
+
+.bento-star-symbol-badge {
+    font-size: 17px;
+    font-weight: 800;
+    color: var(--text-primary);
+    letter-spacing: -0.3px;
+    padding: 3px 8px;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .bento-star-pct {
-    font-size: 13px;
-    font-weight: 700;
+    font-size: 13.5px;
+    font-weight: 800;
     font-variant-numeric: tabular-nums;
     display: inline-flex;
     align-items: center;
-    gap: 3px;
+    gap: 4px;
 }
 
 .bento-star-pct.pos { color: #34D399; }
@@ -3318,119 +3571,351 @@ body.theme-neo-brutalism .btn.secondary {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    position: relative;
+    z-index: 2;
 }
 
-/* Box 5: Quick Actions Box */
-.bento-action-btns {
+/* Module 5: Action Deck Card */
+.bento-action-grid {
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 8px;
     margin-top: 4px;
+    position: relative;
+    z-index: 2;
 }
 
-.bento-act-btn {
+.bento-dock-btn {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 6px;
-    padding: 8px 10px;
-    border-radius: 10px;
+    gap: 8px;
+    padding: 9px 12px;
+    border-radius: 12px;
     font-size: 12px;
-    font-weight: 600;
+    font-weight: 700;
     cursor: pointer;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.1);
     color: var(--text-primary);
-    transition: all 0.2s ease;
+    transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.bento-act-btn:hover {
-    background: rgba(255, 255, 255, 0.1);
-    border-color: rgba(255, 255, 255, 0.18);
+.bento-dock-btn:hover {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.22);
     transform: scale(1.02);
 }
 
-.bento-act-btn:active {
+.bento-dock-btn:active {
     transform: scale(0.96);
 }
 
-.bento-act-btn.primary {
+.bento-dock-btn.primary {
     background: linear-gradient(135deg, #10B981 0%, #059669 100%);
     color: #FFFFFF;
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    box-shadow: 0 4px 14px rgba(16, 185, 129, 0.3);
 }
 
-/* Neo-Brutalism Overrides for Bento Grid */
+.bento-dock-btn.primary:hover {
+    box-shadow: 0 6px 20px rgba(16, 185, 129, 0.45);
+}
+
+/* Module 6: Diversification Deck Card */
+.bento-diversify-card {
+    grid-column: span 2;
+    padding: 16px 18px;
+}
+
+.bento-asset-count-pill {
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--text-secondary);
+}
+
+.bento-cat-chips-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    position: relative;
+    z-index: 2;
+}
+
+.bento-cat-chip {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 9px 4px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 3px;
+    min-width: 0;
+    transition: all 0.2s ease;
+}
+
+.bento-cat-chip:hover {
+    background: rgba(255, 255, 255, 0.08);
+    transform: translateY(-2px);
+}
+
+.bento-cat-chip .chip-title {
+    font-size: 9.5px;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.bento-cat-chip.stock .chip-title i { color: #38BDF8; }
+.bento-cat-chip.fund .chip-title i { color: #C084FC; }
+.bento-cat-chip.fx .chip-title i { color: #FBBF24; }
+.bento-cat-chip.crypto .chip-title i { color: #FB923C; }
+
+.bento-cat-chip .chip-val {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+    color: var(--text-primary);
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.bento-cat-chip .chip-pct {
+    font-size: 9.5px;
+    font-weight: 800;
+    color: var(--text-secondary);
+}
+
+/* ==========================================================================
+   Bento Mode Asset Cards Custom Styling (.layout-bento #assetsList)
+   ========================================================================== */
+.layout-bento #assetsList .asset-card {
+    background: var(--bg-card);
+    backdrop-filter: blur(30px) saturate(190%);
+    -webkit-backdrop-filter: blur(30px) saturate(190%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 16px 18px;
+    box-shadow: 0 8px 24px -4px rgba(0, 0, 0, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.09);
+    position: relative;
+    overflow: hidden;
+    transition: all 0.26s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.layout-bento #assetsList .asset-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: var(--neon-cyan);
+    opacity: 0.85;
+}
+
+.layout-bento #assetsList .asset-card:hover {
+    transform: translateY(-3px) scale(1.008);
+    border-color: rgba(56, 189, 248, 0.35);
+    box-shadow: 0 16px 36px -6px rgba(0, 0, 0, 0.45), 0 0 18px rgba(56, 189, 248, 0.15);
+}
+
+.layout-bento #assetsList .asset-card .asset-weight-tag {
+    background: rgba(56, 189, 248, 0.15);
+    border: 1px solid rgba(56, 189, 248, 0.3);
+    font-weight: 800;
+}
+
+/* ==========================================================================
+   Neo-Brutalism Overrides for Redesigned Bento Grid
+   ========================================================================== */
 body.theme-neo-brutalism .bento-box {
     background: #FFFFFF !important;
-    border: 2.5px solid #000000 !important;
-    box-shadow: 4px 4px 0px #000000 !important;
-    border-radius: 16px !important;
+    border: 3px solid #000000 !important;
+    box-shadow: 5px 5px 0px #000000 !important;
+    border-radius: 18px !important;
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
 }
 
-body.theme-neo-brutalism .bento-balance-box {
-    background: #FFE600 !important;
-    border: 3px solid #000000 !important;
-    box-shadow: 5px 5px 0px #000000 !important;
+body.theme-neo-brutalism .bento-box::before {
+    display: none !important;
 }
 
-body.theme-neo-brutalism .bento-balance-val {
+body.theme-neo-brutalism .bento-card-corner-glow,
+body.theme-neo-brutalism .bento-mesh-glow {
+    display: none !important;
+}
+
+body.theme-neo-brutalism .bento-vault-card {
+    background: #FFE600 !important; /* Signature Pop Yellow */
+    border: 3.5px solid #000000 !important;
+    box-shadow: 6px 6px 0px #000000 !important;
+}
+
+body.theme-neo-brutalism .bento-vault-card .bento-balance-val {
     background: none !important;
     -webkit-background-clip: unset !important;
     -webkit-text-fill-color: #000000 !important;
     color: #000000 !important;
+    font-weight: 900 !important;
 }
 
-body.theme-neo-brutalism .bento-label,
-body.theme-neo-brutalism .bento-balance-sub strong {
-    color: #000000 !important;
+body.theme-neo-brutalism .bento-radar-badge {
+    background: #000000 !important;
+    color: #FFE600 !important;
+    border: 1.5px solid #000000 !important;
+    font-weight: 900 !important;
 }
 
-body.theme-neo-brutalism .bento-box-title {
-    color: #4A5568 !important;
-    font-weight: 700 !important;
+body.theme-neo-brutalism .bento-radar-ping {
+    background: #FFE600 !important;
+    box-shadow: 0 0 6px #FFE600 !important;
 }
 
-body.theme-neo-brutalism .bento-stat-num,
-body.theme-neo-brutalism .bento-star-sym {
+body.theme-neo-brutalism .bento-vault-tag {
     color: #000000 !important;
     font-weight: 800 !important;
 }
 
-body.theme-neo-brutalism .bento-pill {
-    border: 1.5px solid #000000 !important;
-    box-shadow: 2px 2px 0px #000000 !important;
-}
-
-body.theme-neo-brutalism .bento-act-btn {
+body.theme-neo-brutalism .bento-eye-btn {
     background: #FFFFFF !important;
     border: 2px solid #000000 !important;
     box-shadow: 2px 2px 0px #000000 !important;
     color: #000000 !important;
-    font-weight: 700 !important;
 }
 
-body.theme-neo-brutalism .bento-act-btn.primary {
-    background: #25F496 !important;
+body.theme-neo-brutalism .bento-alloc-bar {
+    background: #FFFFFF !important;
+    border: 2px solid #000000 !important;
+    height: 9px !important;
 }
 
-body.theme-neo-brutalism .asset-weight-tag {
-    background: #FFE600 !important;
+body.theme-neo-brutalism .bento-alloc-seg {
+    box-shadow: none !important;
+    border-right: 1px solid #000000 !important;
+}
+
+body.theme-neo-brutalism .bento-alloc-legend {
     color: #000000 !important;
-    border: 1.5px solid #000000 !important;
     font-weight: 800 !important;
 }
 
-body.theme-neo-brutalism .asset-weight-bar-bg {
-    background: #E2E8F0 !important;
-    border: 1px solid #000000 !important;
-    height: 4px !important;
+body.theme-neo-brutalism .bento-mini-chip {
+    background: #FFFFFF !important;
+    border: 2px solid #000000 !important;
+    box-shadow: 2px 2px 0px #000000 !important;
+    color: #000000 !important;
 }
 
-body.theme-neo-brutalism .asset-weight-bar-fill {
+body.theme-neo-brutalism .bento-mini-chip strong {
+    color: #000000 !important;
+}
+
+body.theme-neo-brutalism .bento-box-title {
+    color: #000000 !important;
+    font-weight: 800 !important;
+}
+
+body.theme-neo-brutalism .bento-icon-badge {
+    border: 1.5px solid #000000 !important;
+    box-shadow: 1.5px 1.5px 0px #000000 !important;
+}
+
+body.theme-neo-brutalism .bento-stat-num {
+    color: #000000 !important;
+    font-weight: 900 !important;
+}
+
+body.theme-neo-brutalism .bento-pill {
+    border: 2px solid #000000 !important;
+    box-shadow: 2px 2px 0px #000000 !important;
+    font-weight: 800 !important;
+}
+
+body.theme-neo-brutalism .bento-sub-metric-lbl {
+    color: #4A5568 !important;
+    font-weight: 700 !important;
+}
+
+body.theme-neo-brutalism .bento-star-card {
+    background: #FFF7ED !important;
+}
+
+body.theme-neo-brutalism .bento-star-symbol-badge {
+    background: #FDBA74 !important;
+    color: #000000 !important;
+    border: 2px solid #000000 !important;
+    box-shadow: 2px 2px 0px #000000 !important;
+    font-weight: 900 !important;
+}
+
+body.theme-neo-brutalism .bento-star-name {
+    color: #4A5568 !important;
+    font-weight: 600 !important;
+}
+
+body.theme-neo-brutalism .bento-dock-btn {
+    background: #FFFFFF !important;
+    border: 2px solid #000000 !important;
+    box-shadow: 2px 2px 0px #000000 !important;
+    color: #000000 !important;
+    font-weight: 800 !important;
+}
+
+body.theme-neo-brutalism .bento-dock-btn.primary {
+    background: #25F496 !important;
+}
+
+body.theme-neo-brutalism .bento-dock-btn:hover {
+    transform: translate(-1px, -1px) !important;
+    box-shadow: 4px 4px 0px #000000 !important;
+}
+
+body.theme-neo-brutalism .bento-asset-count-pill {
     background: #000000 !important;
+    color: #FFFFFF !important;
+    font-weight: 800 !important;
+}
+
+body.theme-neo-brutalism .bento-cat-chip {
+    background: #FFFFFF !important;
+    border: 2px solid #000000 !important;
+    box-shadow: 2px 2px 0px #000000 !important;
+}
+
+body.theme-neo-brutalism .bento-cat-chip .chip-title {
+    color: #000000 !important;
+    font-weight: 800 !important;
+}
+
+body.theme-neo-brutalism .bento-cat-chip .chip-val {
+    color: #000000 !important;
+}
+
+body.theme-neo-brutalism .bento-cat-chip .chip-pct {
+    color: #4A5568 !important;
+    font-weight: 800 !important;
+}
+
+body.theme-neo-brutalism .layout-bento #assetsList .asset-card {
+    background: #FFFFFF !important;
+    border: 3px solid #000000 !important;
+    box-shadow: 5px 5px 0px #000000 !important;
+    border-radius: 18px !important;
+}
+
+body.theme-neo-brutalism .layout-bento #assetsList .asset-card::before {
+    background: #000000 !important;
+    width: 6px !important;
 }
 
 /* ==========================================================================

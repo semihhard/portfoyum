@@ -382,8 +382,9 @@ function renderDashboard() {
     if (bentoCost) bentoCost.innerText = formatCurrency(m.totalCost);
 
     const bentoRealized = document.getElementById("bentoRealizedPL");
-    if (bentoRealized) bentoRealized.innerText = formatCurrency(m.totalRealizedPL);
+    if (bentoRealized) bentoRealized.innerText = `${m.totalRealizedPL >= 0 ? '+' : ''}${formatCurrency(m.totalRealizedPL)}`;
 
+    // Module 2: Daily Pulse
     const bentoDailyPLElem = document.getElementById("bentoDailyPL");
     if (bentoDailyPLElem) bentoDailyPLElem.innerText = `${dailySign}${formatCurrency(m.dailyPL)}`;
 
@@ -393,6 +394,13 @@ function renderDashboard() {
         bentoDailyBadgeElem.innerHTML = `<i class="fa-solid ${m.dailyPL >= 0 ? 'fa-arrow-trend-up' : 'fa-arrow-trend-down'}"></i> ${formatPercent(m.dailyPLPct)}`;
     }
 
+    const bentoPulseCard = document.getElementById("bentoPulseCard");
+    if (bentoPulseCard) {
+        bentoPulseCard.classList.remove("glow-pos", "glow-neg", "glow-neut");
+        bentoPulseCard.classList.add(`glow-${dailyClass}`);
+    }
+
+    // Module 3: Total Yield & Capital Multiplier
     const bentoTotalPLElem = document.getElementById("bentoTotalPL");
     if (bentoTotalPLElem) bentoTotalPLElem.innerText = `${totalPLSign}${formatCurrency(m.totalUnrealizedPL)}`;
 
@@ -402,7 +410,55 @@ function renderDashboard() {
         bentoTotalBadgeElem.innerHTML = `<i class="fa-solid ${m.totalUnrealizedPL >= 0 ? 'fa-arrow-trend-up' : 'fa-arrow-trend-down'}"></i> ${formatPercent(m.totalUnrealizedPLPct)}`;
     }
 
-    // Top Performer of the Day (Günün Yıldızı)
+    const multiplier = m.totalCost > 0 ? (m.totalNAV / m.totalCost) : 1;
+    const multLbl = document.getElementById("bentoMultiplierLbl");
+    if (multLbl) {
+        multLbl.innerHTML = `Sermaye Çarpanı: <strong>${multiplier.toFixed(2)}x</strong>`;
+    }
+
+    const bentoYieldCard = document.getElementById("bentoYieldCard");
+    if (bentoYieldCard) {
+        bentoYieldCard.classList.remove("glow-pos", "glow-neg", "glow-neut");
+        bentoYieldCard.classList.add(`glow-${totalPLClass}`);
+    }
+
+    // Module 1: Live Multi-Asset Allocation Ribbon inside Balance Box & Module 6 Category Breakdown
+    const catTotals = { STOCK: 0, FUND: 0, FX: 0, CRYPTO: 0 };
+    appState.holdings.forEach(h => {
+        const val = h.quantity * h.currentPrice;
+        if (catTotals[h.category] !== undefined) {
+            catTotals[h.category] += val;
+        } else {
+            catTotals.STOCK += val;
+        }
+    });
+
+    const totalNavVal = m.totalNAV || 0;
+    const stockPct = totalNavVal > 0 ? (catTotals.STOCK / totalNavVal) * 100 : 0;
+    const fundPct = totalNavVal > 0 ? (catTotals.FUND / totalNavVal) * 100 : 0;
+    const fxPct = totalNavVal > 0 ? (catTotals.FX / totalNavVal) * 100 : 0;
+    const cryptoPct = totalNavVal > 0 ? (catTotals.CRYPTO / totalNavVal) * 100 : 0;
+
+    const segStock = document.getElementById("bentoSegStock");
+    if (segStock) segStock.style.width = `${stockPct.toFixed(1)}%`;
+    const segFund = document.getElementById("bentoSegFund");
+    if (segFund) segFund.style.width = `${fundPct.toFixed(1)}%`;
+    const segFx = document.getElementById("bentoSegFx");
+    if (segFx) segFx.style.width = `${fxPct.toFixed(1)}%`;
+    const segCrypto = document.getElementById("bentoSegCrypto");
+    if (segCrypto) segCrypto.style.width = `${cryptoPct.toFixed(1)}%`;
+
+    const allocLegend = document.getElementById("bentoAllocLegend");
+    if (allocLegend) {
+        allocLegend.innerHTML = `
+            <span class="bento-leg-item stock"><span class="dot"></span> Hisse %${stockPct.toFixed(0)}</span>
+            <span class="bento-leg-item fund"><span class="dot"></span> Fon %${fundPct.toFixed(0)}</span>
+            <span class="bento-leg-item fx"><span class="dot"></span> Döviz %${fxPct.toFixed(0)}</span>
+            <span class="bento-leg-item crypto"><span class="dot"></span> Kripto %${cryptoPct.toFixed(0)}</span>
+        `;
+    }
+
+    // Module 4: Top Performer of the Day (Günün Yıldızı)
     let topHolding = null;
     let topPct = -Infinity;
     appState.holdings.forEach(h => {
@@ -428,6 +484,38 @@ function renderDashboard() {
             bentoStarPct.innerText = "%0,00";
             bentoStarName.innerText = "Varlık bekleniyor";
         }
+    }
+
+    // Module 6: Diversification & Category Chips
+    const activeCountElem = document.getElementById("bentoActiveCount");
+    if (activeCountElem) {
+        activeCountElem.innerText = `${appState.holdings.length} Aktif Varlık`;
+    }
+
+    const bentoCatChipsRow = document.getElementById("bentoCatChipsRow");
+    if (bentoCatChipsRow) {
+        bentoCatChipsRow.innerHTML = `
+            <div class="bento-cat-chip stock">
+                <span class="chip-title"><i class="fa-solid fa-chart-line"></i> Hisse</span>
+                <strong class="chip-val">${formatCurrency(catTotals.STOCK)}</strong>
+                <span class="chip-pct">%${stockPct.toFixed(1)}</span>
+            </div>
+            <div class="bento-cat-chip fund">
+                <span class="chip-title"><i class="fa-solid fa-vault"></i> Fon</span>
+                <strong class="chip-val">${formatCurrency(catTotals.FUND)}</strong>
+                <span class="chip-pct">%${fundPct.toFixed(1)}</span>
+            </div>
+            <div class="bento-cat-chip fx">
+                <span class="chip-title"><i class="fa-solid fa-coins"></i> Döviz</span>
+                <strong class="chip-val">${formatCurrency(catTotals.FX)}</strong>
+                <span class="chip-pct">%${fxPct.toFixed(1)}</span>
+            </div>
+            <div class="bento-cat-chip crypto">
+                <span class="chip-title"><i class="fa-brands fa-bitcoin"></i> Kripto</span>
+                <strong class="chip-val">${formatCurrency(catTotals.CRYPTO)}</strong>
+                <span class="chip-pct">%${cryptoPct.toFixed(1)}</span>
+            </div>
+        `;
     }
 
     const listContainer = document.getElementById("assetsList");
@@ -1916,7 +2004,7 @@ function applyPrivacyMode() {
         if(btn) btn.innerHTML = '<i class="fa-solid fa-eye"></i>';
         
         // Add blur to all sensitive elements
-        document.querySelectorAll('.asset-val, .h-current, .podium-val, .txt-neon-green, .txt-neon-red, .dashboard-card h3').forEach(el => {
+        document.querySelectorAll('.asset-val, .h-current, .podium-val, .txt-neon-green, .txt-neon-red, .dashboard-card h3, .bento-balance-val, .bento-stat-num, .bento-vault-chips strong, .bento-cat-chip strong').forEach(el => {
             if (!el.classList.contains('no-blur') && !el.textContent.includes('%')) {
                 el.classList.add('privacy-blur');
             }
