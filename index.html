@@ -332,11 +332,14 @@
                     </div>
                 </div>
 
-                <!-- Revolut Ultra Style Hero Portfolio Card -->
+                <!-- Apple / iOS 18 Glassmorphism Hero Portfolio Card -->
                 <div class="hero-card ultra-glass-card">
                     <div class="hero-card-shine"></div>
                     <div class="hero-top">
-                        <span class="hero-label"><i class="fa-solid fa-wallet"></i> Toplam Varlık Değeri</span>
+                        <div class="hero-header-left">
+                            <span class="hero-label"><i class="fa-solid fa-wallet"></i> Toplam Portföy Değeri</span>
+                            <span class="live-dot-pill"><span class="pulse-dot"></span> Canlı</span>
+                        </div>
                         <button class="visibility-toggle" id="btnToggleVisibility" title="Değerleri Gizle/Göster">
                             <i class="fa-solid fa-eye" id="eyeIcon"></i>
                         </button>
@@ -348,13 +351,13 @@
 
                     <div class="hero-stats-grid">
                         <div class="stat-item">
-                            <span class="stat-label"><i class="fa-solid fa-calendar-day" style="color: #38BDF8; margin-right: 4px;"></i> Bugün (Günlük)</span>
+                            <span class="stat-label"><i class="fa-solid fa-calendar-day" style="color: #38BDF8;"></i> Bugün</span>
                             <div class="stat-value" id="dailyPL">
                                 <span class="pl-badge neut">₺0,00 (%0,00)</span>
                             </div>
                         </div>
                         <div class="stat-item">
-                            <span class="stat-label"><i class="fa-solid fa-chart-line" style="color: #10B981; margin-right: 4px;"></i> Toplam (Genel)</span>
+                            <span class="stat-label"><i class="fa-solid fa-chart-line" style="color: #10B981;"></i> Toplam Getiri</span>
                             <div class="stat-value" id="totalPL">
                                 <span class="pl-badge neut">₺0,00 (%0,00)</span>
                             </div>
@@ -363,11 +366,12 @@
 
                     <div class="hero-footer-stats">
                         <div class="mini-stat">
-                            <span class="lbl">Toplam Maliyet:</span>
+                            <span class="lbl">Toplam Maliyet</span>
                             <strong id="totalCost">₺0,00</strong>
                         </div>
+                        <div class="mini-stat-divider"></div>
                         <div class="mini-stat">
-                            <span class="lbl">Realize Kâr:</span>
+                            <span class="lbl">Realize Edilen Kâr</span>
                             <strong id="totalRealizedPL" class="txt-neon-green">₺0,00</strong>
                         </div>
                     </div>

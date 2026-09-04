@@ -420,10 +420,12 @@ function renderDashboard() {
                 </div>
                 
                 <div class="asset-right">
-                    <div class="asset-val">${formatCurrency(h.currentPrice)}</div>
+                    <div class="asset-val" title="Toplam Varlık Değeri">${formatCurrency(marketValue)}</div>
+                    <div class="asset-unit-price" title="Anlık Fiyat">Fiyat: ${formatCurrency(h.currentPrice)}</div>
                     <div class="daily-badge-container">
                         <span class="pl-tag daily">Bugün:</span>
                         <div class="daily-badge ${isDailyPos ? 'pos' : 'neg'}" title="Bugünkü Değişim">
+                            <i class="fa-solid ${isDailyPos ? 'fa-arrow-trend-up' : 'fa-arrow-trend-down'}"></i>
                             ${formatPercent(dailyPct)}
                         </div>
                     </div>
