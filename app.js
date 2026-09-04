@@ -597,57 +597,55 @@ function renderSalesTab() {
         const whatIf = calculateWhatIf(s);
 
         return `
-            <div style="background: rgba(30, 30, 45, 0.4); border: 1px solid rgba(255,255,255,0.04); border-radius: 18px; margin-bottom: 16px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.1); transition: transform 0.2s;">
-                
-                <div style="padding: 16px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.05);">
-                    <div style="display: flex; align-items: center; gap: 12px;">
-                        <div style="width: 40px; height: 40px; border-radius: 12px; background: rgba(255,255,255,0.06); display: flex; align-items: center; justify-content: center; font-size: 1.1rem; color: #fff;">
+            <div class="sales-card-item">
+                <div class="sales-card-header">
+                    <div class="sales-card-header-left">
+                        <div class="sales-avatar-icon">
                             <i class="fa-solid fa-money-bill-wave"></i>
                         </div>
                         <div>
-                            <div style="font-weight: 700; font-size: 1.1rem; color: #fff;">${s.symbol}</div>
-                            <div style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 2px;">${s.name}</div>
+                            <div class="sales-card-symbol">${s.symbol}</div>
+                            <div class="sales-card-name">${s.name}</div>
                         </div>
                     </div>
                     
-                    <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px;">
-                        <div style="font-size: 0.75rem; color: var(--text-secondary); font-weight: 500;">Son İz: ${s.saleDate}</div>
-                        <div style="display: flex; gap: 6px;">
-                            <button style="background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.1); color: #fff; cursor: pointer; padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; display: flex; gap: 5px; align-items: center; transition: background 0.2s;" onclick="shareToStory('${s.symbol}', '${s.name}', ${s.costBasisAtSale * s.saleQty}, ${s.salePrice * s.saleQty}, ${s.realizedPL}, ${s.realizedPLPercent || 0}, 100, true)" onmouseover="this.style.background='rgba(255,255,255,0.15)'" onmouseout="this.style.background='rgba(255,255,255,0.08)'" title="Hikayede Paylaş">
+                    <div class="sales-card-header-right">
+                        <div class="sales-card-date">Son İşlem: ${s.saleDate}</div>
+                        <div class="sales-card-actions">
+                            <button class="sales-action-btn" onclick="shareToStory('${s.symbol}', '${s.name}', ${s.costBasisAtSale * s.saleQty}, ${s.salePrice * s.saleQty}, ${s.realizedPL}, ${s.realizedPLPercent || 0}, 100, true)" title="Hikayede Paylaş">
                                 <i class="fa-brands fa-instagram"></i> Paylaş
                             </button>
-                            <button style="background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.1); color: #fff; cursor: pointer; padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; display: flex; gap: 5px; align-items: center; transition: background 0.2s;" onclick="openEditSaleModal('${s.symbol}')" onmouseover="this.style.background='rgba(255,255,255,0.15)'" onmouseout="this.style.background='rgba(255,255,255,0.08)'">
+                            <button class="sales-action-btn" onclick="openEditSaleModal('${s.symbol}')" title="Düzenle">
                                 <i class="fa-solid fa-pen"></i> Düzenle
                             </button>
                         </div>
                     </div>
                 </div>
 
-                <div style="padding: 16px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; text-align: center;">
-                    <div style="background: rgba(0,0,0,0.25); padding: 12px 6px; border-radius: 14px;">
-                        <div style="font-size: 0.65rem; color: var(--text-secondary); margin-bottom: 6px; font-weight: 600; letter-spacing: 0.5px;">TOPLAM SATIŞ</div>
-                        <div style="font-weight: 700; color: #fff; font-size: 0.9rem;">${formatNumber(s.saleQty, s.category === 'CRYPTO' ? 4 : 2)} Adet</div>
+                <div class="sales-stats-row">
+                    <div class="sales-stat-cell">
+                        <div class="sales-stat-label">TOPLAM SATIŞ</div>
+                        <div class="sales-stat-val">${formatNumber(s.saleQty, s.category === 'CRYPTO' ? 4 : 2)} Adet</div>
                     </div>
-                    <div style="background: rgba(0,0,0,0.25); padding: 12px 6px; border-radius: 14px;">
-                        <div style="font-size: 0.65rem; color: var(--text-secondary); margin-bottom: 6px; font-weight: 600; letter-spacing: 0.5px;">ORTALAMA FİYAT</div>
-                        <div style="font-weight: 700; color: #fff; font-size: 0.9rem;">${formatCurrency(s.salePrice)}</div>
+                    <div class="sales-stat-cell">
+                        <div class="sales-stat-label">ORTALAMA FİYAT</div>
+                        <div class="sales-stat-val">${formatCurrency(s.salePrice)}</div>
                     </div>
-                    <div style="background: rgba(${isPos ? '16,185,129' : '239,68,68'}, 0.1); padding: 12px 6px; border-radius: 14px; box-shadow: inset 0 0 0 1px rgba(${isPos ? '16,185,129' : '239,68,68'}, 0.3);">
-                        <div style="font-size: 0.65rem; color: ${isPos ? '#10B981' : '#EF4444'}; margin-bottom: 6px; font-weight: 600; letter-spacing: 0.5px;">GERÇEKLEŞEN KÂR</div>
-                        <div style="font-weight: 700; color: ${isPos ? '#10B981' : '#EF4444'}; font-size: 0.9rem;">${isPos ? '+' : ''}${formatCurrency(s.realizedPL)}</div>
-                        <div style="font-size: 0.7rem; color: ${isPos ? '#10B981' : '#EF4444'}; opacity: 0.8; margin-top: 2px;">(${formatPercent(s.realizedPLPercent)})</div>
+                    <div class="sales-stat-cell pl ${isPos ? 'pos' : 'neg'}">
+                        <div class="sales-stat-label">GERÇEKLEŞEN KÂR</div>
+                        <div class="sales-stat-val ${isPos ? 'txt-neon-green' : 'txt-neon-red'}">${isPos ? '+' : ''}${formatCurrency(s.realizedPL)}</div>
+                        <div class="sales-stat-pct ${isPos ? 'txt-neon-green' : 'txt-neon-red'}">(${formatPercent(s.realizedPLPercent)})</div>
                     </div>
                 </div>
 
-                <div style="padding: 14px 16px; background: ${whatIf.type === 'positive' ? 'rgba(16,185,129,0.05)' : 'rgba(239,68,68,0.05)'}; border-top: 1px solid rgba(255,255,255,0.02); display: flex; gap: 14px; align-items: center;">
-                    <div style="color: ${whatIf.type === 'positive' ? '#10B981' : '#EF4444'}; font-size: 1.4rem; flex-shrink: 0;">
+                <div class="sales-what-if-banner ${whatIf.type}">
+                    <div class="sales-what-if-icon">
                         <i class="fa-solid ${whatIf.icon}"></i>
                     </div>
-                    <div style="font-size: 0.8rem; color: var(--text-secondary); line-height: 1.5;">
+                    <div class="sales-what-if-text">
                         ${whatIf.text}
                     </div>
                 </div>
-
             </div>
         `;
     }).join("");
@@ -664,40 +662,21 @@ function renderTopSalesPodium(aggregatedSales) {
         return;
     }
 
-    const rankColors = ["rgba(255, 215, 0, 0.9)", "rgba(192, 192, 192, 0.9)", "rgba(205, 127, 50, 0.9)"];
-    const rankBgs = ["rgba(255, 215, 0, 0.15)", "rgba(192, 192, 192, 0.15)", "rgba(205, 127, 50, 0.15)"];
     const rankBadges = ["🥇", "🥈", "🥉"];
 
-    // Make the podium wrapper a flex container with spacing
-    podiumElem.style.display = "flex";
-    podiumElem.style.justifyContent = "center";
-    podiumElem.style.gap = "15px";
-    podiumElem.style.alignItems = "flex-end";
-    podiumElem.style.marginBottom = "30px";
-    podiumElem.style.marginTop = "10px";
-
-    podiumElem.innerHTML = top3.map((s, idx) => {
-        // First place gets a slightly taller card
-        const heightStr = idx === 0 ? "min-height: 140px;" : "min-height: 120px;";
-        
-        return `
-        <div style="flex: 1; max-width: 33%; ${heightStr} background: rgba(30, 30, 45, 0.6); border-radius: 20px; padding: 16px 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; box-shadow: 0 8px 32px rgba(0,0,0,0.2), inset 0 0 0 1px ${rankColors[idx]}; transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); cursor: pointer;" onmouseover="this.style.transform='translateY(-5px)'" onmouseout="this.style.transform='translateY(0)'">
-            
-            <div style="background: ${rankBgs[idx]}; width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; margin-bottom: 12px; border: 1px solid ${rankColors[idx]}; box-shadow: 0 0 15px ${rankBgs[idx]};">
-                ${rankBadges[idx]}
-            </div>
-            
-            <h4 style="margin:0; font-size: 1.05rem; color: #fff; text-align: center; font-weight: 800; letter-spacing: 0.5px;">${s.symbol}</h4>
-            
-            <span style="font-weight: 800; font-size: 1rem; margin-top: 6px; text-shadow: 0 0 10px rgba(16,185,129,0.3);" class="${s.realizedPL >= 0 ? 'txt-neon-green' : 'txt-neon-red'}">
+    podiumElem.className = "top-sales-grid";
+    podiumElem.innerHTML = top3.map((s, idx) => `
+        <div class="podium-card-item rank-${idx + 1}" onclick="shareToStory('${s.symbol}', '${s.name}', ${s.costBasisAtSale * s.saleQty}, ${s.salePrice * s.saleQty}, ${s.realizedPL}, ${s.realizedPLPercent || 0}, 100, true)">
+            <div class="podium-badge">${rankBadges[idx]}</div>
+            <h4 class="podium-symbol">${s.symbol}</h4>
+            <span class="podium-gain ${s.realizedPL >= 0 ? 'txt-neon-green' : 'txt-neon-red'}">
                 ${s.realizedPL >= 0 ? '+' : ''}${formatCurrency(s.realizedPL)}
             </span>
-            
-            <button onclick="shareToStory('${s.symbol}', '${s.name}', ${s.costBasisAtSale * s.saleQty}, ${s.salePrice * s.saleQty}, ${s.realizedPL}, ${s.realizedPLPercent || 0}, 100, true)" style="position: absolute; top: 8px; right: 8px; background: rgba(255,255,255,0.1); border: none; width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; cursor: pointer; transition: 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.2)'" onmouseout="this.style.background='rgba(255,255,255,0.1)'" title="Hikayede Paylaş">
-                <i class="fa-brands fa-instagram" style="font-size: 0.8rem;"></i>
+            <button class="podium-share-btn" title="Hikayede Paylaş">
+                <i class="fa-brands fa-instagram"></i>
             </button>
         </div>
-    `}).join("");
+    `).join("");
 }
 
 // Calculate "Satılmasaydı Ne Olurdu?" Difference

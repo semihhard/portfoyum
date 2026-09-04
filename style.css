@@ -1289,145 +1289,284 @@ html, body {
 }
 
 /* TOP 3 SALES LEADERBOARD PODIUM */
+/* TOP 3 SALES LEADERBOARD PODIUM */
 .top-sales-grid {
     display: flex;
-    flex-direction: row;
-    align-items: flex-end;
     justify-content: center;
     gap: 12px;
-    margin-bottom: 22px;
-    height: 160px; /* Podium total height */
+    align-items: flex-end;
+    margin-bottom: 26px;
+    margin-top: 10px;
 }
 
-.top-sale-card {
+.podium-card-item {
     flex: 1;
+    max-width: 33.3%;
+    min-height: 120px;
     background: var(--bg-card);
+    backdrop-filter: blur(28px) saturate(180%);
+    -webkit-backdrop-filter: blur(28px) saturate(180%);
     border: 1px solid var(--border-glass);
-    border-radius: var(--radius-md) var(--radius-md) 0 0;
-    padding: 12px 6px;
+    border-radius: 20px;
+    padding: 16px 10px;
     display: flex;
     flex-direction: column;
-    justify-content: flex-start;
     align-items: center;
+    justify-content: center;
     position: relative;
-    overflow: hidden;
+    box-shadow: 0 8px 24px -4px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    cursor: pointer;
+}
+
+.podium-card-item:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 14px 32px -4px rgba(0, 0, 0, 0.35);
+}
+
+.podium-card-item.rank-1 {
+    min-height: 140px;
+    border-color: rgba(245, 158, 11, 0.4);
+    box-shadow: 0 8px 30px -4px rgba(245, 158, 11, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+}
+
+.podium-badge {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+    margin-bottom: 10px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.podium-card-item.rank-1 .podium-badge {
+    background: rgba(245, 158, 11, 0.15);
+    border-color: rgba(245, 158, 11, 0.4);
+}
+
+.podium-symbol {
+    font-size: 1.05rem;
+    font-weight: 800;
+    letter-spacing: -0.3px;
+    color: var(--text-primary);
+    margin: 0;
     text-align: center;
 }
 
-.top-sale-card.rank-1 {
-    height: 100%; 
-    order: 2;
-    background: linear-gradient(180deg, rgba(255, 214, 10, 0.15) 0%, rgba(20, 28, 42, 0.8) 100%);
-    border: 1px solid rgba(255, 214, 10, 0.4);
-    border-bottom: none;
+.podium-gain {
+    font-weight: 800;
+    font-size: 0.95rem;
+    margin-top: 4px;
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
 }
 
-.top-sale-card.rank-2 {
-    height: 80%; 
-    order: 1;
-    background: linear-gradient(180deg, rgba(203, 213, 225, 0.12) 0%, rgba(20, 28, 42, 0.8) 100%);
-    border: 1px solid rgba(203, 213, 225, 0.3);
-    border-bottom: none;
-}
-
-.top-sale-card.rank-3 {
-    height: 65%; 
-    order: 3;
-    background: linear-gradient(180deg, rgba(205, 127, 50, 0.12) 0%, rgba(20, 28, 42, 0.8) 100%);
-    border: 1px solid rgba(205, 127, 50, 0.3);
-    border-bottom: none;
-}
-
-.rank-badge {
-    width: 32px;
-    height: 32px;
+.podium-share-btn {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    width: 26px;
+    height: 26px;
     border-radius: 50%;
     display: flex;
-    justify-content: center;
     align-items: center;
-    font-size: 16px;
-    margin-bottom: 8px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+    justify-content: center;
+    color: var(--text-primary);
+    cursor: pointer;
+    font-size: 0.75rem;
+    transition: all 0.2s ease;
 }
 
-.top-sale-card h4 {
-    font-size: 14px;
-    margin-bottom: 6px;
-    color: var(--text-main);
+.podium-share-btn:hover {
+    background: rgba(255, 255, 255, 0.18);
+    transform: scale(1.1);
 }
 
-.top-sale-card .podium-val {
-    font-size: 13px;
-    font-weight: 700;
+/* SALES CARDS */
+.sales-card-item {
+    background: var(--bg-card);
+    backdrop-filter: blur(28px) saturate(180%);
+    -webkit-backdrop-filter: blur(28px) saturate(180%);
+    border: 1px solid var(--border-glass);
+    border-radius: 20px;
+    margin-bottom: 16px;
+    overflow: hidden;
+    box-shadow: 0 8px 24px -4px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.rank-1 .rank-badge { background: #FFD60A; color: #000; box-shadow: 0 0 12px rgba(255, 214, 10, 0.4); }
-.rank-2 .rank-badge { background: #E2E8F0; color: #000; box-shadow: 0 0 12px rgba(226, 232, 240, 0.3); }
-.rank-3 .rank-badge { background: #CD7F32; color: #FFF; box-shadow: 0 0 12px rgba(205, 127, 50, 0.3); }
-
-.top-sale-info {
-    flex: 1;
-    margin-left: 12px;
+.sales-card-item:hover {
+    transform: translateY(-2px);
+    border-color: rgba(255, 255, 255, 0.18);
+    box-shadow: 0 12px 30px -4px rgba(0, 0, 0, 0.35);
 }
 
-.top-sale-info h4 {
-    font-size: 15px;
-    font-weight: 800;
+.sales-card-header {
+    padding: 16px 18px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-.top-sale-info span {
-    font-size: 11px;
-    color: var(--text-secondary);
-}
-
-.top-sale-val {
-    text-align: right;
-}
-
-.top-sale-val strong {
-    font-family: var(--font-mono);
-    font-size: 15px;
-    display: block;
-}
-
-.top-sale-val span {
-    font-size: 11px;
-    font-weight: 700;
-}
-
-/* WHAT-IF ANALYSIS BOX ON SALE CARDS */
-.what-if-box {
-    margin-top: 10px;
-    padding: 10px 12px;
-    border-radius: var(--radius-sm);
-    font-size: 11px;
-    font-weight: 600;
+.sales-card-header-left {
     display: flex;
     align-items: center;
-    gap: 8px;
-    line-height: 1.4;
+    gap: 12px;
 }
 
-.what-if-box.good-sell {
-    background: rgba(0, 245, 160, 0.12);
-    border: 1px solid rgba(0, 245, 160, 0.25);
-    color: var(--neon-green);
-}
-
-.what-if-box.missed-gain {
-    background: rgba(255, 51, 102, 0.12);
-    border: 1px solid rgba(255, 51, 102, 0.25);
-    color: var(--neon-red);
-}
-
-.what-if-box.equal {
+.sales-avatar-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 13px;
     background: rgba(255, 255, 255, 0.06);
     border: 1px solid rgba(255, 255, 255, 0.1);
-    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    color: var(--text-primary);
 }
 
-.what-if-box i {
-    font-size: 14px;
+.sales-card-symbol {
+    font-weight: 800;
+    font-size: 1.1rem;
+    color: var(--text-primary);
+    letter-spacing: -0.3px;
+}
+
+.sales-card-name {
+    font-size: 0.76rem;
+    color: var(--text-secondary);
+    margin-top: 2px;
+}
+
+.sales-card-header-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 6px;
+}
+
+.sales-card-date {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    font-weight: 600;
+}
+
+.sales-card-actions {
+    display: flex;
+    gap: 6px;
+}
+
+.sales-action-btn {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--text-primary);
+    cursor: pointer;
+    padding: 4px 10px;
+    border-radius: 8px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    display: inline-flex;
+    gap: 5px;
+    align-items: center;
+    transition: all 0.2s ease;
+}
+
+.sales-action-btn:hover {
+    background: rgba(255, 255, 255, 0.14);
+    transform: scale(1.03);
+}
+
+.sales-stats-row {
+    padding: 14px 16px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    text-align: center;
+}
+
+.sales-stat-cell {
+    background: rgba(0, 0, 0, 0.2);
+    padding: 12px 8px;
+    border-radius: 14px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.sales-stat-label {
+    font-size: 0.65rem;
+    color: var(--text-muted);
+    margin-bottom: 5px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+.sales-stat-val {
+    font-weight: 700;
+    color: var(--text-primary);
+    font-size: 0.92rem;
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+}
+
+.sales-stat-pct {
+    font-size: 0.72rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    margin-top: 2px;
+}
+
+.sales-stat-cell.pl.pos {
+    background: rgba(16, 185, 129, 0.12);
+    border-color: rgba(16, 185, 129, 0.25);
+}
+
+.sales-stat-cell.pl.neg {
+    background: rgba(239, 68, 68, 0.12);
+    border-color: rgba(239, 68, 68, 0.25);
+}
+
+.sales-what-if-banner {
+    padding: 12px 16px;
+    background: rgba(255, 255, 255, 0.03);
+    border-top: 1px solid rgba(255, 255, 255, 0.04);
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    line-height: 1.45;
+}
+
+.sales-what-if-banner.positive {
+    background: rgba(16, 185, 129, 0.06);
+}
+
+.sales-what-if-banner.negative {
+    background: rgba(239, 68, 68, 0.06);
+}
+
+.sales-what-if-banner.positive .sales-what-if-icon {
+    color: #10B981;
+    font-size: 1.3rem;
+    flex-shrink: 0;
+}
+
+.sales-what-if-banner.negative .sales-what-if-icon {
+    color: #EF4444;
+    font-size: 1.3rem;
     flex-shrink: 0;
 }
 
@@ -3294,5 +3433,291 @@ body.theme-neo-brutalism .asset-weight-bar-fill {
     background: #000000 !important;
 }
 
+/* ==========================================================================
+   Neo-Brutalism Overrides for Sales Tab & Modals
+   ========================================================================== */
+body.theme-neo-brutalism #tab-sales .hero-stats-grid {
+    background: #FFFFFF !important;
+    border: 2.5px solid #000000 !important;
+    box-shadow: 4px 4px 0px #000000 !important;
+    border-radius: 16px !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
 
+body.theme-neo-brutalism #tab-sales .stat-label {
+    color: #4A5568 !important;
+    font-weight: 700 !important;
+}
 
+body.theme-neo-brutalism #salesTotalRevenue {
+    color: #000000 !important;
+    font-weight: 900 !important;
+}
+
+body.theme-neo-brutalism #salesTotalCost {
+    color: #718096 !important;
+    font-weight: 700 !important;
+}
+
+body.theme-neo-brutalism #salesSuccessRate {
+    font-weight: 900 !important;
+}
+
+body.theme-neo-brutalism #salesSuccessRate.txt-neon-green {
+    color: #047857 !important;
+}
+
+body.theme-neo-brutalism #salesSuccessRate.txt-neon-amber {
+    color: #B45309 !important;
+}
+
+/* Top 3 Sales Podium */
+body.theme-neo-brutalism .podium-card-item {
+    background: #FFFFFF !important;
+    border: 2.5px solid #000000 !important;
+    box-shadow: 4px 4px 0px #000000 !important;
+    border-radius: 16px !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    transition: all 0.15s ease !important;
+}
+
+body.theme-neo-brutalism .podium-card-item:hover {
+    transform: translate(-2px, -2px) !important;
+    box-shadow: 6px 6px 0px #000000 !important;
+}
+
+body.theme-neo-brutalism .podium-card-item:active {
+    transform: translate(2px, 2px) !important;
+    box-shadow: 2px 2px 0px #000000 !important;
+}
+
+body.theme-neo-brutalism .podium-card-item.rank-1 {
+    background: #FFE600 !important;
+}
+
+body.theme-neo-brutalism .podium-card-item.rank-2 {
+    background: #F1F5F9 !important;
+}
+
+body.theme-neo-brutalism .podium-card-item.rank-3 {
+    background: #FED7AA !important;
+}
+
+body.theme-neo-brutalism .podium-badge {
+    background: #FFFFFF !important;
+    border: 2px solid #000000 !important;
+    box-shadow: 2px 2px 0px #000000 !important;
+}
+
+body.theme-neo-brutalism .podium-symbol {
+    color: #000000 !important;
+    font-weight: 900 !important;
+}
+
+body.theme-neo-brutalism .podium-gain {
+    font-weight: 800 !important;
+}
+
+body.theme-neo-brutalism .podium-gain.txt-neon-green {
+    color: #047857 !important;
+}
+
+body.theme-neo-brutalism .podium-gain.txt-neon-red {
+    color: #DC2626 !important;
+}
+
+body.theme-neo-brutalism .podium-share-btn {
+    background: #FFFFFF !important;
+    border: 2px solid #000000 !important;
+    box-shadow: 2px 2px 0px #000000 !important;
+    color: #000000 !important;
+}
+
+body.theme-neo-brutalism .podium-share-btn:hover {
+    background: #000000 !important;
+    color: #FFE600 !important;
+}
+
+/* Sales Card Item */
+body.theme-neo-brutalism .sales-card-item {
+    background: #FFFFFF !important;
+    border: 2.5px solid #000000 !important;
+    box-shadow: 5px 5px 0px #000000 !important;
+    border-radius: 18px !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    transition: all 0.15s ease !important;
+}
+
+body.theme-neo-brutalism .sales-card-item:hover {
+    transform: translate(-2px, -2px) !important;
+    box-shadow: 7px 7px 0px #000000 !important;
+    border-color: #000000 !important;
+}
+
+body.theme-neo-brutalism .sales-card-header {
+    border-bottom: 2px solid #000000 !important;
+    background: #FAFAFA !important;
+}
+
+body.theme-neo-brutalism .sales-avatar-icon {
+    background: #FFE600 !important;
+    border: 2px solid #000000 !important;
+    box-shadow: 2px 2px 0px #000000 !important;
+    color: #000000 !important;
+    border-radius: 12px !important;
+}
+
+body.theme-neo-brutalism .sales-card-symbol {
+    color: #000000 !important;
+    font-weight: 900 !important;
+}
+
+body.theme-neo-brutalism .sales-card-name {
+    color: #4A5568 !important;
+    font-weight: 600 !important;
+}
+
+body.theme-neo-brutalism .sales-card-date {
+    color: #718096 !important;
+    font-weight: 700 !important;
+}
+
+body.theme-neo-brutalism .sales-action-btn {
+    background: #FFFFFF !important;
+    border: 2px solid #000000 !important;
+    box-shadow: 2px 2px 0px #000000 !important;
+    color: #000000 !important;
+    font-weight: 700 !important;
+    border-radius: 8px !important;
+    transition: all 0.15s ease !important;
+}
+
+body.theme-neo-brutalism .sales-action-btn:hover {
+    background: #FFE600 !important;
+    transform: translate(-1px, -1px) !important;
+    box-shadow: 3px 3px 0px #000000 !important;
+}
+
+body.theme-neo-brutalism .sales-action-btn:active {
+    transform: translate(1px, 1px) !important;
+    box-shadow: 1px 1px 0px #000000 !important;
+}
+
+body.theme-neo-brutalism .sales-stats-row {
+    background: #FFFFFF !important;
+}
+
+body.theme-neo-brutalism .sales-stat-cell {
+    background: #F8FAFC !important;
+    border: 2px solid #000000 !important;
+    box-shadow: 2px 2px 0px #000000 !important;
+    border-radius: 12px !important;
+}
+
+body.theme-neo-brutalism .sales-stat-label {
+    color: #4A5568 !important;
+    font-weight: 800 !important;
+}
+
+body.theme-neo-brutalism .sales-stat-val {
+    color: #000000 !important;
+    font-weight: 800 !important;
+}
+
+body.theme-neo-brutalism .sales-stat-cell.pl.pos {
+    background: #DCFCE7 !important;
+    border-color: #000000 !important;
+}
+
+body.theme-neo-brutalism .sales-stat-cell.pl.pos .sales-stat-val,
+body.theme-neo-brutalism .sales-stat-cell.pl.pos .sales-stat-pct {
+    color: #047857 !important;
+    font-weight: 900 !important;
+}
+
+body.theme-neo-brutalism .sales-stat-cell.pl.neg {
+    background: #FEE2E2 !important;
+    border-color: #000000 !important;
+}
+
+body.theme-neo-brutalism .sales-stat-cell.pl.neg .sales-stat-val,
+body.theme-neo-brutalism .sales-stat-cell.pl.neg .sales-stat-pct {
+    color: #B91C1C !important;
+    font-weight: 900 !important;
+}
+
+/* What-If Banner */
+body.theme-neo-brutalism .sales-what-if-banner {
+    border-top: 2px solid #000000 !important;
+    color: #000000 !important;
+    font-weight: 500 !important;
+    background: #FFFDF5 !important;
+}
+
+body.theme-neo-brutalism .sales-what-if-banner strong {
+    color: #000000 !important;
+    font-weight: 800 !important;
+}
+
+body.theme-neo-brutalism .sales-what-if-banner.positive {
+    background: #F0FDF4 !important;
+}
+
+body.theme-neo-brutalism .sales-what-if-banner.positive .sales-what-if-icon {
+    color: #059669 !important;
+}
+
+body.theme-neo-brutalism .sales-what-if-banner.negative {
+    background: #FFF1F2 !important;
+}
+
+body.theme-neo-brutalism .sales-what-if-banner.negative .sales-what-if-icon {
+    color: #DC2626 !important;
+}
+
+body.theme-neo-brutalism .sales-what-if-banner.neutral {
+    background: #F8FAFC !important;
+}
+
+body.theme-neo-brutalism .sales-what-if-banner.neutral .sales-what-if-icon {
+    color: #4A5568 !important;
+}
+
+body.theme-neo-brutalism #tab-sales .empty-state {
+    background: #FFFFFF !important;
+    border: 2.5px solid #000000 !important;
+    box-shadow: 4px 4px 0px #000000 !important;
+    border-radius: 16px !important;
+    color: #000000 !important;
+}
+
+body.theme-neo-brutalism #tab-sales .empty-state i {
+    color: #FFE600 !important;
+    text-shadow: 2px 2px 0px #000000;
+}
+
+/* Inputs & Forms in Neo-Brutalism */
+body.theme-neo-brutalism input,
+body.theme-neo-brutalism select,
+body.theme-neo-brutalism textarea {
+    background: #FFFFFF !important;
+    border: 2px solid #000000 !important;
+    color: #000000 !important;
+    box-shadow: 2px 2px 0px #000000 !important;
+    border-radius: 10px !important;
+}
+
+body.theme-neo-brutalism input:focus,
+body.theme-neo-brutalism select:focus,
+body.theme-neo-brutalism textarea:focus {
+    border-color: #000000 !important;
+    box-shadow: 3px 3px 0px #000000 !important;
+}
+
+body.theme-neo-brutalism .form-group label {
+    color: #000000 !important;
+    font-weight: 700 !important;
+}
