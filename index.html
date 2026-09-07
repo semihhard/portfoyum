@@ -1039,7 +1039,7 @@
                     <div class="fundamentals-header">
                         <div class="fundamentals-title">
                             <i class="fa-solid fa-chart-pie" style="color: #38BDF8;"></i>
-                            <span>Şirket Sağlık Karnesi</span>
+                            <span>Bilanço & Temel Göstergeler</span>
                         </div>
                         <div id="fundamentalHealthBadge" class="health-score-badge score-green">
                             <span id="fundamentalHealthScore">--</span>
@@ -1047,6 +1047,7 @@
                         </div>
                     </div>
 
+                    <!-- Çarpanlar & Ana Oranlar Grid -->
                     <div class="fundamentals-grid">
                         <div class="fundamental-metric-box">
                             <div class="metric-lbl">F/K Oranı</div>
@@ -1059,14 +1060,139 @@
                             <div class="metric-desc" id="fundamentalPBDesc">Piyasa / Defter</div>
                         </div>
                         <div class="fundamental-metric-box">
-                            <div class="metric-lbl">Borçluluk</div>
-                            <div class="metric-val" id="fundamentalDebt">--</div>
-                            <div class="metric-desc" id="fundamentalDebtDesc">Borç / Özkaynak</div>
+                            <div class="metric-lbl">FD/FAVÖK</div>
+                            <div class="metric-val" id="fundamentalEVToEbitda">--</div>
+                            <div class="metric-desc" id="fundamentalEVDesc">Firma Değeri / FAVÖK</div>
+                        </div>
+                        <div class="fundamental-metric-box">
+                            <div class="metric-lbl">Cari Oran</div>
+                            <div class="metric-val" id="fundamentalCurrentRatio">--</div>
+                            <div class="metric-desc">Dönen Varlık / KV Borç</div>
+                        </div>
+                        <div class="fundamental-metric-box">
+                            <div class="metric-lbl">Kaldıraç Oranı</div>
+                            <div class="metric-val" id="fundamentalLeverage">--</div>
+                            <div class="metric-desc">Toplam Borç / Aktif</div>
                         </div>
                         <div class="fundamental-metric-box">
                             <div class="metric-lbl">Özkaynak Kârı</div>
                             <div class="metric-val" id="fundamentalROE">--</div>
                             <div class="metric-desc" id="fundamentalROEDesc">Yıllık ROE</div>
+                        </div>
+                    </div>
+
+                    <!-- Bilanço Analiz Sekmeleri (Pills) -->
+                    <div class="balance-tabs-bar">
+                        <button type="button" class="b-tab-btn active" data-btab="revenue" onclick="switchBalanceTab('revenue')">
+                            <i class="fa-solid fa-chart-column"></i> Gelir & Kâr
+                        </button>
+                        <button type="button" class="b-tab-btn" data-btab="margins" onclick="switchBalanceTab('margins')">
+                            <i class="fa-solid fa-chart-line"></i> Marjlar (%)
+                        </button>
+                        <button type="button" class="b-tab-btn" data-btab="ratios" onclick="switchBalanceTab('ratios')">
+                            <i class="fa-solid fa-scale-balanced"></i> Oranlar & Kaynak
+                        </button>
+                    </div>
+
+                    <!-- TAB 1: Gelir & Kâr (Sütun Grafikleri) -->
+                    <div id="btabRevenue" class="b-tab-panel active">
+                        <div class="chart-filter-row">
+                            <span class="chart-section-title">Çeyreklik Gelir & Kâr Trendi</span>
+                            <div class="chart-toggle-pills">
+                                <button type="button" class="c-toggle-btn active" onclick="toggleFinancialSeries('all', this)">Tümü</button>
+                                <button type="button" class="c-toggle-btn" onclick="toggleFinancialSeries('sales', this)">Satışlar</button>
+                                <button type="button" class="c-toggle-btn" onclick="toggleFinancialSeries('ebitda', this)">FAVÖK</button>
+                                <button type="button" class="c-toggle-btn" onclick="toggleFinancialSeries('net', this)">Net Kâr</button>
+                            </div>
+                        </div>
+                        <div class="chart-canvas-wrap">
+                            <canvas id="chartQuarterlyFinancials" height="190"></canvas>
+                        </div>
+                        <!-- Son Çeyrek Özet Rakamları -->
+                        <div class="quarterly-summary-row">
+                            <div class="q-stat-card">
+                                <span class="q-lbl"><span class="q-dot blue"></span> Satışlar (Son Ç.)</span>
+                                <strong id="bValRevenue" class="q-val">--</strong>
+                            </div>
+                            <div class="q-stat-card">
+                                <span class="q-lbl"><span class="q-dot purple"></span> FAVÖK (Son Ç.)</span>
+                                <strong id="bValEbitda" class="q-val">--</strong>
+                            </div>
+                            <div class="q-stat-card">
+                                <span class="q-lbl"><span class="q-dot green"></span> Net Kâr (Son Ç.)</span>
+                                <strong id="bValNetIncome" class="q-val">--</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TAB 2: Kârlılık Marjları (Çizgi Grafikleri) -->
+                    <div id="btabMargins" class="b-tab-panel" style="display: none;">
+                        <div class="chart-filter-row">
+                            <span class="chart-section-title">Çeyreklik Kârlılık Marjları (%)</span>
+                        </div>
+                        <div class="chart-canvas-wrap">
+                            <canvas id="chartProfitMargins" height="190"></canvas>
+                        </div>
+                        <!-- Son Çeyrek Marj Kartları -->
+                        <div class="quarterly-summary-row">
+                            <div class="q-stat-card">
+                                <span class="q-lbl"><span class="q-dot cyan"></span> Brüt Kâr Marjı</span>
+                                <strong id="bValGrossMargin" class="q-val">--</strong>
+                            </div>
+                            <div class="q-stat-card">
+                                <span class="q-lbl"><span class="q-dot purple"></span> FAVÖK Marjı</span>
+                                <strong id="bValEbitdaMargin" class="q-val">--</strong>
+                            </div>
+                            <div class="q-stat-card">
+                                <span class="q-lbl"><span class="q-dot emerald"></span> Net Kâr Marjı</span>
+                                <strong id="bValNetMargin" class="q-val">--</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TAB 3: Finansal Oranlar & Kaynak Dağılımı -->
+                    <div id="btabRatios" class="b-tab-panel" style="display: none;">
+                        <div class="chart-filter-row">
+                            <span class="chart-section-title">Finansal Sağlık & Likidite Trendi</span>
+                        </div>
+                        <div class="chart-canvas-wrap">
+                            <canvas id="chartFinancialRatios" height="165"></canvas>
+                        </div>
+
+                        <!-- Kaynak Dağılımı (Bilanço Pasifi) -->
+                        <div class="capital-distribution-section">
+                            <div class="capital-dist-header">
+                                <span><i class="fa-solid fa-pie-chart" style="color: #38BDF8;"></i> Kaynak Dağılımı (Pasif Yapısı)</span>
+                                <small id="bValTotalAssets">Toplam: --</small>
+                            </div>
+                            <div class="capital-dist-body">
+                                <div class="capital-donut-wrap">
+                                    <canvas id="chartCapitalStructure" width="110" height="110"></canvas>
+                                </div>
+                                <div class="capital-legend-col">
+                                    <div class="cap-legend-item">
+                                        <div class="cap-legend-dot short-debt"></div>
+                                        <div class="cap-legend-info">
+                                            <span class="cap-legend-name">Kısa Vadeli Borçlar</span>
+                                            <strong id="bValShortDebt" class="cap-legend-val">--</strong>
+                                        </div>
+                                    </div>
+                                    <div class="cap-legend-item">
+                                        <div class="cap-legend-dot long-debt"></div>
+                                        <div class="cap-legend-info">
+                                            <span class="cap-legend-name">Uzun Vadeli Borçlar</span>
+                                            <strong id="bValLongDebt" class="cap-legend-val">--</strong>
+                                        </div>
+                                    </div>
+                                    <div class="cap-legend-item">
+                                        <div class="cap-legend-dot equity"></div>
+                                        <div class="cap-legend-info">
+                                            <span class="cap-legend-name">Özkaynaklar</span>
+                                            <strong id="bValEquity" class="cap-legend-val">--</strong>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

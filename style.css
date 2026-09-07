@@ -2782,6 +2782,246 @@ input:focus, select:focus {
 }
 
 /* ==========================================================================
+   Quarterly Balance Sheet & Financial Statements Module
+   ========================================================================== */
+.fundamentals-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+}
+@media (max-width: 400px) {
+    .fundamentals-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+.balance-tabs-bar {
+    display: flex;
+    gap: 6px;
+    background: rgba(0, 0, 0, 0.4);
+    padding: 4px;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    margin: 14px 0 10px 0;
+}
+
+.b-tab-btn {
+    flex: 1;
+    padding: 7px 6px;
+    border-radius: 9px;
+    border: none;
+    background: transparent;
+    color: var(--text-secondary);
+    font-size: 0.74rem;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    touch-action: manipulation;
+    font-family: inherit;
+    white-space: nowrap;
+}
+
+.b-tab-btn.active {
+    background: rgba(56, 189, 248, 0.18);
+    color: #38BDF8;
+    border: 1px solid rgba(56, 189, 248, 0.35);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+}
+
+.b-tab-panel {
+    animation: fadeInScale 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.chart-filter-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.chart-section-title {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.chart-toggle-pills {
+    display: flex;
+    gap: 4px;
+}
+
+.c-toggle-btn {
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-size: 0.68rem;
+    font-weight: 700;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.04);
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.15s ease;
+    font-family: inherit;
+    touch-action: manipulation;
+}
+
+.c-toggle-btn.active {
+    background: rgba(56, 189, 248, 0.2);
+    color: #38BDF8;
+    border-color: rgba(56, 189, 248, 0.4);
+}
+
+.chart-canvas-wrap {
+    position: relative;
+    width: 100%;
+    min-height: 180px;
+    max-height: 220px;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 14px;
+    padding: 10px 8px;
+    border: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.quarterly-summary-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+    margin-top: 10px;
+}
+
+.q-stat-card {
+    background: rgba(0, 0, 0, 0.25);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+    padding: 7px 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.q-lbl {
+    font-size: 0.65rem;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-weight: 600;
+}
+
+.q-val {
+    font-size: 0.82rem;
+    font-family: var(--font-mono);
+    color: #F8FAFC;
+    font-weight: 800;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.q-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    display: inline-block;
+    flex-shrink: 0;
+}
+.q-dot.blue { background: #38BDF8; }
+.q-dot.purple { background: #A855F7; }
+.q-dot.green { background: #10B981; }
+.q-dot.cyan { background: #06B6D4; }
+.q-dot.emerald { background: #10B981; }
+
+.capital-distribution-section {
+    margin-top: 12px;
+    background: rgba(0, 0, 0, 0.25);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 14px;
+    padding: 12px;
+}
+
+.capital-dist-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: #FFFFFF;
+    margin-bottom: 8px;
+}
+
+.capital-dist-header small {
+    color: var(--text-muted);
+    font-size: 0.7rem;
+    font-family: var(--font-mono);
+}
+
+.capital-dist-body {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.capital-donut-wrap {
+    width: 110px;
+    height: 110px;
+    flex-shrink: 0;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.capital-legend-col {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.cap-legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.72rem;
+}
+
+.cap-legend-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+.cap-legend-dot.short-debt { background: #EF4444; }
+.cap-legend-dot.long-debt { background: #F59E0B; }
+.cap-legend-dot.equity { background: #10B981; }
+
+.cap-legend-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.cap-legend-name {
+    color: var(--text-secondary);
+    font-weight: 600;
+}
+
+.cap-legend-val {
+    font-family: var(--font-mono);
+    color: #F8FAFC;
+    font-weight: 700;
+}
+
+/* ==========================================================================
    Layout Modes: Standard, Compact, Grid
    ========================================================================== */
 /* Mode 1: Standard (Default) */
