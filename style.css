@@ -2692,6 +2692,244 @@ input:focus, select:focus {
 }
 
 /* ==========================================================================
+   Mode 5: Terminal Pro (layout-terminal)
+   ========================================================================== */
+.layout-terminal #classicHeroCard {
+    background: linear-gradient(180deg, rgba(8, 14, 24, 0.96) 0%, rgba(4, 7, 14, 0.98) 100%) !important;
+    border: 1px solid rgba(56, 189, 248, 0.28) !important;
+    box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.6), 0 0 20px rgba(56, 189, 248, 0.08) !important;
+    font-family: var(--font-mono) !important;
+    position: relative;
+}
+
+.layout-terminal #classicHeroCard::before {
+    content: 'TERMINAL PRO // CANLI VERİ AKIŞI';
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    color: #38BDF8;
+    background: rgba(56, 189, 248, 0.12);
+    border: 1px solid rgba(56, 189, 248, 0.25);
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-bottom: 8px;
+}
+
+.layout-terminal #classicHeroCard .total-val {
+    font-family: var(--font-mono) !important;
+    letter-spacing: -0.5px;
+}
+
+.layout-terminal #assetsList {
+    display: flex;
+    flex-direction: column;
+    gap: 7px !important;
+}
+
+.layout-terminal #assetsList .asset-card {
+    background: rgba(10, 16, 28, 0.85) !important;
+    border: 1px solid rgba(56, 189, 248, 0.16) !important;
+    border-left: 3px solid #38BDF8 !important;
+    border-radius: 10px !important;
+    padding: 10px 14px !important;
+    margin-bottom: 0 !important;
+    font-family: var(--font-mono) !important;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.layout-terminal #assetsList .asset-card:hover {
+    border-color: rgba(56, 189, 248, 0.45) !important;
+    border-left-color: #10B981 !important;
+    background: rgba(15, 24, 42, 0.95) !important;
+    box-shadow: 0 4px 18px rgba(56, 189, 248, 0.12) !important;
+    transform: translateX(3px) !important;
+}
+
+.layout-terminal #assetsList .asset-icon {
+    width: 32px !important;
+    height: 32px !important;
+    font-size: 13px !important;
+    border-radius: 6px !important;
+    background: rgba(255, 255, 255, 0.05) !important;
+}
+
+.layout-terminal #assetsList .asset-symbol {
+    font-family: var(--font-mono) !important;
+    font-size: 0.96rem !important;
+    font-weight: 800 !important;
+    color: #38BDF8 !important;
+    letter-spacing: 0.5px !important;
+}
+
+.layout-terminal #assetsList .asset-cat-tag {
+    font-family: var(--font-mono) !important;
+    font-size: 0.65rem !important;
+    padding: 1px 6px !important;
+    border-radius: 4px !important;
+    text-transform: uppercase !important;
+}
+
+.layout-terminal #assetsList .asset-weight-tag {
+    font-family: var(--font-mono) !important;
+    font-size: 0.65rem !important;
+    background: rgba(255, 255, 255, 0.06) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 4px !important;
+}
+
+.layout-terminal #assetsList .asset-sub {
+    font-family: var(--font-mono) !important;
+    font-size: 0.72rem !important;
+    color: var(--text-secondary) !important;
+}
+
+.layout-terminal #assetsList .asset-pl-summary {
+    font-family: var(--font-mono) !important;
+    font-size: 0.72rem !important;
+}
+
+.layout-terminal #assetsList .asset-val {
+    font-family: var(--font-mono) !important;
+    font-size: 0.96rem !important;
+    font-weight: 800 !important;
+    letter-spacing: -0.2px !important;
+}
+
+.layout-terminal #assetsList .asset-unit-price {
+    font-family: var(--font-mono) !important;
+    font-size: 0.72rem !important;
+    color: var(--text-secondary) !important;
+}
+
+.layout-terminal #assetsList .daily-badge {
+    font-family: var(--font-mono) !important;
+    font-size: 0.72rem !important;
+    padding: 2px 7px !important;
+    border-radius: 6px !important;
+    font-weight: 700 !important;
+}
+
+.layout-terminal #assetsList .daily-diff-val {
+    font-family: var(--font-mono) !important;
+    font-size: 0.72rem !important;
+    font-weight: 700 !important;
+}
+
+/* ==========================================================================
+   Mode 6: Ultra Minimal (layout-minimal)
+   ========================================================================== */
+.layout-minimal #assetsList {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 0 !important;
+    background: var(--bg-card) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border-radius: 20px !important;
+    overflow: hidden !important;
+    padding: 4px 0 !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
+}
+
+.layout-minimal #assetsList .asset-card {
+    background: transparent !important;
+    border: none !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    margin-bottom: 0 !important;
+    padding: 13px 18px !important;
+    transition: background 0.2s ease !important;
+}
+
+.layout-minimal #assetsList .asset-card:last-child {
+    border-bottom: none !important;
+}
+
+.layout-minimal #assetsList .asset-card:hover {
+    background: rgba(255, 255, 255, 0.04) !important;
+    transform: none !important;
+}
+
+.layout-minimal #assetsList .asset-icon {
+    display: none !important;
+}
+
+.layout-minimal #assetsList .asset-cat-tag {
+    display: none !important;
+}
+
+.layout-minimal #assetsList .asset-weight-tag {
+    display: none !important;
+}
+
+.layout-minimal #assetsList .asset-weight-bar-bg {
+    display: none !important;
+}
+
+.layout-minimal #assetsList .daily-diff-val {
+    display: none !important;
+}
+
+.layout-minimal #assetsList .daily-badge-container .pl-tag.daily {
+    display: none !important;
+}
+
+.layout-minimal #assetsList .asset-symbol {
+    font-size: 1.02rem !important;
+    font-weight: 800 !important;
+}
+
+.layout-minimal #assetsList .asset-sub {
+    font-size: 0.74rem !important;
+    color: var(--text-muted) !important;
+}
+
+.layout-minimal #assetsList .asset-val {
+    font-size: 1rem !important;
+    font-weight: 800 !important;
+}
+
+.layout-minimal #assetsList .daily-badge {
+    font-size: 0.74rem !important;
+    padding: 3px 9px !important;
+    border-radius: 8px !important;
+}
+
+/* Light Theme & Neo-Brutalism Overrides for Mode 5 & 6 */
+body.theme-pure-light .layout-terminal #assetsList .asset-card {
+    background: #FFFFFF !important;
+    border: 1px solid rgba(0, 0, 0, 0.1) !important;
+    border-left: 3px solid #0052FF !important;
+    color: #000000 !important;
+}
+body.theme-pure-light .layout-terminal #assetsList .asset-symbol {
+    color: #0052FF !important;
+}
+body.theme-pure-light .layout-minimal #assetsList {
+    background: #FFFFFF !important;
+    border: 1px solid rgba(0, 0, 0, 0.08) !important;
+}
+body.theme-pure-light .layout-minimal #assetsList .asset-card {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06) !important;
+}
+body.theme-neo-brutalism .layout-terminal #assetsList .asset-card {
+    background: #FFFFFF !important;
+    border: 3px solid #000000 !important;
+    box-shadow: 3px 3px 0px #000000 !important;
+}
+body.theme-neo-brutalism .layout-minimal #assetsList {
+    background: #FFFFFF !important;
+    border: 3px solid #000000 !important;
+    box-shadow: 4px 4px 0px #000000 !important;
+}
+body.theme-neo-brutalism .layout-minimal #assetsList .asset-card {
+    border-bottom: 2px solid #000000 !important;
+}
+
+/* ==========================================================================
    Theme & Design Studio Modal Styles
    ========================================================================== */
 .theme-grid-selector {
@@ -3510,6 +3748,8 @@ body.theme-neo-brutalism .btn.secondary {
 .bento-icon-badge.amber { background: rgba(245, 158, 11, 0.15); color: #FBBF24; }
 .bento-icon-badge.violet { background: rgba(139, 92, 246, 0.15); color: #A78BFA; }
 .bento-icon-badge.blue { background: rgba(59, 130, 246, 0.15); color: #60A5FA; }
+.bento-icon-badge.indigo { background: rgba(99, 102, 241, 0.15); color: #818CF8; }
+.bento-icon-badge.fuchsia { background: rgba(217, 70, 239, 0.15); color: #E879F9; }
 
 /* Stat Numbers & Pill */
 .bento-stat-main {
@@ -3582,6 +3822,21 @@ body.theme-neo-brutalism .btn.secondary {
 }
 .bento-yield-card.glow-neg .bento-card-corner-glow {
     background: radial-gradient(circle, rgba(239, 68, 68, 0.25) 0%, transparent 70%);
+}
+.bento-health-card.glow-pos .bento-card-corner-glow {
+    background: radial-gradient(circle, rgba(16, 185, 129, 0.25) 0%, transparent 70%);
+}
+.bento-health-card.glow-cyan .bento-card-corner-glow {
+    background: radial-gradient(circle, rgba(99, 102, 241, 0.25) 0%, transparent 70%);
+}
+.bento-health-card.glow-neg .bento-card-corner-glow {
+    background: radial-gradient(circle, rgba(239, 68, 68, 0.25) 0%, transparent 70%);
+}
+.bento-health-card.glow-neut .bento-card-corner-glow {
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+}
+.bento-goal-card .bento-card-corner-glow {
+    background: radial-gradient(circle, rgba(217, 70, 239, 0.25) 0%, transparent 70%);
 }
 
 /* Module 4: Star Performer Card */
@@ -3676,7 +3931,87 @@ body.theme-neo-brutalism .btn.secondary {
     box-shadow: 0 6px 20px rgba(16, 185, 129, 0.45);
 }
 
-/* Module 6: Diversification Deck Card */
+/* Bento Action Button in Card Title */
+.bento-card-action-btn {
+    margin-left: auto;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--text-secondary);
+    border-radius: 8px;
+    width: 24px;
+    height: 24px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    padding: 0;
+    position: relative;
+    z-index: 2;
+}
+
+.bento-card-action-btn:hover {
+    background: rgba(217, 70, 239, 0.2);
+    border-color: rgba(217, 70, 239, 0.4);
+    color: #F0ABFC;
+    transform: scale(1.08);
+}
+
+/* Bento Goal Progress & Hero */
+.bento-goal-hero {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 6px;
+    margin: 4px 0 6px 0;
+    position: relative;
+    z-index: 2;
+}
+
+.bento-goal-hero .bento-stat-num {
+    margin-bottom: 0;
+}
+
+.bento-goal-progress-track {
+    width: 100%;
+    height: 7px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 999px;
+    overflow: hidden;
+    margin: 4px 0 8px 0;
+    position: relative;
+    z-index: 2;
+}
+
+.bento-goal-progress-bar {
+    height: 100%;
+    border-radius: 999px;
+    background: linear-gradient(90deg, #818CF8 0%, #C084FC 50%, #F472B6 100%);
+    transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 0 10px rgba(192, 132, 252, 0.5);
+}
+
+.btn-preset-chip {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--text-secondary);
+    border-radius: 12px;
+    padding: 6px 12px;
+    font-size: 11.5px;
+    font-family: var(--font-mono);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-preset-chip:hover {
+    background: rgba(168, 85, 247, 0.2);
+    border-color: rgba(168, 85, 247, 0.45);
+    color: #E879F9;
+}
+
+/* Module 8: Diversification Deck Card */
 .bento-diversify-card {
     grid-column: span 2;
     padding: 16px 18px;
@@ -4271,6 +4606,26 @@ body.theme-neo-brutalism .bento-dock-btn.primary {
 body.theme-neo-brutalism .bento-dock-btn:hover {
     transform: translate(-1px, -1px) !important;
     box-shadow: 4px 4px 0px #000000 !important;
+}
+
+body.theme-neo-brutalism .bento-card-action-btn {
+    background: #FFFFFF !important;
+    border: 2px solid #000000 !important;
+    box-shadow: 2px 2px 0px #000000 !important;
+    color: #000000 !important;
+}
+
+body.theme-neo-brutalism .bento-goal-progress-track {
+    background: #E2E8F0 !important;
+    border: 1px solid #000000 !important;
+}
+
+body.theme-neo-brutalism .btn-preset-chip {
+    background: #FFFFFF !important;
+    border: 2px solid #000000 !important;
+    box-shadow: 2px 2px 0px #000000 !important;
+    color: #000000 !important;
+    font-weight: 800 !important;
 }
 
 body.theme-neo-brutalism .bento-asset-count-pill {

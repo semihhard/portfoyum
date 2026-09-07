@@ -23,7 +23,7 @@
     <!-- ExcelJS for Modern Excel Export -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
-    <link rel="stylesheet" href="style.css?v=9">    <style>
+    <link rel="stylesheet" href="style.css?v=11">    <style>
         /* Refresh Button Loading Animation */
         .icon-btn.loading i {
             animation: spin 1s linear infinite;
@@ -169,6 +169,41 @@
         </div>
     </div>
 
+    <!-- MODAL: SET PORTFOLIO GOAL (BİRİKİM HEDEFİ AYARLA) -->
+    <div class="modal-overlay" id="modalSetGoal" onclick="if(event.target===this) closeSetGoalModal()">
+        <div class="modal-sheet ultra-glass-modal" style="max-width: 440px;">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-bullseye" style="color: #E879F9;"></i> Birikim Hedefi Belirle</h3>
+                <button class="modal-close" onclick="closeSetGoalModal()">&times;</button>
+            </div>
+            <div style="margin-top: 15px;">
+                <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 14px; line-height: 1.45;">
+                    Portföyünüz için ulaşmak istediğiniz toplam hedef bakiyeyi belirleyin. İlerlemeniz Bento Dashboard üzerinde anlık ve canlı olarak takip edilir.
+                </p>
+                <div class="form-group" style="margin-bottom: 12px;">
+                    <label style="font-size: 0.8rem; font-weight: 600;">Hedef Tutar (₺)</label>
+                    <input type="number" id="inputPortfolioGoal" class="form-input" min="1000" step="1000" placeholder="100000" style="font-size: 1.25rem; font-weight: 700; font-family: var(--font-mono); text-align: center;">
+                </div>
+
+                <!-- Quick amount presets -->
+                <div class="goal-presets-row" style="display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 20px; justify-content: center;">
+                    <button type="button" class="btn-preset-chip" onclick="setGoalPreset(50000)">₺50.000</button>
+                    <button type="button" class="btn-preset-chip" onclick="setGoalPreset(100000)">₺100.000</button>
+                    <button type="button" class="btn-preset-chip" onclick="setGoalPreset(250000)">₺250.000</button>
+                    <button type="button" class="btn-preset-chip" onclick="setGoalPreset(500000)">₺500.000</button>
+                    <button type="button" class="btn-preset-chip" onclick="setGoalPreset(1000000)">₺1.000.000</button>
+                </div>
+
+                <div style="display: flex; gap: 10px;">
+                    <button type="button" class="btn secondary" onclick="closeSetGoalModal()" style="flex: 1;">İptal</button>
+                    <button type="button" class="btn primary neon-glow" onclick="savePortfolioGoal()" style="flex: 1.5; background: linear-gradient(135deg, #A855F7 0%, #7C3AED 100%);">
+                        <i class="fa-solid fa-check"></i> Hedefi Kaydet
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Theme & Design Studio Modal -->
     <div class="modal-overlay" id="themeStudioModal">
         <div class="modal-content ultra-glass-card" style="max-width: 440px;">
@@ -286,6 +321,14 @@
                         <button class="layout-btn" onclick="selectLayout('layout-bento')" id="btnLayoutBento">
                             <i class="fa-solid fa-cubes-stacked"></i>
                             <span>Bento Modüler</span>
+                        </button>
+                        <button class="layout-btn" onclick="selectLayout('layout-terminal')" id="btnLayoutTerminal">
+                            <i class="fa-solid fa-terminal"></i>
+                            <span>Terminal Pro</span>
+                        </button>
+                        <button class="layout-btn" onclick="selectLayout('layout-minimal')" id="btnLayoutMinimal">
+                            <i class="fa-solid fa-grip-lines"></i>
+                            <span>Ultra Minimal</span>
                         </button>
                     </div>
                 </div>
@@ -535,7 +578,41 @@
                         </div>
                     </div>
 
-                    <!-- Box 6: Portföy Çeşitlilik & Dağılım Özeti (Spans 2 columns) -->
+                    <!-- Box 6: Portföy Sağlık & Risk Radarı -->
+                    <div class="bento-box bento-health-card" id="bentoHealthCard">
+                        <div class="bento-card-corner-glow"></div>
+                        <div class="bento-box-title">
+                            <span class="bento-icon-badge indigo"><i class="fa-solid fa-heart-pulse"></i></span>
+                            <span>SAĞLIK & RİSK</span>
+                        </div>
+                        <div class="bento-stat-main">
+                            <div class="bento-stat-num" id="bentoHealthScore">--/100</div>
+                            <div class="bento-pill neut" id="bentoHealthBadge">Hesaplanıyor</div>
+                        </div>
+                        <div class="bento-sub-metric-lbl" id="bentoHealthDetail">Konsantrasyon: Dengeli</div>
+                    </div>
+
+                    <!-- Box 7: Finansal Birikim Hedefi -->
+                    <div class="bento-box bento-goal-card" id="bentoGoalCard">
+                        <div class="bento-card-corner-glow"></div>
+                        <div class="bento-box-title">
+                            <span class="bento-icon-badge fuchsia"><i class="fa-solid fa-bullseye"></i></span>
+                            <span>BİRİKİM HEDEFİ</span>
+                            <button class="bento-card-action-btn" onclick="openSetGoalModal()" title="Hedefi Değiştir">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                            </button>
+                        </div>
+                        <div class="bento-goal-hero">
+                            <div class="bento-stat-num" id="bentoGoalPct">%0,0</div>
+                            <div class="bento-pill neut" id="bentoGoalRemaining">₺0 kaldı</div>
+                        </div>
+                        <div class="bento-goal-progress-track">
+                            <div class="bento-goal-progress-bar" id="bentoGoalBar" style="width: 0%;"></div>
+                        </div>
+                        <div class="bento-sub-metric-lbl" id="bentoGoalTargetVal">Hedef: ₺100.000</div>
+                    </div>
+
+                    <!-- Box 8: Portföy Çeşitlilik & Dağılım Özeti (Spans 2 columns) -->
                     <div class="bento-box bento-diversify-card">
                         <div class="bento-box-title" style="margin-bottom: 10px;">
                             <div style="display: flex; align-items: center; gap: 6px;">
@@ -1214,6 +1291,6 @@
 
 
 
-    <script src="app.js?v=58"></script>
+    <script src="app.js?v=60"></script>
 </body>
 </html>
