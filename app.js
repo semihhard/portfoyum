@@ -42,6 +42,8 @@ let currentThemeIndex = 0;
 let appState = {
     holdings: [],
     sales: [],
+    manualT2Entries: [],
+    settledSaleIds: [],
     marketPrices: { ...DEFAULT_MARKET_PRICES },
     privacyMode: false,
     activeCategory: "ALL",
@@ -58,6 +60,8 @@ let appState = {
 function loadInitialSampleData() {
     appState.holdings = [];
     appState.sales = [];
+    appState.manualT2Entries = [];
+    appState.settledSaleIds = [];
 }
 
 // --- Storage Controls ---
@@ -71,6 +75,8 @@ function loadData() {
         try {
             appState = JSON.parse(saved);
             appState.marketPrices = { ...DEFAULT_MARKET_PRICES, ...appState.marketPrices };
+            if (!appState.manualT2Entries) appState.manualT2Entries = [];
+            if (!appState.settledSaleIds) appState.settledSaleIds = [];
         } catch (e) {
             console.error("Storage load error", e);
             loadInitialSampleData();
@@ -166,6 +172,161 @@ function formatNumber(val, decimals = 2) {
 function formatPercent(val) {
     const sign = val > 0 ? "+" : "";
     return `${sign}${val.toFixed(2)}%`;
+}
+
+// --- T+2 Valör & Takas Calculation Engine ---
+function toLocalDateStringISO(date) {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+}
+
+function calculateBusinessDaysSettlement(startDateStr, businessDays = 2) {
+    if (!startDateStr) startDateStr = toLocalDateStringISO(new Date());
+    const parts = startDateStr.split('-');
+    let current = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10), 12, 0, 0);
+    while (current.getDay() === 0 || current.getDay() === 6) {
+        current.setDate(current.getDate() + 1);
+    }
+    let added = 0;
+    while (added < businessDays) {
+        current.setDate(current.getDate() + 1);
+        const day = current.getDay();
+        if (day !== 0 && day !== 6) {
+            added++;
+        }
+    }
+    return toLocalDateStringISO(current);
+}
+
+function formatSettlementDateDisplay(dateStr) {
+    if (!dateStr) return "";
+    const parts = dateStr.split('-');
+    const date = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10), 12, 0, 0);
+    const options = { day: 'numeric', month: 'short', weekday: 'short' };
+    return date.toLocaleDateString('tr-TR', options);
+}
+
+function formatFullDateDisplay(dateStr) {
+    if (!dateStr) return "";
+    const parts = dateStr.split('-');
+    const date = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10), 12, 0, 0);
+    const options = { day: 'numeric', month: 'long', year: 'numeric', weekday: 'long' };
+    return date.toLocaleDateString('tr-TR', options);
+}
+
+function getPendingT2Data() {
+    const todayStr = toLocalDateStringISO(new Date());
+    const tomorrowDate = new Date();
+    tomorrowDate.setDate(tomorrowDate.getDate() + 1);
+    while (tomorrowDate.getDay() === 0 || tomorrowDate.getDay() === 6) {
+        tomorrowDate.setDate(tomorrowDate.getDate() + 1);
+    }
+    const nextBusinessDayStr = toLocalDateStringISO(tomorrowDate);
+
+    let totalPending = 0;
+    let t1Pending = 0;
+    let t2Pending = 0;
+    const pendingItems = [];
+    const settledItems = [];
+
+    if (!appState.settledSaleIds) appState.settledSaleIds = [];
+    if (!appState.manualT2Entries) appState.manualT2Entries = [];
+
+    // 1. Process Stock Sales from appState.sales
+    appState.sales.forEach(sale => {
+        const isStock = !sale.category || sale.category === "STOCK";
+        if (!isStock) return;
+
+        const saleRevenue = (sale.saleQty || 0) * (sale.salePrice || 0);
+        const settlementDate = sale.settlementDate || calculateBusinessDaysSettlement(sale.saleDate, 2);
+        const isManuallySettled = appState.settledSaleIds.includes(sale.id);
+
+        let status = 'pending';
+        if (isManuallySettled || settlementDate < todayStr) {
+            status = 'settled';
+        } else if (settlementDate === todayStr) {
+            status = 'today';
+        } else {
+            status = 'pending';
+        }
+
+        const itemObj = {
+            id: sale.id,
+            type: 'sale',
+            symbol: sale.symbol,
+            name: sale.name || sale.symbol,
+            amount: saleRevenue,
+            saleDate: sale.saleDate,
+            settlementDate: settlementDate,
+            status: status,
+            isManual: false,
+            qty: sale.saleQty,
+            price: sale.salePrice
+        };
+
+        if (status === 'pending' || status === 'today') {
+            totalPending += saleRevenue;
+            if (settlementDate <= nextBusinessDayStr) {
+                t1Pending += saleRevenue;
+            } else {
+                t2Pending += saleRevenue;
+            }
+            pendingItems.push(itemObj);
+        } else {
+            settledItems.push(itemObj);
+        }
+    });
+
+    // 2. Process Manual Entries
+    appState.manualT2Entries.forEach(entry => {
+        const settlementDate = entry.settlementDate;
+        let status = entry.status || 'pending';
+        if (status !== 'settled' && settlementDate < todayStr) {
+            status = 'settled';
+        } else if (status !== 'settled' && settlementDate === todayStr) {
+            status = 'today';
+        }
+
+        const itemObj = {
+            id: entry.id,
+            type: 'manual',
+            symbol: entry.description,
+            name: 'Manuel Valör Kaydı',
+            amount: entry.amount || 0,
+            saleDate: entry.createdDate || todayStr,
+            settlementDate: settlementDate,
+            status: status,
+            isManual: true
+        };
+
+        if (status === 'pending' || status === 'today') {
+            totalPending += entry.amount;
+            if (settlementDate <= nextBusinessDayStr) {
+                t1Pending += entry.amount;
+            } else {
+                t2Pending += entry.amount;
+            }
+            pendingItems.push(itemObj);
+        } else {
+            settledItems.push(itemObj);
+        }
+    });
+
+    pendingItems.sort((a, b) => new Date(a.settlementDate) - new Date(b.settlementDate));
+    settledItems.sort((a, b) => new Date(b.settlementDate) - new Date(a.settlementDate));
+
+    const nearestDate = pendingItems.length > 0 ? pendingItems[0].settlementDate : null;
+
+    return {
+        totalPending,
+        t1Pending,
+        t2Pending,
+        pendingItems,
+        settledItems,
+        nearestDate
+    };
 }
 
 // --- Portfolio Calculation Engine ---
@@ -277,6 +438,7 @@ function executeSaleTransaction(holdingId, saleQty, salePrice, saleDate) {
     const costBasisAtSale = h.avgCost;
     const realizedPL = (salePrice - costBasisAtSale) * saleQty;
     const realizedPLPercent = costBasisAtSale > 0 ? ((salePrice - costBasisAtSale) / costBasisAtSale) * 100 : 0;
+    const settlementDate = calculateBusinessDaysSettlement(saleDate, 2);
 
     appState.sales.unshift({
         id: "s_" + Date.now(),
@@ -284,6 +446,7 @@ function executeSaleTransaction(holdingId, saleQty, salePrice, saleDate) {
         name: h.name,
         category: h.category,
         saleDate,
+        settlementDate,
         saleQty,
         salePrice,
         costBasisAtSale,
@@ -360,6 +523,31 @@ function renderDashboard() {
     const classicRealized = document.getElementById("totalRealizedPL");
     if (classicRealized) classicRealized.innerText = formatCurrency(m.totalRealizedPL);
 
+    // T+2 Valör Bekleyen Bakiye Metrics
+    const t2Data = getPendingT2Data();
+
+    const heroT2Elem = document.getElementById("heroT2Pending");
+    if (heroT2Elem) heroT2Elem.innerText = formatCurrency(t2Data.totalPending);
+
+    const dashT2Val = document.getElementById("dashboardT2Value");
+    if (dashT2Val) dashT2Val.innerText = formatCurrency(t2Data.totalPending);
+
+    const dashT2Badge = document.getElementById("t2BadgeCount");
+    if (dashT2Badge) dashT2Badge.innerText = `${t2Data.pendingItems.length} İşlem`;
+
+    const dashT2Pulse = document.getElementById("t2PulseDot");
+    if (dashT2Pulse) dashT2Pulse.style.display = t2Data.pendingItems.length > 0 ? "block" : "none";
+
+    const dashT2Sub = document.getElementById("dashboardT2Sub");
+    if (dashT2Sub) {
+        if (t2Data.pendingItems.length > 0) {
+            const nearestFormatted = formatSettlementDateDisplay(t2Data.nearestDate);
+            dashT2Sub.innerHTML = `<i class="fa-solid fa-clock-rotate-left" style="color: #38BDF8;"></i> En yakın valör: <strong style="color: #BAE6FD;">${nearestFormatted}</strong> (${t2Data.pendingItems.length} satış takasta)`;
+        } else {
+            dashT2Sub.innerHTML = `<i class="fa-solid fa-shield-check" style="color: #10B981;"></i> Takasta bekleyen bakiye bulunmuyor`;
+        }
+    }
+
     const dailyClass = m.dailyPL > 0 ? "pos" : (m.dailyPL < 0 ? "neg" : "neut");
     const dailySign = m.dailyPL > 0 ? "+" : "";
     const dailyElem = document.getElementById("dailyPL");
@@ -383,6 +571,9 @@ function renderDashboard() {
 
     const bentoRealized = document.getElementById("bentoRealizedPL");
     if (bentoRealized) bentoRealized.innerText = `${m.totalRealizedPL >= 0 ? '+' : ''}${formatCurrency(m.totalRealizedPL)}`;
+
+    const bentoT2Chip = document.getElementById("bentoT2Pending");
+    if (bentoT2Chip) bentoT2Chip.innerText = formatCurrency(t2Data.totalPending);
 
     // Module 2: Daily Pulse
     const bentoDailyPLElem = document.getElementById("bentoDailyPL");
@@ -1197,11 +1388,202 @@ function openSellModal(holdingId) {
     document.getElementById("inputSellQty").value = "";
 
     updateEstimatedRealizedPL();
+    updateSellT2EstimatedDate();
     document.getElementById("modalSellAsset").classList.add("active");
+}
+
+function updateSellT2EstimatedDate() {
+    const dateInput = document.getElementById("inputSellDate");
+    const previewElem = document.getElementById("sellT2EstimatedDate");
+    if (!previewElem) return;
+    const saleDate = (dateInput && dateInput.value) ? dateInput.value : new Date().toISOString().split('T')[0];
+    const settlementDate = calculateBusinessDaysSettlement(saleDate, 2);
+    previewElem.innerText = formatFullDateDisplay(settlementDate);
 }
 
 function closeSellModal() {
     document.getElementById("modalSellAsset").classList.remove("active");
+}
+
+// --- T+2 Valör & Takas Takibi Modal Management ---
+function openT2Modal() {
+    renderT2ModalList();
+    const modal = document.getElementById("modalT2Detail");
+    if (modal) modal.classList.add("active");
+}
+
+function closeT2Modal() {
+    const modal = document.getElementById("modalT2Detail");
+    if (modal) modal.classList.remove("active");
+    const formBox = document.getElementById("manualT2FormContainer");
+    if (formBox) formBox.style.display = "none";
+}
+
+function toggleManualT2Form() {
+    const formBox = document.getElementById("manualT2FormContainer");
+    if (!formBox) return;
+    const isHidden = formBox.style.display === "none" || formBox.style.display === "";
+    formBox.style.display = isHidden ? "block" : "none";
+    if (isHidden) {
+        const dateInput = document.getElementById("manualT2SettlementDate");
+        if (dateInput) {
+            dateInput.value = calculateBusinessDaysSettlement(new Date().toISOString().split('T')[0], 2);
+        }
+    }
+}
+
+function saveManualT2Entry(e) {
+    e.preventDefault();
+    const desc = document.getElementById("manualT2Desc").value.trim();
+    const amount = parseFloat(document.getElementById("manualT2Amount").value);
+    const settlementDate = document.getElementById("manualT2SettlementDate").value;
+
+    if (!desc || isNaN(amount) || amount <= 0 || !settlementDate) {
+        alert("Lütfen tüm alanları geçerli şekilde doldurun.");
+        return;
+    }
+
+    if (!appState.manualT2Entries) appState.manualT2Entries = [];
+
+    appState.manualT2Entries.unshift({
+        id: "m_t2_" + Date.now(),
+        description: desc,
+        amount: amount,
+        createdDate: new Date().toISOString().split('T')[0],
+        settlementDate: settlementDate,
+        status: 'pending'
+    });
+
+    saveData();
+    renderAll();
+    renderT2ModalList();
+    toggleManualT2Form();
+    e.target.reset();
+}
+
+function deleteManualT2Entry(id) {
+    if (confirm("Bu manuel valör kaydını silmek istediğinize emin misiniz?")) {
+        appState.manualT2Entries = appState.manualT2Entries.filter(item => item.id !== id);
+        saveData();
+        renderAll();
+        renderT2ModalList();
+    }
+}
+
+function toggleSaleSettled(saleId) {
+    if (!appState.settledSaleIds) appState.settledSaleIds = [];
+    const index = appState.settledSaleIds.indexOf(saleId);
+    if (index >= 0) {
+        appState.settledSaleIds.splice(index, 1);
+    } else {
+        appState.settledSaleIds.push(saleId);
+    }
+    saveData();
+    renderAll();
+    renderT2ModalList();
+}
+
+function renderT2ModalList() {
+    const t2Data = getPendingT2Data();
+
+    const totalElem = document.getElementById("modalT2TotalVal");
+    if (totalElem) totalElem.innerText = formatCurrency(t2Data.totalPending);
+
+    const t1Elem = document.getElementById("modalT2T1Val");
+    if (t1Elem) t1Elem.innerText = formatCurrency(t2Data.t1Pending);
+
+    const t2Elem = document.getElementById("modalT2T2Val");
+    if (t2Elem) t2Elem.innerText = formatCurrency(t2Data.t2Pending);
+
+    const countElem = document.getElementById("modalT2Count");
+    if (countElem) countElem.innerText = t2Data.pendingItems.length;
+
+    const listContainer = document.getElementById("modalT2ItemsList");
+    if (!listContainer) return;
+
+    if (t2Data.pendingItems.length === 0 && t2Data.settledItems.length === 0) {
+        listContainer.innerHTML = `
+            <div class="empty-state" style="padding: 24px 15px;">
+                <i class="fa-solid fa-hourglass-start" style="font-size: 2.2rem; color: #38BDF8; opacity: 0.7; margin-bottom: 10px;"></i>
+                <p style="font-size: 0.9rem; margin-bottom: 6px; font-weight: 600;">Valör Bekleyen İşlem Yok</p>
+                <small style="color: var(--text-muted); line-height: 1.4;">Hisse senedi sattığınızda 2 iş günü sürecek olan takas süreci burada otomatik listelenir.</small>
+            </div>
+        `;
+        return;
+    }
+
+    let html = '';
+
+    // Pending Items
+    if (t2Data.pendingItems.length > 0) {
+        html += t2Data.pendingItems.map(item => {
+            const dateStr = formatFullDateDisplay(item.settlementDate);
+            const pillClass = item.status === 'today' ? 'today' : 'pending';
+            const pillText = item.status === 'today' 
+                ? '<i class="fa-solid fa-bell"></i> Bugün Hesaba Geçiyor' 
+                : `<i class="fa-solid fa-clock"></i> T+2 Bekliyor (${formatSettlementDateDisplay(item.settlementDate)})`;
+            
+            const detailSub = item.isManual 
+                ? `Manuel Kayıt &bull; İşlem Tarihi: ${formatSettlementDateDisplay(item.saleDate)}`
+                : `${item.qty} Adet @ ${formatCurrency(item.price)} &bull; Satış: ${formatSettlementDateDisplay(item.saleDate)}`;
+
+            return `
+                <div class="t2-item-card">
+                    <div class="t2-item-header">
+                        <div class="t2-item-title">
+                            <i class="fa-solid ${item.isManual ? 'fa-pen-to-square' : 'fa-chart-line'}" style="color: #38BDF8;"></i>
+                            <span>${item.symbol}</span>
+                            <span class="valeur-pill ${pillClass}">${pillText}</span>
+                        </div>
+                        <div class="t2-item-amount">+${formatCurrency(item.amount)}</div>
+                    </div>
+                    <div class="t2-item-details-row">
+                        <span>${detailSub}</span>
+                        <span style="color: #BAE6FD; font-weight: 600;"><i class="fa-solid fa-calendar-check"></i> Valör: ${dateStr}</span>
+                    </div>
+                    <div class="t2-item-actions">
+                        ${item.isManual 
+                            ? `<button class="btn-sm" style="background: rgba(239,68,68,0.15); color: #EF4444; border: 1px solid rgba(239,68,68,0.3); font-size: 0.75rem; padding: 4px 10px; border-radius: 6px; cursor: pointer;" onclick="deleteManualT2Entry('${item.id}')"><i class="fa-solid fa-trash"></i> Sil</button>`
+                            : `<button class="btn-sm" style="background: rgba(16,185,129,0.15); color: #10B981; border: 1px solid rgba(16,185,129,0.3); font-size: 0.75rem; padding: 4px 10px; border-radius: 6px; cursor: pointer;" onclick="toggleSaleSettled('${item.id}')"><i class="fa-solid fa-check"></i> Hesaba Geçti Olarak İşaretle</button>`
+                        }
+                    </div>
+                </div>
+            `;
+        }).join("");
+    }
+
+    // Settled Items
+    if (t2Data.settledItems.length > 0) {
+        html += `
+            <div style="margin-top: 14px; margin-bottom: 8px;">
+                <span style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;">
+                    <i class="fa-solid fa-clock-rotate-left"></i> Tamamlanan / Serbest Kalan Valörler (${t2Data.settledItems.length})
+                </span>
+            </div>
+        `;
+        html += t2Data.settledItems.slice(0, 5).map(item => {
+            return `
+                <div class="t2-item-card" style="opacity: 0.65;">
+                    <div class="t2-item-header">
+                        <div class="t2-item-title" style="font-size: 13px;">
+                            <i class="fa-solid fa-circle-check" style="color: #10B981;"></i>
+                            <span>${item.symbol}</span>
+                            <span class="valeur-pill settled">Valör Tamamlandı</span>
+                        </div>
+                        <div class="t2-item-amount" style="color: #94A3B8; font-size: 13px;">+${formatCurrency(item.amount)}</div>
+                    </div>
+                    <div class="t2-item-details-row">
+                        <span>Valör Tarihi: ${formatSettlementDateDisplay(item.settlementDate)}</span>
+                        ${!item.isManual && appState.settledSaleIds.includes(item.id) 
+                            ? `<button class="btn-sm" style="background: transparent; color: var(--text-muted); border: 1px solid rgba(255,255,255,0.1); font-size: 0.7rem; padding: 2px 6px; border-radius: 4px; cursor: pointer;" onclick="toggleSaleSettled('${item.id}')">Geri Al</button>` 
+                            : ''}
+                    </div>
+                </div>
+            `;
+        }).join("");
+    }
+
+    listContainer.innerHTML = html;
 }
 
 // --- Financial Health Score & Fundamental Analysis Engine ---
@@ -1646,6 +2028,8 @@ function initEvents() {
 
     document.getElementById("inputSellQty").addEventListener("input", updateEstimatedRealizedPL);
     document.getElementById("inputSellPrice").addEventListener("input", updateEstimatedRealizedPL);
+    document.getElementById("inputSellDate").addEventListener("change", updateSellT2EstimatedDate);
+    document.getElementById("inputSellDate").addEventListener("input", updateSellT2EstimatedDate);
 
     document.getElementById("btnUpdatePricePrompt").addEventListener("click", () => {
         const h = appState.holdings.find(item => item.id === activeDetailHoldingId);
