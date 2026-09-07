@@ -1882,7 +1882,8 @@ window.switchBalanceTab = function(tabName) {
     const panels = {
         'revenue': document.getElementById('btabRevenue'),
         'margins': document.getElementById('btabMargins'),
-        'ratios': document.getElementById('btabRatios')
+        'ratios': document.getElementById('btabRatios'),
+        'table': document.getElementById('btabTable')
     };
 
     Object.keys(panels).forEach(key => {
@@ -2163,6 +2164,124 @@ function getStockQuarterlyStatement(stock, symbol) {
     };
 }
 
+function formatChangePill(elemId, currentVal, prevVal, isMarginOrRatio = false) {
+    const elem = document.getElementById(elemId);
+    if (!elem) return;
+    if (prevVal === undefined || prevVal === null || isNaN(prevVal) || prevVal === 0) {
+        elem.innerText = "—";
+        elem.className = "hero-change-pill";
+        return;
+    }
+    
+    if (isMarginOrRatio) {
+        const diff = currentVal - prevVal;
+        const sign = diff >= 0 ? "+" : "";
+        elem.innerText = `${sign}${diff.toFixed(1)}p QoQ`;
+        elem.className = `hero-change-pill ${diff >= 0 ? 'pos' : 'neg'}`;
+    } else {
+        const pct = ((currentVal - prevVal) / Math.abs(prevVal)) * 100;
+        const sign = pct >= 0 ? "+" : "";
+        elem.innerText = `${sign}%${pct.toFixed(1)} QoQ`;
+        elem.className = `hero-change-pill ${pct >= 0 ? 'pos' : 'neg'}`;
+    }
+}
+
+function renderFintablesTable(statement) {
+    const thead = document.getElementById("fintablesTableHead");
+    const tbody = document.getElementById("fintablesTableBody");
+    if (!thead || !tbody) return;
+
+    const quarters = statement.quarters;
+    const lastIdx = quarters.length - 1;
+
+    // Header Row
+    thead.innerHTML = `
+        <tr>
+            <th>Finansal Kalem</th>
+            ${quarters.map(q => `<th>${q}</th>`).join('')}
+            <th>QoQ</th>
+            <th>YoY</th>
+        </tr>
+    `;
+
+    const grossProfitArr = statement.revenue.map((r, i) => Math.round(r * (statement.grossMargin[i] / 100)));
+
+    const rows = [
+        { isSection: true, title: "GELİR TABLOSU (ÇEYREKLİK)" },
+        { name: "Satış Gelirleri (Ciro)", data: statement.revenue, isMoney: true },
+        { name: "Brüt Kâr", data: grossProfitArr, isMoney: true },
+        { name: "FAVÖK", data: statement.ebitda, isMoney: true },
+        { name: "Net Dönem Kârı", data: statement.netIncome, isMoney: true },
+        { isSection: true, title: "KÂRLILIK MARJLARI" },
+        { name: "Brüt Kâr Marjı", data: statement.grossMargin, isPct: true },
+        { name: "FAVÖK Marjı", data: statement.ebitdaMargin, isPct: true },
+        { name: "Net Kâr Marjı", data: statement.netMargin, isPct: true },
+        { isSection: true, title: "BİLANÇO & ORANLAR" },
+        { name: "Cari Oran", data: statement.currentRatio, isRatio: true },
+        { name: "Kaldıraç Oranı", data: statement.leverage, isPct: true },
+        { name: "Özkaynak Kârlılığı (ROE)", data: statement.roe, isPct: true }
+    ];
+
+    tbody.innerHTML = rows.map(r => {
+        if (r.isSection) {
+            return `
+                <tr class="fintables-section-row">
+                    <td colspan="${quarters.length + 3}">${r.title}</td>
+                </tr>
+            `;
+        }
+
+        const curr = r.data[lastIdx];
+        const prev = r.data[lastIdx - 1];
+        const yoyVal = (lastIdx >= 4 && r.data[lastIdx - 4] !== undefined) ? r.data[lastIdx - 4] : r.data[0];
+
+        // QoQ calculation
+        let qoqBadge = "—";
+        if (prev !== undefined && prev !== null && prev !== 0 && !isNaN(prev)) {
+            if (r.isPct || r.isRatio) {
+                const diff = curr - prev;
+                const sign = diff >= 0 ? "+" : "";
+                qoqBadge = `<span class="fintables-badge ${diff >= 0 ? 'pos' : 'neg'}">${sign}${diff.toFixed(1)}p</span>`;
+            } else {
+                const pct = ((curr - prev) / Math.abs(prev)) * 100;
+                const sign = pct >= 0 ? "+" : "";
+                qoqBadge = `<span class="fintables-badge ${pct >= 0 ? 'pos' : 'neg'}">${sign}%${pct.toFixed(1)}</span>`;
+            }
+        }
+
+        // YoY calculation
+        let yoyBadge = "—";
+        if (yoyVal !== undefined && yoyVal !== null && yoyVal !== 0 && !isNaN(yoyVal)) {
+            if (r.isPct || r.isRatio) {
+                const diff = curr - yoyVal;
+                const sign = diff >= 0 ? "+" : "";
+                yoyBadge = `<span class="fintables-badge ${diff >= 0 ? 'pos' : 'neg'}">${sign}${diff.toFixed(1)}p</span>`;
+            } else {
+                const pct = ((curr - yoyVal) / Math.abs(yoyVal)) * 100;
+                const sign = pct >= 0 ? "+" : "";
+                yoyBadge = `<span class="fintables-badge ${pct >= 0 ? 'pos' : 'neg'}">${sign}%${pct.toFixed(1)}</span>`;
+            }
+        }
+
+        const cells = r.data.map(val => {
+            let formatted = val;
+            if (r.isMoney) formatted = formatBillionOrMillion(val);
+            else if (r.isPct) formatted = `%${val}`;
+            else if (r.isRatio) formatted = `${val}x`;
+            return `<td>${formatted}</td>`;
+        }).join('');
+
+        return `
+            <tr>
+                <td class="fintables-row-header">${r.name}</td>
+                ${cells}
+                <td>${qoqBadge}</td>
+                <td>${yoyBadge}</td>
+            </tr>
+        `;
+    }).join('');
+}
+
 function renderStockBalanceSheetCharts(stock, symbol) {
     destroyBalanceSheetCharts();
 
@@ -2200,25 +2319,48 @@ function renderStockBalanceSheetCharts(stock, symbol) {
         roeElem.innerText = (latestRoe !== null && !isNaN(latestRoe)) ? `%${latestRoe.toFixed(1)}` : "—";
     }
 
-    // 2. Summary Stat Rows for Quarters
+    // 2. Populate Hero Cards & Quarterly Stats
     const lastIdx = statement.revenue.length - 1;
+    const prevIdx = lastIdx - 1;
+
+    // Tab 1 Hero Cards (Revenue, EBITDA, Net Income)
     const valRev = document.getElementById("bValRevenue");
     if (valRev) valRev.innerText = formatBillionOrMillion(statement.revenue[lastIdx]);
+    formatChangePill("bChangeRevenue", statement.revenue[lastIdx], statement.revenue[prevIdx]);
 
     const valEbitda = document.getElementById("bValEbitda");
     if (valEbitda) valEbitda.innerText = formatBillionOrMillion(statement.ebitda[lastIdx]);
+    formatChangePill("bChangeEbitda", statement.ebitda[lastIdx], statement.ebitda[prevIdx]);
 
     const valNet = document.getElementById("bValNetIncome");
     if (valNet) valNet.innerText = formatBillionOrMillion(statement.netIncome[lastIdx]);
+    formatChangePill("bChangeNetIncome", statement.netIncome[lastIdx], statement.netIncome[prevIdx]);
 
+    // Tab 2 Hero Cards (Margins)
     const valGrossM = document.getElementById("bValGrossMargin");
     if (valGrossM) valGrossM.innerText = `%${statement.grossMargin[lastIdx]}`;
+    formatChangePill("bChangeGrossMargin", statement.grossMargin[lastIdx], statement.grossMargin[prevIdx], true);
 
     const valEbitdaM = document.getElementById("bValEbitdaMargin");
     if (valEbitdaM) valEbitdaM.innerText = `%${statement.ebitdaMargin[lastIdx]}`;
+    formatChangePill("bChangeEbitdaMargin", statement.ebitdaMargin[lastIdx], statement.ebitdaMargin[prevIdx], true);
 
     const valNetM = document.getElementById("bValNetMargin");
     if (valNetM) valNetM.innerText = `%${statement.netMargin[lastIdx]}`;
+    formatChangePill("bChangeNetMargin", statement.netMargin[lastIdx], statement.netMargin[prevIdx], true);
+
+    // Tab 3 Hero Cards (Ratios)
+    const valCR = document.getElementById("bValCurrentRatio");
+    if (valCR) valCR.innerText = `${statement.currentRatio[lastIdx]}x`;
+    formatChangePill("bChangeCurrentRatio", statement.currentRatio[lastIdx], statement.currentRatio[prevIdx], true);
+
+    const valLev = document.getElementById("bValLeverageRatio");
+    if (valLev) valLev.innerText = `%${statement.leverage[lastIdx]}`;
+    formatChangePill("bChangeLeverageRatio", statement.leverage[lastIdx], statement.leverage[prevIdx], true);
+
+    const valRoe = document.getElementById("bValRoeRatio");
+    if (valRoe) valRoe.innerText = `%${statement.roe[lastIdx]}`;
+    formatChangePill("bChangeRoeRatio", statement.roe[lastIdx], statement.roe[prevIdx], true);
 
     // 3. Capital Distribution (Pasif Yapısı)
     const totalPassives = statement.shortDebt + statement.longDebt + statement.equity;
@@ -2243,6 +2385,9 @@ function renderStockBalanceSheetCharts(stock, symbol) {
         valEq.innerText = `${formatBillionOrMillion(statement.equity)} (%${pct})`;
     }
 
+    // Tab 4: Render Fintables Table
+    renderFintablesTable(statement);
+
     // Reset toggle pills and activate first tab
     const pills = document.querySelectorAll('.chart-toggle-pills .c-toggle-btn');
     pills.forEach((p, idx) => {
@@ -2253,7 +2398,7 @@ function renderStockBalanceSheetCharts(stock, symbol) {
 
     if (typeof Chart === 'undefined') return;
 
-    // 4. Render Chart 1: Quarterly Financials (Revenue, EBITDA, Net Income - Bar Chart)
+    // 4. Render Chart 1: Simplified Quarterly Financials (Bar Chart)
     const ctxRevenue = document.getElementById("chartQuarterlyFinancials");
     if (ctxRevenue) {
         chartQuarterlyFinancialsInstance = new Chart(ctxRevenue, {
@@ -2264,39 +2409,33 @@ function renderStockBalanceSheetCharts(stock, symbol) {
                     {
                         label: 'Satışlar',
                         data: statement.revenue,
-                        backgroundColor: 'rgba(56, 189, 248, 0.75)',
-                        borderColor: '#38BDF8',
-                        borderWidth: 1.5,
-                        borderRadius: 4,
-                        barPercentage: 0.85,
-                        categoryPercentage: 0.75
+                        backgroundColor: 'rgba(56, 189, 248, 0.82)',
+                        borderRadius: 6,
+                        barPercentage: 0.8,
+                        categoryPercentage: 0.72
                     },
                     {
                         label: 'FAVÖK',
                         data: statement.ebitda,
-                        backgroundColor: 'rgba(168, 85, 247, 0.75)',
-                        borderColor: '#A855F7',
-                        borderWidth: 1.5,
-                        borderRadius: 4,
-                        barPercentage: 0.85,
-                        categoryPercentage: 0.75
+                        backgroundColor: 'rgba(168, 85, 247, 0.82)',
+                        borderRadius: 6,
+                        barPercentage: 0.8,
+                        categoryPercentage: 0.72
                     },
                     {
                         label: 'Net Kâr',
                         data: statement.netIncome,
-                        backgroundColor: statement.netIncome.map(v => v >= 0 ? 'rgba(16, 185, 129, 0.75)' : 'rgba(239, 68, 68, 0.75)'),
-                        borderColor: statement.netIncome.map(v => v >= 0 ? '#10B981' : '#EF4444'),
-                        borderWidth: 1.5,
-                        borderRadius: 4,
-                        barPercentage: 0.85,
-                        categoryPercentage: 0.75
+                        backgroundColor: statement.netIncome.map(v => v >= 0 ? 'rgba(16, 185, 129, 0.82)' : 'rgba(239, 68, 68, 0.82)'),
+                        borderRadius: 6,
+                        barPercentage: 0.8,
+                        categoryPercentage: 0.72
                     }
                 ]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                animation: { duration: 400 },
+                animation: { duration: 350 },
                 plugins: {
                     legend: {
                         display: true,
@@ -2314,7 +2453,7 @@ function renderStockBalanceSheetCharts(stock, symbol) {
                         bodyColor: '#CBD5E1',
                         borderColor: 'rgba(255, 255, 255, 0.12)',
                         borderWidth: 1,
-                        padding: 10,
+                        padding: 8,
                         callbacks: {
                             label: function(ctx) {
                                 return ` ${ctx.dataset.label}: ${formatBillionOrMillion(ctx.raw)}`;
@@ -2328,7 +2467,7 @@ function renderStockBalanceSheetCharts(stock, symbol) {
                         ticks: { color: '#94A3B8', font: { size: 10 } }
                     },
                     y: {
-                        grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                        grid: { color: 'rgba(255, 255, 255, 0.04)' },
                         ticks: {
                             color: '#94A3B8',
                             font: { size: 9 },
@@ -2340,7 +2479,7 @@ function renderStockBalanceSheetCharts(stock, symbol) {
         });
     }
 
-    // 5. Render Chart 2: Profit Margins (Gross Margin, EBITDA Margin, Net Margin - Line Chart)
+    // 5. Render Chart 2: Simplified Profit Margins (Line Chart)
     const ctxMargins = document.getElementById("chartProfitMargins");
     if (ctxMargins) {
         chartProfitMarginsInstance = new Chart(ctxMargins, {
@@ -2352,10 +2491,10 @@ function renderStockBalanceSheetCharts(stock, symbol) {
                         label: 'Brüt Kâr Marjı',
                         data: statement.grossMargin,
                         borderColor: '#06B6D4',
-                        backgroundColor: 'rgba(6, 182, 212, 0.08)',
+                        backgroundColor: 'transparent',
                         tension: 0.35,
                         borderWidth: 2,
-                        pointRadius: 3.5,
+                        pointRadius: 3,
                         pointBackgroundColor: '#06B6D4',
                         fill: false
                     },
@@ -2363,10 +2502,10 @@ function renderStockBalanceSheetCharts(stock, symbol) {
                         label: 'FAVÖK Marjı',
                         data: statement.ebitdaMargin,
                         borderColor: '#A855F7',
-                        backgroundColor: 'rgba(168, 85, 247, 0.08)',
+                        backgroundColor: 'transparent',
                         tension: 0.35,
                         borderWidth: 2,
-                        pointRadius: 3.5,
+                        pointRadius: 3,
                         pointBackgroundColor: '#A855F7',
                         fill: false
                     },
@@ -2374,10 +2513,10 @@ function renderStockBalanceSheetCharts(stock, symbol) {
                         label: 'Net Kâr Marjı',
                         data: statement.netMargin,
                         borderColor: '#10B981',
-                        backgroundColor: 'rgba(16, 185, 129, 0.08)',
+                        backgroundColor: 'transparent',
                         tension: 0.35,
                         borderWidth: 2,
-                        pointRadius: 3.5,
+                        pointRadius: 3,
                         pointBackgroundColor: '#10B981',
                         fill: false
                     }
@@ -2386,7 +2525,7 @@ function renderStockBalanceSheetCharts(stock, symbol) {
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                animation: { duration: 400 },
+                animation: { duration: 350 },
                 plugins: {
                     legend: {
                         display: true,
@@ -2404,7 +2543,7 @@ function renderStockBalanceSheetCharts(stock, symbol) {
                         bodyColor: '#CBD5E1',
                         borderColor: 'rgba(255, 255, 255, 0.12)',
                         borderWidth: 1,
-                        padding: 10,
+                        padding: 8,
                         callbacks: {
                             label: function(ctx) {
                                 return ` ${ctx.dataset.label}: %${Number(ctx.raw).toFixed(1)}`;
@@ -2418,7 +2557,7 @@ function renderStockBalanceSheetCharts(stock, symbol) {
                         ticks: { color: '#94A3B8', font: { size: 10 } }
                     },
                     y: {
-                        grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                        grid: { color: 'rgba(255, 255, 255, 0.04)' },
                         ticks: {
                             color: '#94A3B8',
                             font: { size: 9 },
@@ -2430,7 +2569,7 @@ function renderStockBalanceSheetCharts(stock, symbol) {
         });
     }
 
-    // 6. Render Chart 3: Financial Ratios (Current Ratio, Leverage, ROE - Dual-Axis Line Chart)
+    // 6. Render Chart 3: Simplified Financial Ratios (Dual-Axis Line Chart)
     const ctxRatios = document.getElementById("chartFinancialRatios");
     if (ctxRatios) {
         chartFinancialRatiosInstance = new Chart(ctxRatios, {
@@ -2446,7 +2585,7 @@ function renderStockBalanceSheetCharts(stock, symbol) {
                         yAxisID: 'y1',
                         tension: 0.35,
                         borderWidth: 2,
-                        pointRadius: 3.5,
+                        pointRadius: 3,
                         pointBackgroundColor: '#38BDF8'
                     },
                     {
@@ -2457,7 +2596,7 @@ function renderStockBalanceSheetCharts(stock, symbol) {
                         yAxisID: 'y',
                         tension: 0.35,
                         borderWidth: 2,
-                        pointRadius: 3.5,
+                        pointRadius: 3,
                         pointBackgroundColor: '#F59E0B'
                     },
                     {
@@ -2468,7 +2607,7 @@ function renderStockBalanceSheetCharts(stock, symbol) {
                         yAxisID: 'y',
                         tension: 0.35,
                         borderWidth: 2,
-                        pointRadius: 3.5,
+                        pointRadius: 3,
                         pointBackgroundColor: '#10B981'
                     }
                 ]
@@ -2476,7 +2615,7 @@ function renderStockBalanceSheetCharts(stock, symbol) {
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                animation: { duration: 400 },
+                animation: { duration: 350 },
                 plugins: {
                     legend: {
                         display: true,
@@ -2494,7 +2633,7 @@ function renderStockBalanceSheetCharts(stock, symbol) {
                         bodyColor: '#CBD5E1',
                         borderColor: 'rgba(255, 255, 255, 0.12)',
                         borderWidth: 1,
-                        padding: 10,
+                        padding: 8,
                         callbacks: {
                             label: function(ctx) {
                                 if (ctx.dataset.yAxisID === 'y1') {
@@ -2514,7 +2653,7 @@ function renderStockBalanceSheetCharts(stock, symbol) {
                     y: {
                         type: 'linear',
                         position: 'left',
-                        grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                        grid: { color: 'rgba(255, 255, 255, 0.04)' },
                         ticks: {
                             color: '#F59E0B',
                             font: { size: 9 },
@@ -2536,7 +2675,7 @@ function renderStockBalanceSheetCharts(stock, symbol) {
         });
     }
 
-    // 7. Render Chart 4: Capital Structure (Short-term Debt, Long-term Debt, Equity - Donut Chart)
+    // 7. Render Chart 4: Capital Structure (Donut Chart)
     const ctxCap = document.getElementById("chartCapitalStructure");
     if (ctxCap) {
         chartCapitalStructureInstance = new Chart(ctxCap, {
@@ -2555,7 +2694,7 @@ function renderStockBalanceSheetCharts(stock, symbol) {
                 responsive: true,
                 maintainAspectRatio: false,
                 cutout: '70%',
-                animation: { duration: 400 },
+                animation: { duration: 350 },
                 plugins: {
                     legend: { display: false },
                     tooltip: {
@@ -2564,7 +2703,7 @@ function renderStockBalanceSheetCharts(stock, symbol) {
                         bodyColor: '#CBD5E1',
                         borderColor: 'rgba(255, 255, 255, 0.12)',
                         borderWidth: 1,
-                        padding: 10,
+                        padding: 8,
                         callbacks: {
                             label: function(ctx) {
                                 const val = ctx.raw;

@@ -2890,40 +2890,79 @@ input:focus, select:focus {
     border: 1px solid rgba(255, 255, 255, 0.04);
 }
 
-.quarterly-summary-row {
+.hero-quarter-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 6px;
-    margin-top: 10px;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+@media (max-width: 480px) {
+    .hero-quarter-grid {
+        gap: 6px;
+    }
 }
 
-.q-stat-card {
-    background: rgba(0, 0, 0, 0.25);
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    border-radius: 10px;
-    padding: 7px 8px;
+.hero-q-card {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.01) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.09);
+    border-radius: 12px;
+    padding: 10px 9px;
     display: flex;
     flex-direction: column;
-    gap: 2px;
+    gap: 4px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
 }
 
-.q-lbl {
-    font-size: 0.65rem;
+.hero-q-lbl {
+    font-size: 0.68rem;
     color: var(--text-secondary);
+    font-weight: 700;
     display: flex;
     align-items: center;
-    gap: 4px;
-    font-weight: 600;
-}
-
-.q-val {
-    font-size: 0.82rem;
-    font-family: var(--font-mono);
-    color: #F8FAFC;
-    font-weight: 800;
+    gap: 5px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+}
+
+.hero-q-val {
+    font-size: 1.05rem;
+    font-family: var(--font-mono);
+    font-weight: 800;
+    color: #FFFFFF;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    letter-spacing: -0.3px;
+}
+
+.hero-change-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    font-size: 0.64rem;
+    font-weight: 700;
+    font-family: var(--font-mono);
+    padding: 2px 6px;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.06);
+    color: var(--text-muted);
+    width: fit-content;
+    line-height: 1.2;
+}
+
+.hero-change-pill.pos {
+    background: rgba(16, 185, 129, 0.16);
+    color: #10B981;
+    border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.hero-change-pill.neg {
+    background: rgba(239, 68, 68, 0.16);
+    color: #EF4444;
+    border: 1px solid rgba(239, 68, 68, 0.3);
 }
 
 .q-dot {
@@ -2938,6 +2977,100 @@ input:focus, select:focus {
 .q-dot.green { background: #10B981; }
 .q-dot.cyan { background: #06B6D4; }
 .q-dot.emerald { background: #10B981; }
+.q-dot.amber { background: #F59E0B; }
+
+/* Fintables Style Financial Statements Table */
+.fintables-table-wrap {
+    width: 100%;
+    overflow-x: auto;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(0, 0, 0, 0.35);
+    margin-top: 6px;
+    -webkit-overflow-scrolling: touch;
+}
+
+.fintables-table {
+    width: 100%;
+    min-width: 580px;
+    border-collapse: collapse;
+    font-size: 0.73rem;
+}
+
+.fintables-table th {
+    background: rgba(15, 23, 42, 0.9);
+    color: var(--text-secondary);
+    font-weight: 700;
+    padding: 8px 10px;
+    text-align: right;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    white-space: nowrap;
+}
+
+.fintables-table th:first-child {
+    text-align: left;
+    position: sticky;
+    left: 0;
+    background: rgba(15, 23, 42, 0.98);
+    z-index: 2;
+}
+
+.fintables-table td {
+    padding: 8px 10px;
+    text-align: right;
+    font-family: var(--font-mono);
+    color: #F1F5F9;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    white-space: nowrap;
+}
+
+.fintables-table tr:hover td {
+    background: rgba(56, 189, 248, 0.05);
+}
+
+.fintables-row-header {
+    text-align: left !important;
+    font-family: inherit !important;
+    font-weight: 700;
+    color: var(--text-primary) !important;
+    position: sticky;
+    left: 0;
+    background: rgba(11, 16, 26, 0.96);
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.fintables-badge {
+    display: inline-block;
+    padding: 2px 6px;
+    border-radius: 5px;
+    font-weight: 700;
+    font-size: 0.67rem;
+    font-family: var(--font-mono);
+}
+
+.fintables-badge.pos {
+    background: rgba(16, 185, 129, 0.15);
+    color: #10B981;
+}
+
+.fintables-badge.neg {
+    background: rgba(239, 68, 68, 0.15);
+    color: #EF4444;
+}
+
+.fintables-section-row td {
+    background: rgba(255, 255, 255, 0.03);
+    font-weight: 800;
+    color: #38BDF8;
+    text-transform: uppercase;
+    font-size: 0.66rem;
+    letter-spacing: 0.5px;
+    padding-top: 10px;
+    padding-bottom: 6px;
+}
 
 .capital-distribution-section {
     margin-top: 12px;

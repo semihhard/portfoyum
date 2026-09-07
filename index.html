@@ -1092,10 +1092,32 @@
                         <button type="button" class="b-tab-btn" data-btab="ratios" onclick="switchBalanceTab('ratios')">
                             <i class="fa-solid fa-scale-balanced"></i> Oranlar & Kaynak
                         </button>
+                        <button type="button" class="b-tab-btn" data-btab="table" onclick="switchBalanceTab('table')">
+                            <i class="fa-solid fa-table-list"></i> Finansal Tablo
+                        </button>
                     </div>
 
                     <!-- TAB 1: Gelir & Kâr (Sütun Grafikleri) -->
                     <div id="btabRevenue" class="b-tab-panel active">
+                        <!-- Vurgulu Son Çeyrek Gösterge Kartları -->
+                        <div class="hero-quarter-grid">
+                            <div class="hero-q-card">
+                                <div class="hero-q-lbl"><span class="q-dot blue"></span> Satışlar (Son Ç.)</div>
+                                <div class="hero-q-val" id="bValRevenue">--</div>
+                                <div class="hero-change-pill" id="bChangeRevenue">--</div>
+                            </div>
+                            <div class="hero-q-card">
+                                <div class="hero-q-lbl"><span class="q-dot purple"></span> FAVÖK (Son Ç.)</div>
+                                <div class="hero-q-val" id="bValEbitda">--</div>
+                                <div class="hero-change-pill" id="bChangeEbitda">--</div>
+                            </div>
+                            <div class="hero-q-card">
+                                <div class="hero-q-lbl"><span class="q-dot green"></span> Net Kâr (Son Ç.)</div>
+                                <div class="hero-q-val" id="bValNetIncome">--</div>
+                                <div class="hero-change-pill" id="bChangeNetIncome">--</div>
+                            </div>
+                        </div>
+
                         <div class="chart-filter-row">
                             <span class="chart-section-title">Çeyreklik Gelir & Kâr Trendi</span>
                             <div class="chart-toggle-pills">
@@ -1106,57 +1128,65 @@
                             </div>
                         </div>
                         <div class="chart-canvas-wrap">
-                            <canvas id="chartQuarterlyFinancials" height="190"></canvas>
-                        </div>
-                        <!-- Son Çeyrek Özet Rakamları -->
-                        <div class="quarterly-summary-row">
-                            <div class="q-stat-card">
-                                <span class="q-lbl"><span class="q-dot blue"></span> Satışlar (Son Ç.)</span>
-                                <strong id="bValRevenue" class="q-val">--</strong>
-                            </div>
-                            <div class="q-stat-card">
-                                <span class="q-lbl"><span class="q-dot purple"></span> FAVÖK (Son Ç.)</span>
-                                <strong id="bValEbitda" class="q-val">--</strong>
-                            </div>
-                            <div class="q-stat-card">
-                                <span class="q-lbl"><span class="q-dot green"></span> Net Kâr (Son Ç.)</span>
-                                <strong id="bValNetIncome" class="q-val">--</strong>
-                            </div>
+                            <canvas id="chartQuarterlyFinancials" height="185"></canvas>
                         </div>
                     </div>
 
                     <!-- TAB 2: Kârlılık Marjları (Çizgi Grafikleri) -->
                     <div id="btabMargins" class="b-tab-panel" style="display: none;">
+                        <!-- Vurgulu Son Çeyrek Marj Kartları -->
+                        <div class="hero-quarter-grid">
+                            <div class="hero-q-card">
+                                <div class="hero-q-lbl"><span class="q-dot cyan"></span> Brüt Kâr Marjı</div>
+                                <div class="hero-q-val" id="bValGrossMargin">--</div>
+                                <div class="hero-change-pill" id="bChangeGrossMargin">--</div>
+                            </div>
+                            <div class="hero-q-card">
+                                <div class="hero-q-lbl"><span class="q-dot purple"></span> FAVÖK Marjı</div>
+                                <div class="hero-q-val" id="bValEbitdaMargin">--</div>
+                                <div class="hero-change-pill" id="bChangeEbitdaMargin">--</div>
+                            </div>
+                            <div class="hero-q-card">
+                                <div class="hero-q-lbl"><span class="q-dot emerald"></span> Net Kâr Marjı</div>
+                                <div class="hero-q-val" id="bValNetMargin">--</div>
+                                <div class="hero-change-pill" id="bChangeNetMargin">--</div>
+                            </div>
+                        </div>
+
                         <div class="chart-filter-row">
                             <span class="chart-section-title">Çeyreklik Kârlılık Marjları (%)</span>
                         </div>
                         <div class="chart-canvas-wrap">
-                            <canvas id="chartProfitMargins" height="190"></canvas>
-                        </div>
-                        <!-- Son Çeyrek Marj Kartları -->
-                        <div class="quarterly-summary-row">
-                            <div class="q-stat-card">
-                                <span class="q-lbl"><span class="q-dot cyan"></span> Brüt Kâr Marjı</span>
-                                <strong id="bValGrossMargin" class="q-val">--</strong>
-                            </div>
-                            <div class="q-stat-card">
-                                <span class="q-lbl"><span class="q-dot purple"></span> FAVÖK Marjı</span>
-                                <strong id="bValEbitdaMargin" class="q-val">--</strong>
-                            </div>
-                            <div class="q-stat-card">
-                                <span class="q-lbl"><span class="q-dot emerald"></span> Net Kâr Marjı</span>
-                                <strong id="bValNetMargin" class="q-val">--</strong>
-                            </div>
+                            <canvas id="chartProfitMargins" height="185"></canvas>
                         </div>
                     </div>
 
                     <!-- TAB 3: Finansal Oranlar & Kaynak Dağılımı -->
                     <div id="btabRatios" class="b-tab-panel" style="display: none;">
+                        <!-- Vurgulu Son Çeyrek Oran Kartları -->
+                        <div class="hero-quarter-grid">
+                            <div class="hero-q-card">
+                                <div class="hero-q-lbl"><span class="q-dot blue"></span> Cari Oran</div>
+                                <div class="hero-q-val" id="bValCurrentRatio">--</div>
+                                <div class="hero-change-pill" id="bChangeCurrentRatio">--</div>
+                            </div>
+                            <div class="hero-q-card">
+                                <div class="hero-q-lbl"><span class="q-dot amber"></span> Kaldıraç Oranı</div>
+                                <div class="hero-q-val" id="bValLeverageRatio">--</div>
+                                <div class="hero-change-pill" id="bChangeLeverageRatio">--</div>
+                            </div>
+                            <div class="hero-q-card">
+                                <div class="hero-q-lbl"><span class="q-dot green"></span> ROE (Özkaynak Kârı)</div>
+                                <div class="hero-q-val" id="bValRoeRatio">--</div>
+                                <div class="hero-change-pill" id="bChangeRoeRatio">--</div>
+                            </div>
+                        </div>
+
                         <div class="chart-filter-row">
                             <span class="chart-section-title">Finansal Sağlık & Likidite Trendi</span>
                         </div>
                         <div class="chart-canvas-wrap">
-                            <canvas id="chartFinancialRatios" height="165"></canvas>
+                            <canvas id="chartFinancialRatios" height="160"></canvas>
                         </div>
 
                         <!-- Kaynak Dağılımı (Bilanço Pasifi) -->
@@ -1193,6 +1223,31 @@
                                     </div>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+
+                    <!-- TAB 4: Fintables Tarzı Finansal Veri Tablosu -->
+                    <div id="btabTable" class="b-tab-panel" style="display: none;">
+                        <div class="chart-filter-row">
+                            <span class="chart-section-title">
+                                <i class="fa-solid fa-table" style="color: #38BDF8;"></i>
+                                Çeyreklik Karşılaştırmalı Finansal Tablo
+                            </span>
+                            <span style="font-size: 0.68rem; color: var(--text-muted);">Milyar / Milyon TL</span>
+                        </div>
+                        <div class="fintables-table-wrap">
+                            <table class="fintables-table" id="fintablesTable">
+                                <thead id="fintablesTableHead">
+                                    <!-- Populated via JS -->
+                                </thead>
+                                <tbody id="fintablesTableBody">
+                                    <!-- Populated via JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                        <div style="margin-top: 8px; font-size: 0.67rem; color: var(--text-muted); display: flex; justify-content: space-between; align-items: center;">
+                            <span><i class="fa-solid fa-circle-info"></i> QoQ: Çeyreklik değişim</span>
+                            <span>YoY: Yıllık değişim</span>
                         </div>
                     </div>
                 </div>
