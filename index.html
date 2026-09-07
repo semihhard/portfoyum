@@ -23,7 +23,7 @@
     <!-- ExcelJS for Modern Excel Export -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
-    <link rel="stylesheet" href="style.css?v=13">    <style>
+    <link rel="stylesheet" href="style.css?v=14">    <style>
         /* Refresh Button Loading Animation */
         .icon-btn.loading i {
             animation: spin 1s linear infinite;
@@ -36,6 +36,20 @@
     </style>
 </head>
 <body class="theme-oled-neon">
+    <!-- SVG Defs for Sparkline Gradients -->
+    <svg width="0" height="0" style="position: absolute; pointer-events: none;">
+        <defs>
+            <linearGradient id="spark-grad-pos" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stop-color="#10B981" stop-opacity="0.55"/>
+                <stop offset="100%" stop-color="#10B981" stop-opacity="0.0"/>
+            </linearGradient>
+            <linearGradient id="spark-grad-neg" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stop-color="#EF4444" stop-opacity="0.55"/>
+                <stop offset="100%" stop-color="#EF4444" stop-opacity="0.0"/>
+            </linearGradient>
+        </defs>
+    </svg>
+
     <!-- Ambient Background Glow Orbs -->
     <div class="bg-orb orb-1"></div>
     <div class="bg-orb orb-2"></div>
@@ -413,6 +427,18 @@
     <main class="app-content">
             <!-- TAB 1: PORTFOLIO DASHBOARD -->
             <section id="tab-dashboard" class="tab-page active">
+                <!-- iOS Pull-to-Refresh Indicator -->
+                <div class="pull-to-refresh-indicator" id="pullToRefreshIndicator">
+                    <div class="ptr-content">
+                        <div class="ptr-icon-ring">
+                            <i class="fa-solid fa-arrow-down ptr-arrow" id="ptrArrow"></i>
+                            <i class="fa-solid fa-arrows-rotate ptr-spinner" id="ptrSpinner"></i>
+                            <i class="fa-solid fa-check ptr-check" id="ptrCheck"></i>
+                        </div>
+                        <span class="ptr-text" id="ptrText">Yenilemek için aşağı çekin</span>
+                    </div>
+                </div>
+
                 <div class="page-header">
                     <div>
                         <div class="badge-online"><span class="pulse-dot"></span> PİYASA CANLI</div>
@@ -662,7 +688,53 @@
                 <!-- Active Assets List Section -->
                 <div class="section-header">
                     <h2>Varlık Portföyü (<span id="assetCount">0</span>)</h2>
-                    <span class="sort-info"><i class="fa-solid fa-bolt"></i> Anlık Güncelleniyor</span>
+                    <div class="sort-dropdown-wrap">
+                        <button class="sort-trigger-btn" id="btnSortMenu" onclick="toggleSortMenu(event)" title="Sıralama Seçenekleri" type="button">
+                            <i class="fa-solid fa-arrow-down-short-wide"></i>
+                            <span id="sortCurrentLabel">Varsayılan</span>
+                            <i class="fa-solid fa-chevron-down sort-chevron" id="sortChevron"></i>
+                        </button>
+                        <div class="sort-dropdown-menu" id="sortDropdownMenu">
+                            <div class="sort-menu-header">
+                                <i class="fa-solid fa-arrow-down-wide-short"></i> Sıralama Ölçütü
+                            </div>
+                            <button class="sort-option active" data-sort="default" onclick="selectSortOption('default')">
+                                <i class="fa-solid fa-clock-rotate-left"></i>
+                                <span>Varsayılan (Tarih Sırası)</span>
+                                <i class="fa-solid fa-check sort-check"></i>
+                            </button>
+                            <button class="sort-option" data-sort="profit-desc" onclick="selectSortOption('profit-desc')">
+                                <i class="fa-solid fa-arrow-trend-up txt-neon-green"></i>
+                                <span>En Yüksek Kâr (₺)</span>
+                                <i class="fa-solid fa-check sort-check"></i>
+                            </button>
+                            <button class="sort-option" data-sort="profit-pct-desc" onclick="selectSortOption('profit-pct-desc')">
+                                <i class="fa-solid fa-percent txt-neon-green"></i>
+                                <span>En Yüksek Getiri (%)</span>
+                                <i class="fa-solid fa-check sort-check"></i>
+                            </button>
+                            <button class="sort-option" data-sort="loss-desc" onclick="selectSortOption('loss-desc')">
+                                <i class="fa-solid fa-arrow-trend-down txt-neon-red"></i>
+                                <span>En Çok Zarar Edenler</span>
+                                <i class="fa-solid fa-check sort-check"></i>
+                            </button>
+                            <button class="sort-option" data-sort="daily-desc" onclick="selectSortOption('daily-desc')">
+                                <i class="fa-solid fa-bolt txt-neon-cyan"></i>
+                                <span>Bugün En Çok Artanlar</span>
+                                <i class="fa-solid fa-check sort-check"></i>
+                            </button>
+                            <button class="sort-option" data-sort="weight-desc" onclick="selectSortOption('weight-desc')">
+                                <i class="fa-solid fa-pie-chart" style="color: #F59E0B;"></i>
+                                <span>Portföy Payı (Ağırlık)</span>
+                                <i class="fa-solid fa-check sort-check"></i>
+                            </button>
+                            <button class="sort-option" data-sort="alpha-asc" onclick="selectSortOption('alpha-asc')">
+                                <i class="fa-solid fa-arrow-down-a-z" style="color: #A855F7;"></i>
+                                <span>Alfabetik (A - Z)</span>
+                                <i class="fa-solid fa-check sort-check"></i>
+                            </button>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="assets-list" id="assetsList">
@@ -988,6 +1060,25 @@
                     </div>
                 </div>
 
+                <!-- Interactive TradingView / Lightweight Chart Container -->
+                <div class="detail-chart-wrapper" id="detailChartWrapper">
+                    <div class="detail-chart-header">
+                        <div class="chart-header-left">
+                            <i class="fa-solid fa-chart-area" style="color: #38BDF8;"></i>
+                            <span>Fiyat Trendi & Grafik</span>
+                        </div>
+                        <div class="chart-source-tag" id="detailChartSourceTag">
+                            <i class="fa-solid fa-bolt"></i> TradingView Canlı
+                        </div>
+                    </div>
+                    <div class="detail-chart-embed" id="detailChartEmbed">
+                        <div class="detail-chart-loading">
+                            <i class="fa-solid fa-arrows-rotate fa-spin" style="color: #38BDF8;"></i>
+                            <span>Grafik yükleniyor...</span>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Company Fundamental Analysis & Health Scorecard -->
                 <div id="companyFundamentalsCard" class="fundamentals-card" style="display: none;">
                     <div class="fundamentals-header">
@@ -1304,6 +1395,6 @@
 
 
 
-    <script src="app.js?v=62"></script>
+    <script src="app.js?v=63"></script>
 </body>
 </html>

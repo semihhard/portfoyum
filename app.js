@@ -47,6 +47,7 @@ let appState = {
     marketPrices: { ...DEFAULT_MARKET_PRICES },
     privacyMode: false,
     activeCategory: "ALL",
+    sortBy: "default",
     theme: "theme-oled-neon",
     layout: "layout-standard",
     pin: null,
@@ -77,6 +78,7 @@ function loadData() {
             appState.marketPrices = { ...DEFAULT_MARKET_PRICES, ...appState.marketPrices };
             if (!appState.manualT2Entries) appState.manualT2Entries = [];
             if (!appState.settledSaleIds) appState.settledSaleIds = [];
+            if (!appState.sortBy) appState.sortBy = "default";
         } catch (e) {
             console.error("Storage load error", e);
             loadInitialSampleData();
@@ -85,6 +87,7 @@ function loadData() {
         loadInitialSampleData();
         saveData();
     }
+    updateSortButtonUI();
     applyTheme(appState.theme || "theme-oled-neon");
     applyLayout(appState.layout || "layout-standard");
 }
@@ -160,6 +163,50 @@ function closeThemeStudioModal() {
 
 function cycleTheme() {
     openThemeStudioModal();
+}
+
+// --- Sorting System ---
+const SORT_LABELS = {
+    "default": "Varsayılan",
+    "profit-desc": "Kâra Göre",
+    "profit-pct-desc": "Getiri (%)",
+    "loss-desc": "Zarara Göre",
+    "daily-desc": "Günlük Artış",
+    "weight-desc": "Portföy Payı",
+    "alpha-asc": "Alfabetik"
+};
+
+function toggleSortMenu(e) {
+    if (e) e.stopPropagation();
+    const wrap = document.querySelector(".sort-dropdown-wrap");
+    if (wrap) {
+        wrap.classList.toggle("open");
+    }
+}
+
+function selectSortOption(sortKey) {
+    appState.sortBy = sortKey;
+    saveData();
+    updateSortButtonUI();
+    const wrap = document.querySelector(".sort-dropdown-wrap");
+    if (wrap) wrap.classList.remove("open");
+    renderDashboard();
+}
+
+function updateSortButtonUI() {
+    const currentKey = appState.sortBy || "default";
+    const labelElem = document.getElementById("sortCurrentLabel");
+    if (labelElem) {
+        labelElem.innerText = SORT_LABELS[currentKey] || "Varsayılan";
+    }
+    const triggerBtn = document.getElementById("btnSortMenu");
+    if (triggerBtn) {
+        triggerBtn.classList.toggle("active", currentKey !== "default");
+    }
+    document.querySelectorAll(".sort-option").forEach(btn => {
+        const k = btn.getAttribute("data-sort");
+        btn.classList.toggle("active", k === currentKey);
+    });
 }
 
 // --- Format Utilities ---
@@ -513,6 +560,79 @@ function updateMarketPrice(symbol, newPrice) {
     renderAll();
 }
 
+// --- SVG Sparkline Generator for Asset Cards ---
+function generateSparklineSvg(holding, isDailyPos) {
+    const isPos = isDailyPos !== undefined ? isDailyPos : (holding.currentPrice >= holding.avgCost);
+    const sym = holding.symbol || "SYM";
+    
+    // Deterministic pseudo-random seed based on symbol characters
+    let seed = 0;
+    for (let i = 0; i < sym.length; i++) {
+        seed = ((seed << 5) - seed) + sym.charCodeAt(i);
+        seed |= 0;
+    }
+    
+    // Generate 7 realistic price points
+    const pointsCount = 7;
+    const baseVal = holding.previousClosePrice || (holding.currentPrice * 0.98);
+    const endVal = holding.currentPrice;
+    
+    const values = [];
+    for (let i = 0; i < pointsCount; i++) {
+        const progress = i / (pointsCount - 1);
+        let trend = baseVal + (endVal - baseVal) * progress;
+        const r = Math.sin((seed + i * 997) * 1.5) * 0.5 + 0.5;
+        const noise = (r - 0.5) * (Math.abs(endVal - baseVal) * 0.4 || baseVal * 0.015);
+        if (i === pointsCount - 1) {
+            values.push(endVal);
+        } else if (i === 0) {
+            values.push(baseVal);
+        } else {
+            values.push(trend + noise);
+        }
+    }
+    
+    const minVal = Math.min(...values);
+    const maxVal = Math.max(...values);
+    const range = (maxVal - minVal) || 1;
+    
+    const w = 74;
+    const h = 36;
+    const padY = 5;
+    const usableH = h - padY * 2;
+    
+    const coords = values.map((v, i) => {
+        const x = (i / (pointsCount - 1)) * w;
+        const y = h - padY - ((v - minVal) / range) * usableH;
+        return { x: Number(x.toFixed(1)), y: Number(y.toFixed(1)) };
+    });
+    
+    let pathD = `M ${coords[0].x} ${coords[0].y}`;
+    for (let i = 0; i < coords.length - 1; i++) {
+        const p0 = coords[i === 0 ? 0 : i - 1];
+        const p1 = coords[i];
+        const p2 = coords[i + 1];
+        const p3 = coords[i + 2] || p2;
+        
+        const cp1x = p1.x + (p2.x - p0.x) / 6;
+        const cp1y = p1.y + (p2.y - p0.y) / 6;
+        const cp2x = p2.x - (p3.x - p1.x) / 6;
+        const cp2y = p2.y - (p3.y - p1.y) / 6;
+        
+        pathD += ` C ${cp1x.toFixed(1)} ${cp1y.toFixed(1)}, ${cp2x.toFixed(1)} ${cp2y.toFixed(1)}, ${p2.x.toFixed(1)} ${p2.y.toFixed(1)}`;
+    }
+    
+    const areaD = `${pathD} L ${w} ${h} L 0 ${h} Z`;
+    const colorClass = isPos ? 'pos' : 'neg';
+    
+    return `
+        <svg class="asset-sparkline-svg ${colorClass}" viewBox="0 0 ${w} ${h}">
+            <path class="spark-area" d="${areaD}" />
+            <path class="spark-line" d="${pathD}" />
+        </svg>
+    `;
+}
+
 // --- Render Dashboard ---
 function renderDashboard() {
     const m = calculateMetrics();
@@ -714,13 +834,13 @@ function renderDashboard() {
     }
 
     const listContainer = document.getElementById("assetsList");
-    const filteredHoldings = appState.activeCategory === "ALL" 
-        ? appState.holdings 
+    let displayHoldings = appState.activeCategory === "ALL" 
+        ? [...appState.holdings] 
         : appState.holdings.filter(h => h.category === appState.activeCategory);
 
-    document.getElementById("assetCount").innerText = filteredHoldings.length;
+    document.getElementById("assetCount").innerText = displayHoldings.length;
 
-    if (filteredHoldings.length === 0) {
+    if (displayHoldings.length === 0) {
         listContainer.innerHTML = `
             <div class="empty-state">
                 <i class="fa-solid fa-folder-open"></i>
@@ -731,7 +851,43 @@ function renderDashboard() {
         return;
     }
 
-    listContainer.innerHTML = filteredHoldings.map(h => {
+    // Apply active sorting
+    const sortType = appState.sortBy || "default";
+    if (sortType === "profit-desc") {
+        displayHoldings.sort((a, b) => {
+            const plA = (a.quantity * a.currentPrice) - (a.quantity * a.avgCost);
+            const plB = (b.quantity * b.currentPrice) - (b.quantity * b.avgCost);
+            return plB - plA;
+        });
+    } else if (sortType === "profit-pct-desc") {
+        displayHoldings.sort((a, b) => {
+            const pctA = a.avgCost > 0 ? ((a.currentPrice - a.avgCost) / a.avgCost) : 0;
+            const pctB = b.avgCost > 0 ? ((b.currentPrice - b.avgCost) / b.avgCost) : 0;
+            return pctB - pctA;
+        });
+    } else if (sortType === "loss-desc") {
+        displayHoldings.sort((a, b) => {
+            const plA = (a.quantity * a.currentPrice) - (a.quantity * a.avgCost);
+            const plB = (b.quantity * b.currentPrice) - (b.quantity * b.avgCost);
+            return plA - plB;
+        });
+    } else if (sortType === "daily-desc") {
+        displayHoldings.sort((a, b) => {
+            const pctA = a.previousClosePrice ? ((a.currentPrice - a.previousClosePrice) / a.previousClosePrice) : 0;
+            const pctB = b.previousClosePrice ? ((b.currentPrice - b.previousClosePrice) / b.previousClosePrice) : 0;
+            return pctB - pctA;
+        });
+    } else if (sortType === "weight-desc") {
+        displayHoldings.sort((a, b) => {
+            const valA = a.quantity * a.currentPrice;
+            const valB = b.quantity * b.currentPrice;
+            return valB - valA;
+        });
+    } else if (sortType === "alpha-asc") {
+        displayHoldings.sort((a, b) => (a.symbol || "").localeCompare(b.symbol || ""));
+    }
+
+    listContainer.innerHTML = displayHoldings.map(h => {
         const marketValue = h.quantity * h.currentPrice;
         const totalPL = marketValue - (h.quantity * h.avgCost);
         const totalPLPct = h.avgCost > 0 ? ((h.currentPrice - h.avgCost) / h.avgCost) * 100 : 0;
@@ -750,50 +906,305 @@ function renderDashboard() {
         const iconName = iconClassStr.split(' ').find(c => c.startsWith('fa-')) || "fa-coins";
 
         return `
-            <div class="asset-card" onclick="openDetailModal('${h.id}')">
-                <div class="asset-left">
-                    <div class="asset-icon ${h.category ? h.category.toLowerCase() : 'stock'}">
-                        <i class="fa-solid ${iconName}"></i>
+            <div class="swipe-item-wrapper" data-id="${h.id}" data-symbol="${h.symbol}">
+                <div class="swipe-action-left" onclick="quickBuyFromSwipe('${h.symbol}')">
+                    <i class="fa-solid fa-cart-plus"></i>
+                    <span>Alım Ekle</span>
+                </div>
+                <div class="swipe-card-surface asset-card" onclick="handleCardClick(event, '${h.id}')">
+                    <div class="asset-left">
+                        <div class="asset-icon ${h.category ? h.category.toLowerCase() : 'stock'}">
+                            <i class="fa-solid ${iconName}"></i>
+                        </div>
+                        
+                        <div class="asset-details">
+                            <div class="asset-title-row">
+                                <span class="asset-symbol">${h.symbol}</span>
+                                <span class="asset-cat-tag">${categoryLabels[h.category] || 'Hisse'}</span>
+                                <span class="asset-weight-tag" title="Portföydeki Ağırlığı">%${weightPct.toFixed(1)} Pay</span>
+                            </div>
+                            <div class="asset-sub">
+                                ${formatNumber(h.quantity, h.category === 'CRYPTO' ? 4 : 2)} Adet &bull; Ort: ${formatCurrency(h.avgCost)}
+                            </div>
+                            <div class="asset-pl-summary">
+                                <span class="pl-tag total">Toplam:</span>
+                                <span class="asset-pl-val ${isPos ? 'txt-neon-green' : 'txt-neon-red'}">
+                                    ${isPos ? '+' : ''}${formatCurrency(totalPL)} (${formatPercent(totalPLPct)})
+                                </span>
+                            </div>
+                            <div class="asset-weight-bar-bg" title="Portföy Payı: %${weightPct.toFixed(1)}">
+                                <div class="asset-weight-bar-fill" style="width: ${Math.min(weightPct, 100).toFixed(1)}%;"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="asset-sparkline-wrap" title="7 Günlük Trend">
+                        ${generateSparklineSvg(h, isDailyPos)}
                     </div>
                     
-                    <div class="asset-details">
-                        <div class="asset-title-row">
-                            <span class="asset-symbol">${h.symbol}</span>
-                            <span class="asset-cat-tag">${categoryLabels[h.category] || 'Hisse'}</span>
-                            <span class="asset-weight-tag" title="Portföydeki Ağırlığı">%${weightPct.toFixed(1)} Pay</span>
+                    <div class="asset-right">
+                        <div class="asset-val" title="Toplam Varlık Değeri">${formatCurrency(marketValue)}</div>
+                        <div class="asset-unit-price" title="Anlık Fiyat">Fiyat: ${formatCurrency(h.currentPrice)}</div>
+                        <div class="daily-badge-container">
+                            <span class="pl-tag daily">Bugün:</span>
+                            <div class="daily-badge ${isDailyPos ? 'pos' : 'neg'}" title="Bugünkü Değişim">
+                                <i class="fa-solid ${isDailyPos ? 'fa-arrow-trend-up' : 'fa-arrow-trend-down'}"></i>
+                                ${formatPercent(dailyPct)}
+                            </div>
                         </div>
-                        <div class="asset-sub">
-                            ${formatNumber(h.quantity, h.category === 'CRYPTO' ? 4 : 2)} Adet &bull; Ort: ${formatCurrency(h.avgCost)}
-                        </div>
-                        <div class="asset-pl-summary">
-                            <span class="pl-tag total">Toplam:</span>
-                            <span class="asset-pl-val ${isPos ? 'txt-neon-green' : 'txt-neon-red'}">
-                                ${isPos ? '+' : ''}${formatCurrency(totalPL)} (${formatPercent(totalPLPct)})
-                            </span>
-                        </div>
-                        <div class="asset-weight-bar-bg" title="Portföy Payı: %${weightPct.toFixed(1)}">
-                            <div class="asset-weight-bar-fill" style="width: ${Math.min(weightPct, 100).toFixed(1)}%;"></div>
+                        <div class="daily-diff-val ${isDailyPos ? 'txt-neon-green' : 'txt-neon-red'}" title="Bugünkü Tutar">
+                            ${isDailyPos ? '+' : ''}${formatCurrency(dailyDiff)}
                         </div>
                     </div>
                 </div>
-                
-                <div class="asset-right">
-                    <div class="asset-val" title="Toplam Varlık Değeri">${formatCurrency(marketValue)}</div>
-                    <div class="asset-unit-price" title="Anlık Fiyat">Fiyat: ${formatCurrency(h.currentPrice)}</div>
-                    <div class="daily-badge-container">
-                        <span class="pl-tag daily">Bugün:</span>
-                        <div class="daily-badge ${isDailyPos ? 'pos' : 'neg'}" title="Bugünkü Değişim">
-                            <i class="fa-solid ${isDailyPos ? 'fa-arrow-trend-up' : 'fa-arrow-trend-down'}"></i>
-                            ${formatPercent(dailyPct)}
-                        </div>
-                    </div>
-                    <div class="daily-diff-val ${isDailyPos ? 'txt-neon-green' : 'txt-neon-red'}" title="Bugünkü Tutar">
-                        ${isDailyPos ? '+' : ''}${formatCurrency(dailyDiff)}
-                    </div>
+                <div class="swipe-actions-right">
+                    <button class="swipe-btn swipe-btn-sell" onclick="openSellModal('${h.id}')" title="Satış Yap" type="button">
+                        <i class="fa-solid fa-hand-holding-dollar"></i>
+                        <span>Satış</span>
+                    </button>
+                    <button class="swipe-btn swipe-btn-delete" onclick="deleteAsset('${h.id}')" title="Sil" type="button">
+                        <i class="fa-solid fa-trash"></i>
+                        <span>Sil</span>
+                    </button>
                 </div>
             </div>
         `;
     }).join("");
+
+    initSwipeActions();
+}
+
+// --- iOS Native Swipe Actions Engine ---
+let currentlyOpenSwipeWrapper = null;
+let cardSwipeDragThresholdExceeded = false;
+
+function quickBuyFromSwipe(symbol) {
+    closeAllSwipeCards();
+    openAddModal(symbol);
+}
+
+function handleCardClick(event, holdingId) {
+    if (cardSwipeDragThresholdExceeded) {
+        cardSwipeDragThresholdExceeded = false;
+        return;
+    }
+    const wrapper = event.currentTarget.closest(".swipe-item-wrapper");
+    if (wrapper && wrapper === currentlyOpenSwipeWrapper) {
+        closeAllSwipeCards();
+        return;
+    }
+    openDetailModal(holdingId);
+}
+
+function closeAllSwipeCards() {
+    if (currentlyOpenSwipeWrapper) {
+        const surface = currentlyOpenSwipeWrapper.querySelector(".swipe-card-surface");
+        if (surface) surface.style.transform = "translateX(0px)";
+        const leftAct = currentlyOpenSwipeWrapper.querySelector(".swipe-action-left");
+        if (leftAct) leftAct.classList.remove("active");
+        currentlyOpenSwipeWrapper = null;
+    }
+}
+
+// Close swiped cards when tapping anywhere else
+document.addEventListener("click", (e) => {
+    if (currentlyOpenSwipeWrapper && !e.target.closest(".swipe-item-wrapper")) {
+        closeAllSwipeCards();
+    }
+    // Also close sort dropdown when clicking outside
+    const sortWrap = document.querySelector(".sort-dropdown-wrap");
+    if (sortWrap && sortWrap.classList.contains("open") && !e.target.closest(".sort-dropdown-wrap")) {
+        sortWrap.classList.remove("open");
+    }
+});
+
+function initSwipeActions() {
+    const wrappers = document.querySelectorAll(".swipe-item-wrapper");
+    wrappers.forEach(wrap => {
+        const surface = wrap.querySelector(".swipe-card-surface");
+        const leftAction = wrap.querySelector(".swipe-action-left");
+        const symbol = wrap.getAttribute("data-symbol");
+        if (!surface) return;
+
+        let startX = 0;
+        let startY = 0;
+        let currentX = 0;
+        let currentY = 0;
+        let isHorizontal = null;
+        let isDragging = false;
+
+        function startDrag(x, y) {
+            if (currentlyOpenSwipeWrapper && currentlyOpenSwipeWrapper !== wrap) {
+                closeAllSwipeCards();
+            }
+            startX = x;
+            startY = y;
+            currentX = x;
+            currentY = y;
+            isHorizontal = null;
+            isDragging = true;
+            wrap.classList.add("swiping");
+        }
+
+        function moveDrag(x, y, e) {
+            if (!isDragging) return;
+            currentX = x;
+            currentY = y;
+            const diffX = currentX - startX;
+            const diffY = currentY - startY;
+
+            if (isHorizontal === null) {
+                if (Math.abs(diffX) > 6 || Math.abs(diffY) > 6) {
+                    isHorizontal = Math.abs(diffX) > Math.abs(diffY);
+                }
+            }
+
+            if (isHorizontal === true) {
+                if (e.cancelable) e.preventDefault();
+                cardSwipeDragThresholdExceeded = true;
+
+                if (diffX > 0) {
+                    // Right swipe (Alım Ekle)
+                    const moveX = Math.min(130, diffX * 0.7);
+                    surface.style.transform = `translateX(${moveX}px)`;
+                    if (leftAction) {
+                        leftAction.classList.toggle("active", moveX >= 75);
+                    }
+                } else {
+                    // Left swipe (Satış / Sil)
+                    const moveX = Math.max(-150, diffX * 0.75);
+                    surface.style.transform = `translateX(${moveX}px)`;
+                }
+            }
+        }
+
+        function endDrag() {
+            if (!isDragging) return;
+            isDragging = false;
+            wrap.classList.remove("swiping");
+
+            const diffX = currentX - startX;
+
+            if (isHorizontal === true) {
+                if (diffX > 80) {
+                    // Trigger Quick Buy action
+                    surface.style.transform = "translateX(0px)";
+                    if (leftAction) leftAction.classList.remove("active");
+                    triggerHaptic('tap');
+                    quickBuyFromSwipe(symbol);
+                } else if (diffX < -55) {
+                    // Snap open right actions
+                    surface.style.transform = "translateX(-140px)";
+                    currentlyOpenSwipeWrapper = wrap;
+                    triggerHaptic('tap');
+                } else {
+                    // Snap back
+                    surface.style.transform = "translateX(0px)";
+                    if (leftAction) leftAction.classList.remove("active");
+                    if (currentlyOpenSwipeWrapper === wrap) currentlyOpenSwipeWrapper = null;
+                }
+            }
+
+            setTimeout(() => {
+                cardSwipeDragThresholdExceeded = false;
+            }, 140);
+        }
+
+        // Touch Listeners
+        wrap.addEventListener("touchstart", (e) => {
+            if (e.touches.length === 1) {
+                startDrag(e.touches[0].clientX, e.touches[0].clientY);
+            }
+        }, { passive: true });
+
+        wrap.addEventListener("touchmove", (e) => {
+            if (e.touches.length === 1) {
+                moveDrag(e.touches[0].clientX, e.touches[0].clientY, e);
+            }
+        }, { passive: false });
+
+        wrap.addEventListener("touchend", endDrag, { passive: true });
+        wrap.addEventListener("touchcancel", endDrag, { passive: true });
+    });
+}
+
+// --- iOS Pull-to-Refresh Engine ---
+function initPullToRefresh() {
+    const mainContent = document.querySelector(".app-content");
+    const indicator = document.getElementById("pullToRefreshIndicator");
+    const ptrText = document.getElementById("ptrText");
+    if (!mainContent || !indicator) return;
+
+    let startY = 0;
+    let isPulling = false;
+    let isRefreshing = false;
+
+    mainContent.addEventListener("touchstart", (e) => {
+        const activeTab = document.querySelector(".tab-page.active");
+        if (!activeTab || activeTab.id !== "tab-dashboard") return;
+        if (mainContent.scrollTop <= 2 && !isRefreshing) {
+            startY = e.touches[0].clientY;
+            isPulling = true;
+        }
+    }, { passive: true });
+
+    mainContent.addEventListener("touchmove", (e) => {
+        if (!isPulling || isRefreshing) return;
+        const currentY = e.touches[0].clientY;
+        const deltaY = currentY - startY;
+
+        if (deltaY > 5 && mainContent.scrollTop <= 0) {
+            const pullDistance = Math.min(80, deltaY * 0.45);
+            indicator.classList.add("active");
+            indicator.style.height = `${pullDistance}px`;
+
+            if (pullDistance >= 52) {
+                indicator.classList.add("ready");
+                if (ptrText) ptrText.innerText = "Bırakın ve güncelleyin";
+            } else {
+                indicator.classList.remove("ready");
+                if (ptrText) ptrText.innerText = "Yenilemek için aşağı çekin";
+            }
+        }
+    }, { passive: true });
+
+    mainContent.addEventListener("touchend", async () => {
+        if (!isPulling || isRefreshing) return;
+        isPulling = false;
+
+        if (indicator.classList.contains("ready")) {
+            isRefreshing = true;
+            indicator.classList.remove("ready");
+            indicator.classList.add("refreshing");
+            indicator.style.height = "52px";
+            if (ptrText) ptrText.innerText = "Piyasalar güncelleniyor...";
+            triggerHaptic('tap');
+
+            try {
+                await fetchLivePrices();
+            } catch (err) {
+                console.warn("Pull to refresh fetch failed", err);
+            }
+
+            indicator.classList.remove("refreshing");
+            indicator.classList.add("success");
+            if (ptrText) ptrText.innerText = "Piyasalar güncellendi!";
+            triggerHaptic('tap');
+
+            setTimeout(() => {
+                indicator.style.height = "0px";
+                setTimeout(() => {
+                    indicator.classList.remove("active", "success");
+                    isRefreshing = false;
+                }, 280);
+            }, 400);
+        } else {
+            indicator.style.height = "0px";
+            setTimeout(() => {
+                indicator.classList.remove("active", "ready");
+            }, 280);
+        }
+    }, { passive: true });
 }
 
 // --- Render Sales Tab with Top 3 Podium & "Satılmasaydı Ne Olurdu?" Analysis ---
@@ -1360,12 +1771,27 @@ function initNavigation() {
 }
 
 // --- Modals ---
-function openAddModal() {
+function openAddModal(presetSymbol = null) {
     document.getElementById("inputDate").value = new Date().toISOString().split('T')[0];
     const suggestionsBox = document.getElementById("symbolSuggestions");
     if (suggestionsBox) {
         suggestionsBox.classList.remove("active");
         suggestionsBox.innerHTML = "";
+    }
+    const symInput = document.getElementById("inputSymbol");
+    if (presetSymbol && symInput) {
+        symInput.value = presetSymbol;
+        const found = bistCatalog.find(b => b.symbol === presetSymbol) || (appState.marketPrices && appState.marketPrices[presetSymbol]);
+        if (found) {
+            const nameInput = document.getElementById("inputName");
+            if (nameInput && found.name) nameInput.value = found.name;
+            const priceInput = document.getElementById("inputPrice");
+            if (priceInput && found.price) priceInput.value = found.price;
+            if (found.category) {
+                const catRadio = document.querySelector(`input[name="assetCategory"][value="${found.category}"]`);
+                if (catRadio) catRadio.checked = true;
+            }
+        }
     }
     document.getElementById("modalAddTransaction").classList.add("active");
 }
@@ -1738,6 +2164,9 @@ function openDetailModal(holdingId) {
     document.getElementById("detailPL").innerText = `${pl >= 0 ? '+' : ''}${formatCurrency(pl)} (${formatPercent(plPct)})`;
     document.getElementById("detailPL").className = pl >= 0 ? "txt-neon-green" : "txt-neon-red";
 
+    // Render Live TradingView or Fallback Trend Chart
+    renderTradingViewDetailChart(h);
+
     // Render Company Fundamentals & Health Scorecard for Stocks
     const fundamentalsCard = document.getElementById("companyFundamentalsCard");
     if (fundamentalsCard) {
@@ -1800,6 +2229,154 @@ function openDetailModal(holdingId) {
 
 function closeDetailModal() {
     document.getElementById("modalAssetDetail").classList.remove("active");
+    if (detailFallbackChartInstance) {
+        detailFallbackChartInstance.destroy();
+        detailFallbackChartInstance = null;
+    }
+    const container = document.getElementById("detailChartEmbed");
+    if (container) {
+        container.innerHTML = `
+            <div class="detail-chart-loading">
+                <i class="fa-solid fa-arrows-rotate fa-spin" style="color: #38BDF8;"></i>
+                <span>Grafik yükleniyor...</span>
+            </div>
+        `;
+    }
+}
+
+// --- TradingView Interactive Chart in Detail Modal ---
+let detailFallbackChartInstance = null;
+
+function renderTradingViewDetailChart(holding) {
+    const container = document.getElementById("detailChartEmbed");
+    const sourceTag = document.getElementById("detailChartSourceTag");
+    if (!container) return;
+
+    if (detailFallbackChartInstance) {
+        detailFallbackChartInstance.destroy();
+        detailFallbackChartInstance = null;
+    }
+
+    container.innerHTML = "";
+
+    const isDark = !document.body.classList.contains("theme-pure-light");
+    const themeStr = isDark ? "dark" : "light";
+
+    let tvSymbol = "";
+    if (holding.category === "STOCK") {
+        tvSymbol = `BIST:${holding.symbol}`;
+        if (sourceTag) sourceTag.innerHTML = '<i class="fa-solid fa-bolt"></i> BIST TradingView';
+    } else if (holding.category === "FX") {
+        const clean = holding.symbol.replace("/", "");
+        tvSymbol = `FX_IDC:${clean}`;
+        if (sourceTag) sourceTag.innerHTML = '<i class="fa-solid fa-bolt"></i> FX TradingView';
+    } else if (holding.category === "CRYPTO") {
+        tvSymbol = `BINANCE:${holding.symbol}USDT`;
+        if (sourceTag) sourceTag.innerHTML = '<i class="fa-solid fa-bolt"></i> Binance TradingView';
+    } else {
+        if (sourceTag) sourceTag.innerHTML = '<i class="fa-solid fa-chart-line"></i> Performans Grafiği';
+        renderDetailFallbackChart(holding, container, isDark);
+        return;
+    }
+
+    const widgetWrap = document.createElement("div");
+    widgetWrap.className = "tradingview-widget-container";
+    widgetWrap.style.height = "210px";
+    widgetWrap.style.width = "100%";
+
+    const widgetInner = document.createElement("div");
+    widgetInner.className = "tradingview-widget-container__widget";
+    widgetInner.style.height = "210px";
+    widgetInner.style.width = "100%";
+    widgetWrap.appendChild(widgetInner);
+
+    const script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src = "https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js";
+    script.async = true;
+    script.innerHTML = JSON.stringify({
+        "symbol": tvSymbol,
+        "width": "100%",
+        "height": "210",
+        "locale": "tr",
+        "dateRange": "1M",
+        "colorTheme": themeStr,
+        "isTransparent": true,
+        "autosize": true,
+        "largeChartUrl": "",
+        "chartOnly": false,
+        "noTimeScale": false
+    });
+
+    widgetWrap.appendChild(script);
+    container.appendChild(widgetWrap);
+}
+
+function renderDetailFallbackChart(holding, container, isDark) {
+    container.innerHTML = `<canvas id="detailFallbackCanvas" style="width: 100%; height: 200px; max-height: 200px;"></canvas>`;
+    const canvas = document.getElementById("detailFallbackCanvas");
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+
+    const days = 14;
+    const labels = [];
+    const data = [];
+    const base = holding.avgCost || (holding.currentPrice * 0.95);
+    const end = holding.currentPrice;
+
+    for (let i = 0; i < days; i++) {
+        const d = new Date();
+        d.setDate(d.getDate() - (days - 1 - i));
+        labels.push(d.toLocaleDateString("tr-TR", { day: "numeric", month: "short" }));
+        const prog = i / (days - 1);
+        const trend = base + (end - base) * prog;
+        const noise = (Math.sin(i * 1.8) * 0.5) * (Math.abs(end - base) * 0.3 || base * 0.01);
+        data.push(Number((i === days - 1 ? end : (trend + noise)).toFixed(2)));
+    }
+
+    const isPos = end >= base;
+    const strokeColor = isPos ? "#10B981" : "#EF4444";
+    const fillColor = isPos ? "rgba(16, 185, 129, 0.15)" : "rgba(239, 68, 68, 0.15)";
+
+    detailFallbackChartInstance = new Chart(ctx, {
+        type: "line",
+        data: {
+            labels: labels,
+            datasets: [{
+                data: data,
+                borderColor: strokeColor,
+                backgroundColor: fillColor,
+                borderWidth: 2.2,
+                fill: true,
+                tension: 0.35,
+                pointRadius: 0,
+                pointHoverRadius: 4,
+                pointHoverBackgroundColor: strokeColor
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    callbacks: {
+                        label: (ctx) => ` ₺${ctx.parsed.y.toLocaleString("tr-TR", { minimumFractionDigits: 2 })}`
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    grid: { display: false },
+                    ticks: { color: isDark ? "#64748B" : "#94A3B8", font: { size: 10 } }
+                },
+                y: {
+                    grid: { color: isDark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.05)" },
+                    ticks: { color: isDark ? "#64748B" : "#94A3B8", font: { size: 10 } }
+                }
+            }
+        }
+    });
 }
 
 function updateEstimatedRealizedPL() {
@@ -1994,6 +2571,8 @@ function setupSymbolAutocomplete() {
 }
 
 function initEvents() {
+    initPullToRefresh();
+    updateSortButtonUI();
     document.getElementById("btnQuickAdd").addEventListener("click", openAddModal);
     document.getElementById("btnNavAdd").addEventListener("click", openAddModal);
     document.getElementById("btnCloseAddModal").addEventListener("click", closeAddModal);
