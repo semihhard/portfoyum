@@ -1041,9 +1041,14 @@
                             <i class="fa-solid fa-chart-pie" style="color: #38BDF8;"></i>
                             <span>Bilanço & Temel Göstergeler</span>
                         </div>
-                        <div id="fundamentalHealthBadge" class="health-score-badge score-green">
-                            <span id="fundamentalHealthScore">--</span>
-                            <small id="fundamentalHealthLabel">Hesaplanıyor</small>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <button type="button" class="btn-landscape-trigger" onclick="openLandscapeFinancials()" title="Ekranı yatay çevirip 8-12 çeyreklik genişletilmiş geçmişi gör">
+                                <i class="fa-solid fa-arrows-rotate"></i> Daha Fazla Gör
+                            </button>
+                            <div id="fundamentalHealthBadge" class="health-score-badge score-green">
+                                <span id="fundamentalHealthScore">--</span>
+                                <small id="fundamentalHealthLabel">Hesaplanıyor</small>
+                            </div>
                         </div>
                     </div>
 
@@ -1233,7 +1238,9 @@
                                 <i class="fa-solid fa-table" style="color: #38BDF8;"></i>
                                 Çeyreklik Karşılaştırmalı Finansal Tablo
                             </span>
-                            <span style="font-size: 0.68rem; color: var(--text-muted);">Milyar / Milyon TL</span>
+                            <button type="button" class="btn-landscape-mini-trigger" onclick="openLandscapeFinancials()" title="8-12 çeyreği yatay panoramik ekranda incele">
+                                <i class="fa-solid fa-arrows-rotate"></i> Yatay Ekran
+                            </button>
                         </div>
                         <div class="fintables-table-wrap">
                             <table class="fintables-table" id="fintablesTable">
@@ -1531,6 +1538,135 @@
 
 
 
-    <script src="app.js?v=63"></script>
+    <!-- MODAL: YATAY PANORAMİK GENİŞLETİLMİŞ BİLANÇO ANALİZİ (8-12 ÇEYREK) -->
+    <div id="modalLandscapeFinancials" class="modal-landscape-view">
+        <div class="landscape-shell">
+            <!-- Üst Kontrol & Başlık Barı -->
+            <div class="landscape-header">
+                <div class="landscape-title-col">
+                    <div class="landscape-symbol-tag">
+                        <span id="landscapeStockSymbol">THYAO</span>
+                        <span id="landscapeStockName" class="landscape-comp-name">Türk Hava Yolları</span>
+                    </div>
+                    <div class="landscape-subtitle">
+                        <i class="fa-solid fa-chart-pie" style="color: #38BDF8;"></i>
+                        <span>Genişletilmiş Finansallar</span>
+                        <span class="landscape-period-badge" id="landscapePeriodBadge">Son 8-12 Çeyrek</span>
+                    </div>
+                </div>
+
+                <!-- Ortadaki Hızlı Filtreler (Çeyrekler & Bölüm) -->
+                <div class="landscape-nav-tools">
+                    <div class="landscape-pill-group" id="landscapeQuarterPills">
+                        <button type="button" class="l-pill active" onclick="setLandscapeQuarterFilter('all', this)">Tümü (Geniş)</button>
+                        <button type="button" class="l-pill" onclick="setLandscapeQuarterFilter(8, this)">Son 8 Çeyrek</button>
+                        <button type="button" class="l-pill" onclick="setLandscapeQuarterFilter(5, this)">Son 5 Çeyrek</button>
+                    </div>
+                    <div class="landscape-pill-group" id="landscapeSectionPills">
+                        <button type="button" class="l-pill active" onclick="switchLandscapeSection('all', this)"><i class="fa-solid fa-table-columns"></i> Tümü</button>
+                        <button type="button" class="l-pill" onclick="switchLandscapeSection('charts', this)"><i class="fa-solid fa-chart-simple"></i> Grafikler</button>
+                        <button type="button" class="l-pill" onclick="switchLandscapeSection('table', this)"><i class="fa-solid fa-table"></i> Finansal Tablo</button>
+                    </div>
+                </div>
+
+                <!-- Sağ Aksiyon Butonları -->
+                <div class="landscape-actions">
+                    <button type="button" class="btn-l-action btn-rotate-toggle" onclick="toggleLandscapeOrientation()" title="Ekranı Yatay / Dikey Döndür">
+                        <i class="fa-solid fa-arrows-rotate"></i> <span>Döndür</span>
+                    </button>
+                    <button type="button" class="btn-l-action btn-close-landscape" onclick="closeLandscapeFinancials()" title="Dikey Ekrana Geri Dön">
+                        <i class="fa-solid fa-xmark"></i> <span>Dikey Görünüme Dön</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Kaydırılabilir İçerik Gövdesi -->
+            <div class="landscape-body" id="landscapeBody">
+                <!-- Panoramik Grafikler Alanı -->
+                <div class="landscape-section" id="lsecCharts">
+                    <div class="landscape-charts-grid">
+                        <!-- Grafik 1: Gelir & Kâr Trendi -->
+                        <div class="l-chart-card">
+                            <div class="l-card-header">
+                                <div>
+                                    <span class="l-card-title"><i class="fa-solid fa-chart-column" style="color: #38BDF8;"></i> Çeyreklik Satış Gelirleri, FAVÖK ve Net Kâr</span>
+                                    <small class="l-card-desc">Geçmiş çeyreklerin büyüme dinamikleri (Milyar/Milyon TL)</small>
+                                </div>
+                                <div class="chart-toggle-pills">
+                                    <button type="button" class="c-toggle-btn active" onclick="toggleLandscapeFinancialSeries('all', this)">Tümü</button>
+                                    <button type="button" class="c-toggle-btn" onclick="toggleLandscapeFinancialSeries('sales', this)">Satışlar</button>
+                                    <button type="button" class="c-toggle-btn" onclick="toggleLandscapeFinancialSeries('ebitda', this)">FAVÖK</button>
+                                    <button type="button" class="c-toggle-btn" onclick="toggleLandscapeFinancialSeries('net', this)">Net Kâr</button>
+                                </div>
+                            </div>
+                            <div class="l-canvas-wrap">
+                                <canvas id="chartLandscapeFinancials"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- Grafik 2: Marj Trendi -->
+                        <div class="l-chart-card">
+                            <div class="l-card-header">
+                                <div>
+                                    <span class="l-card-title"><i class="fa-solid fa-percent" style="color: #06B6D4;"></i> Çeyreklik Kârlılık Marjları Trendi (%)</span>
+                                    <small class="l-card-desc">Brüt Kâr Marjı, FAVÖK Marjı ve Net Kâr Marjı Karşılaştırması</small>
+                                </div>
+                                <div class="l-chart-legend-custom">
+                                    <span class="l-leg-item"><span class="q-dot cyan"></span> Brüt Marj</span>
+                                    <span class="l-leg-item"><span class="q-dot purple"></span> FAVÖK Marj</span>
+                                    <span class="l-leg-item"><span class="q-dot emerald"></span> Net Marj</span>
+                                </div>
+                            </div>
+                            <div class="l-canvas-wrap">
+                                <canvas id="chartLandscapeMargins"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- Grafik 3: Finansal Sağlık & ROE -->
+                        <div class="l-chart-card">
+                            <div class="l-card-header">
+                                <div>
+                                    <span class="l-card-title"><i class="fa-solid fa-scale-balanced" style="color: #10B981;"></i> Finansal Oranlar & ROE Gelişimi</span>
+                                    <small class="l-card-desc">Cari Oran (x), Kaldıraç Oranı (%) ve Özkaynak Kârlılığı (%)</small>
+                                </div>
+                                <div class="l-chart-legend-custom">
+                                    <span class="l-leg-item"><span class="q-dot blue"></span> Cari Oran</span>
+                                    <span class="l-leg-item"><span class="q-dot amber"></span> Kaldıraç</span>
+                                    <span class="l-leg-item"><span class="q-dot green"></span> ROE</span>
+                                </div>
+                            </div>
+                            <div class="l-canvas-wrap">
+                                <canvas id="chartLandscapeRatios"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Panoramik Fintables Tablosu Alanı -->
+                <div class="landscape-section" id="lsecTable">
+                    <div class="l-table-card">
+                        <div class="l-card-header">
+                            <div>
+                                <span class="l-card-title"><i class="fa-solid fa-table" style="color: #38BDF8;"></i> Genişletilmiş Çeyreklik Karşılaştırmalı Finansal Tablo</span>
+                                <small class="l-card-desc">Tüm geçmiş çeyrekler için detaylı bilanço ve gelir tablosu verileri</small>
+                            </div>
+                            <div class="l-table-legend">
+                                <span class="fintables-badge pos">+% QoQ / YoY Artış</span>
+                                <span class="fintables-badge neg">-% QoQ / YoY Düşüş</span>
+                            </div>
+                        </div>
+                        <div class="l-table-wrap">
+                            <table class="fintables-table l-fintables-table" id="landscapeFintablesTable">
+                                <thead id="landscapeFintablesTableHead"></thead>
+                                <tbody id="landscapeFintablesTableBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js?v=64"></script>
 </body>
 </html>

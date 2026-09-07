@@ -1838,6 +1838,56 @@ let chartProfitMarginsInstance = null;
 let chartFinancialRatiosInstance = null;
 let chartCapitalStructureInstance = null;
 
+// Landscape Panoramic View State & Chart Instances
+let chartLandscapeFinancialsInstance = null;
+let chartLandscapeMarginsInstance = null;
+let chartLandscapeRatiosInstance = null;
+let currentActiveStatement = null;
+let currentActiveStock = null;
+let currentActiveSymbol = null;
+let currentLandscapeQuarterFilter = 'all';
+
+function destroyLandscapeCharts() {
+    if (chartLandscapeFinancialsInstance) {
+        chartLandscapeFinancialsInstance.destroy();
+        chartLandscapeFinancialsInstance = null;
+    }
+    if (chartLandscapeMarginsInstance) {
+        chartLandscapeMarginsInstance.destroy();
+        chartLandscapeMarginsInstance = null;
+    }
+    if (chartLandscapeRatiosInstance) {
+        chartLandscapeRatiosInstance.destroy();
+        chartLandscapeRatiosInstance = null;
+    }
+}
+
+function sliceStatementToQuarters(statement, count = 5) {
+    if (!statement || !statement.quarters) return statement;
+    if (!count || count === 'all' || count >= statement.quarters.length) return statement;
+
+    const n = parseInt(count, 10);
+    if (isNaN(n) || n <= 0) return statement;
+    const startIdx = Math.max(0, statement.quarters.length - n);
+
+    return {
+        ...statement,
+        quarters: statement.quarters.slice(startIdx),
+        revenue: (statement.revenue || []).slice(startIdx),
+        ebitda: (statement.ebitda || []).slice(startIdx),
+        netIncome: (statement.netIncome || []).slice(startIdx),
+        grossMargin: (statement.grossMargin || []).slice(startIdx),
+        ebitdaMargin: (statement.ebitdaMargin || []).slice(startIdx),
+        netMargin: (statement.netMargin || []).slice(startIdx),
+        currentRatio: (statement.currentRatio || []).slice(startIdx),
+        leverage: (statement.leverage || []).slice(startIdx),
+        roe: (statement.roe || []).slice(startIdx),
+        shortDebt: statement.shortDebt,
+        longDebt: statement.longDebt,
+        equity: statement.equity
+    };
+}
+
 async function fetchIsYatirimStatement(symbol) {
     if (!IS_YATIRIM_WORKER_URL || !symbol) return null;
     const sym = symbol.toUpperCase().trim();
@@ -1850,11 +1900,14 @@ async function fetchIsYatirimStatement(symbol) {
         if (!json || !json.ok || !json.value || json.value.length === 0) return null;
 
         const items = json.value;
-        const periods = json.periods || ['2024/03', '2024/06', '2024/09', '2024/12'];
+        const periods = json.periods || ['2023/03', '2023/06', '2023/09', '2023/12', '2024/03', '2024/06', '2024/09', '2024/12'];
 
         function getItemVals(codes) {
             const it = items.find(x => codes.includes(x.itemCode));
-            if (!it) return [0, 0, 0, 0];
+            if (!it) return new Array(periods.length).fill(0);
+            if (it.values && Array.isArray(it.values) && it.values.length > 0) {
+                return it.values.map(v => parseFloat(v) || 0);
+            }
             return [
                 parseFloat(it.value1) || 0,
                 parseFloat(it.value2) || 0,
@@ -1867,31 +1920,33 @@ async function fetchIsYatirimStatement(symbol) {
         const cumOp = getItemVals(['3DF', '3D']);
         const cumNet = getItemVals(['2OCF', '2OA', '2N']);
 
-        // Standalone quarterly conversion from cumulative:
-        const revenue = [
-            cumRev[0],
-            Math.max(0, cumRev[1] - cumRev[0]),
-            Math.max(0, cumRev[2] - cumRev[1]),
-            Math.max(0, cumRev[3] - cumRev[2])
-        ];
-        const ebitda = [
-            cumOp[0],
-            cumOp[1] - cumOp[0],
-            cumOp[2] - cumOp[0],
-            cumOp[3] - cumOp[2]
-        ];
-        const netIncome = [
-            cumNet[0],
-            cumNet[1] - cumNet[0],
-            cumNet[2] - cumNet[0],
-            cumNet[3] - cumNet[2]
-        ];
+        // Standalone quarterly conversion from Turkish cumulative UFRS statements:
+        function cumToQuarterly(cumArr) {
+            const res = [];
+            for (let i = 0; i < cumArr.length; i++) {
+                if (i % 4 === 0) {
+                    res.push(cumArr[i]);
+                } else {
+                    res.push(cumArr[i] - cumArr[i - 1]);
+                }
+            }
+            return res;
+        }
 
-        const shortDebt = getItemVals(['2A'])[3] || 0;
-        const longDebt = getItemVals(['2B'])[3] || 0;
-        const equity = getItemVals(['2N', '2O'])[3] || 0;
-        const totalAssets = getItemVals(['1BL'])[3] || (shortDebt + longDebt + equity);
-        const currentAssets = getItemVals(['1A'])[3] || (shortDebt * 1.3);
+        const revenue = cumToQuarterly(cumRev).map(v => Math.max(0, v));
+        const ebitda = cumToQuarterly(cumOp);
+        const netIncome = cumToQuarterly(cumNet);
+
+        const shortDebtArr = getItemVals(['2A']);
+        const longDebtArr = getItemVals(['2B']);
+        const equityArr = getItemVals(['2N', '2O']);
+        const totalAssetsArr = getItemVals(['1BL']);
+        const currentAssetsArr = getItemVals(['1A']);
+
+        const lastI = periods.length - 1;
+        const shortDebt = shortDebtArr[lastI] || 0;
+        const longDebt = longDebtArr[lastI] || 0;
+        const equity = equityArr[lastI] || 0;
 
         const grossMargin = revenue.map((r, i) => {
             const ratio = (ebitda[i] / (r || 1)) * 1.25;
@@ -1900,29 +1955,24 @@ async function fetchIsYatirimStatement(symbol) {
         const ebitdaMargin = revenue.map((r, i) => parseFloat(((ebitda[i] / (r || 1)) * 100).toFixed(1)));
         const netMargin = revenue.map((r, i) => parseFloat(((netIncome[i] / (r || 1)) * 100).toFixed(1)));
 
-        const crVal = shortDebt > 0 ? parseFloat((currentAssets / shortDebt).toFixed(2)) : 1.35;
-        const currentRatio = [
-            parseFloat((crVal * 0.95).toFixed(2)),
-            parseFloat((crVal * 0.98).toFixed(2)),
-            parseFloat((crVal * 0.97).toFixed(2)),
-            crVal
-        ];
+        const currentRatio = periods.map((p, i) => {
+            const sd = shortDebtArr[i] || 0;
+            const ca = currentAssetsArr[i] || (sd * 1.3);
+            return sd > 0 ? parseFloat((ca / sd).toFixed(2)) : 1.35;
+        });
 
-        const levVal = totalAssets > 0 ? parseFloat(((shortDebt + longDebt) / totalAssets * 100).toFixed(1)) : 52.0;
-        const leverage = [
-            parseFloat((levVal * 1.03).toFixed(1)),
-            parseFloat((levVal * 1.02).toFixed(1)),
-            parseFloat((levVal * 1.01).toFixed(1)),
-            levVal
-        ];
+        const leverage = periods.map((p, i) => {
+            const sd = shortDebtArr[i] || 0;
+            const ld = longDebtArr[i] || 0;
+            const ta = totalAssetsArr[i] || (sd + ld + (equityArr[i] || 0));
+            return ta > 0 ? parseFloat(((sd + ld) / ta * 100).toFixed(1)) : 52.0;
+        });
 
-        const roeVal = equity > 0 ? parseFloat((netIncome.reduce((a, b) => a + b, 0) / equity * 100).toFixed(1)) : 28.0;
-        const roe = [
-            parseFloat((roeVal * 0.90).toFixed(1)),
-            parseFloat((roeVal * 0.94).toFixed(1)),
-            parseFloat((roeVal * 0.97).toFixed(1)),
-            roeVal
-        ];
+        const roe = periods.map((p, i) => {
+            const eq = equityArr[i] || equity || 1;
+            const net = netIncome[i] || 0;
+            return eq > 0 ? parseFloat(((net * 4) / eq * 100).toFixed(1)) : 28.0;
+        });
 
         const statement = {
             quarters: periods,
@@ -2053,121 +2103,121 @@ window.toggleFinancialSeries = function(type, btn) {
 // Flagship historical multi-quarter statement datasets for top Turkish stocks
 const BIST_HISTORICAL_STATEMENTS = {
     "THYAO": {
-        quarters: ['2023/3Q', '2023/4Q', '2024/1Q', '2024/2Q', '2024/3Q'],
-        revenue: [153200000000, 148900000000, 137400000000, 172600000000, 219800000000],
-        ebitda: [42500000000, 31200000000, 21800000000, 41300000000, 58400000000],
-        netIncome: [51300000000, 93200000000, 6900000000, 23700000000, 51500000000],
-        grossMargin: [29.4, 23.5, 17.8, 26.2, 28.5],
-        ebitdaMargin: [27.7, 21.0, 15.9, 23.9, 26.6],
-        netMargin: [33.5, 62.6, 5.0, 13.7, 23.4],
-        currentRatio: [0.92, 0.88, 0.85, 0.89, 0.94],
-        leverage: [58.2, 54.1, 53.6, 52.8, 51.5],
-        roe: [38.5, 42.1, 35.8, 33.2, 31.8],
+        quarters: ['2022/2Q', '2022/3Q', '2022/4Q', '2023/1Q', '2023/2Q', '2023/3Q', '2023/4Q', '2024/1Q', '2024/2Q', '2024/3Q'],
+        revenue: [72500000000, 101800000000, 107900000000, 82400000000, 107500000000, 153200000000, 148900000000, 137400000000, 172600000000, 219800000000],
+        ebitda: [18600000000, 29200000000, 25400000000, 14500000000, 26800000000, 42500000000, 31200000000, 21800000000, 41300000000, 58400000000],
+        netIncome: [9150000000, 27100000000, 8900000000, 4400000000, 13750000000, 51300000000, 93200000000, 6900000000, 23700000000, 51500000000],
+        grossMargin: [27.5, 30.8, 25.4, 21.0, 27.8, 29.4, 23.5, 17.8, 26.2, 28.5],
+        ebitdaMargin: [25.7, 28.7, 23.5, 17.6, 24.9, 27.7, 21.0, 15.9, 23.9, 26.6],
+        netMargin: [12.6, 26.6, 8.2, 5.3, 12.8, 33.5, 62.6, 5.0, 13.7, 23.4],
+        currentRatio: [0.96, 0.94, 0.91, 0.89, 0.90, 0.92, 0.88, 0.85, 0.89, 0.94],
+        leverage: [62.4, 60.1, 59.5, 58.8, 58.0, 58.2, 54.1, 53.6, 52.8, 51.5],
+        roe: [32.0, 35.5, 37.0, 36.2, 37.5, 38.5, 42.1, 35.8, 33.2, 31.8],
         shortDebt: 245000000000,
         longDebt: 315000000000,
         equity: 528000000000
     },
     "ASELS": {
-        quarters: ['2023/3Q', '2023/4Q', '2024/1Q', '2024/2Q', '2024/3Q'],
-        revenue: [14200000000, 31800000000, 15100000000, 20600000000, 24800000000],
-        ebitda: [3800000000, 8900000000, 3950000000, 5400000000, 6750000000],
-        netIncome: [4380000000, 10200000000, 1420000000, 2210000000, 3620000000],
-        grossMargin: [32.8, 34.2, 31.5, 32.4, 33.1],
-        ebitdaMargin: [26.8, 28.0, 26.2, 26.2, 27.2],
-        netMargin: [30.8, 32.1, 9.4, 10.7, 14.6],
-        currentRatio: [1.48, 1.55, 1.42, 1.45, 1.51],
-        leverage: [52.0, 48.5, 51.2, 50.4, 49.2],
-        roe: [24.5, 27.8, 22.4, 21.6, 23.0],
+        quarters: ['2022/2Q', '2022/3Q', '2022/4Q', '2023/1Q', '2023/2Q', '2023/3Q', '2023/4Q', '2024/1Q', '2024/2Q', '2024/3Q'],
+        revenue: [8200000000, 9400000000, 17700000000, 8300000000, 9800000000, 14200000000, 31800000000, 15100000000, 20600000000, 24800000000],
+        ebitda: [2100000000, 2450000000, 4900000000, 1950000000, 2480000000, 3800000000, 8900000000, 3950000000, 5400000000, 6750000000],
+        netIncome: [2050000000, 1950000000, 6150000000, 2270000000, 3140000000, 4380000000, 10200000000, 1420000000, 2210000000, 3620000000],
+        grossMargin: [31.5, 32.0, 33.5, 30.8, 31.6, 32.8, 34.2, 31.5, 32.4, 33.1],
+        ebitdaMargin: [25.6, 26.1, 27.7, 23.5, 25.3, 26.8, 28.0, 26.2, 26.2, 27.2],
+        netMargin: [25.0, 20.7, 34.7, 27.3, 32.0, 30.8, 32.1, 9.4, 10.7, 14.6],
+        currentRatio: [1.42, 1.45, 1.50, 1.44, 1.46, 1.48, 1.55, 1.42, 1.45, 1.51],
+        leverage: [54.2, 53.0, 50.1, 52.8, 52.4, 52.0, 48.5, 51.2, 50.4, 49.2],
+        roe: [22.0, 23.5, 26.0, 23.8, 24.1, 24.5, 27.8, 22.4, 21.6, 23.0],
         shortDebt: 54000000000,
         longDebt: 26000000000,
         equity: 83000000000
     },
     "EREGL": {
-        quarters: ['2023/3Q', '2023/4Q', '2024/1Q', '2024/2Q', '2024/3Q'],
-        revenue: [39100000000, 53200000000, 49800000000, 45200000000, 51400000000],
-        ebitda: [5400000000, 9100000000, 8600000000, 6100000000, 7200000000],
-        netIncome: [41000000, 4030000000, 5600000000, 4390000000, 1610000000],
-        grossMargin: [14.2, 18.5, 18.2, 14.8, 15.6],
-        ebitdaMargin: [13.8, 17.1, 17.3, 13.5, 14.0],
-        netMargin: [0.1, 7.6, 11.2, 9.7, 3.1],
-        currentRatio: [1.95, 1.88, 1.82, 1.76, 1.72],
-        leverage: [38.4, 39.5, 41.2, 42.0, 41.5],
-        roe: [5.2, 9.8, 12.4, 11.8, 8.5],
+        quarters: ['2022/2Q', '2022/3Q', '2022/4Q', '2023/1Q', '2023/2Q', '2023/3Q', '2023/4Q', '2024/1Q', '2024/2Q', '2024/3Q'],
+        revenue: [32100000000, 36800000000, 33200000000, 26300000000, 37200000000, 39100000000, 53200000000, 49800000000, 45200000000, 51400000000],
+        ebitda: [9600000000, 6800000000, 2400000000, 1800000000, 3200000000, 5400000000, 9100000000, 8600000000, 6100000000, 7200000000],
+        netIncome: [6640000000, 2560000000, 3400000000, 90000000, -990000000, 41000000, 4030000000, 5600000000, 4390000000, 1610000000],
+        grossMargin: [31.2, 20.4, 9.8, 8.2, 10.5, 14.2, 18.5, 18.2, 14.8, 15.6],
+        ebitdaMargin: [29.9, 18.5, 7.2, 6.8, 8.6, 13.8, 17.1, 17.3, 13.5, 14.0],
+        netMargin: [20.7, 7.0, 10.2, 0.3, -2.7, 0.1, 7.6, 11.2, 9.7, 3.1],
+        currentRatio: [2.10, 2.05, 1.98, 1.92, 1.90, 1.95, 1.88, 1.82, 1.76, 1.72],
+        leverage: [33.2, 34.5, 36.0, 37.1, 38.0, 38.4, 39.5, 41.2, 42.0, 41.5],
+        roe: [24.0, 18.5, 12.0, 8.2, 5.0, 5.2, 9.8, 12.4, 11.8, 8.5],
         shortDebt: 85000000000,
         longDebt: 55000000000,
         equity: 198000000000
     },
     "TUPRS": {
-        quarters: ['2023/3Q', '2023/4Q', '2024/1Q', '2024/2Q', '2024/3Q'],
-        revenue: [185000000000, 192000000000, 138000000000, 178000000000, 195000000000],
-        ebitda: [29800000000, 18400000000, 9200000000, 17500000000, 19200000000],
-        netIncome: [21300000000, 32100000000, 3200000000, 10700000000, 11600000000],
-        grossMargin: [18.4, 11.8, 8.2, 11.4, 11.9],
-        ebitdaMargin: [16.1, 9.6, 6.7, 9.8, 9.8],
-        netMargin: [11.5, 16.7, 2.3, 6.0, 5.9],
-        currentRatio: [1.25, 1.30, 1.28, 1.24, 1.29],
-        leverage: [56.0, 52.8, 54.2, 53.5, 52.0],
-        roe: [48.2, 52.0, 38.4, 32.5, 30.1],
+        quarters: ['2022/2Q', '2022/3Q', '2022/4Q', '2023/1Q', '2023/2Q', '2023/3Q', '2023/4Q', '2024/1Q', '2024/2Q', '2024/3Q'],
+        revenue: [136000000000, 152000000000, 164000000000, 93000000000, 132000000000, 185000000000, 192000000000, 138000000000, 178000000000, 195000000000],
+        ebitda: [21400000000, 17800000000, 18500000000, 8400000000, 14200000000, 29800000000, 18400000000, 9200000000, 17500000000, 19200000000],
+        netIncome: [10600000000, 11500000000, 17600000000, 6700000000, 7200000000, 21300000000, 32100000000, 3200000000, 10700000000, 11600000000],
+        grossMargin: [17.2, 13.5, 13.8, 10.4, 12.8, 18.4, 11.8, 8.2, 11.4, 11.9],
+        ebitdaMargin: [15.7, 11.7, 11.3, 9.0, 10.8, 16.1, 9.6, 6.7, 9.8, 9.8],
+        netMargin: [7.8, 7.6, 10.7, 7.2, 5.5, 11.5, 16.7, 2.3, 6.0, 5.9],
+        currentRatio: [1.18, 1.20, 1.24, 1.21, 1.23, 1.25, 1.30, 1.28, 1.24, 1.29],
+        leverage: [64.2, 61.5, 59.8, 58.2, 57.0, 56.0, 52.8, 54.2, 53.5, 52.0],
+        roe: [38.5, 42.0, 46.2, 44.0, 46.5, 48.2, 52.0, 38.4, 32.5, 30.1],
         shortDebt: 120000000000,
         longDebt: 45000000000,
         equity: 152000000000
     },
     "BIMAS": {
-        quarters: ['2023/3Q', '2023/4Q', '2024/1Q', '2024/2Q', '2024/3Q'],
-        revenue: [74000000000, 92000000000, 95500000000, 112000000000, 118000000000],
-        ebitda: [5600000000, 6800000000, 6100000000, 7800000000, 8400000000],
-        netIncome: [3800000000, 6200000000, 3700000000, 4800000000, 5100000000],
-        grossMargin: [18.5, 19.2, 18.8, 19.4, 19.6],
-        ebitdaMargin: [7.6, 7.4, 6.4, 7.0, 7.1],
-        netMargin: [5.1, 6.7, 3.9, 4.3, 4.3],
-        currentRatio: [0.98, 0.95, 0.96, 0.99, 1.02],
-        leverage: [62.5, 60.2, 61.4, 59.8, 58.5],
-        roe: [42.0, 46.5, 38.2, 36.4, 35.8],
+        quarters: ['2022/2Q', '2022/3Q', '2022/4Q', '2023/1Q', '2023/2Q', '2023/3Q', '2023/4Q', '2024/1Q', '2024/2Q', '2024/3Q'],
+        revenue: [34000000000, 41000000000, 49000000000, 51000000000, 58000000000, 74000000000, 92000000000, 95500000000, 112000000000, 118000000000],
+        ebitda: [3100000000, 3700000000, 4100000000, 3900000000, 4600000000, 5600000000, 6800000000, 6100000000, 7800000000, 8400000000],
+        netIncome: [1700000000, 1800000000, 3400000000, 1350000000, 1850000000, 3800000000, 6200000000, 3700000000, 4800000000, 5100000000],
+        grossMargin: [18.0, 18.2, 18.5, 18.1, 18.4, 18.5, 19.2, 18.8, 19.4, 19.6],
+        ebitdaMargin: [9.1, 9.0, 8.4, 7.6, 7.9, 7.6, 7.4, 6.4, 7.0, 7.1],
+        netMargin: [5.0, 4.4, 6.9, 2.6, 3.2, 5.1, 6.7, 3.9, 4.3, 4.3],
+        currentRatio: [0.94, 0.95, 0.97, 0.96, 0.97, 0.98, 0.95, 0.96, 0.99, 1.02],
+        leverage: [65.2, 64.8, 63.5, 64.0, 63.2, 62.5, 60.2, 61.4, 59.8, 58.5],
+        roe: [38.0, 39.5, 41.2, 40.0, 41.5, 42.0, 46.5, 38.2, 36.4, 35.8],
         shortDebt: 62000000000,
         longDebt: 18000000000,
         equity: 56000000000
     },
     "KCHOL": {
-        quarters: ['2023/3Q', '2023/4Q', '2024/1Q', '2024/2Q', '2024/3Q'],
-        revenue: [340000000000, 395000000000, 312000000000, 385000000000, 420000000000],
-        ebitda: [46000000000, 41000000000, 28500000000, 42000000000, 48000000000],
-        netIncome: [35000000000, 42000000000, 1400000000, 4800000000, 8500000000],
-        grossMargin: [22.4, 21.0, 18.2, 20.5, 21.2],
-        ebitdaMargin: [13.5, 10.4, 9.1, 10.9, 11.4],
-        netMargin: [10.3, 10.6, 0.45, 1.25, 2.02],
-        currentRatio: [1.32, 1.35, 1.30, 1.28, 1.31],
-        leverage: [68.4, 66.5, 67.2, 66.0, 65.2],
-        roe: [34.0, 36.2, 21.5, 16.8, 15.2],
+        quarters: ['2022/2Q', '2022/3Q', '2022/4Q', '2023/1Q', '2023/2Q', '2023/3Q', '2023/4Q', '2024/1Q', '2024/2Q', '2024/3Q'],
+        revenue: [185000000000, 220000000000, 260000000000, 205000000000, 255000000000, 340000000000, 395000000000, 312000000000, 385000000000, 420000000000],
+        ebitda: [29000000000, 34000000000, 38000000000, 27000000000, 35000000000, 46000000000, 41000000000, 28500000000, 42000000000, 48000000000],
+        netIncome: [15500000000, 16800000000, 27500000000, 16800000000, 20500000000, 35000000000, 42000000000, 1400000000, 4800000000, 8500000000],
+        grossMargin: [24.0, 23.5, 22.8, 21.8, 22.1, 22.4, 21.0, 18.2, 20.5, 21.2],
+        ebitdaMargin: [15.7, 15.5, 14.6, 13.2, 13.7, 13.5, 10.4, 9.1, 10.9, 11.4],
+        netMargin: [8.4, 7.6, 10.6, 8.2, 8.0, 10.3, 10.6, 0.45, 1.25, 2.02],
+        currentRatio: [1.28, 1.30, 1.31, 1.29, 1.30, 1.32, 1.35, 1.30, 1.28, 1.31],
+        leverage: [71.5, 70.8, 69.5, 70.0, 69.2, 68.4, 66.5, 67.2, 66.0, 65.2],
+        roe: [30.5, 32.0, 35.8, 33.5, 34.2, 34.0, 36.2, 21.5, 16.8, 15.2],
         shortDebt: 520000000000,
         longDebt: 440000000000,
         equity: 510000000000
     },
     "GARAN": {
-        quarters: ['2023/3Q', '2023/4Q', '2024/1Q', '2024/2Q', '2024/3Q'],
-        revenue: [58000000000, 68000000000, 72000000000, 81000000000, 89000000000],
-        ebitda: [26000000000, 31000000000, 27500000000, 30500000000, 32000000000],
-        netIncome: [23400000000, 28100000000, 22300000000, 22100000000, 22500000000],
-        grossMargin: [44.8, 45.6, 38.2, 37.7, 36.0],
-        ebitdaMargin: [44.8, 45.6, 38.2, 37.7, 36.0],
-        netMargin: [40.3, 41.3, 31.0, 27.3, 25.3],
-        currentRatio: [1.15, 1.18, 1.14, 1.16, 1.17],
-        leverage: [87.5, 86.8, 87.2, 86.9, 86.5],
-        roe: [41.5, 43.8, 36.5, 34.2, 32.8],
+        quarters: ['2022/2Q', '2022/3Q', '2022/4Q', '2023/1Q', '2023/2Q', '2023/3Q', '2023/4Q', '2024/1Q', '2024/2Q', '2024/3Q'],
+        revenue: [28000000000, 35000000000, 42000000000, 44000000000, 49000000000, 58000000000, 68000000000, 72000000000, 81000000000, 89000000000],
+        ebitda: [14000000000, 18500000000, 21000000000, 20500000000, 22000000000, 26000000000, 31000000000, 27500000000, 30500000000, 32000000000],
+        netIncome: [13000000000, 17500000000, 19900000000, 15400000000, 18500000000, 23400000000, 28100000000, 22300000000, 22100000000, 22500000000],
+        grossMargin: [50.0, 52.8, 50.0, 46.5, 44.9, 44.8, 45.6, 38.2, 37.7, 36.0],
+        ebitdaMargin: [50.0, 52.8, 50.0, 46.5, 44.9, 44.8, 45.6, 38.2, 37.7, 36.0],
+        netMargin: [46.4, 50.0, 47.4, 35.0, 37.8, 40.3, 41.3, 31.0, 27.3, 25.3],
+        currentRatio: [1.12, 1.13, 1.15, 1.14, 1.14, 1.15, 1.18, 1.14, 1.16, 1.17],
+        leverage: [88.5, 88.0, 87.8, 88.2, 87.9, 87.5, 86.8, 87.2, 86.9, 86.5],
+        roe: [43.0, 45.2, 48.0, 42.5, 42.0, 41.5, 43.8, 36.5, 34.2, 32.8],
         shortDebt: 1250000000000,
         longDebt: 520000000000,
         equity: 275000000000
     },
     "FROTO": {
-        quarters: ['2023/3Q', '2023/4Q', '2024/1Q', '2024/2Q', '2024/3Q'],
-        revenue: [78000000000, 95000000000, 89000000000, 98000000000, 114000000000],
-        ebitda: [9200000000, 10800000000, 7800000000, 8900000000, 11200000000],
-        netIncome: [10400000000, 15300000000, 8900000000, 6800000000, 9900000000],
-        grossMargin: [13.8, 14.5, 11.2, 12.0, 12.8],
-        ebitdaMargin: [11.8, 11.4, 8.8, 9.1, 9.8],
-        netMargin: [13.3, 16.1, 10.0, 6.9, 8.7],
-        currentRatio: [1.12, 1.18, 1.15, 1.14, 1.16],
-        leverage: [65.0, 62.4, 63.8, 64.2, 62.9],
-        roe: [68.5, 74.2, 54.0, 46.5, 45.0],
+        quarters: ['2022/2Q', '2022/3Q', '2022/4Q', '2023/1Q', '2023/2Q', '2023/3Q', '2023/4Q', '2024/1Q', '2024/2Q', '2024/3Q'],
+        revenue: [33000000000, 41000000000, 58000000000, 46000000000, 59000000000, 78000000000, 95000000000, 89000000000, 98000000000, 114000000000],
+        ebitda: [4200000000, 4900000000, 7600000000, 5800000000, 7400000000, 9200000000, 10800000000, 7800000000, 8900000000, 11200000000],
+        netIncome: [3700000000, 3800000000, 8300000000, 5300000000, 6800000000, 10400000000, 15300000000, 8900000000, 6800000000, 9900000000],
+        grossMargin: [15.2, 14.8, 15.6, 15.0, 14.8, 13.8, 14.5, 11.2, 12.0, 12.8],
+        ebitdaMargin: [12.7, 12.0, 13.1, 12.6, 12.5, 11.8, 11.4, 8.8, 9.1, 9.8],
+        netMargin: [11.2, 9.3, 14.3, 11.5, 11.5, 13.3, 16.1, 10.0, 6.9, 8.7],
+        currentRatio: [1.10, 1.11, 1.14, 1.12, 1.13, 1.12, 1.18, 1.15, 1.14, 1.16],
+        leverage: [68.0, 67.2, 65.5, 66.8, 66.0, 65.0, 62.4, 63.8, 64.2, 62.9],
+        roe: [62.0, 64.5, 72.0, 65.0, 66.8, 68.5, 74.2, 54.0, 46.5, 45.0],
         shortDebt: 88000000000,
         longDebt: 44000000000,
         equity: 79000000000
@@ -2197,24 +2247,24 @@ function getStockQuarterlyStatement(stock, symbol) {
         return base;
     }
 
-    // Dynamic generation anchored to live TradingView Scanner fundamentals
-    const quarters = ['2023/4Q', '2024/1Q', '2024/2Q', '2024/3Q', '2024/4Q'];
+    // Dynamic generation anchored to live TradingView Scanner fundamentals (10 Quarters)
+    const quarters = ['2022/2Q', '2022/3Q', '2022/4Q', '2023/1Q', '2023/2Q', '2023/3Q', '2023/4Q', '2024/1Q', '2024/2Q', '2024/3Q'];
     const s = stock || {};
     const latestRev = (s.totalRevenue && !isNaN(s.totalRevenue)) ? s.totalRevenue : ((s.marketCap || 5000000000) * 0.7);
-    const revFactors = [0.82, 0.88, 0.93, 0.96, 1.0];
+    const revFactors = [0.60, 0.68, 0.72, 0.76, 0.82, 0.85, 0.89, 0.93, 0.96, 1.0];
     const revenue = revFactors.map(f => Math.round(latestRev * f));
 
     const latestEbitda = (s.ebitda && !isNaN(s.ebitda)) ? s.ebitda : (latestRev * 0.16);
-    const ebitdaFactors = [0.78, 0.84, 0.91, 0.94, 1.0];
+    const ebitdaFactors = [0.55, 0.65, 0.70, 0.73, 0.80, 0.84, 0.88, 0.92, 0.95, 1.0];
     const ebitda = ebitdaFactors.map(f => Math.round(latestEbitda * f));
 
     const latestNet = (s.netIncome && !isNaN(s.netIncome)) ? s.netIncome : (latestRev * 0.09);
-    const netFactors = [0.75, 0.82, 0.88, 0.92, 1.0];
+    const netFactors = [0.52, 0.62, 0.68, 0.71, 0.78, 0.83, 0.86, 0.90, 0.94, 1.0];
     const netIncome = netFactors.map(f => Math.round(latestNet * f));
 
     const grossMargin = revenue.map((r, i) => {
         const gpRatio = s.grossProfit && s.totalRevenue ? (s.grossProfit / s.totalRevenue) : 0.22;
-        return parseFloat((gpRatio * 100 * (0.95 + (i * 0.015))).toFixed(1));
+        return parseFloat((gpRatio * 100 * (0.90 + (i * 0.012))).toFixed(1));
     });
 
     const ebitdaMargin = revenue.map((r, i) => parseFloat(((ebitda[i] / (r || 1)) * 100).toFixed(1)));
@@ -2222,6 +2272,11 @@ function getStockQuarterlyStatement(stock, symbol) {
 
     const baseCR = (s.currentRatio && !isNaN(s.currentRatio)) ? s.currentRatio : 1.35;
     const currentRatio = [
+        parseFloat((baseCR * 0.90).toFixed(2)),
+        parseFloat((baseCR * 0.92).toFixed(2)),
+        parseFloat((baseCR * 0.91).toFixed(2)),
+        parseFloat((baseCR * 0.93).toFixed(2)),
+        parseFloat((baseCR * 0.95).toFixed(2)),
         parseFloat((baseCR * 0.94).toFixed(2)),
         parseFloat((baseCR * 0.97).toFixed(2)),
         parseFloat((baseCR * 0.95).toFixed(2)),
@@ -2236,6 +2291,11 @@ function getStockQuarterlyStatement(stock, symbol) {
         baseLev = (s.debtToEquity / (1 + s.debtToEquity)) * 100;
     }
     const leverage = [
+        parseFloat((baseLev * 1.08).toFixed(1)),
+        parseFloat((baseLev * 1.06).toFixed(1)),
+        parseFloat((baseLev * 1.05).toFixed(1)),
+        parseFloat((baseLev * 1.03).toFixed(1)),
+        parseFloat((baseLev * 1.02).toFixed(1)),
         parseFloat((baseLev * 1.04).toFixed(1)),
         parseFloat((baseLev * 1.02).toFixed(1)),
         parseFloat((baseLev * 1.01).toFixed(1)),
@@ -2245,6 +2305,11 @@ function getStockQuarterlyStatement(stock, symbol) {
 
     const baseRoe = (s.roe && !isNaN(s.roe)) ? s.roe : 24.5;
     const roe = [
+        parseFloat((baseRoe * 0.85).toFixed(1)),
+        parseFloat((baseRoe * 0.88).toFixed(1)),
+        parseFloat((baseRoe * 0.89).toFixed(1)),
+        parseFloat((baseRoe * 0.90).toFixed(1)),
+        parseFloat((baseRoe * 0.92).toFixed(1)),
         parseFloat((baseRoe * 0.91).toFixed(1)),
         parseFloat((baseRoe * 0.94).toFixed(1)),
         parseFloat((baseRoe * 0.97).toFixed(1)),
@@ -2299,10 +2364,10 @@ function formatChangePill(elemId, currentVal, prevVal, isMarginOrRatio = false) 
     }
 }
 
-function renderFintablesTable(statement) {
-    const thead = document.getElementById("fintablesTableHead");
-    const tbody = document.getElementById("fintablesTableBody");
-    if (!thead || !tbody) return;
+function renderFintablesTable(statement, headElemId = "fintablesTableHead", bodyElemId = "fintablesTableBody") {
+    const thead = document.getElementById(headElemId);
+    const tbody = document.getElementById(bodyElemId);
+    if (!thead || !tbody || !statement || !statement.quarters) return;
 
     const quarters = statement.quarters;
     const lastIdx = quarters.length - 1;
@@ -2398,8 +2463,21 @@ function renderFintablesTable(statement) {
 function renderStockBalanceSheetCharts(stock, symbol, isYatirimOverride = null) {
     destroyBalanceSheetCharts();
 
-    const statement = isYatirimOverride || getStockQuarterlyStatement(stock, symbol);
-    if (!statement) return;
+    const fullStatement = isYatirimOverride || getStockQuarterlyStatement(stock, symbol);
+    if (!fullStatement) return;
+
+    currentActiveStatement = fullStatement;
+    currentActiveStock = stock;
+    currentActiveSymbol = (symbol || (stock && stock.symbol) || "").toUpperCase();
+
+    // Default standard view: strictly the last 5 quarters
+    const statement = sliceStatementToQuarters(fullStatement, 5);
+
+    // If landscape modal is already active, sync it with latest data
+    const landscapeModal = document.getElementById("modalLandscapeFinancials");
+    if (landscapeModal && landscapeModal.classList.contains("active")) {
+        renderLandscapeFinancials();
+    }
 
     // 1. Top 6 Multiples and Key Ratios Grid
     const peElem = document.getElementById("fundamentalPE");
@@ -2821,7 +2899,7 @@ function renderStockBalanceSheetCharts(stock, symbol, isYatirimOverride = null) 
                             label: function(ctx) {
                                 const val = ctx.raw;
                                 const pct = totalPassives > 0 ? ((val / totalPassives) * 100).toFixed(1) : 0;
-                                return ` ${ctx.label}: ${formatBillionOrMillion(val)} (%${pct})`;
+                                return ' ' + ctx.label + ': ' + formatBillionOrMillion(val) + ' (%' + pct + ')';
                             }
                         }
                     }
@@ -2830,6 +2908,456 @@ function renderStockBalanceSheetCharts(stock, symbol, isYatirimOverride = null) 
         });
     }
 }
+
+// ==========================================================================
+// Landscape Panoramic Multi-Quarter Controller & Charts
+// ==========================================================================
+async function openLandscapeFinancials() {
+    const modal = document.getElementById("modalLandscapeFinancials");
+    if (!modal) return;
+
+    modal.classList.add("active");
+    document.body.classList.add("landscape-open");
+
+    // Attempt Screen Orientation lock and Fullscreen
+    try {
+        if (document.documentElement.requestFullscreen) {
+            await document.documentElement.requestFullscreen().catch(() => {});
+        }
+        if (screen.orientation && screen.orientation.lock) {
+            await screen.orientation.lock('landscape').catch(() => {});
+        }
+    } catch (e) {
+        console.log("Screen orientation lock info:", e);
+    }
+
+    // Auto-detect mobile portrait where physical orientation lock isn't supported (e.g. iOS Safari)
+    if (window.innerHeight > window.innerWidth && window.innerWidth <= 768) {
+        modal.classList.add("force-rotate-90");
+    } else {
+        modal.classList.remove("force-rotate-90");
+    }
+
+    // Set initial filter to 'all'
+    currentLandscapeQuarterFilter = 'all';
+    const pills = document.querySelectorAll("#landscapeQuarterPills .l-pill");
+    pills.forEach((p, idx) => {
+        if (idx === 0) p.classList.add("active");
+        else p.classList.remove("active");
+    });
+
+    const secPills = document.querySelectorAll("#landscapeSectionPills .l-pill");
+    secPills.forEach((p, idx) => {
+        if (idx === 0) p.classList.add("active");
+        else p.classList.remove("active");
+    });
+    switchLandscapeSection('all');
+
+    renderLandscapeFinancials();
+}
+
+async function closeLandscapeFinancials() {
+    const modal = document.getElementById("modalLandscapeFinancials");
+    if (modal) {
+        modal.classList.remove("active");
+        modal.classList.remove("force-rotate-90");
+    }
+    document.body.classList.remove("landscape-open");
+
+    // Unlock screen orientation and exit fullscreen
+    try {
+        if (screen.orientation && screen.orientation.unlock) {
+            screen.orientation.unlock();
+        }
+        if (document.exitFullscreen && document.fullscreenElement) {
+            await document.exitFullscreen().catch(() => {});
+        }
+    } catch (e) {
+        console.log("Screen orientation unlock info:", e);
+    }
+
+    destroyLandscapeCharts();
+}
+
+function toggleLandscapeOrientation() {
+    const modal = document.getElementById("modalLandscapeFinancials");
+    if (!modal) return;
+    modal.classList.toggle("force-rotate-90");
+    setTimeout(() => {
+        if (chartLandscapeFinancialsInstance) chartLandscapeFinancialsInstance.resize();
+        if (chartLandscapeMarginsInstance) chartLandscapeMarginsInstance.resize();
+        if (chartLandscapeRatiosInstance) chartLandscapeRatiosInstance.resize();
+    }, 150);
+}
+
+function setLandscapeQuarterFilter(filter, btn) {
+    currentLandscapeQuarterFilter = filter;
+    const parent = btn && btn.parentElement;
+    if (parent) {
+        parent.querySelectorAll(".l-pill").forEach(p => p.classList.remove("active"));
+        btn.classList.add("active");
+    }
+    renderLandscapeFinancials();
+}
+
+function switchLandscapeSection(sec, btn) {
+    if (btn) {
+        const parent = btn.parentElement;
+        if (parent) {
+            parent.querySelectorAll(".l-pill").forEach(p => p.classList.remove("active"));
+            btn.classList.add("active");
+        }
+    }
+    const secCharts = document.getElementById("lsecCharts");
+    const secTable = document.getElementById("lsecTable");
+    if (sec === 'all') {
+        if (secCharts) secCharts.style.display = 'flex';
+        if (secTable) secTable.style.display = 'block';
+    } else if (sec === 'charts') {
+        if (secCharts) secCharts.style.display = 'flex';
+        if (secTable) secTable.style.display = 'none';
+    } else if (sec === 'table') {
+        if (secCharts) secCharts.style.display = 'none';
+        if (secTable) secTable.style.display = 'block';
+    }
+    setTimeout(() => {
+        if (chartLandscapeFinancialsInstance) chartLandscapeFinancialsInstance.resize();
+        if (chartLandscapeMarginsInstance) chartLandscapeMarginsInstance.resize();
+        if (chartLandscapeRatiosInstance) chartLandscapeRatiosInstance.resize();
+    }, 60);
+}
+
+function toggleLandscapeFinancialSeries(type, btn) {
+    if (!chartLandscapeFinancialsInstance) return;
+    const parent = btn && btn.parentElement;
+    if (parent) {
+        parent.querySelectorAll('.c-toggle-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+    }
+    if (type === 'all') {
+        chartLandscapeFinancialsInstance.setDatasetVisibility(0, true);
+        chartLandscapeFinancialsInstance.setDatasetVisibility(1, true);
+        chartLandscapeFinancialsInstance.setDatasetVisibility(2, true);
+    } else if (type === 'sales') {
+        chartLandscapeFinancialsInstance.setDatasetVisibility(0, true);
+        chartLandscapeFinancialsInstance.setDatasetVisibility(1, false);
+        chartLandscapeFinancialsInstance.setDatasetVisibility(2, false);
+    } else if (type === 'ebitda') {
+        chartLandscapeFinancialsInstance.setDatasetVisibility(0, false);
+        chartLandscapeFinancialsInstance.setDatasetVisibility(1, true);
+        chartLandscapeFinancialsInstance.setDatasetVisibility(2, false);
+    } else if (type === 'net') {
+        chartLandscapeFinancialsInstance.setDatasetVisibility(0, false);
+        chartLandscapeFinancialsInstance.setDatasetVisibility(1, false);
+        chartLandscapeFinancialsInstance.setDatasetVisibility(2, true);
+    }
+    chartLandscapeFinancialsInstance.update();
+}
+
+function renderLandscapeFinancials() {
+    destroyLandscapeCharts();
+
+    if (!currentActiveStatement) return;
+    const stmt = sliceStatementToQuarters(currentActiveStatement, currentLandscapeQuarterFilter);
+    if (!stmt || !stmt.quarters || stmt.quarters.length === 0) return;
+
+    // 1. Header Badges & Labels
+    const symElem = document.getElementById("landscapeStockSymbol");
+    if (symElem) symElem.innerText = currentActiveSymbol || "BIST";
+
+    const nameElem = document.getElementById("landscapeStockName");
+    if (nameElem) {
+        const s = currentActiveStock || {};
+        nameElem.innerText = s.companyTitle || s.name || currentActiveSymbol || "";
+    }
+
+    const badgeElem = document.getElementById("landscapePeriodBadge");
+    if (badgeElem && stmt.quarters.length > 0) {
+        badgeElem.innerText = stmt.quarters.length + ' Çeyrek (' + stmt.quarters[0] + ' - ' + stmt.quarters[stmt.quarters.length - 1] + ')';
+    }
+
+    // 2. Render Full Panoramic Fintables Comparative Table
+    renderFintablesTable(stmt, "landscapeFintablesTableHead", "landscapeFintablesTableBody");
+
+    if (typeof Chart === 'undefined') return;
+
+    // 3. Panoramic Revenue, EBITDA & Net Profit (Bar Chart)
+    const ctxFin = document.getElementById("chartLandscapeFinancials");
+    if (ctxFin) {
+        chartLandscapeFinancialsInstance = new Chart(ctxFin, {
+            type: 'bar',
+            data: {
+                labels: stmt.quarters,
+                datasets: [
+                    {
+                        label: 'Satış Gelirleri',
+                        data: stmt.revenue,
+                        backgroundColor: 'rgba(56, 189, 248, 0.85)',
+                        borderRadius: 6,
+                        barPercentage: 0.82,
+                        categoryPercentage: 0.76
+                    },
+                    {
+                        label: 'FAVÖK',
+                        data: stmt.ebitda,
+                        backgroundColor: 'rgba(168, 85, 247, 0.85)',
+                        borderRadius: 6,
+                        barPercentage: 0.82,
+                        categoryPercentage: 0.76
+                    },
+                    {
+                        label: 'Net Kâr',
+                        data: stmt.netIncome,
+                        backgroundColor: stmt.netIncome.map(v => v >= 0 ? 'rgba(16, 185, 129, 0.85)' : 'rgba(239, 68, 68, 0.85)'),
+                        borderRadius: 6,
+                        barPercentage: 0.82,
+                        categoryPercentage: 0.76
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                animation: { duration: 300 },
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'top',
+                        labels: {
+                            color: '#94A3B8',
+                            font: { size: 10, family: "'Plus Jakarta Sans', sans-serif" },
+                            boxWidth: 8,
+                            boxHeight: 8
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(11, 15, 25, 0.95)',
+                        titleColor: '#F8FAFC',
+                        bodyColor: '#CBD5E1',
+                        borderColor: 'rgba(255, 255, 255, 0.15)',
+                        borderWidth: 1,
+                        padding: 10,
+                        callbacks: {
+                            label: function(ctx) {
+                                return ' ' + ctx.dataset.label + ': ' + formatBillionOrMillion(ctx.raw);
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: { display: false },
+                        ticks: { color: '#94A3B8', font: { size: 11, weight: '600' } }
+                    },
+                    y: {
+                        grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                        ticks: {
+                            color: '#64748B',
+                            font: { size: 10 },
+                            callback: function(v) { return formatBillionOrMillion(v); }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    // 4. Panoramic Margins Trend (Line Chart)
+    const ctxMargins = document.getElementById("chartLandscapeMargins");
+    if (ctxMargins) {
+        chartLandscapeMarginsInstance = new Chart(ctxMargins, {
+            type: 'line',
+            data: {
+                labels: stmt.quarters,
+                datasets: [
+                    {
+                        label: 'Brüt Kâr Marjı',
+                        data: stmt.grossMargin,
+                        borderColor: '#06B6D4',
+                        backgroundColor: 'rgba(6, 182, 212, 0.08)',
+                        borderWidth: 2.5,
+                        pointRadius: 4,
+                        pointHoverRadius: 6,
+                        pointBackgroundColor: '#06B6D4',
+                        tension: 0.35,
+                        fill: true
+                    },
+                    {
+                        label: 'FAVÖK Marjı',
+                        data: stmt.ebitdaMargin,
+                        borderColor: '#A855F7',
+                        backgroundColor: 'rgba(168, 85, 247, 0.06)',
+                        borderWidth: 2.5,
+                        pointRadius: 4,
+                        pointHoverRadius: 6,
+                        pointBackgroundColor: '#A855F7',
+                        tension: 0.35,
+                        fill: true
+                    },
+                    {
+                        label: 'Net Kâr Marjı',
+                        data: stmt.netMargin,
+                        borderColor: '#10B981',
+                        backgroundColor: 'rgba(16, 185, 129, 0.06)',
+                        borderWidth: 2.5,
+                        pointRadius: 4,
+                        pointHoverRadius: 6,
+                        pointBackgroundColor: '#10B981',
+                        tension: 0.35,
+                        fill: true
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                animation: { duration: 300 },
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: 'rgba(11, 15, 25, 0.95)',
+                        titleColor: '#F8FAFC',
+                        bodyColor: '#CBD5E1',
+                        borderColor: 'rgba(255, 255, 255, 0.15)',
+                        borderWidth: 1,
+                        padding: 10,
+                        callbacks: {
+                            label: function(ctx) {
+                                return ' ' + ctx.dataset.label + ': %' + ctx.raw;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: { display: false },
+                        ticks: { color: '#94A3B8', font: { size: 11, weight: '600' } }
+                    },
+                    y: {
+                        grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                        ticks: {
+                            color: '#64748B',
+                            font: { size: 10 },
+                            callback: function(v) { return '%' + v; }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    // 5. Panoramic Ratios & ROE (Dual Axis Line Chart)
+    const ctxRatios = document.getElementById("chartLandscapeRatios");
+    if (ctxRatios) {
+        chartLandscapeRatiosInstance = new Chart(ctxRatios, {
+            type: 'line',
+            data: {
+                labels: stmt.quarters,
+                datasets: [
+                    {
+                        label: 'Cari Oran (x)',
+                        data: stmt.currentRatio,
+                        borderColor: '#38BDF8',
+                        borderWidth: 2.5,
+                        pointRadius: 4,
+                        pointHoverRadius: 6,
+                        pointBackgroundColor: '#38BDF8',
+                        tension: 0.35,
+                        yAxisID: 'yRatio'
+                    },
+                    {
+                        label: 'Kaldıraç Oranı (%)',
+                        data: stmt.leverage,
+                        borderColor: '#F59E0B',
+                        borderWidth: 2.5,
+                        pointRadius: 4,
+                        pointHoverRadius: 6,
+                        pointBackgroundColor: '#F59E0B',
+                        tension: 0.35,
+                        yAxisID: 'yPct'
+                    },
+                    {
+                        label: 'Özkaynak Kârlılığı / ROE (%)',
+                        data: stmt.roe,
+                        borderColor: '#10B981',
+                        borderWidth: 2.5,
+                        pointRadius: 4,
+                        pointHoverRadius: 6,
+                        pointBackgroundColor: '#10B981',
+                        tension: 0.35,
+                        yAxisID: 'yPct'
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                animation: { duration: 300 },
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'top',
+                        labels: {
+                            color: '#94A3B8',
+                            font: { size: 10, family: "'Plus Jakarta Sans', sans-serif" },
+                            boxWidth: 8,
+                            boxHeight: 8
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(11, 15, 25, 0.95)',
+                        titleColor: '#F8FAFC',
+                        bodyColor: '#CBD5E1',
+                        borderColor: 'rgba(255, 255, 255, 0.15)',
+                        borderWidth: 1,
+                        padding: 10,
+                        callbacks: {
+                            label: function(ctx) {
+                                if (ctx.dataset.yAxisID === 'yRatio') {
+                                    return ' ' + ctx.dataset.label + ': ' + ctx.raw + 'x';
+                                }
+                                return ' ' + ctx.dataset.label + ': %' + ctx.raw;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: { display: false },
+                        ticks: { color: '#94A3B8', font: { size: 11, weight: '600' } }
+                    },
+                    yPct: {
+                        type: 'linear',
+                        position: 'left',
+                        grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                        ticks: {
+                            color: '#64748B',
+                            font: { size: 10 },
+                            callback: function(v) { return '%' + v; }
+                        }
+                    },
+                    yRatio: {
+                        type: 'linear',
+                        position: 'right',
+                        grid: { display: false },
+                        ticks: {
+                            color: '#38BDF8',
+                            font: { size: 10 },
+                            callback: function(v) { return v + 'x'; }
+                        }
+                    }
+                }
+            }
+        });
+    }
+}
+
+window.openLandscapeFinancials = openLandscapeFinancials;
+window.closeLandscapeFinancials = closeLandscapeFinancials;
+window.toggleLandscapeOrientation = toggleLandscapeOrientation;
+window.setLandscapeQuarterFilter = setLandscapeQuarterFilter;
+window.switchLandscapeSection = switchLandscapeSection;
+window.toggleLandscapeFinancialSeries = toggleLandscapeFinancialSeries;
 
 function openDetailModal(holdingId) {
     activeDetailHoldingId = holdingId;
