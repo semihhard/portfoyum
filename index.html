@@ -36,20 +36,6 @@
     </style>
 </head>
 <body class="theme-oled-neon">
-    <!-- SVG Defs for Sparkline Gradients -->
-    <svg width="0" height="0" style="position: absolute; pointer-events: none;">
-        <defs>
-            <linearGradient id="spark-grad-pos" x1="0%" y1="0%" x2="0%" y2="100%">
-                <stop offset="0%" stop-color="#10B981" stop-opacity="0.55"/>
-                <stop offset="100%" stop-color="#10B981" stop-opacity="0.0"/>
-            </linearGradient>
-            <linearGradient id="spark-grad-neg" x1="0%" y1="0%" x2="0%" y2="100%">
-                <stop offset="0%" stop-color="#EF4444" stop-opacity="0.55"/>
-                <stop offset="100%" stop-color="#EF4444" stop-opacity="0.0"/>
-            </linearGradient>
-        </defs>
-    </svg>
-
     <!-- Ambient Background Glow Orbs -->
     <div class="bg-orb orb-1"></div>
     <div class="bg-orb orb-2"></div>
@@ -427,18 +413,6 @@
     <main class="app-content">
             <!-- TAB 1: PORTFOLIO DASHBOARD -->
             <section id="tab-dashboard" class="tab-page active">
-                <!-- iOS Pull-to-Refresh Indicator -->
-                <div class="pull-to-refresh-indicator" id="pullToRefreshIndicator">
-                    <div class="ptr-content">
-                        <div class="ptr-icon-ring">
-                            <i class="fa-solid fa-arrow-down ptr-arrow" id="ptrArrow"></i>
-                            <i class="fa-solid fa-arrows-rotate ptr-spinner" id="ptrSpinner"></i>
-                            <i class="fa-solid fa-check ptr-check" id="ptrCheck"></i>
-                        </div>
-                        <span class="ptr-text" id="ptrText">Yenilemek için aşağı çekin</span>
-                    </div>
-                </div>
-
                 <div class="page-header">
                     <div>
                         <div class="badge-online"><span class="pulse-dot"></span> PİYASA CANLI</div>
@@ -1057,25 +1031,6 @@
                         <div>Toplam Adet: <strong id="detailQty">0</strong></div>
                         <div>Toplam Değer: <strong id="detailTotalVal">₺0.00</strong></div>
                         <div>Kar/Zarar: <strong id="detailPL">₺0.00</strong></div>
-                    </div>
-                </div>
-
-                <!-- Interactive TradingView / Lightweight Chart Container -->
-                <div class="detail-chart-wrapper" id="detailChartWrapper">
-                    <div class="detail-chart-header">
-                        <div class="chart-header-left">
-                            <i class="fa-solid fa-chart-area" style="color: #38BDF8;"></i>
-                            <span>Fiyat Trendi & Grafik</span>
-                        </div>
-                        <div class="chart-source-tag" id="detailChartSourceTag">
-                            <i class="fa-solid fa-bolt"></i> TradingView Canlı
-                        </div>
-                    </div>
-                    <div class="detail-chart-embed" id="detailChartEmbed">
-                        <div class="detail-chart-loading">
-                            <i class="fa-solid fa-arrows-rotate fa-spin" style="color: #38BDF8;"></i>
-                            <span>Grafik yükleniyor...</span>
-                        </div>
                     </div>
                 </div>
 
