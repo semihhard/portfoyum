@@ -3823,21 +3823,6 @@ body.theme-neo-brutalism .btn.secondary {
 .bento-yield-card.glow-neg .bento-card-corner-glow {
     background: radial-gradient(circle, rgba(239, 68, 68, 0.25) 0%, transparent 70%);
 }
-.bento-health-card.glow-pos .bento-card-corner-glow {
-    background: radial-gradient(circle, rgba(16, 185, 129, 0.25) 0%, transparent 70%);
-}
-.bento-health-card.glow-cyan .bento-card-corner-glow {
-    background: radial-gradient(circle, rgba(99, 102, 241, 0.25) 0%, transparent 70%);
-}
-.bento-health-card.glow-neg .bento-card-corner-glow {
-    background: radial-gradient(circle, rgba(239, 68, 68, 0.25) 0%, transparent 70%);
-}
-.bento-health-card.glow-neut .bento-card-corner-glow {
-    background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
-}
-.bento-goal-card .bento-card-corner-glow {
-    background: radial-gradient(circle, rgba(217, 70, 239, 0.25) 0%, transparent 70%);
-}
 
 /* Module 4: Star Performer Card */
 .bento-star-hero {
@@ -3931,87 +3916,7 @@ body.theme-neo-brutalism .btn.secondary {
     box-shadow: 0 6px 20px rgba(16, 185, 129, 0.45);
 }
 
-/* Bento Action Button in Card Title */
-.bento-card-action-btn {
-    margin-left: auto;
-    background: rgba(255, 255, 255, 0.06);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    color: var(--text-secondary);
-    border-radius: 8px;
-    width: 24px;
-    height: 24px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 11px;
-    cursor: pointer;
-    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-    padding: 0;
-    position: relative;
-    z-index: 2;
-}
-
-.bento-card-action-btn:hover {
-    background: rgba(217, 70, 239, 0.2);
-    border-color: rgba(217, 70, 239, 0.4);
-    color: #F0ABFC;
-    transform: scale(1.08);
-}
-
-/* Bento Goal Progress & Hero */
-.bento-goal-hero {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: 6px;
-    margin: 4px 0 6px 0;
-    position: relative;
-    z-index: 2;
-}
-
-.bento-goal-hero .bento-stat-num {
-    margin-bottom: 0;
-}
-
-.bento-goal-progress-track {
-    width: 100%;
-    height: 7px;
-    background: rgba(255, 255, 255, 0.08);
-    border-radius: 999px;
-    overflow: hidden;
-    margin: 4px 0 8px 0;
-    position: relative;
-    z-index: 2;
-}
-
-.bento-goal-progress-bar {
-    height: 100%;
-    border-radius: 999px;
-    background: linear-gradient(90deg, #818CF8 0%, #C084FC 50%, #F472B6 100%);
-    transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-    box-shadow: 0 0 10px rgba(192, 132, 252, 0.5);
-}
-
-.btn-preset-chip {
-    background: rgba(255, 255, 255, 0.06);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    color: var(--text-secondary);
-    border-radius: 12px;
-    padding: 6px 12px;
-    font-size: 11.5px;
-    font-family: var(--font-mono);
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-
-.btn-preset-chip:hover {
-    background: rgba(168, 85, 247, 0.2);
-    border-color: rgba(168, 85, 247, 0.45);
-    color: #E879F9;
-}
-
-/* Module 8: Diversification Deck Card */
+/* Module 6: Diversification Deck Card */
 .bento-diversify-card {
     grid-column: span 2;
     padding: 16px 18px;
@@ -4606,26 +4511,6 @@ body.theme-neo-brutalism .bento-dock-btn.primary {
 body.theme-neo-brutalism .bento-dock-btn:hover {
     transform: translate(-1px, -1px) !important;
     box-shadow: 4px 4px 0px #000000 !important;
-}
-
-body.theme-neo-brutalism .bento-card-action-btn {
-    background: #FFFFFF !important;
-    border: 2px solid #000000 !important;
-    box-shadow: 2px 2px 0px #000000 !important;
-    color: #000000 !important;
-}
-
-body.theme-neo-brutalism .bento-goal-progress-track {
-    background: #E2E8F0 !important;
-    border: 1px solid #000000 !important;
-}
-
-body.theme-neo-brutalism .btn-preset-chip {
-    background: #FFFFFF !important;
-    border: 2px solid #000000 !important;
-    box-shadow: 2px 2px 0px #000000 !important;
-    color: #000000 !important;
-    font-weight: 800 !important;
 }
 
 body.theme-neo-brutalism .bento-asset-count-pill {

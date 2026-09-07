@@ -53,8 +53,7 @@ let appState = {
     biometricEnabled: false,
     biometricCredentialId: null,
     lastCloseUpdateDate: null,
-    notifications: [],
-    portfolioGoal: 100000
+    notifications: []
 };
 
 // --- Initial Sample Data ---
@@ -63,7 +62,6 @@ function loadInitialSampleData() {
     appState.sales = [];
     appState.manualT2Entries = [];
     appState.settledSaleIds = [];
-    appState.portfolioGoal = 100000;
 }
 
 // --- Storage Controls ---
@@ -79,7 +77,6 @@ function loadData() {
             appState.marketPrices = { ...DEFAULT_MARKET_PRICES, ...appState.marketPrices };
             if (!appState.manualT2Entries) appState.manualT2Entries = [];
             if (!appState.settledSaleIds) appState.settledSaleIds = [];
-            if (!appState.portfolioGoal) appState.portfolioGoal = 100000;
         } catch (e) {
             console.error("Storage load error", e);
             loadInitialSampleData();
@@ -684,127 +681,7 @@ function renderDashboard() {
         }
     }
 
-    // Module 6: Portfolio Health & Risk Radar
-    const bentoHealthScoreElem = document.getElementById("bentoHealthScore");
-    const bentoHealthBadgeElem = document.getElementById("bentoHealthBadge");
-    const bentoHealthDetailElem = document.getElementById("bentoHealthDetail");
-    const bentoHealthCard = document.getElementById("bentoHealthCard");
-
-    if (bentoHealthScoreElem && bentoHealthBadgeElem && bentoHealthDetailElem) {
-        if (appState.holdings.length === 0) {
-            bentoHealthScoreElem.innerText = "--/100";
-            bentoHealthBadgeElem.className = "bento-pill neut";
-            bentoHealthBadgeElem.innerText = "Veri Yok";
-            bentoHealthDetailElem.innerText = "Varlık bekleniyor";
-            if (bentoHealthCard) {
-                bentoHealthCard.classList.remove("glow-pos", "glow-cyan", "glow-neg", "glow-neut");
-                bentoHealthCard.classList.add("glow-neut");
-            }
-        } else {
-            let score = 50;
-            // 1. Asset diversification: how many categories have > 5% weight
-            let activeCatCount = 0;
-            if (stockPct >= 5) activeCatCount++;
-            if (fundPct >= 5) activeCatCount++;
-            if (fxPct >= 5) activeCatCount++;
-            if (cryptoPct >= 5) activeCatCount++;
-
-            if (activeCatCount >= 4) score += 25;
-            else if (activeCatCount === 3) score += 20;
-            else if (activeCatCount === 2) score += 12;
-            else score += 5;
-
-            // 2. Total asset count
-            if (appState.holdings.length >= 7) score += 15;
-            else if (appState.holdings.length >= 4) score += 10;
-            else if (appState.holdings.length >= 2) score += 5;
-
-            // 3. Concentration risk (max holding weight)
-            let maxHoldingWeight = 0;
-            let maxHoldingSymbol = "";
-            appState.holdings.forEach(h => {
-                const val = h.quantity * h.currentPrice;
-                const weight = totalNavVal > 0 ? (val / totalNavVal) * 100 : 0;
-                if (weight > maxHoldingWeight) {
-                    maxHoldingWeight = weight;
-                    maxHoldingSymbol = h.symbol;
-                }
-            });
-
-            if (maxHoldingWeight > 60) score -= 25;
-            else if (maxHoldingWeight > 45) score -= 15;
-            else if (maxHoldingWeight > 35) score -= 5;
-            else if (maxHoldingWeight <= 25 && appState.holdings.length >= 3) score += 10;
-
-            // 4. Unrealized P/L contribution
-            if (m.totalUnrealizedPLPct > 15) score += 10;
-            else if (m.totalUnrealizedPLPct > 0) score += 5;
-            else if (m.totalUnrealizedPLPct < -15) score -= 10;
-            else if (m.totalUnrealizedPLPct < 0) score -= 5;
-
-            // Clamp score
-            score = Math.max(25, Math.min(99, Math.round(score)));
-
-            let grade = "A+ Mükemmel";
-            let gradeClass = "pos";
-            let glowClass = "glow-pos";
-            if (score >= 85) {
-                grade = "A+ Mükemmel";
-                gradeClass = "pos";
-                glowClass = "glow-pos";
-            } else if (score >= 70) {
-                grade = "A Sağlam";
-                gradeClass = "pos";
-                glowClass = "glow-cyan";
-            } else if (score >= 55) {
-                grade = "B Dengeli";
-                gradeClass = "neut";
-                glowClass = "glow-cyan";
-            } else {
-                grade = "C Dikkat";
-                gradeClass = "neg";
-                glowClass = "glow-neg";
-            }
-
-            bentoHealthScoreElem.innerText = `${score}/100`;
-            bentoHealthBadgeElem.className = `bento-pill ${gradeClass}`;
-            bentoHealthBadgeElem.innerText = grade;
-            bentoHealthDetailElem.innerHTML = `En Büyük Pay: <strong>${maxHoldingSymbol} %${maxHoldingWeight.toFixed(0)}</strong>`;
-
-            if (bentoHealthCard) {
-                bentoHealthCard.classList.remove("glow-pos", "glow-cyan", "glow-neg", "glow-neut");
-                bentoHealthCard.classList.add(glowClass);
-            }
-        }
-    }
-
-    // Module 7: Portfolio Goal & Milestone Tracker
-    const bentoGoalPctElem = document.getElementById("bentoGoalPct");
-    const bentoGoalRemainingElem = document.getElementById("bentoGoalRemaining");
-    const bentoGoalBarElem = document.getElementById("bentoGoalBar");
-    const bentoGoalTargetElem = document.getElementById("bentoGoalTargetVal");
-
-    const userGoal = (appState.portfolioGoal && appState.portfolioGoal > 0) ? appState.portfolioGoal : 100000;
-
-    if (bentoGoalPctElem && bentoGoalRemainingElem && bentoGoalBarElem && bentoGoalTargetElem) {
-        const goalPct = totalNavVal > 0 ? (totalNavVal / userGoal) * 100 : 0;
-        const clampedPct = Math.min(100, Math.max(0, goalPct));
-
-        bentoGoalPctElem.innerText = `%${goalPct.toFixed(1)}`;
-        bentoGoalBarElem.style.width = `${clampedPct.toFixed(1)}%`;
-        bentoGoalTargetElem.innerHTML = `Hedef: <strong>${formatCurrency(userGoal)}</strong>`;
-
-        if (totalNavVal >= userGoal && userGoal > 0) {
-            bentoGoalRemainingElem.className = "bento-pill pos";
-            bentoGoalRemainingElem.innerHTML = `<i class="fa-solid fa-rocket"></i> Hedefe Ulaşıldı!`;
-        } else {
-            const remaining = Math.max(0, userGoal - totalNavVal);
-            bentoGoalRemainingElem.className = "bento-pill neut";
-            bentoGoalRemainingElem.innerText = `${formatCurrency(remaining)} kaldı`;
-        }
-    }
-
-    // Module 8: Diversification & Category Chips
+    // Module 6: Diversification & Category Chips
     const activeCountElem = document.getElementById("bentoActiveCount");
     if (activeCountElem) {
         activeCountElem.innerText = `${appState.holdings.length} Aktif Varlık`;
@@ -1530,39 +1407,6 @@ function updateSellT2EstimatedDate() {
 
 function closeSellModal() {
     document.getElementById("modalSellAsset").classList.remove("active");
-}
-
-// --- Portfolio Goal Modal Management ---
-function openSetGoalModal() {
-    const currentGoal = (appState.portfolioGoal && appState.portfolioGoal > 0) ? appState.portfolioGoal : 100000;
-    const input = document.getElementById("inputPortfolioGoal");
-    if (input) input.value = currentGoal;
-    const modal = document.getElementById("modalSetGoal");
-    if (modal) modal.classList.add("active");
-}
-
-function closeSetGoalModal() {
-    const modal = document.getElementById("modalSetGoal");
-    if (modal) modal.classList.remove("active");
-}
-
-function setGoalPreset(amount) {
-    const input = document.getElementById("inputPortfolioGoal");
-    if (input) input.value = amount;
-}
-
-function savePortfolioGoal() {
-    const input = document.getElementById("inputPortfolioGoal");
-    if (!input) return;
-    const val = parseFloat(input.value);
-    if (isNaN(val) || val <= 0) {
-        alert("Lütfen geçerli bir hedef tutar giriniz.");
-        return;
-    }
-    appState.portfolioGoal = val;
-    saveData();
-    closeSetGoalModal();
-    renderDashboard();
 }
 
 // --- T+2 Valör & Takas Takibi Modal Management ---
