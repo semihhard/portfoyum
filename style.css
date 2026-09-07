@@ -751,7 +751,7 @@ html, body {
 .app-content {
     flex: 1;
     overflow-y: auto;
-    padding: 12px 16px calc(88px + env(safe-area-inset-bottom, 0px)) 16px;
+    padding: 12px 16px calc(92px + env(safe-area-inset-bottom, 12px)) 16px;
     scrollbar-width: none;
     -webkit-overflow-scrolling: touch;
 }
@@ -1791,27 +1791,40 @@ html, body {
 }
 
 /* iOS Bottom Tab Bar (Modern Floating Pill) */
+/* iOS Bottom Tab Bar (Fixed Bottom Ultra-Glass Bar) */
 .ios-tab-bar {
-    position: fixed;
-    bottom: calc(10px + env(safe-area-inset-bottom, 0px));
-    left: 12px;
-    right: 12px;
-    width: auto;
-    max-width: 416px;
-    margin: 0 auto;
-    height: 64px;
-    background: rgba(16, 22, 34, 0.94);
-    backdrop-filter: blur(28px) saturate(180%);
-    -webkit-backdrop-filter: blur(28px) saturate(180%);
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    border-radius: 32px;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    margin: 0;
+    height: auto;
+    min-height: calc(64px + env(safe-area-inset-bottom, 0px));
+    background: rgba(10, 14, 24, 0.88);
+    backdrop-filter: blur(32px) saturate(200%);
+    -webkit-backdrop-filter: blur(32px) saturate(200%);
+    border: none;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 0 0 46px 46px;
     display: flex;
-    justify-content: space-between;
+    justify-content: space-around;
     align-items: center;
-    padding: 0 4px;
-    z-index: 999;
-    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.65), 0 0 1px rgba(255, 255, 255, 0.2);
+    padding: 6px 4px max(env(safe-area-inset-bottom, 0px), 8px) 4px;
+    z-index: 1000;
+    box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.06);
     box-sizing: border-box;
+}
+
+@media (max-width: 480px) {
+    .ios-tab-bar {
+        position: fixed !important;
+        bottom: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        width: 100% !important;
+        border-radius: 0 !important;
+    }
 }
 
 .tab-item {
@@ -1823,31 +1836,42 @@ html, body {
     align-items: center;
     justify-content: center;
     gap: 3px;
-    font-size: 9px;
-    font-weight: 700;
+    font-size: 10px;
+    font-weight: 600;
     cursor: pointer;
-    transition: var(--transition-fast);
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
     flex: 1;
     min-width: 0;
     padding: 4px 1px;
-    border-radius: 14px;
+    border-radius: 12px;
     user-select: none;
     -webkit-tap-highlight-color: transparent;
+    position: relative;
 }
 
 .tab-item i {
-    font-size: 16px;
-    transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+    font-size: 18px;
+    transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1), color 0.2s ease;
+    margin-bottom: 1px;
 }
 
 .tab-item span {
-    font-size: 9px;
-    font-weight: 700;
+    font-size: 10px;
+    font-weight: 600;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     max-width: 100%;
     letter-spacing: 0.1px;
+    transition: color 0.2s ease, font-weight 0.2s ease;
+}
+
+.tab-item:hover {
+    color: var(--text-primary);
+}
+
+.tab-item:hover i {
+    transform: translateY(-1px);
 }
 
 .tab-item.active {
@@ -1855,37 +1879,67 @@ html, body {
 }
 
 .tab-item.active i {
-    transform: translateY(-1px) scale(1.1);
+    transform: translateY(-2px) scale(1.12);
+}
+
+.tab-item.active span {
+    font-weight: 800;
+}
+
+.tab-item.active::after {
+    content: '';
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--neon-cyan);
+    box-shadow: 0 0 6px var(--neon-cyan);
+    margin-top: 1px;
 }
 
 .tab-item.add-action {
     position: relative;
-    top: -14px;
-    flex: 0 0 48px;
+    top: -12px;
+    flex: 0 0 52px;
     padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.tab-item.add-action::after {
+    display: none !important;
 }
 
 .add-circle {
-    width: 46px;
-    height: 46px;
+    width: 48px;
+    height: 48px;
     border-radius: 50%;
     background: linear-gradient(135deg, var(--neon-cyan) 0%, #0284C7 100%);
     color: #FFFFFF;
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 18px;
-    border: 3px solid var(--bg-main);
-    box-shadow: 0 6px 18px rgba(14, 165, 233, 0.45);
-    transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+    font-size: 20px;
+    border: 3.5px solid var(--bg-main);
+    box-shadow: 0 8px 22px rgba(14, 165, 233, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+    transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .tab-item.add-action:active .add-circle {
-    transform: scale(0.9);
+    transform: scale(0.92);
 }
 
 .tab-item.add-action:hover .add-circle {
-    transform: scale(1.08);
+    transform: translateY(-2px) scale(1.08);
+    box-shadow: 0 12px 28px rgba(14, 165, 233, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+
+.tab-item.add-action span {
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--text-muted);
+    margin-top: 2px;
 }
 
 /* Summary Box */
@@ -5532,13 +5586,23 @@ body.theme-pure-light .tab-item.active {
     color: #007AFF !important;
 }
 
+body.theme-pure-light .tab-item.active::after {
+    background: #007AFF !important;
+    box-shadow: 0 0 6px rgba(0, 122, 255, 0.6) !important;
+}
+
 body.theme-pure-light .tab-indicator {
     background: #007AFF !important;
 }
 
-body.theme-pure-light .add-circle {
-    background: linear-gradient(135deg, #007AFF, #0056B3) !important;
-    box-shadow: 0 4px 14px rgba(0, 122, 255, 0.4) !important;
+body.theme-pure-light .tab-item.add-action .add-circle {
+    background: linear-gradient(135deg, #007AFF 0%, #0056B3 100%) !important;
+    border-color: #FFFFFF !important;
+    box-shadow: 0 6px 18px rgba(0, 122, 255, 0.4) !important;
+}
+
+body.theme-pure-light .tab-item.add-action span {
+    color: #8E8E93 !important;
 }
 
 /* 9. iOS Sheet Modals in Apple Clean Light */
@@ -5697,6 +5761,45 @@ body.theme-pure-light .top-item {
 
 body.theme-pure-light .top-sym {
     color: #000000 !important;
+}
+
+/* Neo-Brutalism Tab Bar Overrides */
+body.theme-neo-brutalism .ios-tab-bar {
+    background: #FFFFFF !important;
+    border: none !important;
+    border-top: 3px solid #000000 !important;
+    box-shadow: 0 -4px 0px #000000 !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
+
+body.theme-neo-brutalism .tab-item {
+    color: #000000 !important;
+    font-weight: 800 !important;
+}
+
+body.theme-neo-brutalism .tab-item.active {
+    color: #0052FF !important;
+}
+
+body.theme-neo-brutalism .tab-item.active::after {
+    background: #0052FF !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    width: 6px !important;
+    height: 6px !important;
+}
+
+body.theme-neo-brutalism .tab-item.add-action .add-circle {
+    background: #FFE600 !important;
+    color: #000000 !important;
+    border: 3px solid #000000 !important;
+    box-shadow: 3px 3px 0px #000000 !important;
+}
+
+body.theme-neo-brutalism .tab-item.add-action span {
+    color: #000000 !important;
+    font-weight: 800 !important;
 }
 
 
