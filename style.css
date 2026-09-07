@@ -5720,26 +5720,566 @@ body.theme-pure-light .t2-info-notice strong {
     color: #007AFF !important;
 }
 
-/* 11. Sales & Analytics Tabs in Apple Clean Light */
-body.theme-pure-light .sales-card-item {
+/* 11. Sales Tab Redesign for Apple Clean Light */
+body.theme-pure-light #tab-sales .badge-online.purple {
+    background: rgba(88, 86, 214, 0.08) !important;
+    color: #5856D6 !important;
+    border: 1px solid rgba(88, 86, 214, 0.18) !important;
+    box-shadow: none !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.5px !important;
+    text-transform: uppercase !important;
+}
+
+body.theme-pure-light #tab-sales .page-title {
+    color: #000000 !important;
+    font-size: 28px !important;
+    font-weight: 800 !important;
+    letter-spacing: -0.6px !important;
+}
+
+/* Sales Hero Stats Grid (Apple Finance / Card Summary) */
+body.theme-pure-light #tab-sales .hero-stats-grid,
+body.theme-pure-light.layout-bento #tab-sales .hero-stats-grid {
     background: #FFFFFF !important;
     border: 1px solid rgba(0, 0, 0, 0.06) !important;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02) !important;
-    border-radius: 18px !important;
+    border-radius: 22px !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03) !important;
+    padding: 16px !important;
+    margin-bottom: 24px !important;
+    margin-top: 10px !important;
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 12px !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
+
+body.theme-pure-light #tab-sales .hero-stats-grid .stat-item,
+body.theme-pure-light.layout-bento #tab-sales .hero-stats-grid .stat-item {
+    background: #F8F9FA !important;
+    border: 1px solid rgba(0, 0, 0, 0.04) !important;
+    border-radius: 16px !important;
+    padding: 14px 16px !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+body.theme-pure-light #tab-sales .hero-stats-grid .stat-item::before,
+body.theme-pure-light.layout-bento #tab-sales .hero-stats-grid .stat-item::before {
+    display: none !important;
+}
+
+body.theme-pure-light #tab-sales .hero-stats-grid .stat-item:hover,
+body.theme-pure-light.layout-bento #tab-sales .hero-stats-grid .stat-item:hover {
+    transform: translateY(-2px) !important;
+    background: #F2F2F7 !important;
+    border-color: rgba(0, 0, 0, 0.08) !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04) !important;
+}
+
+/* Stat 1: Total Revenue (Spans 2 columns, Hero Apple Card look) */
+body.theme-pure-light #tab-sales .hero-stats-grid .stat-item:nth-child(1),
+body.theme-pure-light.layout-bento #tab-sales .hero-stats-grid .stat-item:nth-child(1) {
+    grid-column: span 2 !important;
+    background: linear-gradient(135deg, #FFFFFF 0%, #F5F7FA 100%) !important;
+    border: 1px solid rgba(0, 0, 0, 0.08) !important;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.02) !important;
+    padding: 18px 20px !important;
+}
+
+body.theme-pure-light #tab-sales .hero-stats-grid .stat-item:nth-child(1) .stat-label,
+body.theme-pure-light.layout-bento #tab-sales .hero-stats-grid .stat-item:nth-child(1) .stat-label {
+    color: #8E8E93 !important;
+    font-size: 11px !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.6px !important;
+    text-transform: uppercase !important;
+    margin-bottom: 6px !important;
+}
+
+body.theme-pure-light #tab-sales .hero-stats-grid .stat-item:nth-child(1) #salesTotalRevenue,
+body.theme-pure-light.layout-bento #tab-sales .hero-stats-grid .stat-item:nth-child(1) #salesTotalRevenue {
+    color: #000000 !important;
+    -webkit-text-fill-color: #000000 !important;
+    font-size: 32px !important;
+    font-weight: 900 !important;
+    letter-spacing: -1.2px !important;
+    font-family: var(--font-mono) !important;
+}
+
+/* Stat 2: Total Cost */
+body.theme-pure-light #tab-sales .hero-stats-grid .stat-item:nth-child(2),
+body.theme-pure-light.layout-bento #tab-sales .hero-stats-grid .stat-item:nth-child(2) {
+    grid-column: span 1 !important;
+}
+
+body.theme-pure-light #tab-sales .hero-stats-grid #salesTotalCost,
+body.theme-pure-light.layout-bento #tab-sales .hero-stats-grid #salesTotalCost {
+    color: #636366 !important;
+    font-size: 1.15rem !important;
+    font-weight: 700 !important;
+    font-family: var(--font-mono) !important;
+}
+
+/* Stat 3: Total Realized P/L */
+body.theme-pure-light #tab-sales .hero-stats-grid .stat-item:nth-child(3),
+body.theme-pure-light.layout-bento #tab-sales .hero-stats-grid .stat-item:nth-child(3) {
+    grid-column: span 1 !important;
+}
+
+body.theme-pure-light #tab-sales .hero-stats-grid #salesTotalPL,
+body.theme-pure-light.layout-bento #tab-sales .hero-stats-grid #salesTotalPL {
+    font-size: 0.95rem !important;
+    font-weight: 800 !important;
+    font-family: var(--font-mono) !important;
+    display: inline-block !important;
+    padding: 4px 10px !important;
+    border-radius: 10px !important;
+}
+
+body.theme-pure-light #tab-sales .hero-stats-grid #salesTotalPL.pos {
+    background: rgba(52, 199, 89, 0.12) !important;
+    color: #248A3D !important;
+    border: 1px solid rgba(52, 199, 89, 0.25) !important;
+}
+
+body.theme-pure-light #tab-sales .hero-stats-grid #salesTotalPL.neg {
+    background: rgba(255, 59, 48, 0.12) !important;
+    color: #D70015 !important;
+    border: 1px solid rgba(255, 59, 48, 0.25) !important;
+}
+
+body.theme-pure-light #tab-sales .hero-stats-grid #salesTotalPL.neut {
+    background: rgba(142, 142, 147, 0.12) !important;
+    color: #636366 !important;
+    border: 1px solid rgba(142, 142, 147, 0.25) !important;
+}
+
+/* Stat 4: Success Rate */
+body.theme-pure-light #tab-sales .hero-stats-grid .stat-item:nth-child(4),
+body.theme-pure-light.layout-bento #tab-sales .hero-stats-grid .stat-item:nth-child(4) {
+    grid-column: span 2 !important;
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    background: #F8F9FA !important;
+    border: 1px solid rgba(0, 0, 0, 0.04) !important;
+}
+
+body.theme-pure-light #tab-sales #salesSuccessRate {
+    font-size: 1.25rem !important;
+    font-weight: 800 !important;
+    font-family: var(--font-mono) !important;
+}
+
+body.theme-pure-light #tab-sales #salesSuccessRate.txt-neon-green {
+    color: #248A3D !important;
+}
+
+body.theme-pure-light #tab-sales #salesSuccessRate.txt-neon-amber {
+    color: #FF9500 !important;
+}
+
+/* Section Headers */
+body.theme-pure-light #tab-sales .section-header h2 {
+    color: #000000 !important;
+    font-size: 1.1rem !important;
+    font-weight: 800 !important;
+    letter-spacing: -0.3px !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+}
+
+body.theme-pure-light #tab-sales .section-header h2 i {
+    color: #FF9500 !important;
+}
+
+/* Top 3 Sales Podium (Apple Leaderboard) */
+body.theme-pure-light #topSalesPodium,
+body.theme-pure-light.layout-bento #topSalesPodium {
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 12px !important;
+    margin-bottom: 24px !important;
+}
+
+body.theme-pure-light .podium-card-item,
+body.theme-pure-light.layout-bento .podium-card-item {
+    background: #FFFFFF !important;
+    border: 1px solid rgba(0, 0, 0, 0.06) !important;
+    border-radius: 20px !important;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.02) !important;
+    padding: 16px 10px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    text-align: center !important;
+    cursor: pointer !important;
+    position: relative !important;
+    overflow: hidden !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.22s ease !important;
+}
+
+body.theme-pure-light .podium-card-item::before,
+body.theme-pure-light.layout-bento .podium-card-item::before {
+    display: none !important;
+}
+
+body.theme-pure-light .podium-card-item:hover,
+body.theme-pure-light.layout-bento .podium-card-item:hover {
+    transform: translateY(-3px) !important;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06) !important;
+    border-color: rgba(0, 0, 0, 0.12) !important;
+}
+
+body.theme-pure-light .podium-card-item.rank-1,
+body.theme-pure-light.layout-bento .podium-card-item.rank-1 {
+    background: linear-gradient(180deg, #FFFFFF 0%, #FFFDF5 100%) !important;
+    border: 1.5px solid rgba(255, 204, 0, 0.4) !important;
+    box-shadow: 0 6px 20px rgba(255, 204, 0, 0.12) !important;
+}
+
+body.theme-pure-light .podium-card-item.rank-2,
+body.theme-pure-light.layout-bento .podium-card-item.rank-2 {
+    background: linear-gradient(180deg, #FFFFFF 0%, #F9FAFB 100%) !important;
+    border: 1.5px solid rgba(142, 142, 147, 0.3) !important;
+}
+
+body.theme-pure-light .podium-card-item.rank-3,
+body.theme-pure-light.layout-bento .podium-card-item.rank-3 {
+    background: linear-gradient(180deg, #FFFFFF 0%, #FDF8F5 100%) !important;
+    border: 1.5px solid rgba(198, 125, 78, 0.35) !important;
+}
+
+body.theme-pure-light .podium-badge,
+body.theme-pure-light.layout-bento .podium-badge {
+    font-size: 1.8rem !important;
+    margin-bottom: 6px !important;
+    line-height: 1 !important;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.06)) !important;
+}
+
+body.theme-pure-light .podium-symbol,
+body.theme-pure-light.layout-bento .podium-symbol {
+    color: #000000 !important;
+    font-size: 1.05rem !important;
+    font-weight: 800 !important;
+    letter-spacing: -0.3px !important;
+    margin-bottom: 4px !important;
+}
+
+body.theme-pure-light .podium-gain,
+body.theme-pure-light.layout-bento .podium-gain {
+    font-size: 0.82rem !important;
+    font-weight: 800 !important;
+    font-family: var(--font-mono) !important;
+    padding: 3px 8px !important;
+    border-radius: 8px !important;
+    display: inline-block !important;
+    margin-top: 2px !important;
+}
+
+body.theme-pure-light .podium-gain.txt-neon-green,
+body.theme-pure-light.layout-bento .podium-gain.txt-neon-green {
+    color: #248A3D !important;
+    background: rgba(52, 199, 89, 0.12) !important;
+    border: 1px solid rgba(52, 199, 89, 0.22) !important;
+}
+
+body.theme-pure-light .podium-gain.txt-neon-red,
+body.theme-pure-light.layout-bento .podium-gain.txt-neon-red {
+    color: #D70015 !important;
+    background: rgba(255, 59, 48, 0.12) !important;
+    border: 1px solid rgba(255, 59, 48, 0.22) !important;
+}
+
+body.theme-pure-light .podium-share-btn {
+    background: #F2F2F7 !important;
+    border: 1px solid rgba(0, 0, 0, 0.05) !important;
+    color: #007AFF !important;
+    border-radius: 50% !important;
+    width: 28px !important;
+    height: 28px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    margin-top: 8px !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+}
+
+body.theme-pure-light .podium-share-btn:hover {
+    background: #007AFF !important;
+    color: #FFFFFF !important;
+    transform: scale(1.08) !important;
+}
+
+/* Sales Archive List & Cards (Apple Stocks / Card Aesthetic) */
+body.theme-pure-light #salesList,
+body.theme-pure-light.layout-bento #salesList {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 14px !important;
+}
+
+body.theme-pure-light .sales-card-item,
+body.theme-pure-light.layout-bento #salesList .sales-card-item {
+    background: #FFFFFF !important;
+    border: 1px solid rgba(0, 0, 0, 0.06) !important;
+    border-radius: 20px !important;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.02) !important;
+    margin-bottom: 0 !important;
+    overflow: hidden !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.22s ease !important;
+}
+
+body.theme-pure-light .sales-card-item::before,
+body.theme-pure-light.layout-bento #salesList .sales-card-item::before {
+    display: none !important;
+}
+
+body.theme-pure-light .sales-card-item:hover,
+body.theme-pure-light.layout-bento #salesList .sales-card-item:hover {
+    transform: translateY(-2px) !important;
+    border-color: rgba(0, 0, 0, 0.12) !important;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06) !important;
+}
+
+/* Card Header */
+body.theme-pure-light .sales-card-header {
+    background: #FAFAFC !important;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.04) !important;
+    padding: 14px 18px !important;
+}
+
+body.theme-pure-light .sales-avatar-icon {
+    background: rgba(0, 122, 255, 0.08) !important;
+    border: 1px solid rgba(0, 122, 255, 0.16) !important;
+    color: #007AFF !important;
+    border-radius: 12px !important;
+    width: 40px !important;
+    height: 40px !important;
+    font-size: 1.05rem !important;
 }
 
 body.theme-pure-light .sales-card-symbol {
     color: #000000 !important;
+    font-size: 1.08rem !important;
+    font-weight: 800 !important;
+    letter-spacing: -0.3px !important;
 }
 
 body.theme-pure-light .sales-card-name {
     color: #8E8E93 !important;
+    font-size: 0.78rem !important;
+    font-weight: 500 !important;
 }
 
-body.theme-pure-light .top-sales-podium-card {
+body.theme-pure-light .sales-card-date {
+    color: #8E8E93 !important;
+    font-size: 0.72rem !important;
+    font-weight: 600 !important;
+}
+
+body.theme-pure-light .sales-action-btn {
     background: #FFFFFF !important;
-    border: 1px solid rgba(0, 0, 0, 0.06) !important;
-    border-radius: 18px !important;
+    border: 1px solid rgba(0, 0, 0, 0.08) !important;
+    color: #1D1D1F !important;
+    border-radius: 8px !important;
+    font-size: 0.75rem !important;
+    font-weight: 600 !important;
+    padding: 4px 10px !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04) !important;
+    transition: all 0.2s ease !important;
+}
+
+body.theme-pure-light .sales-action-btn:hover {
+    background: #F2F2F7 !important;
+    border-color: rgba(0, 0, 0, 0.16) !important;
+    transform: scale(1.03) !important;
+}
+
+/* Sales Stats Row */
+body.theme-pure-light .sales-stats-row {
+    background: #FFFFFF !important;
+    padding: 14px 18px !important;
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 10px !important;
+}
+
+body.theme-pure-light .sales-stat-cell,
+body.theme-pure-light.layout-bento .sales-stat-cell {
+    background: #F8F9FA !important;
+    border: 1px solid rgba(0, 0, 0, 0.03) !important;
+    border-radius: 14px !important;
+    padding: 10px 8px !important;
+    box-shadow: none !important;
+}
+
+body.theme-pure-light .sales-stat-label {
+    color: #8E8E93 !important;
+    font-size: 0.65rem !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.4px !important;
+    text-transform: uppercase !important;
+    margin-bottom: 4px !important;
+}
+
+body.theme-pure-light .sales-stat-val {
+    color: #000000 !important;
+    font-weight: 700 !important;
+    font-size: 0.92rem !important;
+    font-family: var(--font-mono) !important;
+}
+
+body.theme-pure-light .sales-stat-cell.pl.pos {
+    background: rgba(52, 199, 89, 0.08) !important;
+    border-color: rgba(52, 199, 89, 0.2) !important;
+}
+
+body.theme-pure-light .sales-stat-cell.pl.neg {
+    background: rgba(255, 59, 48, 0.08) !important;
+    border-color: rgba(255, 59, 48, 0.2) !important;
+}
+
+body.theme-pure-light .sales-stat-val.txt-neon-green,
+body.theme-pure-light .sales-stat-pct.txt-neon-green {
+    color: #248A3D !important;
+}
+
+body.theme-pure-light .sales-stat-val.txt-neon-red,
+body.theme-pure-light .sales-stat-pct.txt-neon-red {
+    color: #D70015 !important;
+}
+
+/* What-If Banner (Apple Tinted Callout) */
+body.theme-pure-light .sales-what-if-banner,
+body.theme-pure-light.layout-bento .sales-what-if-banner {
+    margin: 0 16px 14px 16px !important;
+    border-radius: 12px !important;
+    border: 1px solid transparent !important;
+    padding: 10px 14px !important;
+    font-size: 0.78rem !important;
+    line-height: 1.45 !important;
+    display: flex !important;
+    gap: 10px !important;
+    align-items: center !important;
+}
+
+body.theme-pure-light .sales-what-if-banner.positive {
+    background: rgba(52, 199, 89, 0.08) !important;
+    border-color: rgba(52, 199, 89, 0.18) !important;
+    color: #144917 !important;
+}
+
+body.theme-pure-light .sales-what-if-banner.positive .sales-what-if-icon {
+    color: #34C759 !important;
+    font-size: 1.2rem !important;
+}
+
+body.theme-pure-light .sales-what-if-banner.positive strong {
+    color: #0b360e !important;
+}
+
+body.theme-pure-light .sales-what-if-banner.negative {
+    background: rgba(255, 59, 48, 0.06) !important;
+    border-color: rgba(255, 59, 48, 0.18) !important;
+    color: #821818 !important;
+}
+
+body.theme-pure-light .sales-what-if-banner.negative .sales-what-if-icon {
+    color: #FF3B30 !important;
+    font-size: 1.2rem !important;
+}
+
+body.theme-pure-light .sales-what-if-banner.negative strong {
+    color: #5c0f0f !important;
+}
+
+body.theme-pure-light .sales-what-if-banner.neutral {
+    background: #F2F2F7 !important;
+    border-color: rgba(0, 0, 0, 0.05) !important;
+    color: #475569 !important;
+}
+
+body.theme-pure-light .sales-what-if-banner.neutral .sales-what-if-icon {
+    color: #8E8E93 !important;
+    font-size: 1.2rem !important;
+}
+
+/* Empty State */
+body.theme-pure-light #tab-sales .empty-state {
+    background: #FFFFFF !important;
+    border: 1px dashed rgba(0, 0, 0, 0.12) !important;
+    border-radius: 20px !important;
+    padding: 36px 20px !important;
+    color: #8E8E93 !important;
+    text-align: center !important;
+}
+
+body.theme-pure-light #tab-sales .empty-state i {
+    color: #007AFF !important;
+    font-size: 2.2rem !important;
+    opacity: 0.7 !important;
+    margin-bottom: 8px !important;
+}
+
+body.theme-pure-light #tab-sales .empty-state p {
+    color: #636366 !important;
+    font-weight: 600 !important;
+}
+
+/* Mobile Responsiveness for Sales in Apple Clean Light */
+@media (max-width: 480px) {
+    body.theme-pure-light #tab-sales .hero-stats-grid .stat-item:nth-child(1) #salesTotalRevenue,
+    body.theme-pure-light.layout-bento #tab-sales .hero-stats-grid .stat-item:nth-child(1) #salesTotalRevenue {
+        font-size: 26px !important;
+    }
+
+    body.theme-pure-light #topSalesPodium,
+    body.theme-pure-light.layout-bento #topSalesPodium {
+        gap: 8px !important;
+    }
+
+    body.theme-pure-light .podium-card-item,
+    body.theme-pure-light.layout-bento .podium-card-item {
+        padding: 12px 6px !important;
+    }
+
+    body.theme-pure-light .podium-symbol,
+    body.theme-pure-light.layout-bento .podium-symbol {
+        font-size: 0.92rem !important;
+    }
+
+    body.theme-pure-light .podium-gain,
+    body.theme-pure-light.layout-bento .podium-gain {
+        font-size: 0.74rem !important;
+        padding: 2px 4px !important;
+    }
+
+    body.theme-pure-light .sales-stats-row {
+        gap: 6px !important;
+        padding: 12px 10px !important;
+    }
+
+    body.theme-pure-light .sales-stat-cell,
+    body.theme-pure-light.layout-bento .sales-stat-cell {
+        padding: 8px 4px !important;
+    }
+
+    body.theme-pure-light .sales-stat-val {
+        font-size: 0.82rem !important;
+    }
 }
 
 body.theme-pure-light .analytics-card {
