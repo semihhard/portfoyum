@@ -2443,42 +2443,238 @@ renderAll = function() {
 
 let enteredPin = "";
 let isPinSetupMode = false;
+let isPinVisible = false;
+let pinAudioCtx = null;
+
+// Audio & Haptic Feedback Engines
+function playKeyClickSound() {
+    try {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        if (!AudioContext) return;
+        if (!pinAudioCtx) {
+            pinAudioCtx = new AudioContext();
+        }
+        if (pinAudioCtx.state === 'suspended') {
+            pinAudioCtx.resume();
+        }
+        const osc = pinAudioCtx.createOscillator();
+        const gain = pinAudioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(1400, pinAudioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(320, pinAudioCtx.currentTime + 0.025);
+        gain.gain.setValueAtTime(0.045, pinAudioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, pinAudioCtx.currentTime + 0.025);
+        osc.connect(gain);
+        gain.connect(pinAudioCtx.destination);
+        osc.start();
+        osc.stop(pinAudioCtx.currentTime + 0.03);
+    } catch(e) {}
+}
+
+function triggerHaptic(type = 'tap') {
+    if (!navigator.vibrate) return;
+    try {
+        if (type === 'tap') navigator.vibrate(12);
+        else if (type === 'error') navigator.vibrate([40, 50, 40]);
+        else if (type === 'success') navigator.vibrate([25, 40, 30]);
+    } catch(e) {}
+}
+
+function updatePinGreeting() {
+    const el = document.getElementById("pinGreetingText");
+    if (!el) return;
+    const hour = new Date().getHours();
+    let msg = "Hoş Geldiniz, Yatırımcı";
+    if (hour >= 5 && hour < 12) msg = "Günaydın, Yatırımcı";
+    else if (hour >= 12 && hour < 18) msg = "İyi günler, Yatırımcı";
+    else if (hour >= 18 && hour < 23) msg = "İyi akşamlar, Yatırımcı";
+    else msg = "İyi geceler, Yatırımcı";
+    el.textContent = msg;
+}
 
 function openPinModal() {
-    document.getElementById("pinModal").classList.add("active");
+    const modal = document.getElementById("pinModal");
+    if (modal) modal.classList.add("active");
+
+    // Clear digit boxes
+    document.querySelectorAll(".pin-digit-box").forEach(b => {
+        b.value = "";
+        b.classList.remove("filled");
+        b.type = "password";
+    });
+    isPinVisible = false;
+    const btnEye = document.getElementById("btnTogglePinVisibility");
+    if (btnEye) btnEye.innerHTML = '<i class="fa-solid fa-eye"></i> Rakamları Göster';
+
+    // Update banner & active actions
+    const icon = document.getElementById("pinStatusIcon");
+    const title = document.getElementById("pinStatusTitle");
+    const desc = document.getElementById("pinStatusDesc");
+    const badge = document.getElementById("pinStatusBadge");
+    const activeActions = document.getElementById("pinActiveActions");
+
     if (appState.pin) {
-        document.getElementById("removePinBtn").style.display = "block";
+        if (icon) {
+            icon.className = "pin-status-icon active";
+            icon.innerHTML = '<i class="fa-solid fa-shield-halved"></i>';
+        }
+        if (title) title.textContent = "PIN Koruması Aktif";
+        if (desc) desc.textContent = "Uygulamanız 4 haneli PIN kodu ile güvence altında";
+        if (badge) {
+            badge.className = "pin-badge active";
+            badge.textContent = "Aktif";
+        }
+        if (activeActions) activeActions.style.display = "block";
     } else {
-        document.getElementById("removePinBtn").style.display = "none";
+        if (icon) {
+            icon.className = "pin-status-icon inactive";
+            icon.innerHTML = '<i class="fa-solid fa-lock-open"></i>';
+        }
+        if (title) title.textContent = "PIN Koruması Pasif";
+        if (desc) desc.textContent = "Portföyünüzü korumak için 4 haneli PIN belirleyin";
+        if (badge) {
+            badge.className = "pin-badge inactive";
+            badge.textContent = "Pasif";
+        }
+        if (activeActions) activeActions.style.display = "none";
     }
+
     updateBiometricButtonState();
+
+    // Focus first box
+    setTimeout(() => {
+        const firstBox = document.querySelector('.pin-digit-box[data-step="new"][data-index="0"]');
+        if (firstBox) firstBox.focus();
+    }, 200);
 }
 
 function closePinModal() {
-    document.getElementById("pinModal").classList.remove("active");
-    document.getElementById("newPinInput").value = "";
+    const modal = document.getElementById("pinModal");
+    if (modal) modal.classList.remove("active");
 }
 
-function savePin() {
-    const p = document.getElementById("newPinInput").value;
-    if (p.length === 4) {
-        appState.pin = p;
-        saveData();
-        closePinModal();
-        alert("PIN başarıyla kaydedildi! Bir sonraki girişinizde sorulacaktır.");
-    } else {
-        alert("Lütfen 4 haneli bir PIN girin.");
+function togglePinVisibility() {
+    isPinVisible = !isPinVisible;
+    const boxes = document.querySelectorAll(".pin-digit-box");
+    const btn = document.getElementById("btnTogglePinVisibility");
+
+    boxes.forEach(box => {
+        box.type = isPinVisible ? "text" : "password";
+    });
+
+    if (btn) {
+        btn.innerHTML = isPinVisible 
+            ? '<i class="fa-solid fa-eye-slash"></i> Gizle' 
+            : '<i class="fa-solid fa-eye"></i> Rakamları Göster';
     }
 }
 
+function setupSegmentedPinInputs() {
+    const boxes = document.querySelectorAll(".pin-digit-box");
+    boxes.forEach((input) => {
+        input.addEventListener("input", (e) => {
+            const val = e.target.value.replace(/[^0-9]/g, '');
+            e.target.value = val ? val.slice(-1) : '';
+            if (val) {
+                e.target.classList.add("filled");
+                const nextIndex = parseInt(e.target.getAttribute("data-index")) + 1;
+                const step = e.target.getAttribute("data-step");
+                const nextBox = document.querySelector(`.pin-digit-box[data-step="${step}"][data-index="${nextIndex}"]`);
+                if (nextBox) {
+                    nextBox.focus();
+                } else if (step === "new") {
+                    // move to confirm step first box
+                    const firstConfirm = document.querySelector('.pin-digit-box[data-step="confirm"][data-index="0"]');
+                    if (firstConfirm) firstConfirm.focus();
+                }
+            } else {
+                e.target.classList.remove("filled");
+            }
+        });
+
+        input.addEventListener("keydown", (e) => {
+            if (e.key === "Backspace" && !e.target.value) {
+                const prevIndex = parseInt(e.target.getAttribute("data-index")) - 1;
+                const step = e.target.getAttribute("data-step");
+                const prevBox = document.querySelector(`.pin-digit-box[data-step="${step}"][data-index="${prevIndex}"]`);
+                if (prevBox) {
+                    prevBox.focus();
+                    prevBox.value = "";
+                    prevBox.classList.remove("filled");
+                }
+            }
+        });
+
+        input.addEventListener("paste", (e) => {
+            e.preventDefault();
+            const text = (e.clipboardData || window.clipboardData).getData('text').replace(/[^0-9]/g, '');
+            if (!text) return;
+            const step = e.target.getAttribute("data-step");
+            const stepBoxes = document.querySelectorAll(`.pin-digit-box[data-step="${step}"]`);
+            text.split('').slice(0, 4).forEach((char, idx) => {
+                if (stepBoxes[idx]) {
+                    stepBoxes[idx].value = char;
+                    stepBoxes[idx].classList.add("filled");
+                }
+            });
+            if (step === "new") {
+                const firstConfirm = document.querySelector('.pin-digit-box[data-step="confirm"][data-index="0"]');
+                if (firstConfirm) firstConfirm.focus();
+            }
+        });
+    });
+}
+
+function savePinFromBoxes() {
+    const newBoxes = document.querySelectorAll('.pin-digit-box[data-step="new"]');
+    const confirmBoxes = document.querySelectorAll('.pin-digit-box[data-step="confirm"]');
+    
+    let p1 = "";
+    newBoxes.forEach(b => p1 += b.value.trim());
+
+    let p2 = "";
+    confirmBoxes.forEach(b => p2 += b.value.trim());
+
+    if (p1.length !== 4) {
+        alert("Lütfen 4 haneli yeni bir PIN kodu girin.");
+        return;
+    }
+
+    if (p1 !== p2) {
+        alert("Girdiğiniz PIN kodları birbiriyle eşleşmiyor! Lütfen PIN tekrarını kontrol edin.");
+        confirmBoxes.forEach(b => {
+            b.value = "";
+            b.classList.remove("filled");
+        });
+        if (confirmBoxes[0]) confirmBoxes[0].focus();
+        return;
+    }
+
+    appState.pin = p1;
+    saveData();
+    closePinModal();
+    alert("PIN kodu başarıyla kaydedildi! Bir sonraki girişinizde veya 'Şimdi Kilitle'ye bastığınızda sorulacaktır.");
+}
+
+const savePin = savePinFromBoxes;
+
+function lockAppNow() {
+    if (!appState.pin) {
+        alert("Önce 4 haneli bir PIN belirlemelisiniz.");
+        return;
+    }
+    closePinModal();
+    initPinLock();
+}
+
 function removePin() {
-    if(confirm("PIN kodunu kaldırmak istediğinize emin misiniz?")) {
+    if (confirm("PIN kodunu kaldırmak istediğinize emin misiniz? Portföy kilit koruması devre dışı bırakılacak.")) {
         appState.pin = null;
         appState.biometricEnabled = false;
         appState.biometricCredentialId = null;
         saveData();
         closePinModal();
-        alert("PIN ve Biyometrik Giriş kaldırıldı.");
+        alert("PIN kilidi ve biyometrik giriş kaldırıldı.");
     }
 }
 
@@ -2587,10 +2783,21 @@ async function authenticateBiometric() {
         
         if (assertion) {
             // Success! Unlock the app.
-            document.getElementById("pinLockOverlay").style.display = "none";
-            enteredPin = "";
-            updatePinDots();
-            renderAll();
+            triggerHaptic('success');
+            const overlay = document.getElementById("pinLockOverlay");
+            if (overlay) {
+                overlay.style.opacity = "0";
+                overlay.style.transform = "scale(1.04)";
+                overlay.style.transition = "all 0.35s cubic-bezier(0.4, 0, 0.2, 1)";
+                setTimeout(() => {
+                    overlay.style.display = "none";
+                    overlay.style.opacity = "1";
+                    overlay.style.transform = "scale(1)";
+                    enteredPin = "";
+                    updatePinDots();
+                    renderAll();
+                }, 350);
+            }
         }
     } catch (err) {
         console.error("Biometric auth failed:", err);
@@ -2617,16 +2824,21 @@ function updateBiometricButtonState() {
 
 function initPinLock() {
     if (appState.pin) {
+        updatePinGreeting();
+        enteredPin = "";
+        updatePinDots();
         const overlay = document.getElementById("pinLockOverlay");
         if (overlay) {
             overlay.style.display = "flex";
             overlay.style.opacity = "1";
+            overlay.style.transform = "scale(1)";
         }
         
         const bioBtn = document.getElementById("btnKeypadBiometric");
         if (bioBtn) {
             if (appState.biometricEnabled) {
                 bioBtn.style.display = "flex";
+                bioBtn.style.opacity = "1";
                 // Auto-trigger biometric on load
                 setTimeout(() => {
                     authenticateBiometric();
@@ -2661,10 +2873,12 @@ function updatePinDots() {
 function pressPin(num) {
     if (enteredPin.length < 4) {
         enteredPin += num.toString();
+        playKeyClickSound();
+        triggerHaptic('tap');
         updatePinDots();
         
         if (enteredPin.length === 4) {
-            setTimeout(verifyPin, 180);
+            setTimeout(verifyPin, 160);
         }
     }
 }
@@ -2672,6 +2886,8 @@ function pressPin(num) {
 function deletePin() {
     if (enteredPin.length > 0) {
         enteredPin = enteredPin.slice(0, -1);
+        playKeyClickSound();
+        triggerHaptic('tap');
         updatePinDots();
     }
 }
@@ -2679,6 +2895,7 @@ function deletePin() {
 function verifyPin() {
     if (enteredPin === appState.pin) {
         // Unlock with smooth emerald green transformation and holographic burst
+        triggerHaptic('success');
         const dots = document.querySelectorAll("#pinDots .pin-dot");
         dots.forEach(d => d.classList.add("success"));
 
@@ -2692,7 +2909,7 @@ function verifyPin() {
             const overlay = document.getElementById("pinLockOverlay");
             if (overlay) {
                 overlay.style.opacity = "0";
-                overlay.style.transform = "scale(1.05)";
+                overlay.style.transform = "scale(1.04)";
                 overlay.style.transition = "all 0.35s cubic-bezier(0.4, 0, 0.2, 1)";
                 setTimeout(() => {
                     overlay.style.display = "none";
@@ -2707,11 +2924,18 @@ function verifyPin() {
                     renderAll();
                 }, 350);
             }
-        }, 300);
+        }, 280);
     } else {
         // Wrong PIN: shake & turn red with glitch effect
+        triggerHaptic('error');
         const dots = document.querySelectorAll("#pinDots .pin-dot");
         dots.forEach(d => d.classList.add("error"));
+
+        const shield = document.getElementById("pinShieldIcon");
+        if (shield) {
+            shield.classList.add("error");
+            shield.style.animation = "shake 0.45s cubic-bezier(0.36, 0.07, 0.19, 0.97) both";
+        }
 
         const errorMsg = document.getElementById("pinErrorMessage");
         if (errorMsg) errorMsg.style.display = "flex";
@@ -2721,34 +2945,73 @@ function verifyPin() {
             dotsContainer.style.animation = "shake 0.45s cubic-bezier(0.36, 0.07, 0.19, 0.97) both";
         }
 
-        const shield = document.getElementById("pinShieldIcon");
-        if (shield) {
-            shield.style.animation = "shake 0.45s cubic-bezier(0.36, 0.07, 0.19, 0.97) both";
-        }
-
         setTimeout(() => {
             if (dotsContainer) dotsContainer.style.animation = "";
-            if (shield) shield.style.animation = "shieldFloat 4s ease-in-out infinite";
+            if (shield) {
+                shield.style.animation = "shieldFloat 4s ease-in-out infinite";
+                shield.classList.remove("error");
+            }
             dots.forEach(d => d.classList.remove("error"));
             enteredPin = "";
             updatePinDots();
-        }, 600);
+        }, 650);
     }
 }
 
-function promptForgotPin() {
-    if (confirm("PIN kodunuzu unuttuysanız sıfırlamak istiyor musunuz?\n\nGüvenlik nedeniyle PIN kilidi kaldırılacak ve portföyünüze doğrudan erişebileceksiniz.")) {
-        delete appState.pin;
-        delete appState.biometricEnabled;
-        saveData();
-        const overlay = document.getElementById("pinLockOverlay");
-        if (overlay) overlay.style.display = "none";
-        enteredPin = "";
-        updatePinDots();
-        renderAll();
-        alert("PIN kodu başarıyla sıfırlandı. İstediğiniz zaman Ayarlar menüsünden yeni bir PIN belirleyebilirsiniz.");
-    }
+// Forgot PIN Confirmation Dialog
+function openForgotPinModal() {
+    const m = document.getElementById("modalForgotPinConfirm");
+    if (m) m.style.display = "flex";
 }
+
+function closeForgotPinModal() {
+    const m = document.getElementById("modalForgotPinConfirm");
+    if (m) m.style.display = "none";
+}
+
+function confirmResetPin() {
+    delete appState.pin;
+    delete appState.biometricEnabled;
+    delete appState.biometricCredentialId;
+    saveData();
+    closeForgotPinModal();
+    
+    const overlay = document.getElementById("pinLockOverlay");
+    if (overlay) overlay.style.display = "none";
+    enteredPin = "";
+    updatePinDots();
+    renderAll();
+    alert("PIN kodu başarıyla sıfırlandı. İstediğiniz zaman Güvenlik Ayarlarından yeni bir PIN belirleyebilirsiniz.");
+}
+
+const promptForgotPin = openForgotPinModal;
+
+// Physical Keyboard Listener
+window.addEventListener("keydown", (e) => {
+    const overlay = document.getElementById("pinLockOverlay");
+    if (!overlay || overlay.style.display === "none") return;
+    
+    // Ignore if typing in another input
+    if (e.target && (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA")) return;
+
+    if (e.key >= "0" && e.key <= "9") {
+        e.preventDefault();
+        pressPin(parseInt(e.key));
+        const btn = document.querySelector(`.pin-key[data-pin-key="${e.key}"]`);
+        if (btn) {
+            btn.classList.add("key-pressed");
+            setTimeout(() => btn.classList.remove("key-pressed"), 140);
+        }
+    } else if (e.key === "Backspace" || e.key === "Delete") {
+        e.preventDefault();
+        deletePin();
+        const btn = document.querySelector('.pin-key[data-pin-key="backspace"]');
+        if (btn) {
+            btn.classList.add("key-pressed");
+            setTimeout(() => btn.classList.remove("key-pressed"), 140);
+        }
+    }
+});
 
 // Add shake animation dynamically
 const style = document.createElement('style');
@@ -2760,8 +3023,9 @@ style.textContent = `
 }`;
 document.head.appendChild(style);
 
-// Check PIN on load
+// Check PIN on load & setup inputs
 document.addEventListener("DOMContentLoaded", () => {
+    setupSegmentedPinInputs();
     if (appState.pin) {
         initPinLock();
     }
