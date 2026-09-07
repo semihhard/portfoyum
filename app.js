@@ -3470,33 +3470,35 @@ function closeKapModal() {
     document.getElementById("modalKapDetail").classList.remove("active");
 }
 
-// --- iOS Safari Gesture & Double-Tap Zoom Prevention ---
+/// --- Screen Stability, Gesture & Zoom Prevention (Non-Destructive) ---
 (function initTouchZoomPrevention() {
-    // Prevent pinch-to-zoom gestures
+    // 1. Prevent iOS Safari multi-touch gestures (pinch-to-zoom / rotate)
     document.addEventListener('gesturestart', function (e) {
         e.preventDefault();
-    });
+    }, { passive: false });
     document.addEventListener('gesturechange', function (e) {
         e.preventDefault();
-    });
+    }, { passive: false });
     document.addEventListener('gestureend', function (e) {
         e.preventDefault();
-    });
-
-    // Prevent double-tap to zoom
-    let lastTouchTime = 0;
-    document.addEventListener('touchend', function (event) {
-        const now = Date.now();
-        if (now - lastTouchTime <= 300) {
-            event.preventDefault();
-        }
-        lastTouchTime = now;
     }, { passive: false });
 
-    // Prevent dblclick zoom
+    // 2. Prevent multi-finger pinch zoom on touch devices without blocking single-finger taps
+    document.addEventListener('touchstart', function (e) {
+        if (e.touches && e.touches.length > 1) {
+            e.preventDefault();
+        }
+    }, { passive: false });
+
+    // 3. Prevent trackpad / mouse pinch-to-zoom (Ctrl + Wheel)
+    window.addEventListener('wheel', function (e) {
+        if (e.ctrlKey) {
+            e.preventDefault();
+        }
+    }, { passive: false });
+
+    // 4. Prevent desktop dblclick zoom
     document.addEventListener('dblclick', function (e) {
         e.preventDefault();
     }, { passive: false });
 })();
-
-
