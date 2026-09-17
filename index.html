@@ -432,6 +432,9 @@
                         <button class="icon-btn" id="btnRefreshPrices" title="Fiyatları Güncelle">
                             <i class="fa-solid fa-arrows-rotate"></i>
                         </button>
+                        <button class="icon-btn" onclick="openFundAnalysisTab('TI1')" title="TEFAS Fon Analiz Laboratuvarı">
+                            <i class="fa-solid fa-vault" style="color: #38BDF8;"></i>
+                        </button>
                         <button class="icon-btn primary neon-glow" id="btnQuickAdd" title="Varlık / Alım Ekle">
                             <i class="fa-solid fa-plus"></i>
                         </button>
@@ -762,60 +765,291 @@
                 </div>
             </section>
 
-            <!-- TAB 3: PORTFOLIO ANALYTICS -->
+            <!-- TAB 3: PORTFOLIO & FUND ANALYTICS -->
             <section id="tab-analytics" class="tab-page">
                 <div class="page-header">
                     <div>
-                        <div class="badge-online cyan"><i class="fa-solid fa-chart-pie"></i> ANALİZ & ORANLAR</div>
-                        <h1 class="page-title">Portföy Analizi</h1>
+                        <div class="badge-online cyan" id="analyticsHeaderBadge"><i class="fa-solid fa-chart-pie"></i> ANALİZ & RADAR</div>
+                        <h1 class="page-title" id="analyticsHeaderTitle">Portföy Analizi</h1>
                     </div>
                 </div>
 
-                <!-- Bento Mode Quick Insight Modules (Active in layout-bento) -->
-                <div class="analytics-bento-metrics" id="analyticsBentoMetrics">
-                    <div class="bento-box bento-metric-mini">
-                        <div class="bento-box-title" style="margin-bottom: 6px;">
-                            <span class="bento-icon-badge emerald"><i class="fa-solid fa-trophy"></i></span>
-                            <span>LİDER GETİRİ</span>
-                        </div>
-                        <div class="bento-metric-val" id="analyticsTopWinner">---</div>
-                    </div>
-                    <div class="bento-box bento-metric-mini">
-                        <div class="bento-box-title" style="margin-bottom: 6px;">
-                            <span class="bento-icon-badge cyan"><i class="fa-solid fa-shapes"></i></span>
-                            <span>ÇEŞİTLİLİK</span>
-                        </div>
-                        <div class="bento-metric-val" id="analyticsActiveClasses">---</div>
-                    </div>
-                </div>
-
-                <div class="analytics-card ultra-glass-card">
-                    <h3><i class="fa-solid fa-chart-donut"></i> Varlık Dağılımı</h3>
-                    <div class="chart-container">
-                        <canvas id="allocationChart"></canvas>
-                    </div>
-                </div>
-
-                <div class="analytics-card ultra-glass-card">
-                    <h3><i class="fa-solid fa-fire"></i> En Çok Kazandıranlar</h3>
-                    <div id="topPerformersList" class="top-list">
-                        <!-- Dynamic list -->
-                    </div>
-                </div>
-
-                <div class="analytics-card ultra-glass-card mt-4">
-                    <h3><i class="fa-solid fa-file-excel"></i> Veri Yedekleme & Geri Yükleme</h3>
-                    <p style="color:var(--text-secondary); font-size: 0.85rem; margin-bottom: 15px;">Portföyünüzü ve satış geçmişinizi renklendirilmiş, otomatik hesaplamalı ve özel tasarımlı gerçek bir Excel dosyası olarak indirebilir veya daha önce indirdiğiniz dosyayı yükleyerek verilerinizi geri getirebilirsiniz.</p>
-                    
-                    <div style="display: flex; gap: 10px;">
-                        <button class="btn-primary neon-glow" onclick="exportToExcel()" style="flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px; background: linear-gradient(135deg, #10B981, #059669);">
-                            <i class="fa-solid fa-download"></i> İndir
+                <!-- Sub-Navigation Segment (Portföy vs TEFAS Fon Analizi) -->
+                <div class="analytics-segment-wrapper">
+                    <div class="analytics-nav-segment">
+                        <button class="nav-segment-btn active" id="btnSubnavPortfolio" onclick="switchAnalyticsSubView('portfolio')" type="button">
+                            <i class="fa-solid fa-chart-pie"></i>
+                            <span>Portföyüm</span>
                         </button>
+                        <button class="nav-segment-btn" id="btnSubnavFund" onclick="switchAnalyticsSubView('fund')" type="button">
+                            <i class="fa-solid fa-vault"></i>
+                            <span>TEFAS Fon Analizi</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- SUBVIEW 1: PORTFOLIO ANALYTICS -->
+                <div id="subviewPortfolioAnalytics">
+                    <!-- Bento Mode Quick Insight Modules (Active in layout-bento) -->
+                    <div class="analytics-bento-metrics" id="analyticsBentoMetrics">
+                        <div class="bento-box bento-metric-mini">
+                            <div class="bento-box-title" style="margin-bottom: 6px;">
+                                <span class="bento-icon-badge emerald"><i class="fa-solid fa-trophy"></i></span>
+                                <span>LİDER GETİRİ</span>
+                            </div>
+                            <div class="bento-metric-val" id="analyticsTopWinner">---</div>
+                        </div>
+                        <div class="bento-box bento-metric-mini">
+                            <div class="bento-box-title" style="margin-bottom: 6px;">
+                                <span class="bento-icon-badge cyan"><i class="fa-solid fa-shapes"></i></span>
+                                <span>ÇEŞİTLİLİK</span>
+                            </div>
+                            <div class="bento-metric-val" id="analyticsActiveClasses">---</div>
+                        </div>
+                    </div>
+
+                    <div class="analytics-card ultra-glass-card">
+                        <h3><i class="fa-solid fa-chart-donut"></i> Varlık Dağılımı</h3>
+                        <div class="chart-container">
+                            <canvas id="allocationChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="analytics-card ultra-glass-card">
+                        <h3><i class="fa-solid fa-fire"></i> En Çok Kazandıranlar</h3>
+                        <div id="topPerformersList" class="top-list">
+                            <!-- Dynamic list -->
+                        </div>
+                    </div>
+
+                    <div class="analytics-card ultra-glass-card mt-4">
+                        <h3><i class="fa-solid fa-file-excel"></i> Veri Yedekleme & Geri Yükleme</h3>
+                        <p style="color:var(--text-secondary); font-size: 0.85rem; margin-bottom: 15px;">Portföyünüzü ve satış geçmişinizi renklendirilmiş, otomatik hesaplamalı ve özel tasarımlı gerçek bir Excel dosyası olarak indirebilir veya daha önce indirdiğiniz dosyayı yükleyerek verilerinizi geri getirebilirsiniz.</p>
                         
-                        <input type="file" id="excelUploadInput" accept=".xlsx" style="display: none;" onchange="importFromExcel(event)">
-                        <button class="btn-primary" onclick="document.getElementById('excelUploadInput').click()" style="flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);">
-                            <i class="fa-solid fa-upload"></i> Geri Yükle
-                        </button>
+                        <div style="display: flex; gap: 10px;">
+                            <button class="btn-primary neon-glow" onclick="exportToExcel()" style="flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px; background: linear-gradient(135deg, #10B981, #059669);">
+                                <i class="fa-solid fa-download"></i> İndir
+                            </button>
+                            
+                            <input type="file" id="excelUploadInput" accept=".xlsx" style="display: none;" onchange="importFromExcel(event)">
+                            <button class="btn-primary" onclick="document.getElementById('excelUploadInput').click()" style="flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);">
+                                <i class="fa-solid fa-upload"></i> Geri Yükle
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SUBVIEW 2: TEFAS FUND ANALYSIS LABORATORY -->
+                <div id="subviewFundAnalytics" style="display: none;">
+                    <!-- Fund Search & Quick Tags Card -->
+                    <div class="fund-search-card ultra-glass-card">
+                        <div class="fund-search-header">
+                            <div class="fund-search-title">
+                                <i class="fa-solid fa-magnifying-glass-chart" style="color: #38BDF8;"></i>
+                                <span>TEFAS Fon Sorgulama & Analiz</span>
+                            </div>
+                            <span class="fund-badge-tefas"><i class="fa-solid fa-bolt"></i> Canlı TEFAS Verisi</span>
+                        </div>
+                        <p class="fund-search-desc">Portföyünüze eklemeden Türkiye Elektronik Fon Alım Satım Platformu'ndaki tüm fonların geçmiş fiyatını, yatırımcı sayısını ve nakit akışını anlık inceleyin.</p>
+
+                        <div class="fund-input-wrapper">
+                            <div class="fund-input-box">
+                                <i class="fa-solid fa-magnifying-glass"></i>
+                                <input type="text" id="tefasFundSearchInput" placeholder="Fon Kodu veya Fon Adı (Örn: TI1, AFT, MAC, TCD...)" autocomplete="off" autocapitalize="characters">
+                                <button type="button" class="fund-input-clear-btn" id="btnClearFundSearch" onclick="clearFundSearch()" style="display: none;">
+                                    <i class="fa-solid fa-xmark"></i>
+                                </button>
+                            </div>
+                            <button class="btn primary neon-glow fund-search-submit-btn" onclick="triggerFundAnalysisSearch()" id="btnSubmitFundSearch">
+                                <span>Analiz Et</span>
+                                <i class="fa-solid fa-arrow-right"></i>
+                            </button>
+                        </div>
+
+                        <!-- Quick Popular Funds Tags -->
+                        <div class="fund-popular-tags">
+                            <span class="tags-label"><i class="fa-solid fa-fire" style="color: #F59E0B;"></i> Popüler:</span>
+                            <div class="tags-scroll">
+                                <button type="button" class="fund-tag-pill active" data-fon="TI1" onclick="selectQuickFund('TI1')">TI1 <small>İş Para Piy.</small></button>
+                                <button type="button" class="fund-tag-pill" data-fon="AFT" onclick="selectQuickFund('AFT')">AFT <small>Ak Teknoloji</small></button>
+                                <button type="button" class="fund-tag-pill" data-fon="MAC" onclick="selectQuickFund('MAC')">MAC <small>Marmara Hisse</small></button>
+                                <button type="button" class="fund-tag-pill" data-fon="IIH" onclick="selectQuickFund('IIH')">IIH <small>İst. Portföy</small></button>
+                                <button type="button" class="fund-tag-pill" data-fon="TCD" onclick="selectQuickFund('TCD')">TCD <small>Tacirler Değ.</small></button>
+                                <button type="button" class="fund-tag-pill" data-fon="BIO" onclick="selectQuickFund('BIO')">BIO <small>Ak Temettü</small></button>
+                                <button type="button" class="fund-tag-pill" data-fon="GTA" onclick="selectQuickFund('GTA')">GTA <small>Garanti Altın</small></button>
+                                <button type="button" class="fund-tag-pill" data-fon="YAS" onclick="selectQuickFund('YAS')">YAS <small>YK Koç Holding</small></button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Timeframe Period Selector -->
+                    <div class="fund-period-bar">
+                        <span class="period-title"><i class="fa-solid fa-clock-rotate-left"></i> Zaman Aralığı:</span>
+                        <div class="fund-period-pills">
+                            <button class="period-btn" data-days="7" onclick="setFundAnalysisPeriod(7)">1 Hafta</button>
+                            <button class="period-btn active" data-days="30" onclick="setFundAnalysisPeriod(30)">1 Ay</button>
+                            <button class="period-btn" data-days="90" onclick="setFundAnalysisPeriod(90)">3 Ay</button>
+                            <button class="period-btn" data-days="180" onclick="setFundAnalysisPeriod(180)">6 Ay</button>
+                            <button class="period-btn" data-days="365" onclick="setFundAnalysisPeriod(365)">1 Yıl</button>
+                        </div>
+                    </div>
+
+                    <!-- Fund Loading Indicator Overlay -->
+                    <div class="fund-loading-state" id="fundLoadingState" style="display: none;">
+                        <i class="fa-solid fa-arrows-rotate fa-spin"></i>
+                        <p id="fundLoadingText">TEFAS Fon Verileri Yükleniyor...</p>
+                    </div>
+
+                    <!-- Fund Error / Not Found Message -->
+                    <div class="fund-error-card" id="fundErrorCard" style="display: none;">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                        <h4 id="fundErrorTitle">Fon Verisi Bulunamadı</h4>
+                        <p id="fundErrorDesc">Girdiğiniz fon koduna ait TEFAS verisi getirilemedi. Lütfen fon kodunu kontrol edin.</p>
+                    </div>
+
+                    <!-- Active Fund Analysis Content -->
+                    <div id="fundAnalysisResultArea">
+                        <!-- Fund Hero Identity Card -->
+                        <div class="fund-hero-card ultra-glass-card">
+                            <div class="fund-hero-left">
+                                <div class="fund-symbol-badge" id="fundHeroCode">TI1</div>
+                                <div class="fund-info-group">
+                                    <h2 class="fund-hero-name" id="fundHeroName">İŞ PORTFÖY PARA PİYASASI (TL) FONU</h2>
+                                    <div class="fund-meta-badges">
+                                        <span class="fund-meta-pill" id="fundHeroKind"><i class="fa-solid fa-tag"></i> Yatırım Fonu</span>
+                                        <span class="fund-meta-pill live" id="fundHeroDate"><i class="fa-solid fa-calendar"></i> 17.09.2026</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="fund-hero-right">
+                                <button class="btn-quick-add-fund" onclick="prefillAddModalWithFund()" title="İsterseniz bu fonu portföyünüze ekleyin">
+                                    <i class="fa-solid fa-cart-plus"></i>
+                                    <span>Portföye Ekle</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- 4 KPI Metrics Grid -->
+                        <div class="fund-kpi-grid">
+                            <!-- KPI 1: Fiyat -->
+                            <div class="fund-kpi-card ultra-glass-card">
+                                <div class="kpi-header">
+                                    <span class="kpi-title"><i class="fa-solid fa-coins" style="color: #38BDF8;"></i> Son Fon Fiyatı</span>
+                                    <span class="kpi-badge" id="fundKpiPriceBadge">Günlük</span>
+                                </div>
+                                <div class="kpi-main-val" id="fundKpiPrice">₺0,00</div>
+                                <div class="kpi-footer-row">
+                                    <span class="kpi-sub-text" id="fundKpiDailyDiff">Dün: ₺0,00</span>
+                                    <span class="kpi-pct-badge" id="fundKpiPeriodReturn">%0,00</span>
+                                </div>
+                            </div>
+
+                            <!-- KPI 2: Yatırımcı Sayısı -->
+                            <div class="fund-kpi-card ultra-glass-card">
+                                <div class="kpi-header">
+                                    <span class="kpi-title"><i class="fa-solid fa-users" style="color: #C084FC;"></i> Yatırımcı Sayısı</span>
+                                    <span class="kpi-badge purple" id="fundKpiInvestorBadge">Kişi</span>
+                                </div>
+                                <div class="kpi-main-val" id="fundKpiInvestorCount">0</div>
+                                <div class="kpi-footer-row">
+                                    <span class="kpi-sub-text" id="fundKpiInvestorDiff">Dönemlik Değişim</span>
+                                    <span class="kpi-pct-badge" id="fundKpiInvestorPct">%0,00</span>
+                                </div>
+                            </div>
+
+                            <!-- KPI 3: Nakit Girdisi / Çıktısı -->
+                            <div class="fund-kpi-card ultra-glass-card">
+                                <div class="kpi-header">
+                                    <span class="kpi-title"><i class="fa-solid fa-money-bill-transfer" style="color: #10B981;"></i> Net Nakit Akışı</span>
+                                    <span class="kpi-badge green" id="fundKpiFlowType">Net Giriş</span>
+                                </div>
+                                <div class="kpi-main-val" id="fundKpiCashFlow">₺0,00</div>
+                                <div class="kpi-footer-row">
+                                    <span class="kpi-sub-text" id="fundKpiDailyAvgFlow">Günlük Ort: ₺0,00</span>
+                                    <span class="kpi-pct-badge" id="fundKpiFlowDirection">Giriş</span>
+                                </div>
+                            </div>
+
+                            <!-- KPI 4: Portföy Büyüklüğü & Pay Sayısı -->
+                            <div class="fund-kpi-card ultra-glass-card">
+                                <div class="kpi-header">
+                                    <span class="kpi-title"><i class="fa-solid fa-vault" style="color: #F59E0B;"></i> Fon Büyüklüğü (AUM)</span>
+                                    <span class="kpi-badge amber">Toplam</span>
+                                </div>
+                                <div class="kpi-main-val" id="fundKpiPortfolioSize">₺0,00</div>
+                                <div class="kpi-footer-row">
+                                    <span class="kpi-sub-text" id="fundKpiSharesCount">Pay: 0 Adet</span>
+                                    <span class="kpi-pct-badge neut" id="fundKpiSharesDiff">0 Pay</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Charts Section -->
+                        <div class="fund-charts-wrapper">
+                            <!-- Chart 1: Price & Investor Count Dual Axis -->
+                            <div class="analytics-card ultra-glass-card">
+                                <div class="chart-header-row">
+                                    <div>
+                                        <h3><i class="fa-solid fa-chart-line" style="color: #38BDF8;"></i> Fiyat ve Yatırımcı Sayısı Dinamiği</h3>
+                                        <p class="chart-subtitle">Sol eksen: Fon birim fiyatı (₺), Sağ eksen: Fon yatırımcı kişi sayısı</p>
+                                    </div>
+                                    <div class="chart-legend-custom">
+                                        <span class="leg-item cyan"><span class="leg-dot"></span> Fiyat (₺)</span>
+                                        <span class="leg-item purple"><span class="leg-dot"></span> Yatırımcı (Kişi)</span>
+                                    </div>
+                                </div>
+                                <div class="chart-container fund-chart-container">
+                                    <canvas id="fundPriceInvestorChart"></canvas>
+                                </div>
+                            </div>
+
+                            <!-- Chart 2: Daily Net Cash Inflow / Outflow -->
+                            <div class="analytics-card ultra-glass-card">
+                                <div class="chart-header-row">
+                                    <div>
+                                        <h3><i class="fa-solid fa-money-bill-transfer" style="color: #10B981;"></i> Günlük Net Nakit Girdisi / Çıktısı (Para Akışı)</h3>
+                                        <p class="chart-subtitle">Pozitif yeşil sütunlar fona para girişini (katılma payı ihracı), kırmızı sütunlar fon çıkışını (pay itfası) gösterir</p>
+                                    </div>
+                                    <div class="chart-legend-custom">
+                                        <span class="leg-item green"><span class="leg-dot"></span> Para Girişi (+)</span>
+                                        <span class="leg-item red"><span class="leg-dot"></span> Para Çıkışı (-)</span>
+                                    </div>
+                                </div>
+                                <div class="chart-container fund-chart-container">
+                                    <canvas id="fundCashFlowChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Historical Data Breakdown Table -->
+                        <div class="analytics-card ultra-glass-card fund-table-card">
+                            <div class="table-card-header">
+                                <div>
+                                    <h3><i class="fa-solid fa-table-list" style="color: #38BDF8;"></i> Tarihsel Veri ve Nakit Akış Dökümü</h3>
+                                    <p class="chart-subtitle">İncelenen dönemdeki her işlem gününe ait fiyat, pay ve nakit akış dökümü</p>
+                                </div>
+                                <span class="badge-count" id="fundTableCountBadge">0 Gün</span>
+                            </div>
+
+                            <div class="fund-table-responsive">
+                                <table class="fund-data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Tarih</th>
+                                            <th style="text-align: right;">Birim Fiyat</th>
+                                            <th style="text-align: right;">Günlük Fark</th>
+                                            <th style="text-align: right;">Yatırımcı Sayısı</th>
+                                            <th style="text-align: right;">Yatırımcı Değişimi</th>
+                                            <th style="text-align: right;">Tedavüldeki Pay</th>
+                                            <th style="text-align: right;">Net Nakit Akışı</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="fundHistoryTableBody">
+                                        <!-- Rendered dynamically -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </section>

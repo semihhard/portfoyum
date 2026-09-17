@@ -13,6 +13,107 @@ export default {
 
     try {
       const url = new URL(request.url);
+      const fonCode = (url.searchParams.get("fon") || url.searchParams.get("tefas") || "").trim().toUpperCase();
+
+      if (fonCode) {
+        const days = Math.min(365, Math.max(5, parseInt(url.searchParams.get("days") || "30", 10)));
+        const kind = (url.searchParams.get("kind") || "YAT").trim().toUpperCase();
+        const TEFAS_URL = "https://www.tefas.gov.tr/api/funds/fonGnlBlgSiraliGetir";
+
+        const pad = n => String(n).padStart(2, '0');
+        const dStr = d => '' + d.getFullYear() + pad(d.getMonth()+1) + pad(d.getDate());
+
+        const chunks = [];
+        const now = new Date();
+        let currentEnd = now;
+        const targetStart = new Date(now.getTime() - (days * 86400000));
+
+        while (currentEnd > targetStart) {
+          let currentStart = new Date(currentEnd.getTime() - (27 * 86400000));
+          if (currentStart < targetStart) {
+            currentStart = targetStart;
+          }
+          chunks.push({ start: currentStart, end: currentEnd });
+          currentEnd = new Date(currentStart.getTime() - 86400000);
+          if (chunks.length >= 14) break;
+        }
+
+        async function fetchChunk(st, en) {
+          const body = {
+            fonTipi: kind,
+            fonKodu: fonCode,
+            aramaMetni: null,
+            fonTurKod: null,
+            fonGrubu: null,
+            sfonTurKod: null,
+            fonTurAciklama: null,
+            kurucuKod: null,
+            basTarih: dStr(st),
+            bitTarih: dStr(en),
+            basSira: 1,
+            bitSira: 100000,
+            dil: 'TR',
+            sFonTurKod: '',
+            fonKod: '',
+            fonGrup: '',
+            fonUnvanTip: ''
+          };
+          try {
+            const r = await fetch(TEFAS_URL, {
+              method: "POST",
+              headers: {
+                "Accept": "*/*",
+                "Content-Type": "application/json",
+                "Origin": "https://www.tefas.gov.tr",
+                "Referer": "https://www.tefas.gov.tr/tr/fon-verileri",
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+              },
+              body: JSON.stringify(body)
+            });
+            if (!r.ok) return [];
+            const j = await r.json();
+            return j.resultList || [];
+          } catch(e) {
+            return [];
+          }
+        }
+
+        const merged = [];
+        for (let i = 0; i < chunks.length; i++) {
+          const chunkData = await fetchChunk(chunks[i].start, chunks[i].end);
+          if (chunkData && chunkData.length > 0) {
+            merged.push(...chunkData);
+          }
+          if (chunks.length > 1 && i < chunks.length - 1) {
+            await new Promise(res => setTimeout(res, 150));
+          }
+        }
+
+        const seenDates = new Set();
+        const sorted = [];
+        merged.sort((a, b) => (a.tarih || "").localeCompare(b.tarih || ""));
+        for (const item of merged) {
+          if (item.tarih && !seenDates.has(item.tarih)) {
+            seenDates.add(item.tarih);
+            sorted.push(item);
+          }
+        }
+
+        return new Response(JSON.stringify({
+          ok: true,
+          fon: fonCode,
+          kind,
+          count: sorted.length,
+          data: sorted
+        }), {
+          headers: {
+            "Content-Type": "application/json; charset=utf-8",
+            "Access-Control-Allow-Origin": "*",
+            "Cache-Control": "public, max-age=1800",
+          },
+        });
+      }
+
       const symbol = (url.searchParams.get("symbol") || url.searchParams.get("hisse") || "THYAO").trim().toUpperCase();
 
       const groups = ["XI_29", "UFRS_K", "UFRS"];
