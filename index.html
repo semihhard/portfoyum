@@ -1076,6 +1076,81 @@
                             </div>
                         </div>
 
+                        <!-- Card: Son Varlık Dağılımı ve Portföy Hareketleri (Neleri Aldı / Neleri Sattı) -->
+                        <div class="analytics-card ultra-glass-card fund-portfolio-moves-card" id="fundPortfolioMovesCard">
+                            <div class="moves-card-header">
+                                <div class="moves-title-left">
+                                    <div class="fund-header-icon cyan">
+                                        <i class="fa-solid fa-right-left"></i>
+                                    </div>
+                                    <div>
+                                        <div class="moves-header-title-row">
+                                            <h3>Son Portföy Varlık Dağılımı & Hareketleri</h3>
+                                            <span class="moves-live-pill" id="fundMovesRotationPill">
+                                                <i class="fa-solid fa-arrows-rotate"></i> Net Rotasyon: %0.00
+                                            </span>
+                                        </div>
+                                        <p class="chart-subtitle" id="fundMovesSubtitle">
+                                            Hangi varlıkta ne kadar oran var? Son işlem gününde fon yönetimi neleri aldı, neleri sattı?
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="moves-header-right">
+                                    <span class="moves-date-badge" id="fundMovesDateBadge">
+                                        <i class="fa-solid fa-calendar-days"></i> Son İşlem Seansı
+                                    </span>
+                                </div>
+                            </div>
+
+                            <!-- Bölüm 1: En Son Varlık Dağılımı (Hangi Varlıkta Oran Ne Kadar?) -->
+                            <div class="moves-current-assets-section">
+                                <div class="moves-section-label">
+                                    <i class="fa-solid fa-chart-pie"></i>
+                                    <span>Son Portföy Bileşenleri & Dağılım Oranları (Neler Vardı?)</span>
+                                    <span class="moves-asset-count-badge" id="fundMovesAssetCountBadge">0 Varlık</span>
+                                </div>
+                                <div class="moves-asset-chips-grid" id="fundMovesCurrentAssetChips">
+                                    <!-- Dinamik Varlık Çipleri (Oran %, Tahmini Tutar ₺, Dağılım Çubuğu) -->
+                                </div>
+                            </div>
+
+                            <!-- Bölüm 2: Neleri Aldı / Neleri Sattı? İki Kolonlu Karşılaştırma -->
+                            <div class="moves-dual-columns">
+                                <!-- Sol Kolon: Neleri Aldı / Artırdı -->
+                                <div class="moves-col moves-bought-col">
+                                    <div class="moves-col-header emerald">
+                                        <div class="moves-col-title">
+                                            <i class="fa-solid fa-arrow-trend-up"></i>
+                                            <span>Neleri Aldı / Ağırlığını Artırdı?</span>
+                                        </div>
+                                        <span class="moves-col-badge emerald" id="fundMovesBoughtCount">0 Varlık</span>
+                                    </div>
+                                    <div class="moves-list" id="fundMovesBoughtList">
+                                        <!-- Dinamik Alım Satırları -->
+                                    </div>
+                                </div>
+
+                                <!-- Sağ Kolon: Neleri Sattı / Azalttı -->
+                                <div class="moves-col moves-sold-col">
+                                    <div class="moves-col-header rose">
+                                        <div class="moves-col-title">
+                                            <i class="fa-solid fa-arrow-trend-down"></i>
+                                            <span>Neleri Sattı / Ağırlığını Azalttı?</span>
+                                        </div>
+                                        <span class="moves-col-badge rose" id="fundMovesSoldCount">0 Varlık</span>
+                                    </div>
+                                    <div class="moves-list" id="fundMovesSoldList">
+                                        <!-- Dinamik Satış Satırları -->
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Bölüm 3: Rotasyon Özeti Barı -->
+                            <div class="moves-summary-footer" id="fundMovesSummaryFooter">
+                                <!-- Dinamik Rotasyon Vurguları -->
+                            </div>
+                        </div>
+
                         <!-- Card 3: Günlük Varlık Dağılımı ve Değişim Tablosu -->
                         <div class="analytics-card ultra-glass-card fund-table-card fund-alloc-table-card">
                             <div class="table-card-header">

@@ -1847,6 +1847,250 @@ function renderFundLatestAllocation(allocData, totalAUM = 0) {
     }
 }
 
+// Render Latest Asset Composition & Portfolio Movements (Neleri Aldı / Neleri Sattı)
+function renderFundPortfolioMoves(allocData, totalAUM = 0) {
+    if (!allocData || allocData.length === 0) return;
+
+    const container = document.getElementById("fundPortfolioMovesCard");
+    const chipsContainer = document.getElementById("fundMovesCurrentAssetChips");
+    const assetCountBadge = document.getElementById("fundMovesAssetCountBadge");
+    const boughtList = document.getElementById("fundMovesBoughtList");
+    const soldList = document.getElementById("fundMovesSoldList");
+    const boughtCountBadge = document.getElementById("fundMovesBoughtCount");
+    const soldCountBadge = document.getElementById("fundMovesSoldCount");
+    const rotationPill = document.getElementById("fundMovesRotationPill");
+    const dateBadge = document.getElementById("fundMovesDateBadge");
+    const summaryFooter = document.getElementById("fundMovesSummaryFooter");
+
+    if (!container || !chipsContainer) return;
+
+    // Clean data and sort chronologically
+    const clean = allocData.map(r => {
+        const c = { ...r };
+        delete c.bilFiyat;
+        delete c.bilfiyat;
+        return c;
+    }).sort((a, b) => (a.tarih || '').localeCompare(b.tarih || ''));
+
+    const latestRow = clean[clean.length - 1];
+    const prevRow = clean.length >= 2 ? clean[clean.length - 2] : null;
+
+    const formatDate = dStr => {
+        if (!dStr) return '';
+        const p = dStr.split('-');
+        return p.length === 3 ? `${p[2]}.${p[1]}.${p[0]}` : dStr;
+    };
+
+    if (dateBadge && latestRow.tarih) {
+        if (prevRow && prevRow.tarih) {
+            dateBadge.innerHTML = `<i class="fa-solid fa-clock-rotate-left"></i> ${formatDate(prevRow.tarih)} ➔ ${formatDate(latestRow.tarih)}`;
+        } else {
+            dateBadge.innerHTML = `<i class="fa-regular fa-calendar"></i> ${formatDate(latestRow.tarih)} Seansı`;
+        }
+    }
+
+    // 1. Extract all active assets in the latest distribution (Hangi varlıkta oranı ne kadar, neler vardı)
+    const currentAssets = [];
+    for (const [rawKey, rawVal] of Object.entries(latestRow)) {
+        const k = rawKey.toLowerCase();
+        if (!TEFAS_ASSET_MAP[k]) continue;
+        const val = parseFloat(rawVal) || 0;
+        if (val > 0.01 && val <= 100) {
+            const def = TEFAS_ASSET_MAP[k];
+            currentAssets.push({
+                key: k,
+                label: def.label,
+                color: def.color,
+                pct: val,
+                estVal: totalAUM > 0 ? (totalAUM * val / 100) : 0
+            });
+        }
+    }
+    currentAssets.sort((a, b) => b.pct - a.pct);
+
+    if (assetCountBadge) {
+        assetCountBadge.innerText = `${currentAssets.length} Varlık Sınıfı`;
+    }
+
+    // Render Section 1: Asset Chips Grid
+    chipsContainer.innerHTML = currentAssets.map(item => {
+        const valStr = totalAUM > 0 ? formatBillionOrMillion(item.estVal) : "—";
+        return `
+            <div class="moves-asset-chip">
+                <div class="chip-header-row">
+                    <div class="chip-asset-name" title="${item.label}">
+                        <span class="chip-asset-dot" style="background: ${item.color}; box-shadow: 0 0 6px ${item.color};"></span>
+                        <span>${item.label}</span>
+                    </div>
+                    <span class="chip-pct-badge">%${item.pct.toFixed(2)}</span>
+                </div>
+                <div class="chip-val-row">
+                    <span>Tahmini Tutar:</span>
+                    <strong style="color: #E2E8F0;">${valStr}</strong>
+                </div>
+                <div class="chip-mini-bar">
+                    <div class="chip-mini-bar-fill" style="width: ${Math.min(100, item.pct)}%; background: ${item.color};"></div>
+                </div>
+            </div>
+        `;
+    }).join('');
+
+    // 2. Compute movements between prevRow and latestRow (Neleri Aldı / Neleri Sattı)
+    const allKeys = new Set([
+        ...Object.keys(latestRow).map(k => k.toLowerCase()),
+        ...(prevRow ? Object.keys(prevRow).map(k => k.toLowerCase()) : [])
+    ]);
+
+    const boughtItems = [];
+    const soldItems = [];
+    let totalGrossRotation = 0;
+
+    allKeys.forEach(k => {
+        if (!TEFAS_ASSET_MAP[k]) return;
+        const curVal = parseFloat(latestRow[k]) || 0;
+        const prevVal = prevRow ? (parseFloat(prevRow[k]) || 0) : curVal;
+        const diff = curVal - prevVal;
+
+        if (Math.abs(diff) < 0.02) return;
+
+        const def = TEFAS_ASSET_MAP[k];
+        const estDiffAmount = totalAUM > 0 ? (totalAUM * Math.abs(diff) / 100) : 0;
+        totalGrossRotation += Math.abs(diff);
+
+        if (diff > 0) {
+            boughtItems.push({
+                key: k,
+                label: def.label,
+                color: def.color,
+                curPct: curVal,
+                prevPct: prevVal,
+                diff,
+                estAmount: estDiffAmount,
+                isNew: prevVal <= 0.01 && curVal > 0
+            });
+        } else {
+            soldItems.push({
+                key: k,
+                label: def.label,
+                color: def.color,
+                curPct: curVal,
+                prevPct: prevVal,
+                diff,
+                estAmount: estDiffAmount,
+                isExited: prevVal > 0.01 && curVal <= 0.01
+            });
+        }
+    });
+
+    boughtItems.sort((a, b) => b.diff - a.diff);
+    soldItems.sort((a, b) => a.diff - b.diff); // largest negative drops first
+
+    // Update Rotation Pill
+    const netRotationPct = totalGrossRotation / 2;
+    if (rotationPill) {
+        rotationPill.innerHTML = `<i class="fa-solid fa-arrows-rotate"></i> Net Rotasyon: %${netRotationPct.toFixed(2)}`;
+    }
+
+    if (boughtCountBadge) boughtCountBadge.innerText = `${boughtItems.length} Alım / Artış`;
+    if (soldCountBadge) soldCountBadge.innerText = `${soldItems.length} Satış / Azalış`;
+
+    // Render Bought List
+    if (boughtList) {
+        if (boughtItems.length === 0) {
+            boughtList.innerHTML = `
+                <div class="moves-empty-state">
+                    <i class="fa-solid fa-circle-check" style="color: #10B981;"></i>
+                    <span>Son seansta ağırlığı artırılan varlık sınıfı kaydedilmedi.</span>
+                </div>
+            `;
+        } else {
+            boughtList.innerHTML = boughtItems.map(item => {
+                const estStr = totalAUM > 0 ? `+${formatBillionOrMillion(item.estAmount)}` : "";
+                const tag = item.isNew ? `<span class="moves-tag-pill new-entry"><i class="fa-solid fa-sparkles"></i> Yeni Giriş</span>` : "";
+                return `
+                    <div class="moves-item-row">
+                        <div class="moves-item-left">
+                            <span class="moves-item-dot" style="background: ${item.color}; box-shadow: 0 0 6px ${item.color};"></span>
+                            <div class="moves-item-meta">
+                                <div class="moves-item-title-row">
+                                    <span class="moves-item-name" title="${item.label}">${item.label}</span>
+                                    ${tag}
+                                </div>
+                                <span class="moves-item-history-sub">Önceki: %${item.prevPct.toFixed(2)} ➔ Şimdi: %${item.curPct.toFixed(2)}</span>
+                            </div>
+                        </div>
+                        <div class="moves-item-right">
+                            <span class="moves-delta-badge pos">
+                                <i class="fa-solid fa-arrow-up"></i> +%${item.diff.toFixed(2)}
+                            </span>
+                            ${estStr ? `<span class="moves-est-val">${estStr}</span>` : ""}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+    }
+
+    // Render Sold List
+    if (soldList) {
+        if (soldItems.length === 0) {
+            soldList.innerHTML = `
+                <div class="moves-empty-state">
+                    <i class="fa-solid fa-circle-check" style="color: #FB7185;"></i>
+                    <span>Son seansta ağırlığı azaltılan varlık sınıfı kaydedilmedi.</span>
+                </div>
+            `;
+        } else {
+            soldList.innerHTML = soldItems.map(item => {
+                const estStr = totalAUM > 0 ? `-${formatBillionOrMillion(item.estAmount)}` : "";
+                const tag = item.isExited ? `<span class="moves-tag-pill exited"><i class="fa-solid fa-xmark"></i> Tamamen Çıkıldı</span>` : "";
+                return `
+                    <div class="moves-item-row">
+                        <div class="moves-item-left">
+                            <span class="moves-item-dot" style="background: ${item.color}; box-shadow: 0 0 6px ${item.color};"></span>
+                            <div class="moves-item-meta">
+                                <div class="moves-item-title-row">
+                                    <span class="moves-item-name" title="${item.label}">${item.label}</span>
+                                    ${tag}
+                                </div>
+                                <span class="moves-item-history-sub">Önceki: %${item.prevPct.toFixed(2)} ➔ Şimdi: %${item.curPct.toFixed(2)}</span>
+                            </div>
+                        </div>
+                        <div class="moves-item-right">
+                            <span class="moves-delta-badge neg">
+                                <i class="fa-solid fa-arrow-down"></i> -%${Math.abs(item.diff).toFixed(2)}
+                            </span>
+                            ${estStr ? `<span class="moves-est-val">${estStr}</span>` : ""}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+    }
+
+    // Render Summary Footer
+    if (summaryFooter) {
+        const topBought = boughtItems[0];
+        const topSold = soldItems[0];
+
+        const boughtSummary = topBought 
+            ? `<div class="moves-summary-item bought"><i class="fa-solid fa-arrow-trend-up"></i> En Çok Artırılan: <strong>${topBought.label} (+%${topBought.diff.toFixed(2)})</strong></div>`
+            : `<div class="moves-summary-item"><i class="fa-solid fa-minus"></i> Belirgin alım yok</div>`;
+
+        const soldSummary = topSold
+            ? `<div class="moves-summary-item sold"><i class="fa-solid fa-arrow-trend-down"></i> En Çok Azaltılan: <strong>${topSold.label} (-%${Math.abs(topSold.diff).toFixed(2)})</strong></div>`
+            : `<div class="moves-summary-item"><i class="fa-solid fa-minus"></i> Belirgin satış yok</div>`;
+
+        const rotationSummary = `<div class="moves-summary-item"><i class="fa-solid fa-shuffle"></i> Toplam Varlık Değişimi: <strong>%${netRotationPct.toFixed(2)} Portföy Hacmi</strong></div>`;
+
+        summaryFooter.innerHTML = `
+            ${boughtSummary}
+            ${soldSummary}
+            ${rotationSummary}
+        `;
+    }
+}
+
 // Render Daily Asset Allocation Trend (Stacked Area Chart)
 function renderFundHistoryAllocationChart(allocData) {
     if (!allocData || allocData.length === 0) return;
@@ -2487,6 +2731,7 @@ async function loadAndRenderFundAnalysis(fundCode, days = 30) {
             const allocData = await fetchTefasFundAllocation(fCode, days);
             if (allocData && allocData.length > 0) {
                 renderFundLatestAllocation(allocData, totalAUM);
+                renderFundPortfolioMoves(allocData, totalAUM);
                 renderFundHistoryAllocationChart(allocData);
                 renderFundAllocTable(allocData);
             }
