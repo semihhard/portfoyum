@@ -8703,6 +8703,12 @@ body.theme-neo-brutalism .sort-option.active {
     color: #38BDF8;
 }
 
+.fund-header-icon.purple {
+    background: rgba(168, 85, 247, 0.12);
+    border-color: rgba(168, 85, 247, 0.3);
+    color: #C084FC;
+}
+
 .table-header-right-actions {
     display: flex;
     align-items: center;
@@ -8850,6 +8856,135 @@ body.theme-neo-brutalism .sort-option.active {
 .per-person-pill.zero {
     color: var(--text-muted);
     font-weight: 500;
+}
+
+/* ALLOCATION DAILY BREAKDOWN & CHANGE TABLE */
+.fund-alloc-table-card {
+    margin-bottom: 22px;
+}
+
+.alloc-table-responsive {
+    position: relative;
+    max-height: 480px;
+    overflow: auto;
+}
+
+.alloc-data-table {
+    min-width: 720px;
+}
+
+.alloc-data-table th {
+    white-space: nowrap;
+    vertical-align: middle;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+}
+
+.alloc-th-content {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.72rem;
+    font-weight: 700;
+}
+
+.alloc-th-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.alloc-data-table td.sticky-date,
+.alloc-data-table th.sticky-date {
+    position: sticky;
+    left: 0;
+    z-index: 3;
+    background: #0B111C !important;
+    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.45);
+}
+
+.alloc-cell-box {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 3px;
+}
+
+.alloc-cell-pct {
+    font-size: 0.86rem;
+    font-weight: 800;
+    color: #FFFFFF;
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+}
+
+.alloc-delta-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    font-size: 0.68rem;
+    font-weight: 700;
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    line-height: 1.2;
+}
+
+.alloc-delta-badge.pos {
+    background: rgba(16, 185, 129, 0.15);
+    color: #10B981;
+    border: 1px solid rgba(16, 185, 129, 0.25);
+}
+
+.alloc-delta-badge.neg {
+    background: rgba(239, 68, 68, 0.15);
+    color: #EF4444;
+    border: 1px solid rgba(239, 68, 68, 0.25);
+}
+
+.alloc-delta-badge.zero {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-muted);
+}
+
+.alloc-rotations-box {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.alloc-rot-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.70rem;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 6px;
+    white-space: nowrap;
+    font-family: var(--font-mono);
+}
+
+.alloc-rot-pill.pos {
+    background: rgba(16, 185, 129, 0.12);
+    color: #34D399;
+    border: 1px solid rgba(16, 185, 129, 0.25);
+}
+
+.alloc-rot-pill.neg {
+    background: rgba(239, 68, 68, 0.12);
+    color: #F87171;
+    border: 1px solid rgba(239, 68, 68, 0.25);
+}
+
+.alloc-rot-pill.neut {
+    background: rgba(255, 255, 255, 0.06);
+    color: var(--text-muted);
+    font-size: 0.70rem;
 }
 
 /* Symmetrical Responsive Layouts */

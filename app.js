@@ -1108,6 +1108,8 @@ const fundHistoryDataCache = {};
 const fundAllocationDataCache = {};
 let currentFundTableLimit = 15;
 let currentFundFullData = [];
+let currentAllocTableLimit = 15;
+let currentAllocFullData = [];
 
 // Comprehensive TEFAS asset class codes, official Turkish descriptions, and palette
 const TEFAS_ASSET_MAP = {
@@ -1988,6 +1990,190 @@ function toggleAllocDataset(idx, elem) {
 }
 window.toggleAllocDataset = toggleAllocDataset;
 
+// Render Daily Asset Allocation Breakdown & Daily Change Table
+function renderFundAllocTable(allocData) {
+    if (!allocData || allocData.length === 0) return;
+    currentAllocFullData = allocData;
+
+    const thead = document.getElementById("fundAllocTableHead");
+    const tbody = document.getElementById("fundAllocTableBody");
+    const countBadge = document.getElementById("fundAllocTableCountBadge");
+    if (!thead || !tbody) return;
+
+    // Clean rows and sort chronologically
+    const clean = allocData.map(r => {
+        const c = { ...r };
+        delete c.bilFiyat;
+        delete c.bilfiyat;
+        return c;
+    }).sort((a, b) => (a.tarih || '').localeCompare(b.tarih || ''));
+
+    // Find all active asset keys across dataset
+    const keyTotals = {};
+    for (const r of clean) {
+        for (const [k, v] of Object.entries(r)) {
+            const key = k.toLowerCase();
+            if (!TEFAS_ASSET_MAP[key]) continue;
+            const num = parseFloat(v) || 0;
+            if (num > 0.05 && num <= 100) {
+                keyTotals[key] = (keyTotals[key] || 0) + num;
+            }
+        }
+    }
+
+    // Sort active keys by latest day's weight descending
+    const latestRow = clean[clean.length - 1];
+    const activeKeys = Object.keys(keyTotals).sort((a, b) => {
+        const latestA = parseFloat(latestRow[a]) || 0;
+        const latestB = parseFloat(latestRow[b]) || 0;
+        return latestB - latestA;
+    });
+
+    if (activeKeys.length === 0) {
+        thead.innerHTML = '';
+        tbody.innerHTML = `<tr><td colspan="3" style="text-align: center; color: var(--text-muted); padding: 20px;">Varlık dağılım verisi bulunamadı.</td></tr>`;
+        return;
+    }
+
+    // Build Table Header
+    let headHtml = `
+        <tr>
+            <th class="sticky-date">Tarih</th>
+    `;
+    activeKeys.forEach(k => {
+        const def = TEFAS_ASSET_MAP[k] || { label: k.toUpperCase(), color: "#94A3B8" };
+        headHtml += `<th style="text-align: right;"><span class="alloc-th-content"><span class="alloc-th-dot" style="background: ${def.color}; box-shadow: 0 0 5px ${def.color};"></span> ${def.label}</span></th>`;
+    });
+    headHtml += `
+            <th style="text-align: left;">Günün Net Rotasyonu</th>
+        </tr>
+    `;
+    thead.innerHTML = headHtml;
+
+    // Compute deltas day-by-day
+    const rowsWithDeltas = clean.map((cur, idx) => {
+        const deltas = {};
+        let topInc = null;
+        let topDec = null;
+
+        if (idx > 0) {
+            const prev = clean[idx - 1];
+            for (const k of activeKeys) {
+                const curVal = parseFloat(cur[k]) || 0;
+                const prevVal = parseFloat(prev[k]) || 0;
+                const diff = curVal - prevVal;
+                deltas[k] = diff;
+
+                if (diff > 0.05 && (!topInc || diff > topInc.diff)) {
+                    topInc = { key: k, label: TEFAS_ASSET_MAP[k]?.label || k, diff };
+                }
+                if (diff < -0.05 && (!topDec || diff < topDec.diff)) {
+                    topDec = { key: k, label: TEFAS_ASSET_MAP[k]?.label || k, diff };
+                }
+            }
+        }
+
+        return {
+            tarih: cur.tarih,
+            row: cur,
+            deltas,
+            topInc,
+            topDec,
+            isOldest: idx === 0
+        };
+    });
+
+    // Display latest date first
+    const reversed = [...rowsWithDeltas].reverse();
+    const displayRows = (currentAllocTableLimit > 0 && currentAllocTableLimit < reversed.length)
+        ? reversed.slice(0, currentAllocTableLimit)
+        : reversed;
+
+    if (countBadge) {
+        if (currentAllocTableLimit > 0 && currentAllocTableLimit < reversed.length) {
+            countBadge.innerText = `Son ${displayRows.length} / ${reversed.length} Gün`;
+        } else {
+            countBadge.innerText = `${reversed.length} İşlem Günü`;
+        }
+    }
+
+    // Build Table Body
+    let bodyHtml = '';
+    for (const item of displayRows) {
+        const parts = (item.tarih || '').split('-');
+        const dateStr = parts.length === 3 ? `${parts[2]}.${parts[1]}.${parts[0]}` : item.tarih;
+
+        bodyHtml += `<tr>`;
+        bodyHtml += `<td class="sticky-date"><strong>${dateStr}</strong></td>`;
+
+        for (const k of activeKeys) {
+            const curVal = parseFloat(item.row[k]) || 0;
+            let deltaBadge = '';
+
+            if (item.isOldest) {
+                deltaBadge = `<span class="alloc-delta-badge zero">—</span>`;
+            } else {
+                const diff = item.deltas[k] !== undefined ? item.deltas[k] : 0;
+                if (diff > 0.005) {
+                    deltaBadge = `<span class="alloc-delta-badge pos"><i class="fa-solid fa-caret-up"></i> +${diff.toFixed(2)}%</span>`;
+                } else if (diff < -0.005) {
+                    deltaBadge = `<span class="alloc-delta-badge neg"><i class="fa-solid fa-caret-down"></i> ${diff.toFixed(2)}%</span>`;
+                } else {
+                    deltaBadge = `<span class="alloc-delta-badge zero">0.00%</span>`;
+                }
+            }
+
+            bodyHtml += `
+                <td style="text-align: right;">
+                    <div class="alloc-cell-box">
+                        <span class="alloc-cell-pct">%${curVal.toFixed(2)}</span>
+                        ${deltaBadge}
+                    </div>
+                </td>
+            `;
+        }
+
+        // Net Rotation Column
+        let rotHtml = '';
+        if (item.isOldest) {
+            rotHtml = `<span class="alloc-rot-pill neut">—</span>`;
+        } else if (item.topInc || item.topDec) {
+            rotHtml = `<div class="alloc-rotations-box">`;
+            if (item.topInc) {
+                rotHtml += `<span class="alloc-rot-pill pos" title="${item.topInc.label}"><i class="fa-solid fa-arrow-trend-up"></i> +${item.topInc.diff.toFixed(2)}% ${item.topInc.label}</span>`;
+            }
+            if (item.topDec) {
+                rotHtml += `<span class="alloc-rot-pill neg" title="${item.topDec.label}"><i class="fa-solid fa-arrow-trend-down"></i> ${item.topDec.diff.toFixed(2)}% ${item.topDec.label}</span>`;
+            }
+            rotHtml += `</div>`;
+        } else {
+            rotHtml = `<span class="alloc-rot-pill neut">Sabit Dağılım</span>`;
+        }
+
+        bodyHtml += `<td>${rotHtml}</td>`;
+        bodyHtml += `</tr>`;
+    }
+
+    tbody.innerHTML = bodyHtml;
+}
+
+// Filter button handler for Alloc Table (15G, 30G, Tümü)
+function setAllocTableFilter(limit) {
+    currentAllocTableLimit = parseInt(limit, 10);
+    document.querySelectorAll(".fund-alloc-table-card .table-filter-btn").forEach(btn => {
+        if (parseInt(btn.getAttribute("data-alloc-limit"), 10) === currentAllocTableLimit) {
+            btn.classList.add("active");
+        } else {
+            btn.classList.remove("active");
+        }
+    });
+
+    if (currentAllocFullData && currentAllocFullData.length > 0) {
+        renderFundAllocTable(currentAllocFullData);
+    }
+}
+window.setAllocTableFilter = setAllocTableFilter;
+
 // Master Function: Load and Render Fund Analysis
 async function loadAndRenderFundAnalysis(fundCode, days = 30) {
     const fCode = (fundCode || appState.activeFundCode || "TI1").toUpperCase().trim();
@@ -2296,12 +2482,13 @@ async function loadAndRenderFundAnalysis(fundCode, days = 30) {
         renderFundCharts(data);
         renderFundHistoryTable(data);
 
-        // 9. Fetch & Render Asset Allocation (Latest Donut Breakdown & Daily Trend)
+        // 9. Fetch & Render Asset Allocation (Latest Donut Breakdown, Daily Trend, & Table)
         try {
             const allocData = await fetchTefasFundAllocation(fCode, days);
             if (allocData && allocData.length > 0) {
                 renderFundLatestAllocation(allocData, totalAUM);
                 renderFundHistoryAllocationChart(allocData);
+                renderFundAllocTable(allocData);
             }
         } catch (allocErr) {
             console.warn("Asset allocation render error:", allocErr);

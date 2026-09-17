@@ -23,7 +23,7 @@
     <!-- ExcelJS for Modern Excel Export -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
-    <link rel="stylesheet" href="style.css?v=20">    <style>
+    <link rel="stylesheet" href="style.css?v=21">    <style>
         /* Refresh Button Loading Animation */
         .icon-btn.loading i {
             animation: spin 1s linear infinite;
@@ -1073,6 +1073,40 @@
                                 <div class="chart-container fund-chart-container fund-alloc-chart-container" style="position: relative;">
                                     <canvas id="fundHistoryAllocChart"></canvas>
                                 </div>
+                            </div>
+                        </div>
+
+                        <!-- Card 3: Günlük Varlık Dağılımı ve Değişim Tablosu -->
+                        <div class="analytics-card ultra-glass-card fund-table-card fund-alloc-table-card">
+                            <div class="table-card-header">
+                                <div class="table-title-box">
+                                    <div class="fund-header-icon purple">
+                                        <i class="fa-solid fa-table-columns"></i>
+                                    </div>
+                                    <div>
+                                        <h3>Günlük Varlık Dağılımı ve Değişim Tablosu</h3>
+                                        <p class="chart-subtitle">İşlem günleri bazında portföy varlık oranları ve dünkü güne göre net değişimler (+ / -)</p>
+                                    </div>
+                                </div>
+                                <div class="table-header-right-actions">
+                                    <div class="table-filter-pills">
+                                        <button class="table-filter-btn active" data-alloc-limit="15" onclick="setAllocTableFilter(15)">15G</button>
+                                        <button class="table-filter-btn" data-alloc-limit="30" onclick="setAllocTableFilter(30)">30G</button>
+                                        <button class="table-filter-btn" data-alloc-limit="0" onclick="setAllocTableFilter(0)">Tümü</button>
+                                    </div>
+                                    <span class="badge-count" id="fundAllocTableCountBadge">0 Gün</span>
+                                </div>
+                            </div>
+
+                            <div class="fund-table-responsive alloc-table-responsive">
+                                <table class="fund-data-table alloc-data-table">
+                                    <thead id="fundAllocTableHead">
+                                        <!-- Dynamically generated asset headers -->
+                                    </thead>
+                                    <tbody id="fundAllocTableBody">
+                                        <!-- Dynamically populated daily asset breakdown rows -->
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
 
@@ -2186,6 +2220,6 @@
         </div>
     </div>
 
-    <script src="app.js?v=68"></script>
+    <script src="app.js?v=69"></script>
 </body>
 </html>
