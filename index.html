@@ -23,7 +23,7 @@
     <!-- ExcelJS for Modern Excel Export -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
-    <link rel="stylesheet" href="style.css?v=18">    <style>
+    <link rel="stylesheet" href="style.css?v=19">    <style>
         /* Refresh Button Loading Animation */
         .icon-btn.loading i {
             animation: spin 1s linear infinite;
@@ -1138,7 +1138,7 @@
                     <div class="leaders-filter-bar">
                         <button type="button" class="leaders-filter-pill active" data-filter="all" onclick="filterLeaderCategories('all')">
                             <i class="fa-solid fa-layer-group"></i>
-                            <span>Tümü (4 Kategori)</span>
+                            <span>Tüm Kategoriler</span>
                         </button>
                         <button type="button" class="leaders-filter-pill" data-filter="investors" onclick="filterLeaderCategories('investors')">
                             <i class="fa-solid fa-users"></i>
@@ -1148,10 +1148,24 @@
                             <i class="fa-solid fa-money-bill-transfer"></i>
                             <span>Sermaye Akışı</span>
                         </button>
-                        <button type="button" class="leaders-filter-pill expand-all-pill" id="btnToggleAllLeaders" onclick="toggleAllLeaderCategories()" title="Tüm kategorileri genişlet / daralt">
-                            <i class="fa-solid fa-arrows-up-down"></i>
-                            <span id="btnToggleAllLeadersText">Tümünü Sırala</span>
-                        </button>
+                    </div>
+
+                    <!-- Explicit Ranking Mode Switch: Top 3 vs All Funds -->
+                    <div class="leaders-ranking-mode-card ultra-glass-card">
+                        <div class="ranking-mode-label">
+                            <i class="fa-solid fa-arrow-down-wide-short"></i>
+                            <span>Sıralama Modu:</span>
+                        </div>
+                        <div class="ranking-mode-switch">
+                            <button type="button" class="ranking-mode-btn active" id="btnRankModeTop3" onclick="toggleAllLeaderCategories(3)" title="Kategorilerde yalnızca ilk 3 fonu göster">
+                                <i class="fa-solid fa-medal"></i>
+                                <span>İlk 3 Fon</span>
+                            </button>
+                            <button type="button" class="ranking-mode-btn" id="btnRankModeAll" onclick="toggleAllLeaderCategories(100)" title="Tüm fonları sırala">
+                                <i class="fa-solid fa-list-ol"></i>
+                                <span>Tüm Fonları Sırala (15+ Fon)</span>
+                            </button>
+                        </div>
                     </div>
 
                     <!-- Leaders Loading State -->
@@ -1173,11 +1187,11 @@
                                         <div class="leader-title-wrap">
                                             <h3>En Çok Yatırımcı Girişi</h3>
                                             <div class="leader-header-badges">
-                                                <span class="leader-expand-badge" id="expandBadge-inv-in"><i class="fa-solid fa-expand"></i> Tümü</span>
+                                                <button type="button" class="leader-expand-badge" id="expandBadge-inv-in" onclick="toggleCategoryExpansion('inv-in', event)" title="Bu kategorideki tüm fonları sırala"><i class="fa-solid fa-list-ol"></i> Tümünü Gör ▾</button>
                                                 <span class="leader-badge emerald"><i class="fa-solid fa-arrow-trend-up"></i> Giriş (+)</span>
                                             </div>
                                         </div>
-                                        <span class="leader-card-subtitle" id="subTitle-inv-in">Günün en fazla yeni yatırımcı çeken ilk 3 fonu</span>
+                                        <span class="leader-card-subtitle" id="subTitle-inv-in">Günün en fazla yeni yatırımcı çeken fonları (İlk 3 gösteriliyor)</span>
                                     </div>
                                 </div>
                             </div>
@@ -1198,11 +1212,11 @@
                                         <div class="leader-title-wrap">
                                             <h3>En Çok Yatırımcı Çıkışı</h3>
                                             <div class="leader-header-badges">
-                                                <span class="leader-expand-badge" id="expandBadge-inv-out"><i class="fa-solid fa-expand"></i> Tümü</span>
+                                                <button type="button" class="leader-expand-badge" id="expandBadge-inv-out" onclick="toggleCategoryExpansion('inv-out', event)" title="Bu kategorideki tüm fonları sırala"><i class="fa-solid fa-list-ol"></i> Tümünü Gör ▾</button>
                                                 <span class="leader-badge rose"><i class="fa-solid fa-arrow-trend-down"></i> Çıkış (-)</span>
                                             </div>
                                         </div>
-                                        <span class="leader-card-subtitle" id="subTitle-inv-out">Günün en fazla yatırımcı kaybeden ilk 3 fonu</span>
+                                        <span class="leader-card-subtitle" id="subTitle-inv-out">Günün en fazla yatırımcı kaybeden fonları (İlk 3 gösteriliyor)</span>
                                     </div>
                                 </div>
                             </div>
@@ -1223,11 +1237,11 @@
                                         <div class="leader-title-wrap">
                                             <h3>En Çok Para Girişi</h3>
                                             <div class="leader-header-badges">
-                                                <span class="leader-expand-badge" id="expandBadge-cash-in"><i class="fa-solid fa-expand"></i> Tümü</span>
+                                                <button type="button" class="leader-expand-badge" id="expandBadge-cash-in" onclick="toggleCategoryExpansion('cash-in', event)" title="Bu kategorideki tüm fonları sırala"><i class="fa-solid fa-list-ol"></i> Tümünü Gör ▾</button>
                                                 <span class="leader-badge cyan"><i class="fa-solid fa-vault"></i> Net Giriş (+)</span>
                                             </div>
                                         </div>
-                                        <span class="leader-card-subtitle" id="subTitle-cash-in">Günün en yüksek net nakit girişi olan ilk 3 fonu</span>
+                                        <span class="leader-card-subtitle" id="subTitle-cash-in">Günün en yüksek net nakit girişi olan fonları (İlk 3 gösteriliyor)</span>
                                     </div>
                                 </div>
                             </div>
@@ -1248,11 +1262,11 @@
                                         <div class="leader-title-wrap">
                                             <h3>En Çok Para Çıkışı</h3>
                                             <div class="leader-header-badges">
-                                                <span class="leader-expand-badge" id="expandBadge-cash-out"><i class="fa-solid fa-expand"></i> Tümü</span>
+                                                <button type="button" class="leader-expand-badge" id="expandBadge-cash-out" onclick="toggleCategoryExpansion('cash-out', event)" title="Bu kategorideki tüm fonları sırala"><i class="fa-solid fa-list-ol"></i> Tümünü Gör ▾</button>
                                                 <span class="leader-badge amber"><i class="fa-solid fa-arrow-right-from-bracket"></i> Net Çıkış (-)</span>
                                             </div>
                                         </div>
-                                        <span class="leader-card-subtitle" id="subTitle-cash-out">Günün en yüksek net nakit çıkışı olan ilk 3 fonu</span>
+                                        <span class="leader-card-subtitle" id="subTitle-cash-out">Günün en yüksek net nakit çıkışı olan fonları (İlk 3 gösteriliyor)</span>
                                     </div>
                                 </div>
                             </div>
@@ -2119,6 +2133,6 @@
         </div>
     </div>
 
-    <script src="app.js?v=65"></script>
+    <script src="app.js?v=66"></script>
 </body>
 </html>

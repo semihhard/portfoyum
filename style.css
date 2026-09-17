@@ -8927,6 +8927,89 @@ body.theme-neo-brutalism .sort-option.active {
     box-shadow: 0 4px 12px rgba(56, 189, 248, 0.25);
 }
 
+/* Explicit Ranking View Switch: Top 3 vs All Funds */
+.leaders-ranking-mode-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 16px;
+    border-radius: 14px;
+    margin-bottom: 18px;
+    background: rgba(15, 23, 42, 0.65);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.ranking-mode-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--text-secondary);
+}
+
+.ranking-mode-label i {
+    color: #38BDF8;
+}
+
+.ranking-mode-switch {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(0, 0, 0, 0.35);
+    padding: 4px;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.ranking-mode-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 7px 14px;
+    border-radius: 8px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--text-secondary);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: inherit;
+    white-space: nowrap;
+}
+
+.ranking-mode-btn:hover {
+    color: #FFFFFF;
+    background: rgba(255, 255, 255, 0.04);
+}
+
+.ranking-mode-btn.active {
+    background: linear-gradient(135deg, rgba(56, 189, 248, 0.25) 0%, rgba(99, 102, 241, 0.2) 100%);
+    color: #38BDF8;
+    border: 1px solid rgba(56, 189, 248, 0.4);
+    box-shadow: 0 2px 10px rgba(56, 189, 248, 0.2);
+}
+
+@media (max-width: 600px) {
+    .leaders-ranking-mode-card {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+        padding: 10px 12px;
+    }
+    .ranking-mode-switch {
+        width: 100%;
+    }
+    .ranking-mode-btn {
+        flex: 1;
+        justify-content: center;
+        padding: 8px 10px;
+        font-size: 0.74rem;
+    }
+}
+
 /* Full-Width Spacious Leaders Grid */
 .fund-leaders-grid {
     display: flex;

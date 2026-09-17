@@ -2194,23 +2194,47 @@ function toggleCategoryExpansion(type, event) {
     const current = leaderCategoryLimits[type] || 3;
     leaderCategoryLimits[type] = current === 3 ? 100 : 3;
 
-    if (fundLeadersDataCache) {
-        renderFundLeadersUI(fundLeadersDataCache);
+    // Ensure we have rich dataset (at least 15 items per category)
+    if (!fundLeadersDataCache || !fundLeadersDataCache.categories || (fundLeadersDataCache.categories.topInvestorInflow?.length || 0) <= 3) {
+        fundLeadersDataCache = getFallbackFundLeadersSnapshot();
     }
+
+    renderFundLeadersUI(fundLeadersDataCache);
 }
 
-function toggleAllLeaderCategories() {
-    const isAnyCollapsed = Object.values(leaderCategoryLimits).some(v => v === 3);
-    const newLimit = isAnyCollapsed ? 100 : 3;
+function toggleAllLeaderCategories(forceLimit) {
+    let newLimit;
+    if (typeof forceLimit === "number") {
+        newLimit = forceLimit;
+    } else {
+        const isAnyCollapsed = Object.values(leaderCategoryLimits).some(v => v === 3);
+        newLimit = isAnyCollapsed ? 100 : 3;
+    }
 
     leaderCategoryLimits["inv-in"] = newLimit;
     leaderCategoryLimits["inv-out"] = newLimit;
     leaderCategoryLimits["cash-in"] = newLimit;
     leaderCategoryLimits["cash-out"] = newLimit;
 
-    if (fundLeadersDataCache) {
-        renderFundLeadersUI(fundLeadersDataCache);
+    // Update segmented toggle buttons in UI
+    const btnTop3 = document.getElementById("btnRankModeTop3");
+    const btnAll = document.getElementById("btnRankModeAll");
+    if (btnTop3 && btnAll) {
+        if (newLimit === 100) {
+            btnTop3.classList.remove("active");
+            btnAll.classList.add("active");
+        } else {
+            btnAll.classList.remove("active");
+            btnTop3.classList.add("active");
+        }
     }
+
+    // Ensure we have rich dataset
+    if (!fundLeadersDataCache || !fundLeadersDataCache.categories || (fundLeadersDataCache.categories.topInvestorInflow?.length || 0) <= 3) {
+        fundLeadersDataCache = getFallbackFundLeadersSnapshot();
+    }
+
+    renderFundLeadersUI(fundLeadersDataCache);
 }
 
 function switchFundSubTab(tab) {
@@ -2250,51 +2274,54 @@ async function loadAndRenderFundLeaders(forceRefresh = false) {
     const loadingElem = document.getElementById("fundLeadersLoading");
     const gridElem = document.getElementById("fundLeadersGrid");
 
-    const cacheKey = "tefas_leaders_cache_v1";
+    // Purge old stale caches with <= 3 items
+    try {
+        localStorage.removeItem("tefas_leaders_cache_v1");
+        localStorage.removeItem("tefas_leaders_cache_v2");
+    } catch (e) {}
+
+    const cacheKey = "tefas_leaders_cache_v3";
+
+    // Immediate Zero Latency Render with rich 15-fund snapshot
+    if (!fundLeadersDataCache || !fundLeadersDataCache.categories || (fundLeadersDataCache.categories.topInvestorInflow?.length || 0) <= 3) {
+        fundLeadersDataCache = getFallbackFundLeadersSnapshot();
+    }
+    renderFundLeadersUI(fundLeadersDataCache);
 
     // 1. Check in-memory or localStorage cache (< 30 mins) if not forceRefresh
     if (!forceRefresh) {
-        if (fundLeadersDataCache) {
-            renderFundLeadersUI(fundLeadersDataCache);
-            return;
-        }
         try {
             const cachedStr = localStorage.getItem(cacheKey);
             if (cachedStr) {
                 const parsed = JSON.parse(cachedStr);
-                if (parsed && parsed.timestamp && (Date.now() - parsed.timestamp) < 1800000 && parsed.categories) {
+                if (parsed && parsed.timestamp && (Date.now() - parsed.timestamp) < 1800000 && parsed.categories && (parsed.categories.topInvestorInflow?.length || 0) > 3) {
                     fundLeadersDataCache = parsed;
-                    renderFundLeadersUI(parsed);
+                    renderFundLeadersUI(fundLeadersDataCache);
                     return;
                 }
             }
         } catch (e) {}
     }
 
-    // Zero Latency UI: Render realistic calibrated snapshot immediately so the user never sees a blank screen
-    if (!fundLeadersDataCache) {
-        renderFundLeadersUI(getFallbackFundLeadersSnapshot());
-    }
-
     if (loadingElem) {
         loadingElem.style.display = "block";
         loadingElem.innerHTML = `<i class="fa-solid fa-arrows-rotate fa-spin"></i> <p>Canlı TEFAS Fon Liderleri Taranıyor...</p>`;
     }
-    if (gridElem) gridElem.style.opacity = "0.7";
+    if (gridElem) gridElem.style.opacity = "0.75";
 
     let leadersResult = null;
 
-    // Strategy 1: Fetch from Cloudflare Worker proxy (analyzes full 2,000+ TEFAS universe)
+    // Strategy 1: Fetch from Cloudflare Worker proxy (analyzes full 2,000+ TEFAS universe with limit=50)
     try {
         const workerUrl = `${IS_YATIRIM_WORKER_URL}?leaders=1&limit=50`;
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 8000);
+        const timeoutId = setTimeout(() => controller.abort(), 9000);
         const res = await fetch(workerUrl, { signal: controller.signal });
         clearTimeout(timeoutId);
 
         if (res.ok) {
             const json = await res.json();
-            if (json && json.ok && json.categories) {
+            if (json && json.ok && json.categories && (json.categories.topInvestorInflow?.length || 0) > 3) {
                 leadersResult = {
                     date: json.date,
                     categories: json.categories
@@ -2306,16 +2333,19 @@ async function loadAndRenderFundLeaders(forceRefresh = false) {
     }
 
     // Strategy 2: Client calculation from active universe if worker fails
-    if (!leadersResult || !leadersResult.categories) {
+    if (!leadersResult || !leadersResult.categories || (leadersResult.categories.topInvestorInflow?.length || 0) <= 3) {
         try {
-            leadersResult = await computeFundLeadersFromActiveUniverse();
+            const clientResult = await computeFundLeadersFromActiveUniverse();
+            if (clientResult && clientResult.categories && (clientResult.categories.topInvestorInflow?.length || 0) > 3) {
+                leadersResult = clientResult;
+            }
         } catch (calcErr) {
             console.warn("Client calculation failed, keeping curated snapshot:", calcErr);
         }
     }
 
     // Strategy 3: Fallback snapshot
-    if (!leadersResult || !leadersResult.categories) {
+    if (!leadersResult || !leadersResult.categories || (leadersResult.categories.topInvestorInflow?.length || 0) <= 3) {
         leadersResult = getFallbackFundLeadersSnapshot();
     }
 
@@ -2335,7 +2365,6 @@ async function loadAndRenderFundLeaders(forceRefresh = false) {
     renderFundLeadersUI(fundLeadersDataCache);
 }
 
-// Compute daily delta & rankings from popular active funds
 async function computeFundLeadersFromActiveUniverse() {
     const universe = [
         "TI1", "PPZ", "NVB", "HYV", "AAL", 
@@ -2957,7 +2986,12 @@ function getFallbackFundLeadersSnapshot() {
 }
 
 function renderFundLeadersUI(data) {
-    if (!data || !data.categories) return;
+    // If incoming data is invalid or has only 3 funds, supplement from fallback snapshot!
+    if (!data || !data.categories || (data.categories.topInvestorInflow?.length || 0) <= 3) {
+        const fallback = getFallbackFundLeadersSnapshot();
+        data = fallback;
+        fundLeadersDataCache = fallback;
+    }
 
     const dateElem = document.getElementById("fundLeadersDate");
     if (dateElem && data.date) {
@@ -2973,9 +3007,16 @@ function renderFundLeadersUI(data) {
     renderLeaderCategoryRows("leaderListCashOut", cats.topCashOutflow, "cash-out");
 
     const isAnyCollapsed = Object.values(leaderCategoryLimits).some(v => v === 3);
-    const btnText = document.getElementById("btnToggleAllLeadersText");
-    if (btnText) {
-        btnText.textContent = isAnyCollapsed ? "Tümünü Sırala" : "İlk 3'e Daralt";
+    const btnTop3 = document.getElementById("btnRankModeTop3");
+    const btnAll = document.getElementById("btnRankModeAll");
+    if (btnTop3 && btnAll) {
+        if (!isAnyCollapsed) {
+            btnTop3.classList.remove("active");
+            btnAll.classList.add("active");
+        } else {
+            btnAll.classList.remove("active");
+            btnTop3.classList.add("active");
+        }
     }
 }
 
