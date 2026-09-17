@@ -882,18 +882,6 @@
                         </div>
                     </div>
 
-                    <!-- Timeframe Period Selector -->
-                    <div class="fund-period-bar">
-                        <span class="period-title"><i class="fa-solid fa-clock-rotate-left"></i> Zaman Aralığı:</span>
-                        <div class="fund-period-pills">
-                            <button class="period-btn" data-days="7" onclick="setFundAnalysisPeriod(7)">1 Hafta</button>
-                            <button class="period-btn active" data-days="30" onclick="setFundAnalysisPeriod(30)">1 Ay</button>
-                            <button class="period-btn" data-days="90" onclick="setFundAnalysisPeriod(90)">3 Ay</button>
-                            <button class="period-btn" data-days="180" onclick="setFundAnalysisPeriod(180)">6 Ay</button>
-                            <button class="period-btn" data-days="365" onclick="setFundAnalysisPeriod(365)">1 Yıl</button>
-                        </div>
-                    </div>
-
                     <!-- Fund Loading Indicator Overlay -->
                     <div class="fund-loading-state" id="fundLoadingState" style="display: none;">
                         <i class="fa-solid fa-arrows-rotate fa-spin"></i>
@@ -909,7 +897,7 @@
 
                     <!-- Active Fund Analysis Content -->
                     <div id="fundAnalysisResultArea">
-                        <!-- Fund Hero Identity Card -->
+                        <!-- Fund Hero Identity Card with Symmetrical Controls -->
                         <div class="fund-hero-card ultra-glass-card">
                             <div class="fund-hero-left">
                                 <div class="fund-symbol-badge" id="fundHeroCode">TI1</div>
@@ -918,10 +906,18 @@
                                     <div class="fund-meta-badges">
                                         <span class="fund-meta-pill" id="fundHeroKind"><i class="fa-solid fa-tag"></i> Yatırım Fonu</span>
                                         <span class="fund-meta-pill live" id="fundHeroDate"><i class="fa-solid fa-calendar"></i> 17.09.2026</span>
+                                        <span class="fund-meta-pill"><i class="fa-solid fa-shield-halved" style="color: #38BDF8;"></i> TEFAS Canlı</span>
                                     </div>
                                 </div>
                             </div>
                             <div class="fund-hero-right">
+                                <div class="fund-period-pills">
+                                    <button class="period-btn" data-days="7" onclick="setFundAnalysisPeriod(7)">1H</button>
+                                    <button class="period-btn active" data-days="30" onclick="setFundAnalysisPeriod(30)">1A</button>
+                                    <button class="period-btn" data-days="90" onclick="setFundAnalysisPeriod(90)">3A</button>
+                                    <button class="period-btn" data-days="180" onclick="setFundAnalysisPeriod(180)">6A</button>
+                                    <button class="period-btn" data-days="365" onclick="setFundAnalysisPeriod(365)">1Y</button>
+                                </div>
                                 <button class="btn-quick-add-fund" onclick="prefillAddModalWithFund()" title="İsterseniz bu fonu portföyünüze ekleyin">
                                     <i class="fa-solid fa-cart-plus"></i>
                                     <span>Portföye Ekle</span>
@@ -929,7 +925,7 @@
                             </div>
                         </div>
 
-                        <!-- 5 KPI Metrics Grid -->
+                        <!-- 6 KPI Metrics Grid - Perfectly Symmetrical 3x2 on Desktop, 2x3 on Mobile -->
                         <div class="fund-kpi-grid">
                             <!-- KPI 1: Fiyat -->
                             <div class="fund-kpi-card ultra-glass-card">
@@ -983,32 +979,45 @@
                                 </div>
                             </div>
 
-                            <!-- KPI 5: Portföy Büyüklüğü & Pay Sayısı -->
+                            <!-- KPI 5: Fon Portföy Büyüklüğü (AUM) -->
                             <div class="fund-kpi-card ultra-glass-card">
                                 <div class="kpi-header">
                                     <span class="kpi-title"><i class="fa-solid fa-vault" style="color: #F59E0B;"></i> Fon Büyüklüğü (AUM)</span>
-                                    <span class="kpi-badge amber">Toplam</span>
+                                    <span class="kpi-badge amber" id="fundKpiPortfolioBadge">Toplam Değer</span>
                                 </div>
                                 <div class="kpi-main-val" id="fundKpiPortfolioSize">₺0,00</div>
                                 <div class="kpi-footer-row">
-                                    <span class="kpi-sub-text" id="fundKpiSharesCount">Pay: 0 Adet</span>
+                                    <span class="kpi-sub-text" id="fundKpiPortfolioDesc">Toplam Fon Portföyü</span>
+                                    <span class="kpi-pct-badge amber" id="fundKpiPortfolioType">AUM</span>
+                                </div>
+                            </div>
+
+                            <!-- KPI 6: Tedavüldeki Pay Adedi & Değişimi -->
+                            <div class="fund-kpi-card ultra-glass-card">
+                                <div class="kpi-header">
+                                    <span class="kpi-title"><i class="fa-solid fa-layer-group" style="color: #6366F1;"></i> Tedavüldeki Pay</span>
+                                    <span class="kpi-badge indigo" id="fundKpiSharesBadge">Toplam Pay</span>
+                                </div>
+                                <div class="kpi-main-val" id="fundKpiSharesCount">0</div>
+                                <div class="kpi-footer-row">
+                                    <span class="kpi-sub-text" id="fundKpiSharesDiffDesc">Dönemlik Değişim</span>
                                     <span class="kpi-pct-badge neut" id="fundKpiSharesDiff">0 Pay</span>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Charts Section -->
+                        <!-- Dual Interactive Charts - Side-by-Side Symmetrical Layout -->
                         <div class="fund-charts-wrapper">
                             <!-- Chart 1: Price & Investor Count Dual Axis -->
-                            <div class="analytics-card ultra-glass-card">
+                            <div class="analytics-card ultra-glass-card fund-chart-card">
                                 <div class="chart-header-row">
-                                    <div>
-                                        <h3><i class="fa-solid fa-chart-line" style="color: #38BDF8;"></i> Fiyat ve Yatırımcı Sayısı Dinamiği</h3>
-                                        <p class="chart-subtitle">Sol eksen: Fon birim fiyatı (₺), Sağ eksen: Fon yatırımcı kişi sayısı</p>
+                                    <div class="chart-title-left">
+                                        <h3><i class="fa-solid fa-chart-line" style="color: #38BDF8;"></i> Fiyat ve Yatırımcı Dinamiği</h3>
+                                        <p class="chart-subtitle">Birim fiyat (₺) ve kayıtlı yatırımcı kişi sayısı</p>
                                     </div>
                                     <div class="chart-legend-custom">
-                                        <span class="leg-item cyan"><span class="leg-dot"></span> Fiyat (₺)</span>
-                                        <span class="leg-item purple"><span class="leg-dot"></span> Yatırımcı (Kişi)</span>
+                                        <span class="leg-item cyan"><span class="leg-dot"></span> Fiyat</span>
+                                        <span class="leg-item purple"><span class="leg-dot"></span> Yatırımcı</span>
                                     </div>
                                 </div>
                                 <div class="chart-container fund-chart-container">
@@ -1017,15 +1026,15 @@
                             </div>
 
                             <!-- Chart 2: Daily Net Cash Inflow / Outflow -->
-                            <div class="analytics-card ultra-glass-card">
+                            <div class="analytics-card ultra-glass-card fund-chart-card">
                                 <div class="chart-header-row">
-                                    <div>
-                                        <h3><i class="fa-solid fa-money-bill-transfer" style="color: #10B981;"></i> Günlük Net Nakit Girdisi / Çıktısı (Para Akışı)</h3>
-                                        <p class="chart-subtitle">Pozitif yeşil sütunlar fona para girişini (katılma payı ihracı), kırmızı sütunlar fon çıkışını (pay itfası) gösterir</p>
+                                    <div class="chart-title-left">
+                                        <h3><i class="fa-solid fa-money-bill-transfer" style="color: #10B981;"></i> Günlük Net Nakit Akışı</h3>
+                                        <p class="chart-subtitle">İhraç ve itfa kaynaklı günlük net nakit hareketi</p>
                                     </div>
                                     <div class="chart-legend-custom">
-                                        <span class="leg-item green"><span class="leg-dot"></span> Para Girişi (+)</span>
-                                        <span class="leg-item red"><span class="leg-dot"></span> Para Çıkışı (-)</span>
+                                        <span class="leg-item green"><span class="leg-dot"></span> Giriş (+)</span>
+                                        <span class="leg-item red"><span class="leg-dot"></span> Çıkış (-)</span>
                                     </div>
                                 </div>
                                 <div class="chart-container fund-chart-container">
@@ -1037,9 +1046,14 @@
                         <!-- Historical Data Breakdown Table -->
                         <div class="analytics-card ultra-glass-card fund-table-card">
                             <div class="table-card-header">
-                                <div>
-                                    <h3><i class="fa-solid fa-table-list" style="color: #38BDF8;"></i> Tarihsel Veri ve Kişi Başı Akış Dökümü</h3>
-                                    <p class="chart-subtitle">Her gün kaç kişi giriş/çıkış yaptı, toplam net para akışı ve kişi başı ortalama tutar</p>
+                                <div class="table-title-box">
+                                    <div class="fund-header-icon cyan">
+                                        <i class="fa-solid fa-table-list"></i>
+                                    </div>
+                                    <div>
+                                        <h3>Tarihsel Veri ve Kişi Başı Akış Dökümü</h3>
+                                        <p class="chart-subtitle">Her işlem gününe ait birim fiyat, kişi değişimi, nakit akışı ve kişi başı ortalama tutar</p>
+                                    </div>
                                 </div>
                                 <div class="table-header-right-actions">
                                     <div class="table-filter-pills">

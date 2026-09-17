@@ -1720,17 +1720,35 @@ async function loadAndRenderFundAnalysis(fundCode, days = 30) {
                 : `<i class="fa-solid fa-arrow-down"></i> Ort. Çekim`;
         }
 
-        // 7. Populate KPI 5: Portfolio Size (AUM) & Shares
+        // 7. Populate KPI 5: Fon Portföy Büyüklüğü (AUM)
         const aumElem = document.getElementById("fundKpiPortfolioSize");
-        const sharesElem = document.getElementById("fundKpiSharesCount");
-        const sharesDiffElem = document.getElementById("fundKpiSharesDiff");
+        const aumBadge = document.getElementById("fundKpiPortfolioBadge");
+        const aumDesc = document.getElementById("fundKpiPortfolioDesc");
+        const aumType = document.getElementById("fundKpiPortfolioType");
 
         if (aumElem) aumElem.innerText = formatBillionOrMillion(totalAUM);
-        if (sharesElem) sharesElem.innerText = `Tedavüldeki Pay: ${formatFundCount(totalShares)}`;
-        if (sharesDiffElem) {
+        if (aumBadge) aumBadge.innerText = "Toplam Değer";
+        if (aumDesc) aumDesc.innerText = "Toplam Fon Portföyü";
+        if (aumType) aumType.innerText = "AUM";
+
+        // 8. Populate KPI 6: Tedavüldeki Pay Adedi (Shares in Circulation)
+        const sharesElem = document.getElementById("fundKpiSharesCount");
+        const sharesBadge = document.getElementById("fundKpiSharesBadge");
+        const sharesDiffDesc = document.getElementById("fundKpiSharesDiffDesc");
+        const sharesDiffElem = document.getElementById("fundKpiSharesDiff");
+
+        if (sharesElem) sharesElem.innerText = formatFundCount(totalShares);
+        if (sharesBadge) sharesBadge.innerText = "Toplam Pay";
+        if (sharesDiffDesc) {
             const sign = sharesPeriodDiff >= 0 ? "+" : "";
-            sharesDiffElem.className = `kpi-pct-badge ${sharesPeriodDiff >= 0 ? 'pos' : 'neg'}`;
-            sharesDiffElem.innerText = `${sign}${formatFundCount(sharesPeriodDiff)} Pay`;
+            sharesDiffDesc.innerText = `Dönemlik: ${sign}${formatFundCount(sharesPeriodDiff)}`;
+        }
+        if (sharesDiffElem) {
+            const isPos = sharesPeriodDiff >= 0;
+            const sign = isPos ? "+" : "";
+            const sharesDiffPct = firstShares > 0 ? (sharesPeriodDiff / firstShares) * 100 : 0;
+            sharesDiffElem.className = `kpi-pct-badge ${isPos ? 'pos' : 'neg'}`;
+            sharesDiffElem.innerHTML = `${sign}%${Math.abs(sharesDiffPct).toFixed(1)}`;
         }
 
         // 8. Render Charts & Table
