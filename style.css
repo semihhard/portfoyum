@@ -8336,9 +8336,11 @@ body.theme-neo-brutalism .sort-option.active {
 /* Dual Interactive Charts - Side-by-Side Symmetrical on Desktop */
 .fund-charts-wrapper {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 16px;
     margin-bottom: 22px;
+    width: 100%;
+    max-width: 100%;
 }
 
 .fund-chart-card {
@@ -8347,6 +8349,10 @@ body.theme-neo-brutalism .sort-option.active {
     flex-direction: column;
     justify-content: space-between;
     height: 100%;
+    min-width: 0;
+    max-width: 100%;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .chart-header-row {
@@ -8405,7 +8411,18 @@ body.theme-neo-brutalism .sort-option.active {
     height: 290px;
     position: relative;
     width: 100%;
+    max-width: 100%;
+    min-width: 0;
     flex: 1;
+    overflow: hidden;
+}
+
+.fund-chart-container canvas {
+    max-width: 100% !important;
+    max-height: 100% !important;
+    width: 100% !important;
+    display: block;
+    touch-action: pan-y;
 }
 
 /* Historical Data Table */
@@ -8602,7 +8619,11 @@ body.theme-neo-brutalism .sort-option.active {
 /* Symmetrical Responsive Layouts */
 @media (max-width: 960px) {
     .fund-charts-wrapper {
-        grid-template-columns: 1fr;
+        grid-template-columns: minmax(0, 1fr);
+        gap: 16px;
+    }
+    .fund-chart-card {
+        height: auto !important;
     }
 }
 
@@ -8615,6 +8636,8 @@ body.theme-neo-brutalism .sort-option.active {
     .fund-hero-right {
         justify-content: space-between;
         width: 100%;
+        flex-wrap: wrap;
+        gap: 10px;
     }
     .fund-period-pills {
         flex: 1;
@@ -8627,8 +8650,12 @@ body.theme-neo-brutalism .sort-option.active {
         grid-template-columns: repeat(2, 1fr);
         gap: 12px;
     }
+    .fund-chart-card {
+        padding: 16px 14px !important;
+        height: auto !important;
+    }
     .fund-chart-container {
-        height: 240px;
+        height: 230px !important;
     }
     .table-card-header {
         flex-direction: column;
@@ -8638,5 +8665,39 @@ body.theme-neo-brutalism .sort-option.active {
     .table-header-right-actions {
         width: 100%;
         justify-content: space-between;
+    }
+}
+
+@media (max-width: 480px) {
+    .fund-hero-right {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+    }
+    .fund-period-pills {
+        width: 100%;
+        justify-content: space-between;
+    }
+    .btn-quick-add-fund {
+        width: 100%;
+        justify-content: center;
+    }
+    .fund-chart-card {
+        padding: 14px 10px !important;
+    }
+    .fund-chart-container {
+        height: 210px !important;
+    }
+    .chart-title-left h3 {
+        font-size: 0.94rem;
+    }
+    .chart-subtitle {
+        font-size: 0.72rem;
+    }
+    .chart-legend-custom {
+        gap: 8px;
+    }
+    .leg-item {
+        font-size: 0.72rem;
     }
 }

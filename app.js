@@ -1226,7 +1226,9 @@ function switchAnalyticsSubView(view) {
             headerBadge.style.borderColor = "rgba(56, 189, 248, 0.35)";
             headerBadge.innerHTML = '<i class="fa-solid fa-bolt"></i> CANLI FON RADAR';
         }
-        loadAndRenderFundAnalysis(appState.activeFundCode || "TI1", appState.activeFundPeriod || 30);
+        requestAnimationFrame(() => {
+            loadAndRenderFundAnalysis(appState.activeFundCode || "TI1", appState.activeFundPeriod || 30);
+        });
     } else {
         if (btnFund) btnFund.classList.remove("active");
         if (btnPortfolio) btnPortfolio.classList.add("active");
@@ -1762,9 +1764,11 @@ async function loadAndRenderFundAnalysis(fundCode, days = 30) {
     }
 }
 
-// Chart.js Render Engine for Dual Fund Charts
+// Chart.js Render Engine for Dual Fund Charts (Mobile-Optimized & Responsive)
 function renderFundCharts(data) {
     destroyFundCharts();
+
+    const isMobile = window.innerWidth <= 768;
 
     const labels = data.map(d => {
         const parts = (d.tarih || '').split('-');
@@ -1788,9 +1792,10 @@ function renderFundCharts(data) {
                         yAxisID: "yPrice",
                         borderColor: "#38BDF8",
                         backgroundColor: "rgba(56, 189, 248, 0.08)",
-                        borderWidth: 2.5,
-                        pointRadius: data.length > 40 ? 0 : 2,
+                        borderWidth: isMobile ? 2 : 2.5,
+                        pointRadius: isMobile ? 0 : (data.length > 40 ? 0 : 2),
                         pointHoverRadius: 6,
+                        hitRadius: 10,
                         pointBackgroundColor: "#38BDF8",
                         tension: 0.25,
                         fill: true
@@ -1800,10 +1805,11 @@ function renderFundCharts(data) {
                         data: investors,
                         yAxisID: "yInvestors",
                         borderColor: "#C084FC",
-                        borderDash: [5, 4],
-                        borderWidth: 2,
-                        pointRadius: data.length > 40 ? 0 : 2,
+                        borderDash: [4, 4],
+                        borderWidth: isMobile ? 1.8 : 2,
+                        pointRadius: isMobile ? 0 : (data.length > 40 ? 0 : 2),
                         pointHoverRadius: 6,
+                        hitRadius: 10,
                         pointBackgroundColor: "#C084FC",
                         tension: 0.25,
                         fill: false
@@ -1813,6 +1819,7 @@ function renderFundCharts(data) {
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
+                resizeDelay: 100,
                 interaction: {
                     mode: "index",
                     intersect: false
@@ -1840,7 +1847,14 @@ function renderFundCharts(data) {
                 scales: {
                     x: {
                         grid: { color: "rgba(255, 255, 255, 0.04)" },
-                        ticks: { color: "#64748B", font: { family: "Plus Jakarta Sans", size: 10 } }
+                        ticks: {
+                            color: "#64748B",
+                            font: { family: "Plus Jakarta Sans", size: isMobile ? 9 : 10 },
+                            maxTicksLimit: isMobile ? 5 : 9,
+                            maxRotation: 0,
+                            minRotation: 0,
+                            autoSkip: true
+                        }
                     },
                     yPrice: {
                         type: "linear",
@@ -1849,9 +1863,16 @@ function renderFundCharts(data) {
                         grid: { color: "rgba(255, 255, 255, 0.05)" },
                         ticks: {
                             color: "#38BDF8",
-                            font: { family: "Plus Jakarta Sans", size: 10 },
+                            font: { family: "Plus Jakarta Sans", size: isMobile ? 9 : 10 },
+                            maxTicksLimit: isMobile ? 5 : 7,
                             callback: function(val) {
-                                return val < 10 ? `₺${val.toFixed(3)}` : `₺${val.toFixed(1)}`;
+                                if (val < 1) return `₺${val.toFixed(3)}`;
+                                if (val < 10) return `₺${val.toFixed(2)}`;
+                                if (isMobile) {
+                                    if (val >= 1000) return `₺${(val / 1000).toFixed(1)}B`;
+                                    return `₺${Math.round(val)}`;
+                                }
+                                return `₺${val.toLocaleString('tr-TR', { maximumFractionDigits: 2 })}`;
                             }
                         }
                     },
@@ -1862,8 +1883,14 @@ function renderFundCharts(data) {
                         grid: { drawOnChartArea: false },
                         ticks: {
                             color: "#C084FC",
-                            font: { family: "Plus Jakarta Sans", size: 10 },
+                            font: { family: "Plus Jakarta Sans", size: isMobile ? 9 : 10 },
+                            maxTicksLimit: isMobile ? 5 : 7,
                             callback: function(val) {
+                                if (isMobile) {
+                                    if (val >= 1000000) return `${(val / 1000000).toFixed(1)}M`;
+                                    if (val >= 1000) return `${(val / 1000).toFixed(0)}B`;
+                                    return val;
+                                }
                                 return formatFundCount(val);
                             }
                         }
@@ -1892,13 +1919,15 @@ function renderFundCharts(data) {
                     label: "Net Nakit Akışı (₺)",
                     data: flowValues,
                     backgroundColor: flowColors,
-                    borderRadius: 3,
+                    borderRadius: data.length > 30 ? 0 : 3,
+                    maxBarThickness: isMobile ? 12 : 24,
                     borderSkipped: false
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
+                resizeDelay: 100,
                 plugins: {
                     legend: { display: false },
                     tooltip: {
@@ -1933,13 +1962,21 @@ function renderFundCharts(data) {
                 scales: {
                     x: {
                         grid: { display: false },
-                        ticks: { color: "#64748B", font: { family: "Plus Jakarta Sans", size: 10 } }
+                        ticks: {
+                            color: "#64748B",
+                            font: { family: "Plus Jakarta Sans", size: isMobile ? 9 : 10 },
+                            maxTicksLimit: isMobile ? 5 : 9,
+                            maxRotation: 0,
+                            minRotation: 0,
+                            autoSkip: true
+                        }
                     },
                     y: {
                         grid: { color: "rgba(255, 255, 255, 0.05)" },
                         ticks: {
                             color: "#94A3B8",
-                            font: { family: "Plus Jakarta Sans", size: 10 },
+                            font: { family: "Plus Jakarta Sans", size: isMobile ? 9 : 10 },
+                            maxTicksLimit: isMobile ? 5 : 7,
                             callback: function(val) {
                                 return formatBillionOrMillion(val);
                             }
@@ -1949,6 +1986,12 @@ function renderFundCharts(data) {
             }
         });
     }
+
+    // Safety layout check for mobile rendering & orientation changes
+    requestAnimationFrame(() => {
+        if (fundPriceInvestorChartInstance) fundPriceInvestorChartInstance.resize();
+        if (fundCashFlowChartInstance) fundCashFlowChartInstance.resize();
+    });
 }
 
 function destroyFundCharts() {
@@ -1960,7 +2003,35 @@ function destroyFundCharts() {
         fundCashFlowChartInstance.destroy();
         fundCashFlowChartInstance = null;
     }
+
+    // Clean canvas attributes so Chart.js recalculates fresh dimensions on mobile
+    const c1 = document.getElementById("fundPriceInvestorChart");
+    if (c1) {
+        c1.removeAttribute("width");
+        c1.removeAttribute("height");
+        c1.removeAttribute("style");
+    }
+    const c2 = document.getElementById("fundCashFlowChart");
+    if (c2) {
+        c2.removeAttribute("width");
+        c2.removeAttribute("height");
+        c2.removeAttribute("style");
+    }
 }
+
+// Debounced window resize handler for smooth responsive chart recalculation
+let fundChartResizeDebounceTimer = null;
+window.addEventListener("resize", () => {
+    if (fundChartResizeDebounceTimer) clearTimeout(fundChartResizeDebounceTimer);
+    fundChartResizeDebounceTimer = setTimeout(() => {
+        if (fundPriceInvestorChartInstance) {
+            fundPriceInvestorChartInstance.resize();
+        }
+        if (fundCashFlowChartInstance) {
+            fundCashFlowChartInstance.resize();
+        }
+    }, 120);
+});
 
 // Render Historical Table (Latest Date First)
 function renderFundHistoryTable(data) {
