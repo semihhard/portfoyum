@@ -15,6 +15,113 @@ export default {
       const url = new URL(request.url);
       const fonCode = (url.searchParams.get("fon") || url.searchParams.get("tefas") || "").trim().toUpperCase();
 
+      const isLeaders = url.searchParams.get("leaders") === "1" || url.searchParams.get("liderler") === "1" || fonCode === "LEADERS";
+      if (isLeaders) {
+        const TEFAS_URL = "https://www.tefas.gov.tr/api/funds/fonGnlBlgSiraliGetir";
+        const pad = n => String(n).padStart(2, '0');
+        const dStr = d => '' + d.getFullYear() + pad(d.getMonth()+1) + pad(d.getDate());
+        const now = new Date();
+        const startDt = new Date(now.getTime() - (6 * 86400000));
+
+        const body = {
+          fonTipi: 'YAT',
+          fonKodu: null,
+          aramaMetni: null,
+          fonTurKod: null,
+          fonGrubu: null,
+          sfonTurKod: null,
+          fonTurAciklama: null,
+          kurucuKod: null,
+          basTarih: dStr(startDt),
+          bitTarih: dStr(now),
+          basSira: 1,
+          bitSira: 100000,
+          dil: 'TR',
+          sFonTurKod: '',
+          fonKod: '',
+          fonGrup: '',
+          fonUnvanTip: ''
+        };
+
+        try {
+          const res = await fetch(TEFAS_URL, {
+            method: "POST",
+            headers: {
+              "Accept": "*/*",
+              "Content-Type": "application/json",
+              "Origin": "https://www.tefas.gov.tr",
+              "Referer": "https://www.tefas.gov.tr/tr/fon-verileri",
+              "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+            },
+            body: JSON.stringify(body)
+          });
+
+          if (res.ok) {
+            const j = await res.json();
+            const list = j.resultList || [];
+            const byFund = {};
+            for (const row of list) {
+              if (!row.fonKodu) continue;
+              if (!byFund[row.fonKodu]) byFund[row.fonKodu] = [];
+              byFund[row.fonKodu].push(row);
+            }
+            const diffs = [];
+            for (const code of Object.keys(byFund)) {
+              const rows = byFund[code].sort((a,b) => (a.tarih||'').localeCompare(b.tarih||''));
+              if (rows.length < 2) continue;
+              const cur = rows[rows.length - 1];
+              const prev = rows[rows.length - 2];
+              const curPrice = parseFloat(cur.fiyat) || 0;
+              const curShares = parseFloat(cur.tedPaySayisi) || 0;
+              const prevShares = parseFloat(prev.tedPaySayisi) || 0;
+              const curInv = parseInt(cur.kisiSayisi) || 0;
+              const prevInv = parseInt(prev.kisiSayisi) || 0;
+              const dInv = curInv - prevInv;
+              const dShares = curShares - prevShares;
+              const flow = dShares * curPrice;
+              const aum = cur.portfoyBuyukluk || (curPrice * curShares);
+              diffs.push({
+                code,
+                name: cur.fonUnvan || `${code} YATIRIM FONU`,
+                date: cur.tarih,
+                price: curPrice,
+                aum,
+                investors: curInv,
+                deltaInvestors: dInv,
+                deltaShares: dShares,
+                cashFlow: flow,
+                perPerson: Math.abs(dInv) > 0 ? Math.abs(flow) / Math.abs(dInv) : 0
+              });
+            }
+
+            const topInvestorInflow = [...diffs].filter(d => d.deltaInvestors > 0).sort((a,b) => b.deltaInvestors - a.deltaInvestors).slice(0, 3);
+            const topInvestorOutflow = [...diffs].filter(d => d.deltaInvestors < 0).sort((a,b) => a.deltaInvestors - b.deltaInvestors).slice(0, 3);
+            const topCashInflow = [...diffs].filter(d => d.cashFlow > 0).sort((a,b) => b.cashFlow - a.cashFlow).slice(0, 3);
+            const topCashOutflow = [...diffs].filter(d => d.cashFlow < 0).sort((a,b) => a.cashFlow - b.cashFlow).slice(0, 3);
+
+            return new Response(JSON.stringify({
+              ok: true,
+              date: diffs[0]?.date || dStr(now),
+              totalAnalyzed: diffs.length,
+              categories: {
+                topInvestorInflow,
+                topInvestorOutflow,
+                topCashInflow,
+                topCashOutflow
+              }
+            }), {
+              headers: {
+                "Content-Type": "application/json; charset=utf-8",
+                "Access-Control-Allow-Origin": "*",
+                "Cache-Control": "public, max-age=1800",
+              },
+            });
+          }
+        } catch(e) {
+          console.warn("Worker leaders calculation error:", e);
+        }
+      }
+
       if (fonCode) {
         const days = Math.min(365, Math.max(5, parseInt(url.searchParams.get("days") || "30", 10)));
         const kind = (url.searchParams.get("kind") || "YAT").trim().toUpperCase();

@@ -8701,3 +8701,476 @@ body.theme-neo-brutalism .sort-option.active {
         font-size: 0.72rem;
     }
 }
+
+/* ==========================================================================
+   TEFAS Fund Flow Leaders & Investor Inflow/Outflow Radar Styles
+   ========================================================================== */
+
+/* Subnav Capsule Switcher (Tekil Fon Analizi vs Günün Akış Liderleri) */
+.fund-subnav-container {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 22px;
+}
+
+.fund-subnav-pills {
+    display: inline-flex;
+    background: rgba(15, 23, 42, 0.75);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    padding: 5px;
+    border-radius: 16px;
+    gap: 6px;
+    box-shadow: 0 8px 24px -6px rgba(0, 0, 0, 0.4);
+}
+
+.fund-subnav-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 18px;
+    border-radius: 12px;
+    background: transparent;
+    border: 1px solid transparent;
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+    position: relative;
+    user-select: none;
+}
+
+.fund-subnav-btn:hover {
+    color: #FFFFFF;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.fund-subnav-btn.active {
+    background: linear-gradient(135deg, rgba(56, 189, 248, 0.22) 0%, rgba(99, 102, 241, 0.18) 100%);
+    color: #38BDF8;
+    border-color: rgba(56, 189, 248, 0.4);
+    box-shadow: 0 4px 16px -2px rgba(56, 189, 248, 0.3);
+}
+
+.fund-pulse-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #10B981;
+    box-shadow: 0 0 8px #10B981;
+    animation: neon-pulse 2s infinite ease-in-out;
+}
+
+/* Leaders Header Ribbon Card */
+.fund-leaders-header-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 24px;
+    margin-bottom: 22px;
+    border-radius: 20px;
+    gap: 16px;
+    flex-wrap: wrap;
+    background: linear-gradient(135deg, rgba(16, 24, 39, 0.82) 0%, rgba(15, 23, 42, 0.7) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.leaders-header-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.leaders-header-icon-box {
+    width: 46px;
+    height: 46px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.2) 0%, rgba(234, 179, 8, 0.08) 100%);
+    border: 1px solid rgba(245, 158, 11, 0.4);
+    color: #F59E0B;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+    box-shadow: 0 0 16px rgba(245, 158, 11, 0.25);
+    flex-shrink: 0;
+}
+
+.leaders-hero-title {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: #FFFFFF;
+    margin: 0;
+    letter-spacing: -0.4px;
+}
+
+.leaders-hero-subtitle {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    margin-top: 4px;
+    line-height: 1.4;
+}
+
+.leaders-header-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.leaders-date-pill {
+    padding: 6px 14px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--text-secondary);
+    font-size: 0.78rem;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.btn-refresh-leaders {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 7px 14px;
+    border-radius: 10px;
+    background: rgba(56, 189, 248, 0.12);
+    border: 1px solid rgba(56, 189, 248, 0.3);
+    color: #38BDF8;
+    font-size: 0.8rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-refresh-leaders:hover {
+    background: rgba(56, 189, 248, 0.22);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(56, 189, 248, 0.3);
+}
+
+/* Symmetrical 2x2 Leaders Grid */
+.fund-leaders-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+    margin-bottom: 22px;
+}
+
+.leader-category-card {
+    padding: 22px;
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-width: 0;
+    box-sizing: border-box;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.leader-category-card.inflow-investor {
+    border-top: 2.5px solid rgba(16, 185, 129, 0.85);
+}
+
+.leader-category-card.outflow-investor {
+    border-top: 2.5px solid rgba(244, 63, 94, 0.85);
+}
+
+.leader-category-card.inflow-cash {
+    border-top: 2.5px solid rgba(56, 189, 248, 0.85);
+}
+
+.leader-category-card.outflow-cash {
+    border-top: 2.5px solid rgba(245, 158, 11, 0.85);
+}
+
+.leader-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+    gap: 10px;
+}
+
+.leader-card-title-box {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+}
+
+.leader-card-icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.05rem;
+    flex-shrink: 0;
+}
+
+.leader-card-icon.emerald {
+    background: rgba(16, 185, 129, 0.15);
+    border: 1px solid rgba(16, 185, 129, 0.35);
+    color: #10B981;
+}
+
+.leader-card-icon.rose {
+    background: rgba(244, 63, 94, 0.15);
+    border: 1px solid rgba(244, 63, 94, 0.35);
+    color: #F43F5E;
+}
+
+.leader-card-icon.cyan {
+    background: rgba(56, 189, 248, 0.15);
+    border: 1px solid rgba(56, 189, 248, 0.35);
+    color: #38BDF8;
+}
+
+.leader-card-icon.amber {
+    background: rgba(245, 158, 11, 0.15);
+    border: 1px solid rgba(245, 158, 11, 0.35);
+    color: #F59E0B;
+}
+
+.leader-card-title-box h3 {
+    font-size: 0.98rem;
+    font-weight: 800;
+    color: #FFFFFF;
+    margin: 0;
+    letter-spacing: -0.2px;
+}
+
+.leader-card-subtitle {
+    font-size: 0.72rem;
+    color: var(--text-secondary);
+    display: block;
+    margin-top: 2px;
+}
+
+.leader-badge {
+    padding: 4px 10px;
+    border-radius: 8px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.leader-badge.emerald {
+    background: rgba(16, 185, 129, 0.14);
+    color: #10B981;
+    border: 1px solid rgba(16, 185, 129, 0.25);
+}
+
+.leader-badge.rose {
+    background: rgba(244, 63, 94, 0.14);
+    color: #F43F5E;
+    border: 1px solid rgba(244, 63, 94, 0.25);
+}
+
+.leader-badge.cyan {
+    background: rgba(56, 189, 248, 0.14);
+    color: #38BDF8;
+    border: 1px solid rgba(56, 189, 248, 0.25);
+}
+
+.leader-badge.amber {
+    background: rgba(245, 158, 11, 0.14);
+    color: #F59E0B;
+    border: 1px solid rgba(245, 158, 11, 0.25);
+}
+
+/* Leader Rows */
+.leader-list-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.leader-row-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 14px;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.025);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    gap: 12px;
+}
+
+.leader-row-item:hover {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(56, 189, 248, 0.3);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+}
+
+.leader-item-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+    flex: 1;
+}
+
+.leader-rank-badge {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    font-size: 0.78rem;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.leader-rank-badge.gold {
+    background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+    color: #FFFFFF;
+    box-shadow: 0 0 10px rgba(245, 158, 11, 0.4);
+}
+
+.leader-rank-badge.silver {
+    background: linear-gradient(135deg, #94A3B8 0%, #64748B 100%);
+    color: #FFFFFF;
+}
+
+.leader-rank-badge.bronze {
+    background: linear-gradient(135deg, #B45309 0%, #78350F 100%);
+    color: #FFFFFF;
+}
+
+.leader-fund-meta {
+    min-width: 0;
+    flex: 1;
+}
+
+.leader-fund-top-line {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.leader-fund-code {
+    font-size: 0.88rem;
+    font-weight: 800;
+    color: #FFFFFF;
+    letter-spacing: 0.3px;
+    font-family: var(--font-mono);
+}
+
+.leader-fund-price {
+    font-size: 0.74rem;
+    color: var(--text-secondary);
+    font-variant-numeric: tabular-nums;
+}
+
+.leader-fund-name {
+    font-size: 0.73rem;
+    color: var(--text-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-top: 2px;
+}
+
+.leader-item-right {
+    text-align: right;
+    flex-shrink: 0;
+}
+
+.leader-main-val {
+    font-size: 0.96rem;
+    font-weight: 800;
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.3px;
+}
+
+.leader-main-val.pos {
+    color: #10B981;
+}
+
+.leader-main-val.neg {
+    color: #F43F5E;
+}
+
+.leader-sub-metric {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    margin-top: 2px;
+    font-variant-numeric: tabular-nums;
+}
+
+/* Interactive Footer Hint */
+.leaders-footer-hint {
+    padding: 14px 18px;
+    border-radius: 14px;
+    background: rgba(56, 189, 248, 0.05);
+    border: 1px solid rgba(56, 189, 248, 0.15);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--text-secondary);
+    font-size: 0.78rem;
+    line-height: 1.45;
+}
+
+/* Responsive Overrides for Leaders Grid */
+@media (max-width: 960px) {
+    .fund-leaders-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+}
+
+@media (max-width: 600px) {
+    .fund-subnav-pills {
+        width: 100%;
+    }
+    .fund-subnav-btn {
+        flex: 1;
+        justify-content: center;
+        padding: 8px 10px;
+        font-size: 0.78rem;
+    }
+    .fund-leaders-header-card {
+        padding: 16px;
+    }
+    .leaders-header-left {
+        gap: 12px;
+    }
+    .leaders-header-icon-box {
+        width: 40px;
+        height: 40px;
+        font-size: 1.1rem;
+    }
+    .leaders-hero-title {
+        font-size: 1.1rem;
+    }
+    .leaders-header-right {
+        width: 100%;
+        justify-content: space-between;
+    }
+    .leader-row-item {
+        padding: 10px 12px;
+    }
+    .leader-fund-code {
+        font-size: 0.82rem;
+    }
+    .leader-main-val {
+        font-size: 0.88rem;
+    }
+}
+

@@ -841,8 +841,25 @@
 
                 <!-- SUBVIEW 2: TEFAS FUND ANALYSIS LABORATORY -->
                 <div id="subviewFundAnalytics" style="display: none;">
-                    <!-- Fund Search & Quick Tags Card -->
-                    <div class="fund-search-card ultra-glass-card">
+                    <!-- Fund Navigation Sub-Segments: Tekil Fon Analizi vs Günün Akış Liderleri -->
+                    <div class="fund-subnav-container">
+                        <div class="fund-subnav-pills">
+                            <button type="button" class="fund-subnav-btn active" id="btnFundSubtabSingle" onclick="switchFundSubTab('single')">
+                                <i class="fa-solid fa-chart-pie"></i>
+                                <span>Tekil Fon Analizi</span>
+                            </button>
+                            <button type="button" class="fund-subnav-btn" id="btnFundSubtabLeaders" onclick="switchFundSubTab('leaders')">
+                                <i class="fa-solid fa-ranking-star"></i>
+                                <span>Günün Akış Liderleri (Top 3)</span>
+                                <span class="fund-pulse-dot"></span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- SUBVIEW 2-A: TEKİL FON ANALİZİ (MEVCUT) -->
+                    <div id="fundViewSingleArea">
+                        <!-- Fund Search & Quick Tags Card -->
+                        <div class="fund-search-card ultra-glass-card">
                         <div class="fund-search-header">
                             <div class="fund-search-title">
                                 <i class="fa-solid fa-magnifying-glass-chart" style="color: #38BDF8;"></i>
@@ -1084,6 +1101,123 @@
                                     </tbody>
                                 </table>
                             </div>
+                        </div>
+                    </div>
+                    <!-- /fundViewSingleArea -->
+
+                    <!-- SUBVIEW 2-B: GÜNÜN FON AKIŞ LİDERLERİ (TOP 3 RADARI) -->
+                    <div id="fundViewLeadersArea" style="display: none;">
+                        <!-- Leaders Header Bar -->
+                        <div class="fund-leaders-header-card ultra-glass-card">
+                            <div class="leaders-header-left">
+                                <div class="leaders-header-icon-box">
+                                    <i class="fa-solid fa-ranking-star"></i>
+                                </div>
+                                <div>
+                                    <h2 class="leaders-hero-title">Günün TEFAS Akış Liderleri</h2>
+                                    <p class="leaders-hero-subtitle">Son işlem gününde en çok yatırımcı ve net sermaye akışı kaydeden öncü fonlar</p>
+                                </div>
+                            </div>
+                            <div class="leaders-header-right">
+                                <span class="leaders-date-pill" id="fundLeadersDatePill">
+                                    <i class="fa-solid fa-calendar-day"></i> <span id="fundLeadersDate">Canlı Radar</span>
+                                </span>
+                                <button type="button" class="btn-refresh-leaders" onclick="loadAndRenderFundLeaders(true)" title="Verileri Yenile">
+                                    <i class="fa-solid fa-arrows-rotate"></i>
+                                    <span>Yenile</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Leaders Loading State -->
+                        <div class="fund-loading-state" id="fundLeadersLoading" style="display: none;">
+                            <i class="fa-solid fa-arrows-rotate fa-spin"></i>
+                            <p>TEFAS Fon Liderleri Hesaplanıyor...</p>
+                        </div>
+
+                        <!-- Symmetrical 2x2 Leaders Grid -->
+                        <div class="fund-leaders-grid" id="fundLeadersGrid">
+                            <!-- Category 1: Top 3 Investor Inflow (+) -->
+                            <div class="analytics-card ultra-glass-card leader-category-card inflow-investor">
+                                <div class="leader-card-header">
+                                    <div class="leader-card-title-box">
+                                        <div class="leader-card-icon emerald">
+                                            <i class="fa-solid fa-user-plus"></i>
+                                        </div>
+                                        <div>
+                                            <h3>En Çok Yatırımcı Girişi</h3>
+                                            <span class="leader-card-subtitle">Günün en fazla yeni yatırımcı çeken ilk 3 fonu</span>
+                                        </div>
+                                    </div>
+                                    <span class="leader-badge emerald"><i class="fa-solid fa-arrow-trend-up"></i> Giriş (+)</span>
+                                </div>
+                                <div class="leader-list-container" id="leaderListInvIn">
+                                    <!-- Dynamic rows rendered by JS -->
+                                </div>
+                            </div>
+
+                            <!-- Category 2: Top 3 Investor Outflow (-) -->
+                            <div class="analytics-card ultra-glass-card leader-category-card outflow-investor">
+                                <div class="leader-card-header">
+                                    <div class="leader-card-title-box">
+                                        <div class="leader-card-icon rose">
+                                            <i class="fa-solid fa-user-minus"></i>
+                                        </div>
+                                        <div>
+                                            <h3>En Çok Yatırımcı Çıkışı</h3>
+                                            <span class="leader-card-subtitle">Günün en fazla yatırımcı kaybeden ilk 3 fonu</span>
+                                        </div>
+                                    </div>
+                                    <span class="leader-badge rose"><i class="fa-solid fa-arrow-trend-down"></i> Çıkış (-)</span>
+                                </div>
+                                <div class="leader-list-container" id="leaderListInvOut">
+                                    <!-- Dynamic rows rendered by JS -->
+                                </div>
+                            </div>
+
+                            <!-- Category 3: Top 3 Cash Inflow (+) -->
+                            <div class="analytics-card ultra-glass-card leader-category-card inflow-cash">
+                                <div class="leader-card-header">
+                                    <div class="leader-card-title-box">
+                                        <div class="leader-card-icon cyan">
+                                            <i class="fa-solid fa-money-bill-trend-up"></i>
+                                        </div>
+                                        <div>
+                                            <h3>En Çok Para Girişi</h3>
+                                            <span class="leader-card-subtitle">Günün en yüksek net nakit girişi olan ilk 3 fonu</span>
+                                        </div>
+                                    </div>
+                                    <span class="leader-badge cyan"><i class="fa-solid fa-vault"></i> Net Giriş (+)</span>
+                                </div>
+                                <div class="leader-list-container" id="leaderListCashIn">
+                                    <!-- Dynamic rows rendered by JS -->
+                                </div>
+                            </div>
+
+                            <!-- Category 4: Top 3 Cash Outflow (-) -->
+                            <div class="analytics-card ultra-glass-card leader-category-card outflow-cash">
+                                <div class="leader-card-header">
+                                    <div class="leader-card-title-box">
+                                        <div class="leader-card-icon amber">
+                                            <i class="fa-solid fa-money-bill-transfer"></i>
+                                        </div>
+                                        <div>
+                                            <h3>En Çok Para Çıkışı</h3>
+                                            <span class="leader-card-subtitle">Günün en yüksek net nakit çıkışı olan ilk 3 fonu</span>
+                                        </div>
+                                    </div>
+                                    <span class="leader-badge amber"><i class="fa-solid fa-arrow-right-from-bracket"></i> Net Çıkış (-)</span>
+                                </div>
+                                <div class="leader-list-container" id="leaderListCashOut">
+                                    <!-- Dynamic rows rendered by JS -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Interactive Info Footer Hint -->
+                        <div class="leaders-footer-hint ultra-glass-card">
+                            <i class="fa-solid fa-circle-info" style="color: #38BDF8;"></i>
+                            <span>Listedeki herhangi bir fona dokunarak doğrudan <strong>Tekil Fon Analizi</strong> sekmesine geçebilir, fiyat ve yatırımcı grafiklerini detaylı inceleyebilirsiniz.</span>
                         </div>
                     </div>
                 </div>
