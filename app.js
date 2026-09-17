@@ -1523,13 +1523,25 @@ async function fetchTefasFundAllocation(fundCode, days = 30) {
     const fCode = (fundCode || "").toUpperCase().trim();
     const cacheKey = `${fCode}_alloc_${days}`;
 
+    // Purge any corrupted or older allocation caches
+    try {
+        const toRemove = [];
+        for (let i = 0; i < localStorage.length; i++) {
+            const k = localStorage.key(i);
+            if (k && k.startsWith("tefas_alloc_") && !k.startsWith("tefas_alloc_v4_")) {
+                toRemove.push(k);
+            }
+        }
+        toRemove.forEach(k => localStorage.removeItem(k));
+    } catch(e) {}
+
     // Check in-memory cache
     if (fundAllocationDataCache[cacheKey]) {
         return fundAllocationDataCache[cacheKey];
     }
 
     // Check localStorage cache (< 30 mins)
-    const localKey = `tefas_alloc_${cacheKey}`;
+    const localKey = `tefas_alloc_v4_${cacheKey}`;
     try {
         const cachedStr = localStorage.getItem(localKey);
         if (cachedStr) {
@@ -1540,6 +1552,15 @@ async function fetchTefasFundAllocation(fundCode, days = 30) {
             }
         }
     } catch(e) {}
+
+    const cleanRows = rawList => {
+        return rawList.map(row => {
+            const cleaned = { ...row };
+            delete cleaned.bilFiyat;
+            delete cleaned.bilfiyat;
+            return cleaned;
+        }).sort((a, b) => (a.tarih || '').localeCompare(b.tarih || ''));
+    };
 
     // Tier 1: Cloudflare Worker proxy with alloc=1
     try {
@@ -1552,7 +1573,7 @@ async function fetchTefasFundAllocation(fundCode, days = 30) {
         if (res.ok) {
             const json = await res.json();
             if (json.ok && Array.isArray(json.data) && json.data.length > 0) {
-                const sorted = [...json.data].sort((a, b) => (a.tarih || '').localeCompare(b.tarih || ''));
+                const sorted = cleanRows(json.data);
                 fundAllocationDataCache[cacheKey] = sorted;
                 try {
                     localStorage.setItem(localKey, JSON.stringify({ timestamp: Date.now(), data: sorted }));
@@ -1606,7 +1627,7 @@ async function fetchTefasFundAllocation(fundCode, days = 30) {
         if (res.ok) {
             const j = await res.json();
             if (j.resultList && j.resultList.length > 0) {
-                const sorted = [...j.resultList].sort((a, b) => (a.tarih || '').localeCompare(b.tarih || ''));
+                const sorted = cleanRows(j.resultList);
                 fundAllocationDataCache[cacheKey] = sorted;
                 try {
                     localStorage.setItem(localKey, JSON.stringify({ timestamp: Date.now(), data: sorted }));
@@ -1620,11 +1641,11 @@ async function fetchTefasFundAllocation(fundCode, days = 30) {
 
     // Tier 3: Older cached version
     try {
-        const fallbackKeys = Object.keys(localStorage).filter(k => k.startsWith(`tefas_alloc_${fCode}_`));
+        const fallbackKeys = Object.keys(localStorage).filter(k => k.startsWith(`tefas_alloc_v4_${fCode}_`));
         if (fallbackKeys.length > 0) {
             const lastCache = JSON.parse(localStorage.getItem(fallbackKeys[0]));
             if (lastCache && lastCache.data && lastCache.data.length > 0) {
-                return lastCache.data;
+                return cleanRows(lastCache.data);
             }
         }
     } catch(e) {}
@@ -1702,16 +1723,16 @@ function renderFundLatestAllocation(allocData, totalAUM = 0) {
         dateBadge.innerHTML = `<i class="fa-regular fa-calendar"></i> ${dateStr}`;
     }
 
-    const ignoredKeys = new Set(['tarih', 'fonKodu', 'fonUnvan', 'fonKod', 'fonGrup', 'fonTipi', 'sira']);
     const items = [];
 
-    for (const key of Object.keys(latestRow)) {
-        if (ignoredKeys.has(key)) continue;
-        const val = parseFloat(latestRow[key]) || 0;
-        if (val > 0.01) {
-            const def = TEFAS_ASSET_MAP[key] || { label: key.toUpperCase(), color: "#94A3B8" };
+    for (const [key, rawVal] of Object.entries(latestRow)) {
+        const k = key.toLowerCase();
+        if (k === 'bilfiyat' || !TEFAS_ASSET_MAP[k]) continue;
+        const val = parseFloat(rawVal) || 0;
+        if (val > 0.01 && val <= 100) {
+            const def = TEFAS_ASSET_MAP[k];
             items.push({
-                key,
+                key: k,
                 label: def.label,
                 color: def.color,
                 pct: val
@@ -1738,7 +1759,7 @@ function renderFundLatestAllocation(allocData, totalAUM = 0) {
     if (listElem) {
         listElem.innerHTML = items.map(item => {
             const estVal = totalAUM > 0 ? (totalAUM * item.pct / 100) : 0;
-            const valStr = totalAUM > 0 ? `₺${formatBillionOrMillion(estVal)}` : "";
+            const valStr = totalAUM > 0 ? formatBillionOrMillion(estVal) : "";
             return `
                 <div class="alloc-item-row">
                     <div class="alloc-item-top">
@@ -1763,18 +1784,18 @@ function renderFundLatestAllocation(allocData, totalAUM = 0) {
     let chartValues = [];
     let chartColors = [];
 
-    if (items.length <= 6) {
+    if (items.length <= 8) {
         chartLabels = items.map(it => it.label);
         chartValues = items.map(it => it.pct);
         chartColors = items.map(it => it.color);
     } else {
-        const top5 = items.slice(0, 5);
-        const rest = items.slice(5);
+        const top7 = items.slice(0, 7);
+        const rest = items.slice(7);
         const restSum = rest.reduce((acc, it) => acc + it.pct, 0);
 
-        chartLabels = top5.map(it => it.label);
-        chartValues = top5.map(it => it.pct);
-        chartColors = top5.map(it => it.color);
+        chartLabels = top7.map(it => it.label);
+        chartValues = top7.map(it => it.pct);
+        chartColors = top7.map(it => it.color);
 
         chartLabels.push("Diğer Varlıklar");
         chartValues.push(parseFloat(restSum.toFixed(2)));
@@ -1813,7 +1834,7 @@ function renderFundLatestAllocation(allocData, totalAUM = 0) {
                             label: function(ctx) {
                                 const val = ctx.parsed || 0;
                                 const est = totalAUM > 0 ? (totalAUM * val / 100) : 0;
-                                const valPart = totalAUM > 0 ? ` (₺${formatBillionOrMillion(est)})` : '';
+                                const valPart = totalAUM > 0 ? ` (${formatBillionOrMillion(est)})` : '';
                                 return ` ${ctx.label}: %${val.toFixed(2)}${valPart}`;
                             }
                         }
@@ -1834,14 +1855,14 @@ function renderFundHistoryAllocationChart(allocData) {
     }
 
     const isMobile = window.innerWidth <= 768;
-    const ignoredKeys = new Set(['tarih', 'fonKodu', 'fonUnvan', 'fonKod', 'fonGrup', 'fonTipi', 'sira']);
 
     const keyTotals = {};
     for (const row of allocData) {
-        for (const [k, v] of Object.entries(row)) {
-            if (ignoredKeys.has(k)) continue;
-            const val = parseFloat(v) || 0;
-            if (val > 0.05) {
+        for (const [key, rawVal] of Object.entries(row)) {
+            const k = key.toLowerCase();
+            if (k === 'bilfiyat' || !TEFAS_ASSET_MAP[k]) continue;
+            const val = parseFloat(rawVal) || 0;
+            if (val > 0.05 && val <= 100) {
                 keyTotals[k] = (keyTotals[k] || 0) + val;
             }
         }
@@ -1857,7 +1878,10 @@ function renderFundHistoryAllocationChart(allocData) {
 
     const datasets = activeKeys.map(key => {
         const def = TEFAS_ASSET_MAP[key] || { label: key.toUpperCase(), color: "#94A3B8" };
-        const dataPoints = allocData.map(row => parseFloat(row[key]) || 0);
+        const dataPoints = allocData.map(row => {
+            const v = parseFloat(row[key]) || 0;
+            return (v > 0 && v <= 100) ? v : 0;
+        });
 
         let fillBg = "rgba(148, 163, 184, 0.45)";
         if (def.color && def.color.startsWith("#") && def.color.length === 7) {
@@ -1936,9 +1960,10 @@ function renderFundHistoryAllocationChart(allocData) {
                         borderColor: "rgba(255, 255, 255, 0.15)",
                         borderWidth: 1,
                         padding: 10,
+                        itemSort: (a, b) => ((typeof b.raw === 'number' ? b.raw : b.parsed?.y) || 0) - ((typeof a.raw === 'number' ? a.raw : a.parsed?.y) || 0),
                         callbacks: {
                             label: function(ctx) {
-                                const val = ctx.parsed.y;
+                                const val = (typeof ctx.raw === 'number') ? ctx.raw : (ctx.parsed?.y || 0);
                                 if (val < 0.05) return null;
                                 return ` ${ctx.dataset.label}: %${val.toFixed(2)}`;
                             }

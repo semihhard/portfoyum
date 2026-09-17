@@ -205,6 +205,7 @@ export default {
         for (const item of merged) {
           if (item.tarih && !seenDates.has(item.tarih)) {
             seenDates.add(item.tarih);
+            if (item.bilFiyat !== undefined) delete item.bilFiyat;
             sorted.push(item);
           }
         }
