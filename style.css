@@ -7876,38 +7876,54 @@ body.theme-neo-brutalism .sort-option.active {
 }
 
 .fund-tag-pill {
-    padding: 6px 12px;
-    border-radius: 10px;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 7px 13px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.04);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.09);
     color: var(--text-primary);
-    font-size: 0.8rem;
+    font-size: 0.81rem;
     font-weight: 700;
     cursor: pointer;
     white-space: nowrap;
-    display: flex;
+    display: inline-flex;
     align-items: center;
-    gap: 6px;
-    transition: all 0.2s;
+    gap: 7px;
+    transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.fund-tag-pill strong {
+    font-weight: 800;
+    letter-spacing: 0.2px;
 }
 
 .fund-tag-pill small {
-    font-size: 0.7rem;
+    font-size: 0.72rem;
     font-weight: 500;
     color: var(--text-secondary);
+    padding-left: 2px;
 }
 
 .fund-tag-pill:hover {
-    background: rgba(56, 189, 248, 0.1);
-    border-color: rgba(56, 189, 248, 0.3);
-    color: #38BDF8;
+    background: rgba(56, 189, 248, 0.12);
+    border-color: rgba(56, 189, 248, 0.35);
+    color: #FFFFFF;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(56, 189, 248, 0.2);
 }
 
 .fund-tag-pill.active {
-    background: rgba(56, 189, 248, 0.18);
+    background: linear-gradient(135deg, rgba(14, 165, 233, 0.25) 0%, rgba(56, 189, 248, 0.15) 100%);
     border-color: #38BDF8;
     color: #38BDF8;
-    box-shadow: 0 0 10px rgba(56, 189, 248, 0.2);
+    box-shadow: 0 4px 18px rgba(56, 189, 248, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+    transform: translateY(-1px);
+}
+
+.fund-tag-pill.active small {
+    color: #BAE6FD;
 }
 
 /* Timeframe Period Bar */
@@ -8106,30 +8122,43 @@ body.theme-neo-brutalism .sort-option.active {
     transform: translateY(-1px);
 }
 
-/* 4 KPI Grid */
+/* 5 KPI Grid */
 .fund-kpi-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    grid-template-columns: repeat(5, 1fr);
     gap: 14px;
-    margin-bottom: 20px;
+    margin-bottom: 22px;
 }
 
 .fund-kpi-card {
-    padding: 18px 20px;
-    border-radius: 16px;
+    padding: 18px 18px;
+    border-radius: 18px;
     border: 1px solid rgba(255, 255, 255, 0.08);
-    background: rgba(16, 22, 34, 0.85);
+    background: linear-gradient(165deg, rgba(17, 24, 39, 0.85) 0%, rgba(11, 17, 28, 0.95) 100%);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    min-height: 115px;
-    transition: transform 0.2s, border-color 0.2s;
+    min-height: 122px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 8px 24px -4px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.22s, box-shadow 0.22s;
 }
 
 .fund-kpi-card:hover {
-    transform: translateY(-2px);
-    border-color: rgba(255, 255, 255, 0.15);
+    transform: translateY(-3px);
+    border-color: rgba(255, 255, 255, 0.18);
+    box-shadow: 0 14px 32px -4px rgba(0, 0, 0, 0.45);
 }
+
+/* Individual card top accent indicators */
+.fund-kpi-card:nth-child(1) { border-top: 2px solid rgba(56, 189, 248, 0.7); }
+.fund-kpi-card:nth-child(2) { border-top: 2px solid rgba(192, 132, 252, 0.7); }
+.fund-kpi-card:nth-child(3) { border-top: 2px solid rgba(16, 185, 129, 0.7); }
+.fund-kpi-card:nth-child(4) { border-top: 2px solid rgba(244, 63, 94, 0.75); }
+.fund-kpi-card:nth-child(5) { border-top: 2px solid rgba(245, 158, 11, 0.7); }
 
 .fund-kpi-card .kpi-header {
     display: flex;
@@ -8139,14 +8168,14 @@ body.theme-neo-brutalism .sort-option.active {
 }
 
 .fund-kpi-card .kpi-title {
-    font-size: 0.78rem;
+    font-size: 0.75rem;
     font-weight: 700;
     color: var(--text-secondary);
     display: flex;
     align-items: center;
     gap: 6px;
     text-transform: uppercase;
-    letter-spacing: 0.3px;
+    letter-spacing: 0.4px;
 }
 
 .fund-kpi-card .kpi-badge {
@@ -8173,41 +8202,54 @@ body.theme-neo-brutalism .sort-option.active {
     color: #EF4444;
 }
 
+.fund-kpi-card .kpi-badge.rose {
+    background: rgba(244, 63, 94, 0.14);
+    color: #FB7185;
+    border: 1px solid rgba(244, 63, 94, 0.25);
+}
+
 .fund-kpi-card .kpi-badge.amber {
     background: rgba(245, 158, 11, 0.12);
     color: #F59E0B;
 }
 
 .fund-kpi-card .kpi-main-val {
-    font-size: 1.45rem;
+    font-size: 1.35rem;
     font-weight: 800;
     color: #FFFFFF;
     letter-spacing: -0.5px;
     margin-bottom: 8px;
     font-feature-settings: "tnum";
+    font-family: var(--font-mono);
 }
 
 .fund-kpi-card .kpi-footer-row {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 8px;
+    gap: 6px;
+    flex-wrap: wrap;
 }
 
 .fund-kpi-card .kpi-sub-text {
-    font-size: 0.75rem;
+    font-size: 0.73rem;
     color: var(--text-muted);
     font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 65%;
 }
 
 .fund-kpi-card .kpi-pct-badge {
-    padding: 2px 8px;
+    padding: 2px 7px;
     border-radius: 6px;
-    font-size: 0.75rem;
+    font-size: 0.72rem;
     font-weight: 700;
     display: inline-flex;
     align-items: center;
     gap: 4px;
+    white-space: nowrap;
 }
 
 .fund-kpi-card .kpi-pct-badge.pos,
@@ -8220,6 +8262,11 @@ body.theme-neo-brutalism .sort-option.active {
 .fund-kpi-card .kpi-pct-badge.red {
     background: rgba(239, 68, 68, 0.15);
     color: #EF4444;
+}
+
+.fund-kpi-card .kpi-pct-badge.rose {
+    background: rgba(244, 63, 94, 0.15);
+    color: #FB7185;
 }
 
 .fund-kpi-card .kpi-pct-badge.neut {
@@ -8293,7 +8340,46 @@ body.theme-neo-brutalism .sort-option.active {
     align-items: center;
     justify-content: space-between;
     margin-bottom: 16px;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.table-header-right-actions {
+    display: flex;
+    align-items: center;
     gap: 10px;
+}
+
+.table-filter-pills {
+    display: flex;
+    background: rgba(16, 22, 34, 0.85);
+    padding: 3px;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    gap: 4px;
+}
+
+.table-filter-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    padding: 4px 10px;
+    border-radius: 7px;
+    font-size: 0.74rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.table-filter-btn:hover {
+    color: #FFFFFF;
+}
+
+.table-filter-btn.active {
+    background: rgba(56, 189, 248, 0.2);
+    color: #38BDF8;
+    border: 1px solid rgba(56, 189, 248, 0.35);
+    box-shadow: 0 2px 8px rgba(56, 189, 248, 0.15);
 }
 
 .badge-count {
@@ -8309,6 +8395,8 @@ body.theme-neo-brutalism .sort-option.active {
     width: 100%;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .fund-data-table {
@@ -8319,11 +8407,11 @@ body.theme-neo-brutalism .sort-option.active {
 }
 
 .fund-data-table th {
-    padding: 10px 14px;
-    background: rgba(255, 255, 255, 0.03);
+    padding: 11px 14px;
+    background: rgba(16, 22, 36, 0.95);
     color: var(--text-secondary);
     font-weight: 700;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.09);
     text-transform: uppercase;
     letter-spacing: 0.4px;
     font-size: 0.72rem;
@@ -8337,7 +8425,7 @@ body.theme-neo-brutalism .sort-option.active {
 }
 
 .fund-data-table tbody tr:hover {
-    background: rgba(255, 255, 255, 0.03);
+    background: rgba(255, 255, 255, 0.035);
 }
 
 .table-flow-cell {
@@ -8356,9 +8444,60 @@ body.theme-neo-brutalism .sort-option.active {
     color: var(--text-muted);
 }
 
+/* Kişi Başı Ortalama Akış Badge */
+.per-person-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 9px;
+    border-radius: 8px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    font-feature-settings: "tnum";
+    letter-spacing: -0.2px;
+}
+
+.per-person-pill.pos {
+    background: rgba(16, 185, 129, 0.12);
+    color: #34D399;
+    border: 1px solid rgba(16, 185, 129, 0.28);
+}
+
+.per-person-pill.neg {
+    background: rgba(244, 63, 94, 0.12);
+    color: #FB7185;
+    border: 1px solid rgba(244, 63, 94, 0.28);
+}
+
+.per-person-pill.neut {
+    background: rgba(148, 163, 184, 0.1);
+    color: #94A3B8;
+    border: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+.per-person-pill.zero {
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
+@media (max-width: 1200px) {
+    .fund-kpi-grid {
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    }
+}
+
+@media (max-width: 900px) {
+    .fund-kpi-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
 @media (max-width: 600px) {
     .fund-kpi-grid {
         grid-template-columns: repeat(2, 1fr);
+    }
+    .fund-kpi-card.fund-kpi-per-person {
+        grid-column: span 2;
     }
     .fund-chart-container {
         height: 220px;
@@ -8370,5 +8509,13 @@ body.theme-neo-brutalism .sort-option.active {
     .btn-quick-add-fund {
         width: 100%;
         justify-content: center;
+    }
+    .table-card-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .table-header-right-actions {
+        width: 100%;
+        justify-content: space-between;
     }
 }

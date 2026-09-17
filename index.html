@@ -870,14 +870,14 @@
                         <div class="fund-popular-tags">
                             <span class="tags-label"><i class="fa-solid fa-fire" style="color: #F59E0B;"></i> Popüler:</span>
                             <div class="tags-scroll">
-                                <button type="button" class="fund-tag-pill active" data-fon="TI1" onclick="selectQuickFund('TI1')">TI1 <small>İş Para Piy.</small></button>
-                                <button type="button" class="fund-tag-pill" data-fon="AFT" onclick="selectQuickFund('AFT')">AFT <small>Ak Teknoloji</small></button>
-                                <button type="button" class="fund-tag-pill" data-fon="MAC" onclick="selectQuickFund('MAC')">MAC <small>Marmara Hisse</small></button>
-                                <button type="button" class="fund-tag-pill" data-fon="IIH" onclick="selectQuickFund('IIH')">IIH <small>İst. Portföy</small></button>
-                                <button type="button" class="fund-tag-pill" data-fon="TCD" onclick="selectQuickFund('TCD')">TCD <small>Tacirler Değ.</small></button>
-                                <button type="button" class="fund-tag-pill" data-fon="BIO" onclick="selectQuickFund('BIO')">BIO <small>Ak Temettü</small></button>
-                                <button type="button" class="fund-tag-pill" data-fon="GTA" onclick="selectQuickFund('GTA')">GTA <small>Garanti Altın</small></button>
-                                <button type="button" class="fund-tag-pill" data-fon="YAS" onclick="selectQuickFund('YAS')">YAS <small>YK Koç Holding</small></button>
+                                <button type="button" class="fund-tag-pill active" data-fon="TI1" onclick="selectQuickFund('TI1')"><i class="fa-solid fa-vault" style="color: #38BDF8;"></i> <strong>TI1</strong> <small>Para Piy.</small></button>
+                                <button type="button" class="fund-tag-pill" data-fon="AFT" onclick="selectQuickFund('AFT')"><i class="fa-solid fa-microchip" style="color: #C084FC;"></i> <strong>AFT</strong> <small>Teknoloji</small></button>
+                                <button type="button" class="fund-tag-pill" data-fon="MAC" onclick="selectQuickFund('MAC')"><i class="fa-solid fa-chart-line" style="color: #10B981;"></i> <strong>MAC</strong> <small>Hisse</small></button>
+                                <button type="button" class="fund-tag-pill" data-fon="IIH" onclick="selectQuickFund('IIH')"><i class="fa-solid fa-bullseye" style="color: #F59E0B;"></i> <strong>IIH</strong> <small>3. Hisse</small></button>
+                                <button type="button" class="fund-tag-pill" data-fon="TCD" onclick="selectQuickFund('TCD')"><i class="fa-solid fa-scale-balanced" style="color: #F43F5E;"></i> <strong>TCD</strong> <small>Değişken</small></button>
+                                <button type="button" class="fund-tag-pill" data-fon="BIO" onclick="selectQuickFund('BIO')"><i class="fa-solid fa-award" style="color: #06B6D4;"></i> <strong>BIO</strong> <small>Temettü</small></button>
+                                <button type="button" class="fund-tag-pill" data-fon="GTA" onclick="selectQuickFund('GTA')"><i class="fa-solid fa-coins" style="color: #EAB308;"></i> <strong>GTA</strong> <small>Altın</small></button>
+                                <button type="button" class="fund-tag-pill" data-fon="YAS" onclick="selectQuickFund('YAS')"><i class="fa-solid fa-building" style="color: #8B5CF6;"></i> <strong>YAS</strong> <small>Koç İştirak</small></button>
                             </div>
                         </div>
                     </div>
@@ -929,7 +929,7 @@
                             </div>
                         </div>
 
-                        <!-- 4 KPI Metrics Grid -->
+                        <!-- 5 KPI Metrics Grid -->
                         <div class="fund-kpi-grid">
                             <!-- KPI 1: Fiyat -->
                             <div class="fund-kpi-card ultra-glass-card">
@@ -970,7 +970,20 @@
                                 </div>
                             </div>
 
-                            <!-- KPI 4: Portföy Büyüklüğü & Pay Sayısı -->
+                            <!-- KPI 4: Kişi Başı Ortalama Giriş/Çıkış Tutarı -->
+                            <div class="fund-kpi-card ultra-glass-card fund-kpi-per-person">
+                                <div class="kpi-header">
+                                    <span class="kpi-title"><i class="fa-solid fa-user-tag" style="color: #F43F5E;"></i> Kişi Başı Ort. Akış</span>
+                                    <span class="kpi-badge rose" id="fundKpiPerPersonBadge">Yatırımcı Başı</span>
+                                </div>
+                                <div class="kpi-main-val" id="fundKpiPerPerson">₺0,00</div>
+                                <div class="kpi-footer-row">
+                                    <span class="kpi-sub-text" id="fundKpiPerPersonDesc">Katılan/Ayrılan Ort.</span>
+                                    <span class="kpi-pct-badge" id="fundKpiPerPersonType">Ort. Giriş</span>
+                                </div>
+                            </div>
+
+                            <!-- KPI 5: Portföy Büyüklüğü & Pay Sayısı -->
                             <div class="fund-kpi-card ultra-glass-card">
                                 <div class="kpi-header">
                                     <span class="kpi-title"><i class="fa-solid fa-vault" style="color: #F59E0B;"></i> Fon Büyüklüğü (AUM)</span>
@@ -1025,10 +1038,17 @@
                         <div class="analytics-card ultra-glass-card fund-table-card">
                             <div class="table-card-header">
                                 <div>
-                                    <h3><i class="fa-solid fa-table-list" style="color: #38BDF8;"></i> Tarihsel Veri ve Nakit Akış Dökümü</h3>
-                                    <p class="chart-subtitle">İncelenen dönemdeki her işlem gününe ait fiyat, pay ve nakit akış dökümü</p>
+                                    <h3><i class="fa-solid fa-table-list" style="color: #38BDF8;"></i> Tarihsel Veri ve Kişi Başı Akış Dökümü</h3>
+                                    <p class="chart-subtitle">Her gün kaç kişi giriş/çıkış yaptı, toplam net para akışı ve kişi başı ortalama tutar</p>
                                 </div>
-                                <span class="badge-count" id="fundTableCountBadge">0 Gün</span>
+                                <div class="table-header-right-actions">
+                                    <div class="table-filter-pills">
+                                        <button class="table-filter-btn active" data-limit="15" onclick="setTableFilter(15)">15G</button>
+                                        <button class="table-filter-btn" data-limit="30" onclick="setTableFilter(30)">30G</button>
+                                        <button class="table-filter-btn" data-limit="0" onclick="setTableFilter(0)">Tümü</button>
+                                    </div>
+                                    <span class="badge-count" id="fundTableCountBadge">0 Gün</span>
+                                </div>
                             </div>
 
                             <div class="fund-table-responsive">
@@ -1038,10 +1058,11 @@
                                             <th>Tarih</th>
                                             <th style="text-align: right;">Birim Fiyat</th>
                                             <th style="text-align: right;">Günlük Fark</th>
-                                            <th style="text-align: right;">Yatırımcı Sayısı</th>
-                                            <th style="text-align: right;">Yatırımcı Değişimi</th>
-                                            <th style="text-align: right;">Tedavüldeki Pay</th>
+                                            <th style="text-align: right;">Yatırımcı</th>
+                                            <th style="text-align: right;">Kişi Değişimi</th>
                                             <th style="text-align: right;">Net Nakit Akışı</th>
+                                            <th style="text-align: right; color: #F43F5E;"><i class="fa-solid fa-user-tag"></i> Kişi Başı Ort. Tutar</th>
+                                            <th style="text-align: right;">Tedavüldeki Pay</th>
                                         </tr>
                                     </thead>
                                     <tbody id="fundHistoryTableBody">

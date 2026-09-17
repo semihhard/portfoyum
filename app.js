@@ -1100,6 +1100,22 @@ let allocationChartInstance = null;
 let fundPriceInvestorChartInstance = null;
 let fundCashFlowChartInstance = null;
 const fundHistoryDataCache = {};
+let currentFundTableLimit = 15;
+let currentFundFullData = [];
+
+function formatPerPersonNumber(val) {
+    if (val === null || val === undefined || isNaN(val)) return "0";
+    const absVal = Math.abs(val);
+    if (absVal >= 1e9) {
+        return (absVal / 1e9).toLocaleString('tr-TR', { minimumFractionDigits: 1, maximumFractionDigits: 2 }) + " Mr";
+    } else if (absVal >= 1e6) {
+        return (absVal / 1e6).toLocaleString('tr-TR', { minimumFractionDigits: 1, maximumFractionDigits: 2 }) + " Mn";
+    } else if (absVal >= 1e3) {
+        return Math.round(absVal).toLocaleString('tr-TR');
+    } else {
+        return absVal.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+}
 
 function renderAnalyticsTab() {
     const sorted = [...appState.holdings].sort((a, b) => {
@@ -1488,7 +1504,7 @@ async function loadAndRenderFundAnalysis(fundCode, days = 30) {
         // Sort data ascending by date
         const data = [...rawData].sort((a, b) => (a.tarih || '').localeCompare(b.tarih || ''));
 
-        // Compute daily metrics & Net Cash Flow
+        // Compute daily metrics, Net Cash Flow & Per-Person Flow
         for (let i = 0; i < data.length; i++) {
             const curP = parseFloat(data[i].fiyat) || 0;
             const curShares = parseFloat(data[i].tedPaySayisi) || 0;
@@ -1500,6 +1516,9 @@ async function loadAndRenderFundAnalysis(fundCode, days = 30) {
                 data[i].deltaInvestors = 0;
                 data[i].priceChange = 0;
                 data[i].priceChangePct = 0;
+                data[i].perPersonFlow = 0;
+                data[i].perPersonType = "zero";
+                data[i].perPersonLabel = "—";
             } else {
                 const prevP = parseFloat(data[i - 1].fiyat) || curP;
                 const prevShares = parseFloat(data[i - 1].tedPaySayisi) || curShares;
@@ -1507,12 +1526,42 @@ async function loadAndRenderFundAnalysis(fundCode, days = 30) {
 
                 const deltaS = curShares - prevShares;
                 const flow = deltaS * curP; // Net cash flow = delta shares * current price
+                const deltaInv = curInvestors - prevInvestors;
 
                 data[i].deltaShares = deltaS;
                 data[i].cashFlow = flow;
-                data[i].deltaInvestors = curInvestors - prevInvestors;
+                data[i].deltaInvestors = deltaInv;
                 data[i].priceChange = curP - prevP;
                 data[i].priceChangePct = prevP > 0 ? ((curP - prevP) / prevP) * 100 : 0;
+
+                // Per-person calculation: net cash flow divided by delta investors
+                if (deltaInv !== 0) {
+                    const absFlow = Math.abs(flow);
+                    const absInv = Math.abs(deltaInv);
+                    const avgVal = absFlow / absInv;
+
+                    if (deltaInv > 0 && flow >= 0) {
+                        data[i].perPersonFlow = avgVal;
+                        data[i].perPersonType = "inflow";
+                        data[i].perPersonLabel = `+₺${formatPerPersonNumber(avgVal)} / kişi`;
+                    } else if (deltaInv < 0 && flow <= 0) {
+                        data[i].perPersonFlow = -avgVal;
+                        data[i].perPersonType = "outflow";
+                        data[i].perPersonLabel = `-₺${formatPerPersonNumber(avgVal)} / kişi`;
+                    } else if (deltaInv > 0 && flow < 0) {
+                        data[i].perPersonFlow = -avgVal;
+                        data[i].perPersonType = "outflow";
+                        data[i].perPersonLabel = `-₺${formatPerPersonNumber(avgVal)} / kişi`;
+                    } else {
+                        data[i].perPersonFlow = avgVal;
+                        data[i].perPersonType = "inflow";
+                        data[i].perPersonLabel = `+₺${formatPerPersonNumber(avgVal)} / kişi`;
+                    }
+                } else {
+                    data[i].perPersonFlow = 0;
+                    data[i].perPersonType = Math.abs(flow) > 100 ? "holding_change" : "zero";
+                    data[i].perPersonLabel = Math.abs(flow) > 100 ? (flow > 0 ? "+Pay Artışı" : "-Pay Azalışı") : "—";
+                }
             }
         }
 
@@ -1563,6 +1612,26 @@ async function loadAndRenderFundAnalysis(fundCode, days = 30) {
             totalCashFlow += (data[i].cashFlow || 0);
         }
         const avgDailyFlow = data.length > 1 ? totalCashFlow / (data.length - 1) : 0;
+
+        // Per-person summary calculations
+        let sumDailyPerPerson = 0;
+        let countDailyPerPerson = 0;
+        for (let i = 1; i < data.length; i++) {
+            if (data[i].deltaInvestors !== 0 && data[i].perPersonFlow !== 0) {
+                sumDailyPerPerson += Math.abs(data[i].perPersonFlow);
+                countDailyPerPerson++;
+            }
+        }
+        const avgDailyPerPerson = countDailyPerPerson > 0 ? (sumDailyPerPerson / countDailyPerPerson) : 0;
+
+        const netInvPeriod = Math.abs(investorDiff);
+        let periodPerPerson = 0;
+        if (netInvPeriod > 0) {
+            periodPerPerson = Math.abs(totalCashFlow) / netInvPeriod;
+        } else if (avgDailyPerPerson > 0) {
+            periodPerPerson = avgDailyPerPerson;
+        }
+        const isPositivePersonFlow = totalCashFlow >= 0;
 
         const totalAUM = parseFloat(latest.portfoyBuyukluk) || (lastPrice * parseFloat(latest.tedPaySayisi));
         const totalShares = parseFloat(latest.tedPaySayisi) || 0;
@@ -1624,7 +1693,34 @@ async function loadAndRenderFundAnalysis(fundCode, days = 30) {
             flowDirElem.innerText = isPos ? "Para Girişi" : "Para Çıkışı";
         }
 
-        // 6. Populate KPI 4: Portfolio Size (AUM) & Shares
+        // 6. Populate KPI 4: Kişi Başı Ortalama Giriş/Çıkış Tutarı
+        const perPersonElem = document.getElementById("fundKpiPerPerson");
+        const perPersonBadge = document.getElementById("fundKpiPerPersonBadge");
+        const perPersonDesc = document.getElementById("fundKpiPerPersonDesc");
+        const perPersonType = document.getElementById("fundKpiPerPersonType");
+
+        if (perPersonElem) {
+            const sign = isPositivePersonFlow ? "+" : "-";
+            perPersonElem.innerText = `${sign}₺${formatPerPersonNumber(periodPerPerson)}`;
+            perPersonElem.className = `kpi-main-val ${isPositivePersonFlow ? 'txt-neon-green' : 'txt-neon-red'}`;
+        }
+        if (perPersonBadge) {
+            perPersonBadge.className = `kpi-badge rose`;
+            perPersonBadge.innerText = isPositivePersonFlow ? "Yatırım Başı Ort." : "Çekim Başı Ort.";
+        }
+        if (perPersonDesc) {
+            perPersonDesc.innerText = avgDailyPerPerson > 0 
+                ? `Günlük: ₺${formatPerPersonNumber(avgDailyPerPerson)} / kişi`
+                : `Net ${formatFundCount(Math.abs(investorDiff))} kişi değişimi`;
+        }
+        if (perPersonType) {
+            perPersonType.className = `kpi-pct-badge ${isPositivePersonFlow ? 'pos' : 'neg'}`;
+            perPersonType.innerHTML = isPositivePersonFlow 
+                ? `<i class="fa-solid fa-arrow-up"></i> Ort. Yatırım` 
+                : `<i class="fa-solid fa-arrow-down"></i> Ort. Çekim`;
+        }
+
+        // 7. Populate KPI 5: Portfolio Size (AUM) & Shares
         const aumElem = document.getElementById("fundKpiPortfolioSize");
         const sharesElem = document.getElementById("fundKpiSharesCount");
         const sharesDiffElem = document.getElementById("fundKpiSharesDiff");
@@ -1637,7 +1733,7 @@ async function loadAndRenderFundAnalysis(fundCode, days = 30) {
             sharesDiffElem.innerText = `${sign}${formatFundCount(sharesPeriodDiff)} Pay`;
         }
 
-        // 7. Render Charts & Table
+        // 8. Render Charts & Table
         renderFundCharts(data);
         renderFundHistoryTable(data);
 
@@ -1798,8 +1894,20 @@ function renderFundCharts(data) {
                                 const val = context.parsed.y;
                                 const item = flowData[context.dataIndex];
                                 const dir = val >= 0 ? "Net Giriş: +" : "Net Çıkış: ";
-                                const sharesDiff = item ? ` (Pay: ${item.deltaShares >= 0 ? '+' : ''}${formatFundCount(item.deltaShares)})` : '';
-                                return `${dir}${formatBillionOrMillion(val)}${sharesDiff}`;
+                                const lines = [`${dir}${formatBillionOrMillion(val)}`];
+                                if (item) {
+                                    if (item.deltaInvestors !== 0) {
+                                        const invSign = item.deltaInvestors > 0 ? "+" : "";
+                                        lines.push(`Yatırımcı Değişimi: ${invSign}${formatFundCount(item.deltaInvestors)} kişi`);
+                                        if (item.perPersonLabel && item.perPersonLabel !== "—") {
+                                            lines.push(`Kişi Başı Ort: ${item.perPersonLabel}`);
+                                        }
+                                    }
+                                    if (item.deltaShares !== 0) {
+                                        lines.push(`Pay Değişimi: ${item.deltaShares >= 0 ? '+' : ''}${formatFundCount(item.deltaShares)}`);
+                                    }
+                                }
+                                return lines;
                             }
                         }
                     }
@@ -1838,15 +1946,25 @@ function destroyFundCharts() {
 
 // Render Historical Table (Latest Date First)
 function renderFundHistoryTable(data) {
+    currentFundFullData = data;
     const tbody = document.getElementById("fundHistoryTableBody");
     const countBadge = document.getElementById("fundTableCountBadge");
     if (!tbody) return;
 
-    if (countBadge) countBadge.innerText = `${data.length} İşlem Günü`;
-
     const reversed = [...data].reverse();
+    const displayRows = (currentFundTableLimit > 0 && currentFundTableLimit < reversed.length)
+        ? reversed.slice(0, currentFundTableLimit)
+        : reversed;
 
-    tbody.innerHTML = reversed.map((row) => {
+    if (countBadge) {
+        if (currentFundTableLimit > 0 && currentFundTableLimit < reversed.length) {
+            countBadge.innerText = `Son ${displayRows.length} / ${data.length} Gün`;
+        } else {
+            countBadge.innerText = `${data.length} İşlem Günü`;
+        }
+    }
+
+    tbody.innerHTML = displayRows.map((row) => {
         const parts = (row.tarih || '').split('-');
         const dateDisplay = parts.length === 3 ? `${parts[2]}.${parts[1]}.${parts[0]}` : row.tarih;
 
@@ -1864,6 +1982,18 @@ function renderFundHistoryTable(data) {
         const flowClass = flow > 0 ? "table-flow-cell pos" : flow < 0 ? "table-flow-cell neg" : "table-flow-cell zero";
         const flowSign = flow > 0 ? "+" : "";
 
+        // Kişi Başı Ortalama Akış Badge
+        let perPersonHtml = '<span class="per-person-pill zero">—</span>';
+        if (row.deltaInvestors !== 0 && row.perPersonFlow !== 0) {
+            const isPos = row.perPersonFlow >= 0;
+            const pillCls = isPos ? "pos" : "neg";
+            const icon = isPos ? '<i class="fa-solid fa-arrow-trend-up"></i>' : '<i class="fa-solid fa-arrow-trend-down"></i>';
+            const text = `${isPos ? '+' : '-'}₺${formatPerPersonNumber(row.perPersonFlow)} / kişi`;
+            perPersonHtml = `<span class="per-person-pill ${pillCls}">${icon} ${text}</span>`;
+        } else if (Math.abs(flow) > 100) {
+            perPersonHtml = `<span class="per-person-pill neut"><i class="fa-solid fa-arrows-rotate"></i> Pay Değ.</span>`;
+        }
+
         return `
             <tr>
                 <td style="font-weight: 700; color: #FFFFFF;"><i class="fa-regular fa-calendar-days" style="color: #64748B; margin-right: 6px;"></i>${dateDisplay}</td>
@@ -1871,11 +2001,26 @@ function renderFundHistoryTable(data) {
                 <td style="text-align: right;" class="${pctClass}"><strong>${pctSign}${pct.toFixed(2)}%</strong></td>
                 <td style="text-align: right; font-weight: 600;">${formatFundCount(inv)}</td>
                 <td style="text-align: right;" class="${invDiffClass}">${invDiff !== 0 ? `${invDiffSign}${formatFundCount(invDiff)}` : '-'}</td>
-                <td style="text-align: right; color: var(--text-secondary);">${formatFundCount(row.tedPaySayisi)}</td>
                 <td style="text-align: right;" class="${flowClass}">${flow !== 0 ? `${flowSign}${formatBillionOrMillion(flow)}` : '-'}</td>
+                <td style="text-align: right;">${perPersonHtml}</td>
+                <td style="text-align: right; color: var(--text-secondary);">${formatFundCount(row.tedPaySayisi)}</td>
             </tr>
         `;
     }).join("");
+}
+
+function setTableFilter(limit) {
+    currentFundTableLimit = parseInt(limit) || 0;
+    document.querySelectorAll(".table-filter-btn").forEach(btn => {
+        if (parseInt(btn.getAttribute("data-limit")) === currentFundTableLimit) {
+            btn.classList.add("active");
+        } else {
+            btn.classList.remove("active");
+        }
+    });
+    if (currentFundFullData && currentFundFullData.length > 0) {
+        renderFundHistoryTable(currentFundFullData);
+    }
 }
 
 // User Action Handlers
