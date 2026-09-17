@@ -2413,66 +2413,137 @@ function renderFundLeadersUI(data) {
     renderLeaderCategoryRows("leaderListCashOut", cats.topCashOutflow, "cash-out");
 }
 
+function cleanFundTitle(name) {
+    if (!name) return "";
+    return name
+        .replace(/\s*\(HİSSE SENEDİ YOĞUN FON\)/gi, '')
+        .replace(/\s*\(TL\)/gi, '')
+        .replace(/\s*KATILIM\s*\(TL\)/gi, ' KATILIM')
+        .trim();
+}
+
+function filterLeaderCategories(cat) {
+    const pills = document.querySelectorAll(".leaders-filter-pill");
+    pills.forEach(p => {
+        if (p.getAttribute("data-filter") === cat) {
+            p.classList.add("active");
+        } else {
+            p.classList.remove("active");
+        }
+    });
+
+    const cards = document.querySelectorAll(".leader-category-card");
+    cards.forEach(card => {
+        if (cat === "all") {
+            card.style.display = "flex";
+        } else if (card.getAttribute("data-cat") === cat) {
+            card.style.display = "flex";
+        } else {
+            card.style.display = "none";
+        }
+    });
+}
+
 function renderLeaderCategoryRows(containerId, items, type) {
     const container = document.getElementById(containerId);
     if (!container) return;
 
     if (!items || items.length === 0) {
-        container.innerHTML = `<div style="text-align:center; padding: 20px; color: var(--text-muted); font-size: 0.8rem;">Veri bulunamadı.</div>`;
+        container.innerHTML = `<div class="leader-empty-state"><i class="fa-solid fa-inbox"></i><span>Bu kategori için henüz veri oluşmadı.</span></div>`;
         return;
     }
 
     const rankClasses = ["gold", "silver", "bronze"];
-    const rankIcons = ['<i class="fa-solid fa-crown"></i> 1', '2', '3'];
+    const rankBadges = [
+        '<span class="rank-crown"><i class="fa-solid fa-crown"></i></span><span class="rank-num">1</span>',
+        '<span class="rank-num">2</span>',
+        '<span class="rank-num">3</span>'
+    ];
+
+    // Find maximum metric to scale relative volume bars
+    let maxMetric = 1;
+    if (type.startsWith("inv")) {
+        maxMetric = Math.max(...items.map(it => Math.abs(it.deltaInvestors || 0)), 1);
+    } else {
+        maxMetric = Math.max(...items.map(it => Math.abs(it.cashFlow || 0)), 1);
+    }
+
+    const typeColorMap = {
+        "inv-in": "emerald",
+        "inv-out": "rose",
+        "cash-in": "cyan",
+        "cash-out": "amber"
+    };
+    const barColor = typeColorMap[type] || "cyan";
 
     container.innerHTML = items.map((item, idx) => {
         const rankCls = rankClasses[idx] || "bronze";
-        const rankLabel = rankIcons[idx] || (idx + 1);
+        const rankHtml = rankBadges[idx] || `<span class="rank-num">${idx + 1}</span>`;
 
+        let curVal = 0;
         let mainValHtml = "";
         let subMetricHtml = "";
 
         if (type === "inv-in") {
-            const invVal = Math.abs(item.deltaInvestors || 0);
-            mainValHtml = `<span class="leader-main-val pos">+${formatFundCount(invVal)} Kişi</span>`;
-            const ppText = item.perPerson > 0 ? `Ort: ₺${formatPerPersonNumber(item.perPerson)}` : `AUM: ${formatBillionOrMillion(item.aum)}`;
-            subMetricHtml = `<div class="leader-sub-metric">${ppText}</div>`;
+            curVal = Math.abs(item.deltaInvestors || 0);
+            mainValHtml = `<div class="leader-main-metric pos"><i class="fa-solid fa-arrow-trend-up"></i> +${formatFundCount(curVal)} <small>Kişi</small></div>`;
+            const ppText = item.perPerson > 0 ? `Ort: ₺${formatPerPersonNumber(item.perPerson)}` : (item.aum > 0 ? `AUM: ${formatBillionOrMillion(item.aum)}` : "");
+            subMetricHtml = ppText ? `<span class="leader-sub-pill highlight-emerald">${ppText}</span>` : "";
         } else if (type === "inv-out") {
-            const invVal = Math.abs(item.deltaInvestors || 0);
-            mainValHtml = `<span class="leader-main-val neg">-${formatFundCount(invVal)} Kişi</span>`;
-            const ppText = item.perPerson > 0 ? `Ort: ₺${formatPerPersonNumber(item.perPerson)}` : `AUM: ${formatBillionOrMillion(item.aum)}`;
-            subMetricHtml = `<div class="leader-sub-metric">${ppText}</div>`;
+            curVal = Math.abs(item.deltaInvestors || 0);
+            mainValHtml = `<div class="leader-main-metric neg"><i class="fa-solid fa-arrow-trend-down"></i> -${formatFundCount(curVal)} <small>Kişi</small></div>`;
+            const ppText = item.perPerson > 0 ? `Ort: ₺${formatPerPersonNumber(item.perPerson)}` : (item.aum > 0 ? `AUM: ${formatBillionOrMillion(item.aum)}` : "");
+            subMetricHtml = ppText ? `<span class="leader-sub-pill highlight-rose">${ppText}</span>` : "";
         } else if (type === "cash-in") {
-            const cashVal = Math.abs(item.cashFlow || 0);
-            mainValHtml = `<span class="leader-main-val pos">+${formatBillionOrMillion(cashVal)}</span>`;
-            const invSign = item.deltaInvestors >= 0 ? "+" : "";
-            const invText = item.deltaInvestors !== 0 ? `${invSign}${formatFundCount(item.deltaInvestors)} kişi` : `AUM: ${formatBillionOrMillion(item.aum)}`;
-            subMetricHtml = `<div class="leader-sub-metric">${invText}</div>`;
+            curVal = Math.abs(item.cashFlow || 0);
+            mainValHtml = `<div class="leader-main-metric pos"><i class="fa-solid fa-vault"></i> +${formatBillionOrMillion(curVal)}</div>`;
+            const invText = item.deltaInvestors !== 0 ? `${item.deltaInvestors > 0 ? '+' : ''}${formatFundCount(item.deltaInvestors)} Yatırımcı` : (item.aum > 0 ? `AUM: ${formatBillionOrMillion(item.aum)}` : "");
+            subMetricHtml = invText ? `<span class="leader-sub-pill highlight-cyan">${invText}</span>` : "";
         } else if (type === "cash-out") {
-            const cashVal = Math.abs(item.cashFlow || 0);
-            mainValHtml = `<span class="leader-main-val neg">-${formatBillionOrMillion(cashVal)}</span>`;
-            const invSign = item.deltaInvestors >= 0 ? "+" : "";
-            const invText = item.deltaInvestors !== 0 ? `${invSign}${formatFundCount(item.deltaInvestors)} kişi` : `AUM: ${formatBillionOrMillion(item.aum)}`;
-            subMetricHtml = `<div class="leader-sub-metric">${invText}</div>`;
+            curVal = Math.abs(item.cashFlow || 0);
+            mainValHtml = `<div class="leader-main-metric neg"><i class="fa-solid fa-money-bill-transfer"></i> -${formatBillionOrMillion(curVal)}</div>`;
+            const invText = item.deltaInvestors !== 0 ? `${item.deltaInvestors > 0 ? '+' : ''}${formatFundCount(item.deltaInvestors)} Yatırımcı` : (item.aum > 0 ? `AUM: ${formatBillionOrMillion(item.aum)}` : "");
+            subMetricHtml = invText ? `<span class="leader-sub-pill highlight-amber">${invText}</span>` : "";
         }
 
-        const priceText = item.price ? formatFundPriceDisplay(item.price) : "";
+        const pct = Math.max(15, Math.min(100, Math.round((curVal / maxMetric) * 100)));
+
+        const cleanName = cleanFundTitle(item.name || `${item.code} YATIRIM FONU`);
+        const priceTag = (item.price && item.price > 0)
+            ? `<span class="fund-meta-chip price"><i class="fa-solid fa-tag"></i> ${formatFundPriceDisplay(item.price)}</span>`
+            : "";
+        const aumTag = (item.aum && item.aum > 0)
+            ? `<span class="fund-meta-chip aum"><i class="fa-solid fa-chart-pie"></i> ${formatBillionOrMillion(item.aum)}</span>`
+            : "";
 
         return `
-            <div class="leader-row-item" onclick="openSingleFundAnalysis('${item.code}')" title="${item.code} detaylı analizini aç">
-                <div class="leader-item-left">
-                    <span class="leader-rank-badge ${rankCls}">${rankLabel}</span>
-                    <div class="leader-fund-meta">
-                        <div class="leader-fund-top-line">
-                            <span class="leader-fund-code">${item.code}</span>
-                            ${priceText ? `<span class="leader-fund-price">${priceText}</span>` : ""}
+            <div class="leader-row-item" onclick="openSingleFundAnalysis('${item.code}')" title="${item.code} - ${cleanName} detaylı analizini aç">
+                <div class="leader-bar-fill ${barColor}" style="width: ${pct}%;"></div>
+                <div class="leader-item-content">
+                    <div class="leader-item-left">
+                        <div class="leader-rank-badge ${rankCls}">
+                            ${rankHtml}
                         </div>
-                        <div class="leader-fund-name" title="${item.name}">${item.name}</div>
+                        <div class="leader-fund-meta">
+                            <div class="leader-fund-title-row">
+                                <span class="leader-fund-code-pill">${item.code}</span>
+                                <span class="leader-fund-name" title="${item.name}">${cleanName}</span>
+                            </div>
+                            <div class="leader-fund-sub-row">
+                                ${priceTag}
+                                ${aumTag}
+                            </div>
+                        </div>
                     </div>
-                </div>
-                <div class="leader-item-right">
-                    ${mainValHtml}
-                    ${subMetricHtml}
+                    <div class="leader-item-right">
+                        ${mainValHtml}
+                        <div class="leader-sub-row-right">
+                            ${subMetricHtml}
+                        </div>
+                    </div>
+                    <div class="leader-arrow-cell">
+                        <i class="fa-solid fa-chevron-right"></i>
+                    </div>
                 </div>
             </div>
         `;
