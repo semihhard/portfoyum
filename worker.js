@@ -127,7 +127,8 @@ export default {
       if (fonCode) {
         const days = Math.min(365, Math.max(5, parseInt(url.searchParams.get("days") || "30", 10)));
         const kind = (url.searchParams.get("kind") || "YAT").trim().toUpperCase();
-        const TEFAS_URL = "https://www.tefas.gov.tr/api/funds/fonGnlBlgSiraliGetir";
+        const isAlloc = url.searchParams.get("alloc") === "1" || url.searchParams.get("dagilim") === "1" || url.searchParams.get("dist") === "1";
+        const TEFAS_URL = isAlloc ? "https://www.tefas.gov.tr/api/funds/dagilimSiraliGetirT" : "https://www.tefas.gov.tr/api/funds/fonGnlBlgSiraliGetir";
 
         const pad = n => String(n).padStart(2, '0');
         const dStr = d => '' + d.getFullYear() + pad(d.getMonth()+1) + pad(d.getDate());
@@ -163,7 +164,7 @@ export default {
             bitSira: 100000,
             dil: 'TR',
             sFonTurKod: '',
-            fonKod: '',
+            fonKod: fonCode,
             fonGrup: '',
             fonUnvanTip: ''
           };
@@ -212,6 +213,7 @@ export default {
           ok: true,
           fon: fonCode,
           kind,
+          isAlloc,
           count: sorted.length,
           data: sorted
         }), {

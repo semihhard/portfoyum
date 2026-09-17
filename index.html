@@ -23,7 +23,7 @@
     <!-- ExcelJS for Modern Excel Export -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
-    <link rel="stylesheet" href="style.css?v=19">    <style>
+    <link rel="stylesheet" href="style.css?v=20">    <style>
         /* Refresh Button Loading Animation */
         .icon-btn.loading i {
             animation: spin 1s linear infinite;
@@ -1019,6 +1019,59 @@
                                 <div class="kpi-footer-row">
                                     <span class="kpi-sub-text" id="fundKpiSharesDiffDesc">Dönemlik Değişim</span>
                                     <span class="kpi-pct-badge neut" id="fundKpiSharesDiff">0 Pay</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Fund Asset Allocation Section: Latest Distribution & Daily Historical Distribution -->
+                        <div class="fund-charts-wrapper fund-alloc-wrapper">
+                            <!-- Card 1: Son Varlık Dağılımı (Donut + Ayrıntılı Döküm) -->
+                            <div class="analytics-card ultra-glass-card fund-chart-card fund-alloc-latest-card">
+                                <div class="chart-header-row">
+                                    <div class="chart-title-left">
+                                        <h3><i class="fa-solid fa-chart-pie" style="color: #EC4899;"></i> Son Portföy Varlık Dağılımı</h3>
+                                        <p class="chart-subtitle" id="fundLatestAllocSubtitle">Güncel portföy varlık dağılımı ve tahmini büyüklükler</p>
+                                    </div>
+                                    <div class="chart-legend-custom">
+                                        <span class="badge-count" id="fundLatestAllocDateBadge"><i class="fa-regular fa-calendar"></i> Güncel</span>
+                                    </div>
+                                </div>
+                                <div class="fund-alloc-latest-body">
+                                    <div class="alloc-donut-col">
+                                        <div class="alloc-donut-canvas-wrapper">
+                                            <canvas id="fundLatestAllocDonutChart"></canvas>
+                                            <div class="alloc-donut-center" id="fundAllocDonutCenter">
+                                                <span class="center-sub">Ana Varlık</span>
+                                                <span class="center-main" id="fundAllocTopPct">%0</span>
+                                                <span class="center-lbl" id="fundAllocTopName">-</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="alloc-list-col">
+                                        <div class="alloc-breakdown-subhead">
+                                            <span>Varlık Sınıfı</span>
+                                            <span style="text-align: right;">Oran / Tahmini Tutar</span>
+                                        </div>
+                                        <div class="alloc-breakdown-list" id="fundLatestAllocList">
+                                            <!-- Dynamically filled -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Card 2: Günlük Varlık Dağılım Grafiği (Zaman Serisi Yığılmış Alan Grafiği) -->
+                            <div class="analytics-card ultra-glass-card fund-chart-card fund-alloc-history-card">
+                                <div class="chart-header-row">
+                                    <div class="chart-title-left">
+                                        <h3><i class="fa-solid fa-chart-area" style="color: #A855F7;"></i> Günlük Varlık Dağılım Trendi</h3>
+                                        <p class="chart-subtitle">Zaman içinde fon portföyündeki varlık oranlarının değişimi (%)</p>
+                                    </div>
+                                    <div class="chart-legend-custom" id="fundAllocHistoryLegend">
+                                        <!-- Dynamically generated legend pills -->
+                                    </div>
+                                </div>
+                                <div class="chart-container fund-chart-container fund-alloc-chart-container" style="position: relative;">
+                                    <canvas id="fundHistoryAllocChart"></canvas>
                                 </div>
                             </div>
                         </div>
@@ -2133,6 +2186,6 @@
         </div>
     </div>
 
-    <script src="app.js?v=66"></script>
+    <script src="app.js?v=67"></script>
 </body>
 </html>
