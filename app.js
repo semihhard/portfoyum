@@ -3027,9 +3027,266 @@ function openSingleFundAnalysis(fundCode) {
     }
 }
 
+function extractFlatFundsSnapshot(cache) {
+    if (!cache || !cache.categories) return {};
+    const map = {};
+    const cats = [
+        ...(cache.categories.topInvestorInflow || []),
+        ...(cache.categories.topInvestorOutflow || []),
+        ...(cache.categories.topCashInflow || []),
+        ...(cache.categories.topCashOutflow || [])
+    ];
+    for (const f of cats) {
+        if (!f || !f.code) continue;
+        if (!map[f.code]) {
+            map[f.code] = {
+                code: f.code,
+                name: f.name || `${f.code} YATIRIM FONU`,
+                price: parseFloat(f.price) || 0,
+                aum: parseFloat(f.aum) || 0,
+                deltaInvestors: parseInt(f.deltaInvestors) || 0,
+                cashFlow: parseFloat(f.cashFlow) || 0,
+                perPerson: parseFloat(f.perPerson) || 0
+            };
+        }
+    }
+    return map;
+}
+
+function detectAndRenderRecentFundChanges(prevSnapshot, currentCache, isManualRefresh = false) {
+    const gridElem = document.getElementById("recentFundChangesGrid");
+    const containerCard = document.getElementById("recentFundChangesCard");
+    const timeElem = document.getElementById("recentChangesTime");
+    const countPill = document.getElementById("recentChangesCountPill");
+    if (!gridElem) return;
+
+    const currSnapshot = extractFlatFundsSnapshot(currentCache);
+    
+    // Load previously saved snapshot from localStorage if prevSnapshot is missing
+    let baselineSnapshot = prevSnapshot;
+    if (!baselineSnapshot || Object.keys(baselineSnapshot).length === 0) {
+        try {
+            const saved = localStorage.getItem("tefas_last_refresh_snapshot");
+            if (saved) baselineSnapshot = JSON.parse(saved);
+        } catch (e) {}
+    }
+
+    const changedFunds = [];
+
+    if (baselineSnapshot && Object.keys(baselineSnapshot).length > 0) {
+        for (const code in currSnapshot) {
+            const curr = currSnapshot[code];
+            const prev = baselineSnapshot[code];
+            if (!prev) continue;
+
+            const dPrice = curr.price - prev.price;
+            const dInv = curr.deltaInvestors - prev.deltaInvestors;
+            const dCash = curr.cashFlow - prev.cashFlow;
+            const dAum = curr.aum - prev.aum;
+
+            // Check if there is a measurable difference
+            const hasPriceChange = Math.abs(dPrice) > 0.000001;
+            const hasInvChange = Math.abs(dInv) > 0;
+            const hasCashChange = Math.abs(dCash) > 1000;
+            const hasAumChange = Math.abs(dAum) > 10000;
+
+            if (hasPriceChange || hasInvChange || hasCashChange || hasAumChange) {
+                let metricName = "Fiyat";
+                let metricDetail = "";
+                let metricSub = "";
+                let badgeClass = "emerald";
+                let tagText = "Fiyat Güncellendi";
+                let metricIcon = "fa-solid fa-tag";
+                let valueClass = "pos";
+                let changeScore = 0;
+
+                if (hasInvChange && Math.abs(dInv) >= 5) {
+                    metricName = "Yatırımcı Akışı";
+                    metricIcon = "fa-solid fa-users";
+                    const sign = dInv > 0 ? "+" : "";
+                    metricDetail = `${prev.deltaInvestors > 0 ? '+' : ''}${formatFundCount(prev.deltaInvestors)} → ${curr.deltaInvestors > 0 ? '+' : ''}${formatFundCount(curr.deltaInvestors)} (${sign}${formatFundCount(dInv)} Kişi)`;
+                    metricSub = curr.aum > 0 ? `AUM: ${formatBillionOrMillion(curr.aum)}` : "Yatırımcı Hareketi";
+                    badgeClass = dInv >= 0 ? "emerald" : "rose";
+                    tagText = dInv >= 0 ? "Yatırımcı Girişi" : "Yatırımcı Çıkışı";
+                    valueClass = dInv >= 0 ? "pos" : "neg";
+                    changeScore = Math.abs(dInv) * 10;
+                } else if (hasCashChange && Math.abs(dCash) >= 1e6) {
+                    metricName = "Sermaye Akışı";
+                    metricIcon = "fa-solid fa-money-bill-transfer";
+                    const sign = dCash > 0 ? "+" : "";
+                    metricDetail = `${formatBillionOrMillion(curr.cashFlow)} (${sign}${formatBillionOrMillion(dCash)} Net)`;
+                    metricSub = "Nakit Akışı Değişimi";
+                    badgeClass = curr.cashFlow >= 0 ? "cyan" : "amber";
+                    tagText = curr.cashFlow >= 0 ? "Sermaye Girişi" : "Sermaye Çıkışı";
+                    valueClass = curr.cashFlow >= 0 ? "pos" : "neg";
+                    changeScore = Math.abs(dCash) / 1e5;
+                } else if (hasPriceChange) {
+                    metricName = "Fiyat";
+                    metricIcon = "fa-solid fa-arrow-trend-up";
+                    const pct = prev.price > 0 ? (dPrice / prev.price) * 100 : 0;
+                    const sign = dPrice > 0 ? "+" : "";
+                    metricDetail = `₺${formatFundPriceDisplay(prev.price)} → ₺${formatFundPriceDisplay(curr.price)} (${sign}%${pct.toFixed(2)})`;
+                    metricSub = "Birim Pay Değeri";
+                    badgeClass = dPrice >= 0 ? "emerald" : "rose";
+                    tagText = dPrice >= 0 ? "Fiyat Artışı" : "Fiyat Düşüşü";
+                    valueClass = dPrice >= 0 ? "pos" : "neg";
+                    changeScore = Math.abs(pct) * 1000;
+                } else {
+                    metricName = "Fon Büyüklüğü";
+                    metricIcon = "fa-solid fa-chart-pie";
+                    const sign = dAum > 0 ? "+" : "";
+                    metricDetail = `${formatBillionOrMillion(curr.aum)} (${sign}${formatBillionOrMillion(dAum)})`;
+                    metricSub = "Toplam Portföy";
+                    badgeClass = "cyan";
+                    tagText = "Portföy Büyüklüğü";
+                    valueClass = dAum >= 0 ? "pos" : "neg";
+                    changeScore = Math.abs(dAum) / 1e6;
+                }
+
+                changedFunds.push({
+                    code: curr.code,
+                    name: curr.name,
+                    metricName,
+                    metricDetail,
+                    metricSub,
+                    badgeClass,
+                    tagText,
+                    metricIcon,
+                    valueClass,
+                    changeScore
+                });
+            }
+        }
+    }
+
+    // Sort by changeScore descending
+    changedFunds.sort((a, b) => b.changeScore - a.changeScore);
+
+    // If fewer than 3 funds had differences (e.g. repeated refresh in close succession or initial load),
+    // fill in with the top active movement leaders of the latest session so 3 prominent funds are ALWAYS highlighted!
+    let displayList = changedFunds.slice(0, 3);
+
+    if (displayList.length < 3) {
+        const existingCodes = new Set(displayList.map(f => f.code));
+        const categories = currentCache?.categories || {};
+        
+        // Candidate 1: Top investor inflow leader
+        const topInv = (categories.topInvestorInflow || []).find(f => !existingCodes.has(f.code));
+        if (topInv && displayList.length < 3) {
+            existingCodes.add(topInv.code);
+            displayList.push({
+                code: topInv.code,
+                name: topInv.name,
+                metricName: "Yatırımcı Akışı",
+                metricDetail: `+${formatFundCount(topInv.deltaInvestors)} Kişi (${topInv.aum > 0 ? formatBillionOrMillion(topInv.aum) : 'Aktif Giriş'})`,
+                metricSub: "Günün En Yüksek Girişi",
+                badgeClass: "emerald",
+                tagText: "Yatırımcı Girişi",
+                metricIcon: "fa-solid fa-users",
+                valueClass: "pos"
+            });
+        }
+
+        // Candidate 2: Top cash inflow leader
+        const topCash = (categories.topCashInflow || []).find(f => !existingCodes.has(f.code));
+        if (topCash && displayList.length < 3) {
+            existingCodes.add(topCash.code);
+            displayList.push({
+                code: topCash.code,
+                name: topCash.name,
+                metricName: "Sermaye Akışı",
+                metricDetail: `+${formatBillionOrMillion(topCash.cashFlow)} Net Giriş`,
+                metricSub: topCash.deltaInvestors ? `+${formatFundCount(topCash.deltaInvestors)} Yatırımcı` : "Sermaye Büyümesi",
+                badgeClass: "cyan",
+                tagText: "Sermaye Akışı",
+                metricIcon: "fa-solid fa-vault",
+                valueClass: "pos"
+            });
+        }
+
+        // Candidate 3: Top price or runner up
+        const runnerUp = (categories.topInvestorInflow || []).slice(1).find(f => !existingCodes.has(f.code)) 
+                      || (categories.topCashInflow || []).slice(1).find(f => !existingCodes.has(f.code));
+        if (runnerUp && displayList.length < 3) {
+            existingCodes.add(runnerUp.code);
+            const isCash = runnerUp.cashFlow > 0 && Math.abs(runnerUp.cashFlow) > 1e7;
+            displayList.push({
+                code: runnerUp.code,
+                name: runnerUp.name,
+                metricName: isCash ? "Sermaye Girişi" : "Yatırımcı Akışı",
+                metricDetail: isCash ? `+${formatBillionOrMillion(runnerUp.cashFlow)}` : `+${formatFundCount(runnerUp.deltaInvestors)} Kişi`,
+                metricSub: runnerUp.price > 0 ? `Fiyat: ₺${formatFundPriceDisplay(runnerUp.price)}` : "Seans Hareketi",
+                badgeClass: "amber",
+                tagText: "Seans Hareketi",
+                metricIcon: isCash ? "fa-solid fa-money-bill-transfer" : "fa-solid fa-chart-line",
+                valueClass: "pos"
+            });
+        }
+    }
+
+    displayList = displayList.slice(0, 3);
+
+    gridElem.innerHTML = displayList.map(item => {
+        const cleanName = cleanFundTitle(item.name || `${item.code} YATIRIM FONU`);
+        return `
+            <div class="recent-change-fund-card" onclick="openSingleFundAnalysis('${item.code}')" title="${item.code} - ${cleanName} detaylı analizini aç">
+                <div class="rc-card-top">
+                    <div class="rc-fund-badge-group">
+                        <span class="rc-fund-code-pill">${item.code}</span>
+                        <span class="rc-badge-tag ${item.badgeClass}">
+                            <i class="${item.metricIcon}"></i> ${item.tagText}
+                        </span>
+                    </div>
+                    <div class="rc-nav-icon" title="Detayları İncele">
+                        <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                    </div>
+                </div>
+                <div class="rc-fund-name" title="${cleanName}">${cleanName}</div>
+                <div class="rc-change-detail-box">
+                    <div class="rc-change-label">
+                        <i class="${item.metricIcon}"></i> Güncellenen Veri (${item.metricName}):
+                    </div>
+                    <div class="rc-change-metric-value ${item.valueClass}">
+                        <span>${item.metricDetail}</span>
+                        <span class="rc-metric-context">${item.metricSub}</span>
+                    </div>
+                </div>
+            </div>
+        `;
+    }).join("");
+
+    const now = new Date();
+    const timeStr = now.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    if (timeElem) {
+        timeElem.innerText = isManualRefresh ? `Son Yenileme: ${timeStr}` : `Canlı TEFAS (${timeStr})`;
+    }
+    if (countPill) {
+        countPill.innerHTML = `<i class="fa-solid fa-check"></i> 3 Fon Güncellendi`;
+    }
+
+    try {
+        localStorage.setItem("tefas_last_refresh_snapshot", JSON.stringify(currSnapshot));
+    } catch (e) {}
+
+    if (isManualRefresh && containerCard) {
+        containerCard.classList.remove("updated-flash");
+        void containerCard.offsetWidth;
+        containerCard.classList.add("updated-flash");
+    }
+}
+
 async function loadAndRenderFundLeaders(forceRefresh = false) {
     const loadingElem = document.getElementById("fundLeadersLoading");
     const gridElem = document.getElementById("fundLeadersGrid");
+    const btnRefresh = document.querySelector(".btn-refresh-leaders");
+
+    if (forceRefresh && btnRefresh) {
+        const icon = btnRefresh.querySelector("i");
+        if (icon) icon.classList.add("fa-spin");
+    }
+
+    // Capture previous snapshot before refreshing
+    const previousSnapshot = extractFlatFundsSnapshot(fundLeadersDataCache);
 
     // Purge old stale caches with <= 3 items
     try {
@@ -3044,6 +3301,7 @@ async function loadAndRenderFundLeaders(forceRefresh = false) {
         fundLeadersDataCache = getFallbackFundLeadersSnapshot();
     }
     renderFundLeadersUI(fundLeadersDataCache);
+    detectAndRenderRecentFundChanges(null, fundLeadersDataCache, false);
 
     // 1. Check in-memory or localStorage cache (< 30 mins) if not forceRefresh
     if (!forceRefresh) {
@@ -3054,6 +3312,7 @@ async function loadAndRenderFundLeaders(forceRefresh = false) {
                 if (parsed && parsed.timestamp && (Date.now() - parsed.timestamp) < 1800000 && parsed.categories && (parsed.categories.topInvestorInflow?.length || 0) > 3) {
                     fundLeadersDataCache = parsed;
                     renderFundLeadersUI(fundLeadersDataCache);
+                    detectAndRenderRecentFundChanges(null, fundLeadersDataCache, false);
                     return;
                 }
             }
@@ -3068,58 +3327,66 @@ async function loadAndRenderFundLeaders(forceRefresh = false) {
 
     let leadersResult = null;
 
-    // Strategy 1: Fetch from Cloudflare Worker proxy (analyzes full 2,000+ TEFAS universe with limit=50)
     try {
-        const workerUrl = `${IS_YATIRIM_WORKER_URL}?leaders=1&limit=50`;
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 9000);
-        const res = await fetch(workerUrl, { signal: controller.signal });
-        clearTimeout(timeoutId);
-
-        if (res.ok) {
-            const json = await res.json();
-            if (json && json.ok && json.categories && (json.categories.topInvestorInflow?.length || 0) > 3) {
-                leadersResult = {
-                    date: json.date,
-                    categories: json.categories
-                };
-            }
-        }
-    } catch (workerErr) {
-        console.warn("Cloudflare worker leaders fetch failed, attempting client calculation:", workerErr);
-    }
-
-    // Strategy 2: Client calculation from active universe if worker fails
-    if (!leadersResult || !leadersResult.categories || (leadersResult.categories.topInvestorInflow?.length || 0) <= 3) {
+        // Strategy 1: Fetch from Cloudflare Worker proxy (analyzes full 2,000+ TEFAS universe with limit=50)
         try {
-            const clientResult = await computeFundLeadersFromActiveUniverse();
-            if (clientResult && clientResult.categories && (clientResult.categories.topInvestorInflow?.length || 0) > 3) {
-                leadersResult = clientResult;
+            const workerUrl = `${IS_YATIRIM_WORKER_URL}?leaders=1&limit=50`;
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 9000);
+            const res = await fetch(workerUrl, { signal: controller.signal });
+            clearTimeout(timeoutId);
+
+            if (res.ok) {
+                const json = await res.json();
+                if (json && json.ok && json.categories && (json.categories.topInvestorInflow?.length || 0) > 3) {
+                    leadersResult = {
+                        date: json.date,
+                        categories: json.categories
+                    };
+                }
             }
-        } catch (calcErr) {
-            console.warn("Client calculation failed, keeping curated snapshot:", calcErr);
+        } catch (workerErr) {
+            console.warn("Cloudflare worker leaders fetch failed, attempting client calculation:", workerErr);
+        }
+
+        // Strategy 2: Client calculation from active universe if worker fails
+        if (!leadersResult || !leadersResult.categories || (leadersResult.categories.topInvestorInflow?.length || 0) <= 3) {
+            try {
+                const clientResult = await computeFundLeadersFromActiveUniverse();
+                if (clientResult && clientResult.categories && (clientResult.categories.topInvestorInflow?.length || 0) > 3) {
+                    leadersResult = clientResult;
+                }
+            } catch (calcErr) {
+                console.warn("Client calculation failed, keeping curated snapshot:", calcErr);
+            }
+        }
+
+        // Strategy 3: Fallback snapshot
+        if (!leadersResult || !leadersResult.categories || (leadersResult.categories.topInvestorInflow?.length || 0) <= 3) {
+            leadersResult = getFallbackFundLeadersSnapshot();
+        }
+
+        // Store in cache
+        fundLeadersDataCache = {
+            timestamp: Date.now(),
+            date: leadersResult.date || new Date().toISOString().slice(0, 10),
+            categories: leadersResult.categories
+        };
+        try {
+            localStorage.setItem(cacheKey, JSON.stringify(fundLeadersDataCache));
+        } catch (e) {}
+
+        if (loadingElem) loadingElem.style.display = "none";
+        if (gridElem) gridElem.style.opacity = "1";
+
+        renderFundLeadersUI(fundLeadersDataCache);
+        detectAndRenderRecentFundChanges(previousSnapshot, fundLeadersDataCache, forceRefresh);
+    } finally {
+        if (btnRefresh) {
+            const icon = btnRefresh.querySelector("i");
+            if (icon) icon.classList.remove("fa-spin");
         }
     }
-
-    // Strategy 3: Fallback snapshot
-    if (!leadersResult || !leadersResult.categories || (leadersResult.categories.topInvestorInflow?.length || 0) <= 3) {
-        leadersResult = getFallbackFundLeadersSnapshot();
-    }
-
-    // Store in cache
-    fundLeadersDataCache = {
-        timestamp: Date.now(),
-        date: leadersResult.date || new Date().toISOString().slice(0, 10),
-        categories: leadersResult.categories
-    };
-    try {
-        localStorage.setItem(cacheKey, JSON.stringify(fundLeadersDataCache));
-    } catch (e) {}
-
-    if (loadingElem) loadingElem.style.display = "none";
-    if (gridElem) gridElem.style.opacity = "1";
-
-    renderFundLeadersUI(fundLeadersDataCache);
 }
 
 async function computeFundLeadersFromActiveUniverse() {
@@ -7400,6 +7667,9 @@ function initEvents() {
 
     document.getElementById("btnRefreshPrices").addEventListener("click", () => {
         fetchLivePrices();
+        try {
+            loadAndRenderFundLeaders(true);
+        } catch (e) {}
     });
 
     document.getElementById("btnSimulateMarket").addEventListener("click", () => {
