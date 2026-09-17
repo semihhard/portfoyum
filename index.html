@@ -23,7 +23,7 @@
     <!-- ExcelJS for Modern Excel Export -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
-    <link rel="stylesheet" href="style.css?v=17">    <style>
+    <link rel="stylesheet" href="style.css?v=18">    <style>
         /* Refresh Button Loading Animation */
         .icon-btn.loading i {
             animation: spin 1s linear infinite;
@@ -1148,6 +1148,10 @@
                             <i class="fa-solid fa-money-bill-transfer"></i>
                             <span>Sermaye Akışı</span>
                         </button>
+                        <button type="button" class="leaders-filter-pill expand-all-pill" id="btnToggleAllLeaders" onclick="toggleAllLeaderCategories()" title="Tüm kategorileri genişlet / daralt">
+                            <i class="fa-solid fa-arrows-up-down"></i>
+                            <span id="btnToggleAllLeadersText">Tümünü Sırala</span>
+                        </button>
                     </div>
 
                     <!-- Leaders Loading State -->
@@ -1158,9 +1162,9 @@
 
                     <!-- Full-Width Spacious Leaders Grid -->
                     <div class="fund-leaders-grid" id="fundLeadersGrid">
-                        <!-- Category 1: Top 3 Investor Inflow (+) -->
+                        <!-- Category 1: Top Investor Inflow (+) -->
                         <div class="analytics-card ultra-glass-card leader-category-card inflow-investor" data-cat="investors">
-                            <div class="leader-card-header">
+                            <div class="leader-card-header clickable-header" onclick="toggleCategoryExpansion('inv-in', event)" title="Sıralamayı genişlet veya daralt">
                                 <div class="leader-card-title-box">
                                     <div class="leader-card-icon emerald">
                                         <i class="fa-solid fa-user-plus"></i>
@@ -1168,20 +1172,24 @@
                                     <div class="leader-card-title-text">
                                         <div class="leader-title-wrap">
                                             <h3>En Çok Yatırımcı Girişi</h3>
-                                            <span class="leader-badge emerald"><i class="fa-solid fa-arrow-trend-up"></i> Giriş (+)</span>
+                                            <div class="leader-header-badges">
+                                                <span class="leader-expand-badge" id="expandBadge-inv-in"><i class="fa-solid fa-expand"></i> Tümü</span>
+                                                <span class="leader-badge emerald"><i class="fa-solid fa-arrow-trend-up"></i> Giriş (+)</span>
+                                            </div>
                                         </div>
-                                        <span class="leader-card-subtitle">Günün en fazla yeni yatırımcı çeken ilk 3 fonu</span>
+                                        <span class="leader-card-subtitle" id="subTitle-inv-in">Günün en fazla yeni yatırımcı çeken ilk 3 fonu</span>
                                     </div>
                                 </div>
                             </div>
                             <div class="leader-list-container" id="leaderListInvIn">
                                 <!-- Dynamic rows rendered by JS -->
                             </div>
+                            <div class="leader-card-footer-toggle" id="footerToggle-inv-in"></div>
                         </div>
 
-                        <!-- Category 2: Top 3 Investor Outflow (-) -->
+                        <!-- Category 2: Top Investor Outflow (-) -->
                         <div class="analytics-card ultra-glass-card leader-category-card outflow-investor" data-cat="investors">
-                            <div class="leader-card-header">
+                            <div class="leader-card-header clickable-header" onclick="toggleCategoryExpansion('inv-out', event)" title="Sıralamayı genişlet veya daralt">
                                 <div class="leader-card-title-box">
                                     <div class="leader-card-icon rose">
                                         <i class="fa-solid fa-user-minus"></i>
@@ -1189,20 +1197,24 @@
                                     <div class="leader-card-title-text">
                                         <div class="leader-title-wrap">
                                             <h3>En Çok Yatırımcı Çıkışı</h3>
-                                            <span class="leader-badge rose"><i class="fa-solid fa-arrow-trend-down"></i> Çıkış (-)</span>
+                                            <div class="leader-header-badges">
+                                                <span class="leader-expand-badge" id="expandBadge-inv-out"><i class="fa-solid fa-expand"></i> Tümü</span>
+                                                <span class="leader-badge rose"><i class="fa-solid fa-arrow-trend-down"></i> Çıkış (-)</span>
+                                            </div>
                                         </div>
-                                        <span class="leader-card-subtitle">Günün en fazla yatırımcı kaybeden ilk 3 fonu</span>
+                                        <span class="leader-card-subtitle" id="subTitle-inv-out">Günün en fazla yatırımcı kaybeden ilk 3 fonu</span>
                                     </div>
                                 </div>
                             </div>
                             <div class="leader-list-container" id="leaderListInvOut">
                                 <!-- Dynamic rows rendered by JS -->
                             </div>
+                            <div class="leader-card-footer-toggle" id="footerToggle-inv-out"></div>
                         </div>
 
-                        <!-- Category 3: Top 3 Cash Inflow (+) -->
+                        <!-- Category 3: Top Cash Inflow (+) -->
                         <div class="analytics-card ultra-glass-card leader-category-card inflow-cash" data-cat="cash">
-                            <div class="leader-card-header">
+                            <div class="leader-card-header clickable-header" onclick="toggleCategoryExpansion('cash-in', event)" title="Sıralamayı genişlet veya daralt">
                                 <div class="leader-card-title-box">
                                     <div class="leader-card-icon cyan">
                                         <i class="fa-solid fa-money-bill-trend-up"></i>
@@ -1210,20 +1222,24 @@
                                     <div class="leader-card-title-text">
                                         <div class="leader-title-wrap">
                                             <h3>En Çok Para Girişi</h3>
-                                            <span class="leader-badge cyan"><i class="fa-solid fa-vault"></i> Net Giriş (+)</span>
+                                            <div class="leader-header-badges">
+                                                <span class="leader-expand-badge" id="expandBadge-cash-in"><i class="fa-solid fa-expand"></i> Tümü</span>
+                                                <span class="leader-badge cyan"><i class="fa-solid fa-vault"></i> Net Giriş (+)</span>
+                                            </div>
                                         </div>
-                                        <span class="leader-card-subtitle">Günün en yüksek net nakit girişi olan ilk 3 fonu</span>
+                                        <span class="leader-card-subtitle" id="subTitle-cash-in">Günün en yüksek net nakit girişi olan ilk 3 fonu</span>
                                     </div>
                                 </div>
                             </div>
                             <div class="leader-list-container" id="leaderListCashIn">
                                 <!-- Dynamic rows rendered by JS -->
                             </div>
+                            <div class="leader-card-footer-toggle" id="footerToggle-cash-in"></div>
                         </div>
 
-                        <!-- Category 4: Top 3 Cash Outflow (-) -->
+                        <!-- Category 4: Top Cash Outflow (-) -->
                         <div class="analytics-card ultra-glass-card leader-category-card outflow-cash" data-cat="cash">
-                            <div class="leader-card-header">
+                            <div class="leader-card-header clickable-header" onclick="toggleCategoryExpansion('cash-out', event)" title="Sıralamayı genişlet veya daralt">
                                 <div class="leader-card-title-box">
                                     <div class="leader-card-icon amber">
                                         <i class="fa-solid fa-money-bill-transfer"></i>
@@ -1231,15 +1247,19 @@
                                     <div class="leader-card-title-text">
                                         <div class="leader-title-wrap">
                                             <h3>En Çok Para Çıkışı</h3>
-                                            <span class="leader-badge amber"><i class="fa-solid fa-arrow-right-from-bracket"></i> Net Çıkış (-)</span>
+                                            <div class="leader-header-badges">
+                                                <span class="leader-expand-badge" id="expandBadge-cash-out"><i class="fa-solid fa-expand"></i> Tümü</span>
+                                                <span class="leader-badge amber"><i class="fa-solid fa-arrow-right-from-bracket"></i> Net Çıkış (-)</span>
+                                            </div>
                                         </div>
-                                        <span class="leader-card-subtitle">Günün en yüksek net nakit çıkışı olan ilk 3 fonu</span>
+                                        <span class="leader-card-subtitle" id="subTitle-cash-out">Günün en yüksek net nakit çıkışı olan ilk 3 fonu</span>
                                     </div>
                                 </div>
                             </div>
                             <div class="leader-list-container" id="leaderListCashOut">
                                 <!-- Dynamic rows rendered by JS -->
                             </div>
+                            <div class="leader-card-footer-toggle" id="footerToggle-cash-out"></div>
                         </div>
                     </div>
 
@@ -2099,6 +2119,6 @@
         </div>
     </div>
 
-    <script src="app.js?v=64"></script>
+    <script src="app.js?v=65"></script>
 </body>
 </html>

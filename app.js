@@ -2180,6 +2180,39 @@ function prefillAddModalWithFund() {
 
 let fundLeadersDataCache = null;
 
+const leaderCategoryLimits = {
+    "inv-in": 3,
+    "inv-out": 3,
+    "cash-in": 3,
+    "cash-out": 3
+};
+
+function toggleCategoryExpansion(type, event) {
+    if (event) {
+        event.stopPropagation();
+    }
+    const current = leaderCategoryLimits[type] || 3;
+    leaderCategoryLimits[type] = current === 3 ? 100 : 3;
+
+    if (fundLeadersDataCache) {
+        renderFundLeadersUI(fundLeadersDataCache);
+    }
+}
+
+function toggleAllLeaderCategories() {
+    const isAnyCollapsed = Object.values(leaderCategoryLimits).some(v => v === 3);
+    const newLimit = isAnyCollapsed ? 100 : 3;
+
+    leaderCategoryLimits["inv-in"] = newLimit;
+    leaderCategoryLimits["inv-out"] = newLimit;
+    leaderCategoryLimits["cash-in"] = newLimit;
+    leaderCategoryLimits["cash-out"] = newLimit;
+
+    if (fundLeadersDataCache) {
+        renderFundLeadersUI(fundLeadersDataCache);
+    }
+}
+
 function switchFundSubTab(tab) {
     appState.activeFundSubTab = tab;
     const btnSingle = document.getElementById("btnFundSubtabSingle");
@@ -2253,7 +2286,7 @@ async function loadAndRenderFundLeaders(forceRefresh = false) {
 
     // Strategy 1: Fetch from Cloudflare Worker proxy (analyzes full 2,000+ TEFAS universe)
     try {
-        const workerUrl = `${IS_YATIRIM_WORKER_URL}?leaders=1`;
+        const workerUrl = `${IS_YATIRIM_WORKER_URL}?leaders=1&limit=50`;
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 8000);
         const res = await fetch(workerUrl, { signal: controller.signal });
@@ -2351,10 +2384,10 @@ async function computeFundLeadersFromActiveUniverse() {
         }
     }
 
-    const topInvestorInflow = [...results].filter(d => d.deltaInvestors > 0).sort((a, b) => b.deltaInvestors - a.deltaInvestors).slice(0, 3);
-    const topInvestorOutflow = [...results].filter(d => d.deltaInvestors < 0).sort((a, b) => a.deltaInvestors - b.deltaInvestors).slice(0, 3);
-    const topCashInflow = [...results].filter(d => d.cashFlow > 0).sort((a, b) => b.cashFlow - a.cashFlow).slice(0, 3);
-    const topCashOutflow = [...results].filter(d => d.cashFlow < 0).sort((a, b) => a.cashFlow - b.cashFlow).slice(0, 3);
+    const topInvestorInflow = [...results].filter(d => d.deltaInvestors > 0).sort((a, b) => b.deltaInvestors - a.deltaInvestors);
+    const topInvestorOutflow = [...results].filter(d => d.deltaInvestors < 0).sort((a, b) => a.deltaInvestors - b.deltaInvestors);
+    const topCashInflow = [...results].filter(d => d.cashFlow > 0).sort((a, b) => b.cashFlow - a.cashFlow);
+    const topCashOutflow = [...results].filter(d => d.cashFlow < 0).sort((a, b) => a.cashFlow - b.cashFlow);
 
     return {
         date: results[0]?.date || new Date().toISOString().slice(0, 10),
@@ -2368,32 +2401,559 @@ async function computeFundLeadersFromActiveUniverse() {
 }
 
 function getFallbackFundLeadersSnapshot() {
-    const today = new Date().toISOString().slice(0, 10);
     return {
-        date: today,
-        categories: {
-            topInvestorInflow: [
-                { code: "THF", name: "TERA PORTFÖY HİSSE SENEDİ (TL) FONU", price: 2.700585, aum: 127436574731, deltaInvestors: 5399, cashFlow: -3813125941, perPerson: 706265 },
-                { code: "TP2", name: "TERA PORTFÖY PARA PİYASASI (TL) FONU", price: 1.05, aum: 18500000000, deltaInvestors: 2230, cashFlow: 215000000, perPerson: 96412 },
-                { code: "DOH", name: "TERA PORTFÖY DÖRDÜNCÜ HİSSE SENEDİ SERBEST FON", price: 2.371732, aum: 40795298294, deltaInvestors: 1575, cashFlow: -1032627053, perPerson: 655636 }
-            ],
-            topInvestorOutflow: [
-                { code: "ALE", name: "AK PORTFÖY PARA PİYASASI (TL) FONU", price: 13.876086, aum: 94097571861, deltaInvestors: -5741, cashFlow: -1168272444, perPerson: 203496 },
-                { code: "PHE", name: "PUSULA PORTFÖY HİSSE SENEDİ FONU", price: 3.42, aum: 820000000, deltaInvestors: -2625, cashFlow: -41200000, perPerson: 15695 },
-                { code: "GNP", name: "GARANTİ PORTFÖY NEMA PARA PİYASASI (TL) FONU", price: 1.510992, aum: 2058883057, deltaInvestors: -2613, cashFlow: -803801652, perPerson: 307616 }
-            ],
-            topCashInflow: [
-                { code: "ILH", name: "İŞ PORTFÖY BİRİNCİ PARA PİYASASI SERBEST (TL) FON", price: 4.11449, aum: 174855604072, deltaInvestors: 39, cashFlow: 14790772285, perPerson: 379250571 },
-                { code: "ZPK", name: "ZİRAAT PORTFÖY KISA VADELİ KİRA SERTİFİKASI KATILIM FONU", price: 8.638511, aum: 28956757034, deltaInvestors: 97, cashFlow: 3164385550, perPerson: 32622531 },
-                { code: "ZPR", name: "ZİRAAT PORTFÖY PARA PİYASASI SERBEST FON", price: 1.587256, aum: 32397581430, deltaInvestors: 38, cashFlow: 2704344254, perPerson: 71166954 }
-            ],
-            topCashOutflow: [
-                { code: "GTL", name: "GARANTİ PORTFÖY BİRİNCİ PARA PİYASASI (TL) FONU", price: 0.138284, aum: 186299119163, deltaInvestors: -215, cashFlow: -11951810177, perPerson: 55589814 },
-                { code: "PSE", name: "ATLAS PORTFÖY PARA PİYASASI SERBEST FON", price: 1.933609, aum: 15087840690, deltaInvestors: -601, cashFlow: -7718534763, perPerson: 12842819 },
-                { code: "THF", name: "TERA PORTFÖY HİSSE SENEDİ (TL) FONU", price: 2.700585, aum: 127436574731, deltaInvestors: 5399, cashFlow: -3813125941, perPerson: 706265 }
-            ]
-        }
-    };
+    "date": "2026-09-17",
+    "categories": {
+        "topInvestorInflow": [
+            {
+                "code": "THF",
+                "name": "TERA PORTFÖY HİSSE SENEDİ (TL) FONU (HİSSE SENEDİ YOĞUN FON)",
+                "price": 2.700585,
+                "aum": 127436574731.03,
+                "deltaInvestors": 5399,
+                "cashFlow": -3813125941.72107,
+                "perPerson": 706265
+            },
+            {
+                "code": "TP2",
+                "name": "TERA PORTFÖY PARA PİYASASI (TL) FONU",
+                "price": 0,
+                "aum": 0,
+                "deltaInvestors": 2230,
+                "cashFlow": 0,
+                "perPerson": 0
+            },
+            {
+                "code": "DOH",
+                "name": "TERA PORTFÖY DÖRDÜNCÜ HİSSE SENEDİ SERBEST (TL) FON (HİSSE SENEDİ YOĞUN FON)",
+                "price": 2.371732,
+                "aum": 40795298294.67,
+                "deltaInvestors": 1575,
+                "cashFlow": -1032627053.0796881,
+                "perPerson": 655636
+            },
+            {
+                "code": "TLY",
+                "name": "TERA PORTFÖY BİRİNCİ SERBEST FON",
+                "price": 0,
+                "aum": 0,
+                "deltaInvestors": 1141,
+                "cashFlow": 0,
+                "perPerson": 0
+            },
+            {
+                "code": "TTA",
+                "name": "İŞ PORTFÖY ALTIN FONU",
+                "price": 0.620949,
+                "aum": 26171335824,
+                "deltaInvestors": 1041,
+                "cashFlow": -757642.850013,
+                "perPerson": 728
+            },
+            {
+                "code": "TKM",
+                "name": "TEB PORTFÖY PARA PİYASASI (TL) FONU",
+                "price": 0.221122,
+                "aum": 78145483265.33,
+                "deltaInvestors": 954,
+                "cashFlow": -294548817.22706,
+                "perPerson": 308751
+            },
+            {
+                "code": "FSU",
+                "name": "TERA PORTFÖY FON SEPETİ FONU",
+                "price": 1.42933,
+                "aum": 2775345858.63,
+                "deltaInvestors": 613,
+                "cashFlow": -47502344.64402,
+                "perPerson": 77492
+            },
+            {
+                "code": "KLU",
+                "name": "KUVEYT TÜRK PORTFÖY PARA PİYASASI KATILIM (TL) FONU",
+                "price": 4.970386,
+                "aum": 91552803693.08,
+                "deltaInvestors": 593,
+                "cashFlow": -631848903.2733581,
+                "perPerson": 1065512
+            },
+            {
+                "code": "IOO",
+                "name": "İŞ PORTFÖY İKİNCİ PARA PİYASASI (TL) FONU",
+                "price": 4.731986,
+                "aum": 31596824870.74,
+                "deltaInvestors": 518,
+                "cashFlow": -100807631.883686,
+                "perPerson": 194609
+            },
+            {
+                "code": "TZL",
+                "name": "ZİRAAT PORTFÖY PARA PİYASASI (TL) FONU",
+                "price": 0.141914,
+                "aum": 96590901934.67,
+                "deltaInvestors": 376,
+                "cashFlow": -2076250510.6934001,
+                "perPerson": 5521943
+            },
+            {
+                "code": "AES",
+                "name": "AK PORTFÖY PETROL YABANCI BYF FON SEPETİ FONU",
+                "price": 0.209826,
+                "aum": 1587408282.17,
+                "deltaInvestors": 371,
+                "cashFlow": 26113326.20154,
+                "perPerson": 70386
+            },
+            {
+                "code": "TLV",
+                "name": "TERA PORTFÖY PARA PİYASASI KATILIM (TL) FONU",
+                "price": 1.394777,
+                "aum": 3626564860.91,
+                "deltaInvestors": 311,
+                "cashFlow": -628653028.862591,
+                "perPerson": 2021392
+            },
+            {
+                "code": "ZBJ",
+                "name": "ZİRAAT PORTFÖY BAŞAK PARA PİYASASI (TL) FONU",
+                "price": 5.321507,
+                "aum": 58227586436.01,
+                "deltaInvestors": 299,
+                "cashFlow": -3741015163.7944,
+                "perPerson": 12511756
+            },
+            {
+                "code": "AIS",
+                "name": "AK PORTFÖY PARA PİYASASI KATILIM FONU",
+                "price": 0.110449,
+                "aum": 11423008195.98,
+                "deltaInvestors": 213,
+                "cashFlow": -5343500.309302,
+                "perPerson": 25087
+            },
+            {
+                "code": "TGE",
+                "name": "İŞ PORTFÖY EMTİA YABANCI BYF FON SEPETİ FONU",
+                "price": 0.31085,
+                "aum": 3093361720.36,
+                "deltaInvestors": 160,
+                "cashFlow": -3679221.53255,
+                "perPerson": 22995
+            }
+        ],
+        "topInvestorOutflow": [
+            {
+                "code": "ALE",
+                "name": "AK PORTFÖY PARA PİYASASI (TL) FONU",
+                "price": 13.876086,
+                "aum": 94097571861.69,
+                "deltaInvestors": -5741,
+                "cashFlow": -1168272444.593436,
+                "perPerson": 203496
+            },
+            {
+                "code": "PHE",
+                "name": "PUSULA PORTFÖY HİSSE SENEDİ FONU (HİSSE SENEDİ YOĞUN FON)",
+                "price": 0,
+                "aum": 0,
+                "deltaInvestors": -2625,
+                "cashFlow": 0,
+                "perPerson": 0
+            },
+            {
+                "code": "GNP",
+                "name": "GARANTİ PORTFÖY NEMA PARA PİYASASI (TL) FONU",
+                "price": 1.510992,
+                "aum": 2058883057.88,
+                "deltaInvestors": -2613,
+                "cashFlow": -803801652.700032,
+                "perPerson": 307616
+            },
+            {
+                "code": "HLL",
+                "name": "ZİRAAT PORTFÖY HALKBANK PARA PİYASASI (TL) FONU",
+                "price": 0.392631,
+                "aum": 53109979497.43,
+                "deltaInvestors": -2051,
+                "cashFlow": 825041817.708609,
+                "perPerson": 402263
+            },
+            {
+                "code": "TSI",
+                "name": "İŞ PORTFÖY MAKSİMUM HESAP KISA VADELİ BORÇLANMA ARAÇLARI (TL) FONU",
+                "price": 0.212618,
+                "aum": 23609141647.87,
+                "deltaInvestors": -1179,
+                "cashFlow": -561899395.162448,
+                "perPerson": 476590
+            },
+            {
+                "code": "NMP",
+                "name": "AK PORTFÖY NEMA PARA PİYASASI (TL) FONU",
+                "price": 1.043005,
+                "aum": 3319602650.72,
+                "deltaInvestors": -1057,
+                "cashFlow": 2517900729.11343,
+                "perPerson": 2382120
+            },
+            {
+                "code": "PBR",
+                "name": "PUSULA PORTFÖY BİRİNCİ DEĞİŞKEN FON",
+                "price": 0.615036,
+                "aum": 515269992.86,
+                "deltaInvestors": -950,
+                "cashFlow": -64077712.015908,
+                "perPerson": 67450
+            },
+            {
+                "code": "YLB",
+                "name": "YAPI KREDİ PORTFÖY PARA PİYASASI FONU",
+                "price": 1.868388,
+                "aum": 96384668679.27,
+                "deltaInvestors": -925,
+                "cashFlow": -521379127.09296,
+                "perPerson": 563653
+            },
+            {
+                "code": "ENR",
+                "name": "QNB PORTFÖY ENPARA PARA PİYASASI (TL) FONU",
+                "price": 1.237938,
+                "aum": 2496325479.87,
+                "deltaInvestors": -811,
+                "cashFlow": -176959841.436066,
+                "perPerson": 218200
+            },
+            {
+                "code": "VK6",
+                "name": "V PORTFÖY VAKIFBANK PARA PİYASASI (TL) FONU",
+                "price": 4.26919,
+                "aum": 84760420380.18,
+                "deltaInvestors": -748,
+                "cashFlow": 1314204827.16219,
+                "perPerson": 1756958
+            },
+            {
+                "code": "DCN",
+                "name": "DENİZ PORTFÖY ÜÇÜNCÜ PARA PİYASASI (TL) FONU",
+                "price": 1.475835,
+                "aum": 223823906.88,
+                "deltaInvestors": -601,
+                "cashFlow": -386744844.866745,
+                "perPerson": 643502
+            },
+            {
+                "code": "PSE",
+                "name": "ATLAS PORTFÖY PARA PİYASASI SERBEST FON",
+                "price": 1.933609,
+                "aum": 15087840690.8,
+                "deltaInvestors": -601,
+                "cashFlow": -7718534763.359554,
+                "perPerson": 12842820
+            },
+            {
+                "code": "PRY",
+                "name": "PUSULA PORTFÖY PARA PİYASASI (TL) FONU",
+                "price": 3.279274,
+                "aum": 18870851845.68,
+                "deltaInvestors": -569,
+                "cashFlow": 0,
+                "perPerson": 0
+            },
+            {
+                "code": "OPJ",
+                "name": "QNB PORTFÖY QNB PARA PİYASASI (TL) FONU",
+                "price": 1.726034,
+                "aum": 285718089.38,
+                "deltaInvestors": -559,
+                "cashFlow": -581047180.371372,
+                "perPerson": 1039440
+            },
+            {
+                "code": "AFT",
+                "name": "AK PORTFÖY YENİ TEKNOLOJİLER YABANCI HİSSE SENEDİ FONU",
+                "price": 0.981819,
+                "aum": 18611267813.99,
+                "deltaInvestors": -512,
+                "cashFlow": -94253189.562441,
+                "perPerson": 184088
+            }
+        ],
+        "topCashInflow": [
+            {
+                "code": "ILH",
+                "name": "İŞ PORTFÖY BİRİNCİ PARA PİYASASI SERBEST (TL) FON",
+                "price": 4.11449,
+                "aum": 174855604072.95,
+                "deltaInvestors": 39,
+                "cashFlow": 14790772285.09467,
+                "perPerson": 379250571
+            },
+            {
+                "code": "ZPK",
+                "name": "ZİRAAT PORTFÖY KISA VADELİ KİRA SERTİFİKASI KATILIM (TL) FONU",
+                "price": 8.638511,
+                "aum": 28956757034.54,
+                "deltaInvestors": 97,
+                "cashFlow": 3164385550.7205267,
+                "perPerson": 32622531
+            },
+            {
+                "code": "ZPR",
+                "name": "ZİRAAT PORTFÖY PARA PİYASASI SERBEST FON",
+                "price": 1.587256,
+                "aum": 32397581430.82,
+                "deltaInvestors": 38,
+                "cashFlow": 2704344254.399128,
+                "perPerson": 71166954
+            },
+            {
+                "code": "NMP",
+                "name": "AK PORTFÖY NEMA PARA PİYASASI (TL) FONU",
+                "price": 1.043005,
+                "aum": 3319602650.72,
+                "deltaInvestors": -1057,
+                "cashFlow": 2517900729.11343,
+                "perPerson": 2382120
+            },
+            {
+                "code": "PUC",
+                "name": "AK PORTFÖY BİRİNCİ KISA VADELİ SERBEST (TL)  FON",
+                "price": 7.596222,
+                "aum": 4277100984.6,
+                "deltaInvestors": 23,
+                "cashFlow": 2167917996.965058,
+                "perPerson": 94257304
+            },
+            {
+                "code": "DIP",
+                "name": "DENİZ PORTFÖY İKİNCİ PARA PİYASASI SERBEST (TL) FON",
+                "price": 1.624199,
+                "aum": 54028691923.35,
+                "deltaInvestors": 16,
+                "cashFlow": 2117685924.443572,
+                "perPerson": 132355370
+            },
+            {
+                "code": "FSF",
+                "name": "FİBA PORTFÖY PARA PİYASASI SERBEST (TL) FON",
+                "price": 7.112065,
+                "aum": 15896498847.95,
+                "deltaInvestors": 55,
+                "cashFlow": 1942448273.8338819,
+                "perPerson": 35317241
+            },
+            {
+                "code": "DCB",
+                "name": "DENİZ PORTFÖY PARA PİYASASI SERBEST (TL) FON",
+                "price": 4.901948,
+                "aum": 134552323263.37,
+                "deltaInvestors": 39,
+                "cashFlow": 1741254988.206912,
+                "perPerson": 44647564
+            },
+            {
+                "code": "UNT",
+                "name": "İŞ PORTFÖY ÜÇÜNCÜ SERBEST (TL) FON",
+                "price": 1.606842,
+                "aum": 10899178972.21,
+                "deltaInvestors": 3,
+                "cashFlow": 1689072876.8904781,
+                "perPerson": 563024292
+            },
+            {
+                "code": "FIL",
+                "name": "FİBA PORTFÖY PARA PİYASASI (TL) FONU",
+                "price": 0.381891,
+                "aum": 17455566671.3,
+                "deltaInvestors": 39,
+                "cashFlow": 1606384011.054,
+                "perPerson": 41189334
+            },
+            {
+                "code": "YTY",
+                "name": "YAPI KREDİ PORTFÖY TARABYA SERBEST (DÖVİZ-AVRO) FON",
+                "price": 59.987762,
+                "aum": 126278635107.84,
+                "deltaInvestors": -7,
+                "cashFlow": 1344385494.230952,
+                "perPerson": 192055071
+            },
+            {
+                "code": "VK6",
+                "name": "V PORTFÖY VAKIFBANK PARA PİYASASI (TL) FONU",
+                "price": 4.26919,
+                "aum": 84760420380.18,
+                "deltaInvestors": -748,
+                "cashFlow": 1314204827.16219,
+                "perPerson": 1756958
+            },
+            {
+                "code": "PUR",
+                "name": "AK PORTFÖY BİRİNCİ PARA PİYASASI SERBEST (TL) FON",
+                "price": 10.731423,
+                "aum": 130672073851.93,
+                "deltaInvestors": 16,
+                "cashFlow": 1220234470.274217,
+                "perPerson": 76264654
+            },
+            {
+                "code": "KHP",
+                "name": "KUVEYT TÜRK PORTFÖY PAYLAŞIMLI HESAP PARA PİYASASI KATILIM FONU",
+                "price": 1.244959,
+                "aum": 20864289979.36,
+                "deltaInvestors": 7,
+                "cashFlow": 1218235246.6833289,
+                "perPerson": 174033607
+            },
+            {
+                "code": "NSD",
+                "name": "NUROL PORTFÖY DÖRDÜNCÜ SERBEST (DÖVİZ) FON",
+                "price": 66.485332,
+                "aum": 17025467450.33,
+                "deltaInvestors": -2,
+                "cashFlow": 1214459369.863232,
+                "perPerson": 607229685
+            }
+        ],
+        "topCashOutflow": [
+            {
+                "code": "GTL",
+                "name": "GARANTİ PORTFÖY BİRİNCİ PARA PİYASASI (TL) FONU",
+                "price": 0.138284,
+                "aum": 186299119163.67,
+                "deltaInvestors": -215,
+                "cashFlow": -11951810177.746016,
+                "perPerson": 55589815
+            },
+            {
+                "code": "PSE",
+                "name": "ATLAS PORTFÖY PARA PİYASASI SERBEST FON",
+                "price": 1.933609,
+                "aum": 15087840690.8,
+                "deltaInvestors": -601,
+                "cashFlow": -7718534763.359554,
+                "perPerson": 12842820
+            },
+            {
+                "code": "THF",
+                "name": "TERA PORTFÖY HİSSE SENEDİ (TL) FONU (HİSSE SENEDİ YOĞUN FON)",
+                "price": 2.700585,
+                "aum": 127436574731.03,
+                "deltaInvestors": 5399,
+                "cashFlow": -3813125941.72107,
+                "perPerson": 706265
+            },
+            {
+                "code": "ZBJ",
+                "name": "ZİRAAT PORTFÖY BAŞAK PARA PİYASASI (TL) FONU",
+                "price": 5.321507,
+                "aum": 58227586436.01,
+                "deltaInvestors": 299,
+                "cashFlow": -3741015163.7944,
+                "perPerson": 12511756
+            },
+            {
+                "code": "BGP",
+                "name": "AK PORTFÖY ÜÇÜNCÜ PARA PİYASASI (TL) FONU",
+                "price": 6.716667,
+                "aum": 51858202389.32,
+                "deltaInvestors": 56,
+                "cashFlow": -3672631892.4146013,
+                "perPerson": 65582712
+            },
+            {
+                "code": "UCP",
+                "name": "AK PORTFÖY ÜÇÜNCÜ PARA PİYASASI SERBEST (TL) FON",
+                "price": 1.361142,
+                "aum": 12286417557.39,
+                "deltaInvestors": 0,
+                "cashFlow": -3062569500,
+                "perPerson": 0
+            },
+            {
+                "code": "HKJ",
+                "name": "HEDEF PORTFÖY PARA PİYASASI SERBEST FON",
+                "price": 1.449169,
+                "aum": 8705676920.22,
+                "deltaInvestors": -389,
+                "cashFlow": -2727798995.03705,
+                "perPerson": 7012337
+            },
+            {
+                "code": "GAL",
+                "name": "GARANTİ PORTFÖY İKİNCİ PARA PİYASASI (TL) FONU",
+                "price": 420.072101,
+                "aum": 73215078564.71,
+                "deltaInvestors": -77,
+                "cashFlow": -2667379287.8671126,
+                "perPerson": 34641289
+            },
+            {
+                "code": "YVD",
+                "name": "YAPI KREDİ PORTFÖY İKİNCİ PARA PİYASASI (TL) FONU",
+                "price": 4.533327,
+                "aum": 44919396472.13,
+                "deltaInvestors": -201,
+                "cashFlow": -2403227672.944884,
+                "perPerson": 11956357
+            },
+            {
+                "code": "HDH",
+                "name": "HEDEF PORTFÖY DOĞU HİSSE SENEDİ SERBEST (TL) FON (HİSSE SENEDİ YOĞUN FON)",
+                "price": 2995.781124,
+                "aum": 8952562353.26,
+                "deltaInvestors": 0,
+                "cashFlow": -2126842825.859304,
+                "perPerson": 0
+            },
+            {
+                "code": "TZL",
+                "name": "ZİRAAT PORTFÖY PARA PİYASASI (TL) FONU",
+                "price": 0.141914,
+                "aum": 96590901934.67,
+                "deltaInvestors": 376,
+                "cashFlow": -2076250510.6934001,
+                "perPerson": 5521943
+            },
+            {
+                "code": "KVS",
+                "name": "AZİMUT PORTFÖY KISA VADELİ SERBEST (TL) FON",
+                "price": 3.924401,
+                "aum": 24598553357.03,
+                "deltaInvestors": -8,
+                "cashFlow": -1964386654.291867,
+                "perPerson": 245548332
+            },
+            {
+                "code": "TZV",
+                "name": "ZİRAAT PORTFÖY KISA VADELİ BORÇLANMA ARAÇLARI (TL) FONU",
+                "price": 972.671075,
+                "aum": 32180563785.67,
+                "deltaInvestors": -365,
+                "cashFlow": -1959966745.9481626,
+                "perPerson": 5369772
+            },
+            {
+                "code": "KDV",
+                "name": "KUVEYT TÜRK PORTFÖY DOKUZUNCU KATILIM SERBEST (DÖVİZ) FON",
+                "price": 49.697034,
+                "aum": 21800166919.48,
+                "deltaInvestors": 0,
+                "cashFlow": -1838399589.615726,
+                "perPerson": 0
+            },
+            {
+                "code": "PVK",
+                "name": "ALBARAKA PORTFÖY KISA VADELİ KATILIM SERBEST (TL) FON",
+                "price": 5.924838,
+                "aum": 40331805164.25,
+                "deltaInvestors": -13,
+                "cashFlow": -1772062854.636408,
+                "perPerson": 136312527
+            }
+        ]
+    }
+};
 }
 
 function renderFundLeadersUI(data) {
@@ -2411,6 +2971,12 @@ function renderFundLeadersUI(data) {
     renderLeaderCategoryRows("leaderListInvOut", cats.topInvestorOutflow, "inv-out");
     renderLeaderCategoryRows("leaderListCashIn", cats.topCashInflow, "cash-in");
     renderLeaderCategoryRows("leaderListCashOut", cats.topCashOutflow, "cash-out");
+
+    const isAnyCollapsed = Object.values(leaderCategoryLimits).some(v => v === 3);
+    const btnText = document.getElementById("btnToggleAllLeadersText");
+    if (btnText) {
+        btnText.textContent = isAnyCollapsed ? "Tümünü Sırala" : "İlk 3'e Daralt";
+    }
 }
 
 function cleanFundTitle(name) {
@@ -2450,6 +3016,8 @@ function renderLeaderCategoryRows(containerId, items, type) {
 
     if (!items || items.length === 0) {
         container.innerHTML = `<div class="leader-empty-state"><i class="fa-solid fa-inbox"></i><span>Bu kategori için henüz veri oluşmadı.</span></div>`;
+        const footerElem = document.getElementById(`footerToggle-${type}`);
+        if (footerElem) footerElem.style.display = "none";
         return;
     }
 
@@ -2460,7 +3028,7 @@ function renderLeaderCategoryRows(containerId, items, type) {
         '<span class="rank-num">3</span>'
     ];
 
-    // Find maximum metric to scale relative volume bars
+    // Find maximum metric across category to scale relative volume bars
     let maxMetric = 1;
     if (type.startsWith("inv")) {
         maxMetric = Math.max(...items.map(it => Math.abs(it.deltaInvestors || 0)), 1);
@@ -2476,9 +3044,43 @@ function renderLeaderCategoryRows(containerId, items, type) {
     };
     const barColor = typeColorMap[type] || "cyan";
 
-    container.innerHTML = items.map((item, idx) => {
-        const rankCls = rankClasses[idx] || "bronze";
-        const rankHtml = rankBadges[idx] || `<span class="rank-num">${idx + 1}</span>`;
+    const curLimit = leaderCategoryLimits[type] || 3;
+    const isExpanded = curLimit > 3;
+    const totalCount = items.length;
+    const displayedItems = items.slice(0, curLimit);
+
+    // Update Header Badge and Subtitle
+    const badgeElem = document.getElementById(`expandBadge-${type}`);
+    if (badgeElem) {
+        if (isExpanded) {
+            badgeElem.innerHTML = '<i class="fa-solid fa-compress"></i> İlk 3';
+            badgeElem.classList.add("expanded");
+            badgeElem.title = "İlk 3 fona geri daralt";
+        } else {
+            badgeElem.innerHTML = `<i class="fa-solid fa-expand"></i> Tümü (${totalCount})`;
+            badgeElem.classList.remove("expanded");
+            badgeElem.title = `Tüm ${totalCount} fonu sırala`;
+        }
+    }
+
+    const subElem = document.getElementById(`subTitle-${type}`);
+    if (subElem) {
+        const defaultSubtitles = {
+            "inv-in": "Günün en fazla yeni yatırımcı çeken ilk 3 fonu",
+            "inv-out": "Günün en fazla yatırımcı kaybeden ilk 3 fonu",
+            "cash-in": "Günün en yüksek net nakit girişi olan ilk 3 fonu",
+            "cash-out": "Günün en yüksek net nakit çıkışı olan ilk 3 fonu"
+        };
+        if (isExpanded) {
+            subElem.textContent = `Günün en yüksek sıralamalı ${displayedItems.length} fonu gösteriliyor`;
+        } else {
+            subElem.textContent = defaultSubtitles[type] || "Günün en iyi ilk 3 fonu";
+        }
+    }
+
+    container.innerHTML = displayedItems.map((item, idx) => {
+        const rankCls = idx < 3 ? rankClasses[idx] : "other";
+        const rankHtml = idx < 3 ? rankBadges[idx] : `<span class="rank-num">#${idx + 1}</span>`;
 
         let curVal = 0;
         let mainValHtml = "";
@@ -2506,7 +3108,7 @@ function renderLeaderCategoryRows(containerId, items, type) {
             subMetricHtml = invText ? `<span class="leader-sub-pill highlight-amber">${invText}</span>` : "";
         }
 
-        const pct = Math.max(15, Math.min(100, Math.round((curVal / maxMetric) * 100)));
+        const pct = Math.max(12, Math.min(100, Math.round((curVal / maxMetric) * 100)));
 
         const cleanName = cleanFundTitle(item.name || `${item.code} YATIRIM FONU`);
         const priceTag = (item.price && item.price > 0)
@@ -2517,7 +3119,7 @@ function renderLeaderCategoryRows(containerId, items, type) {
             : "";
 
         return `
-            <div class="leader-row-item" onclick="openSingleFundAnalysis('${item.code}')" title="${item.code} - ${cleanName} detaylı analizini aç">
+            <div class="leader-row-item" onclick="event.stopPropagation(); openSingleFundAnalysis('${item.code}')" title="${item.code} - ${cleanName} detaylı analizini aç">
                 <div class="leader-bar-fill ${barColor}" style="width: ${pct}%;"></div>
                 <div class="leader-item-content">
                     <div class="leader-item-left">
@@ -2548,6 +3150,32 @@ function renderLeaderCategoryRows(containerId, items, type) {
             </div>
         `;
     }).join("");
+
+    // Render footer toggle button
+    const footerElem = document.getElementById(`footerToggle-${type}`);
+    if (footerElem) {
+        if (totalCount > 3) {
+            if (isExpanded) {
+                footerElem.innerHTML = `
+                    <button type="button" class="btn-toggle-fund-limit expanded" onclick="toggleCategoryExpansion('${type}', event)" title="İlk 3 fona geri dön">
+                        <i class="fa-solid fa-chevron-up"></i>
+                        <span>İlk 3'e Daralt</span>
+                    </button>
+                `;
+            } else {
+                footerElem.innerHTML = `
+                    <button type="button" class="btn-toggle-fund-limit" onclick="toggleCategoryExpansion('${type}', event)" title="Tüm ${totalCount} fonu sırala">
+                        <i class="fa-solid fa-chevron-down"></i>
+                        <span>Tüm Fonları Sırala (${totalCount} Fon)</span>
+                    </button>
+                `;
+            }
+            footerElem.style.display = "flex";
+        } else {
+            footerElem.innerHTML = "";
+            footerElem.style.display = "none";
+        }
+    }
 }
 
 function renderMarketTab() {

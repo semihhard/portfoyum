@@ -8974,6 +8974,55 @@ body.theme-neo-brutalism .sort-option.active {
     width: 100%;
 }
 
+.leader-card-header.clickable-header {
+    cursor: pointer;
+    user-select: none;
+    transition: opacity 0.2s, background 0.2s;
+    border-radius: 12px;
+    padding: 2px 4px;
+    margin: -2px -4px;
+}
+
+.leader-card-header.clickable-header:hover {
+    opacity: 0.92;
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.leader-header-badges {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+}
+
+.leader-expand-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.67rem;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.07);
+    color: #94A3B8;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.leader-expand-badge:hover {
+    background: rgba(56, 189, 248, 0.18);
+    border-color: rgba(56, 189, 248, 0.4);
+    color: #38BDF8;
+}
+
+.leader-expand-badge.expanded {
+    background: rgba(56, 189, 248, 0.15);
+    border-color: rgba(56, 189, 248, 0.35);
+    color: #38BDF8;
+}
+
 .leader-card-title-box {
     display: flex;
     align-items: center;
@@ -9187,6 +9236,12 @@ body.theme-neo-brutalism .sort-option.active {
     color: #FFFFFF;
 }
 
+.leader-rank-badge.other {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: #94A3B8;
+}
+
 .rank-crown {
     font-size: 0.65rem;
     line-height: 1;
@@ -9365,6 +9420,64 @@ body.theme-neo-brutalism .sort-option.active {
 .leader-empty-state i {
     font-size: 1.4rem;
     color: var(--text-secondary);
+}
+
+.leader-card-footer-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-top: 2px;
+    width: 100%;
+}
+
+.btn-toggle-fund-limit {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    width: 100%;
+    padding: 9px 14px;
+    border-radius: 12px;
+    font-size: 0.76rem;
+    font-weight: 700;
+    background: rgba(255, 255, 255, 0.04);
+    color: #CBD5E1;
+    border: 1px dashed rgba(255, 255, 255, 0.16);
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    font-family: inherit;
+}
+
+.btn-toggle-fund-limit:hover {
+    background: rgba(56, 189, 248, 0.12);
+    color: #38BDF8;
+    border-color: rgba(56, 189, 248, 0.4);
+    border-style: solid;
+    transform: translateY(-1px);
+}
+
+.btn-toggle-fund-limit.expanded {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: var(--text-secondary);
+}
+
+.btn-toggle-fund-limit.expanded:hover {
+    background: rgba(244, 63, 94, 0.1);
+    border-color: rgba(244, 63, 94, 0.3);
+    color: #F43F5E;
+}
+
+.leaders-filter-pill.expand-all-pill {
+    margin-left: auto;
+    background: rgba(56, 189, 248, 0.1);
+    border-color: rgba(56, 189, 248, 0.25);
+    color: #38BDF8;
+}
+
+.leaders-filter-pill.expand-all-pill:hover {
+    background: rgba(56, 189, 248, 0.2);
+    border-color: rgba(56, 189, 248, 0.45);
 }
 
 /* Interactive Footer Hint */
