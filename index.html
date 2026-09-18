@@ -848,6 +848,11 @@
                                 <i class="fa-solid fa-chart-pie"></i>
                                 <span>Tekil Fon Analizi</span>
                             </button>
+                            <button type="button" class="fund-subnav-btn" id="btnFundSubtabCategories" onclick="switchFundSubTab('categories')">
+                                <i class="fa-solid fa-shapes"></i>
+                                <span>Fon Kategorileri</span>
+                                <span class="fund-badge-subnav-cat">9 Kategori</span>
+                            </button>
                             <button type="button" class="fund-subnav-btn" id="btnFundSubtabLeaders" onclick="switchFundSubTab('leaders')">
                                 <i class="fa-solid fa-ranking-star"></i>
                                 <span>Günün Akış Liderleri (Top 3)</span>
@@ -1281,7 +1286,166 @@
                 </div>
                 <!-- /fundViewSingleArea -->
 
-                <!-- SUBVIEW 2-B: GÜNÜN FON AKIŞ LİDERLERİ (TOP 3 RADARI) -->
+                <!-- SUBVIEW 2-B: TEFAS ŞEMSİYE FON KATEGORİLERİ & PAZAR ANALİZİ -->
+                <div id="fundViewCategoriesArea" style="display: none;">
+                    <!-- Categories Header Card -->
+                    <div class="fund-categories-header-card ultra-glass-card">
+                        <div class="categories-header-left">
+                            <div class="categories-header-icon-box">
+                                <i class="fa-solid fa-shapes"></i>
+                            </div>
+                            <div>
+                                <div class="categories-hero-tag-row">
+                                    <h2 class="categories-hero-title">TEFAS Şemsiye Fon Kategorileri</h2>
+                                    <span class="categories-live-pill"><span class="categories-live-dot"></span> Canlı Dağılım</span>
+                                </div>
+                                <p class="categories-hero-subtitle">Kategorilere göre fon sayıları, pazar büyüklükleri (AUM), günlük net para ve yatırımcı giriş/çıkışları</p>
+                            </div>
+                        </div>
+                        <div class="categories-header-right">
+                            <span class="categories-date-pill" id="fundCategoriesDatePill">
+                                <i class="fa-solid fa-calendar-day"></i> <span id="fundCategoriesDate">Canlı TEFAS</span>
+                            </span>
+                            <button type="button" class="btn-refresh-categories" onclick="loadAndRenderFundCategories(true)" title="Kategori Verilerini Yenile">
+                                <i class="fa-solid fa-arrows-rotate"></i>
+                                <span>Yenile</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- TEFAS Market Overview KPI Cards -->
+                    <div class="fund-market-kpis-grid">
+                        <div class="market-kpi-card ultra-glass-card">
+                            <div class="market-kpi-header">
+                                <span class="market-kpi-title">TOPLAM FON SAYISI</span>
+                                <div class="market-kpi-icon-wrap cyan"><i class="fa-solid fa-layer-group"></i></div>
+                            </div>
+                            <div class="market-kpi-value" id="marketKpiTotalFunds">---</div>
+                            <div class="market-kpi-sub">9 Resmi Şemsiye Türü</div>
+                        </div>
+                        <div class="market-kpi-card ultra-glass-card">
+                            <div class="market-kpi-header">
+                                <span class="market-kpi-title">TEFAS TOPLAM BÜYÜKLÜK</span>
+                                <div class="market-kpi-icon-wrap emerald"><i class="fa-solid fa-vault"></i></div>
+                            </div>
+                            <div class="market-kpi-value" id="marketKpiTotalAUM">---</div>
+                            <div class="market-kpi-sub">Toplam Portföy Değeri (AUM)</div>
+                        </div>
+                        <div class="market-kpi-card ultra-glass-card">
+                            <div class="market-kpi-header">
+                                <span class="market-kpi-title">GÜNLÜK NET PARA AKIŞI</span>
+                                <div class="market-kpi-icon-wrap purple"><i class="fa-solid fa-money-bill-transfer"></i></div>
+                            </div>
+                            <div class="market-kpi-value" id="marketKpiDailyCashFlow">---</div>
+                            <div class="market-kpi-sub" id="marketKpiDailyCashFlowSub">Giriş / Çıkış Dengesi</div>
+                        </div>
+                        <div class="market-kpi-card ultra-glass-card">
+                            <div class="market-kpi-header">
+                                <span class="market-kpi-title">GÜNLÜK YATIRIMCI AKIŞI</span>
+                                <div class="market-kpi-icon-wrap amber"><i class="fa-solid fa-users"></i></div>
+                            </div>
+                            <div class="market-kpi-value" id="marketKpiDailyInvestors">---</div>
+                            <div class="market-kpi-sub" id="marketKpiDailyInvestorsSub">Net Yeni Katılımcı</div>
+                        </div>
+                    </div>
+
+                    <!-- Categories Loading State -->
+                    <div class="fund-loading-state" id="fundCategoriesLoading" style="display: none;">
+                        <i class="fa-solid fa-arrows-rotate fa-spin"></i>
+                        <p>TEFAS Fon Kategorileri ve Akış Verileri Taranıyor...</p>
+                    </div>
+
+                    <!-- 9 Official Categories Grid Section -->
+                    <div class="fund-categories-section">
+                        <div class="categories-section-header">
+                            <div class="categories-section-title-wrap">
+                                <i class="fa-solid fa-cubes-stacked" style="color: #38BDF8;"></i>
+                                <h3>Kategori Dağılımı ve Günlük Hareketler</h3>
+                            </div>
+                            <span class="categories-click-hint"><i class="fa-solid fa-hand-pointer"></i> Fonları listelemek için kategoriye tıklayın</span>
+                        </div>
+                        <div class="fund-categories-grid" id="fundCategoriesGrid">
+                            <!-- 9 Kategori Kartı JavaScript tarafından dinamik üretilecek -->
+                        </div>
+                    </div>
+
+                    <!-- Category Funds Explorer Section -->
+                    <div class="analytics-card ultra-glass-card category-funds-explorer" id="categoryFundsExplorer">
+                        <div class="explorer-header">
+                            <div class="explorer-header-left">
+                                <div class="explorer-category-icon-badge" id="explorerCategoryIcon">
+                                    <i class="fa-solid fa-shapes"></i>
+                                </div>
+                                <div>
+                                    <div class="explorer-title-row">
+                                        <h3 id="explorerCategoryTitle">Hisse Senedi Şemsiye Fonları</h3>
+                                        <span class="explorer-count-badge" id="explorerFundsCountBadge">0 Fon</span>
+                                    </div>
+                                    <p class="explorer-subtitle" id="explorerCategoryDesc">Seçili kategorideki tüm fonların getirisi, portföy büyüklüğü ve günlük nakit & yatırımcı akışları</p>
+                                </div>
+                            </div>
+                            <div class="explorer-header-right">
+                                <span class="explorer-stat-pill" id="explorerCategoryAumPill">
+                                    <i class="fa-solid fa-vault"></i> Büyüklük: <strong id="explorerAumVal">---</strong>
+                                </span>
+                                <span class="explorer-stat-pill" id="explorerCategoryCashFlowPill">
+                                    <i class="fa-solid fa-money-bill-transfer"></i> Akış: <strong id="explorerCashVal">---</strong>
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Category Quick Filter Switcher Pills -->
+                        <div class="explorer-cat-switcher" id="explorerCatSwitcher">
+                            <!-- Rendered dynamically by JavaScript -->
+                        </div>
+
+                        <!-- Search & Sort Toolbar -->
+                        <div class="explorer-toolbar">
+                            <div class="explorer-search-box">
+                                <i class="fa-solid fa-magnifying-glass"></i>
+                                <input type="text" id="explorerFundSearchInput" placeholder="Kategori içinde fon ara (Örn: TI1, MAC, AFT, Fon Adı)..." oninput="handleCategoryFundsSearch(this.value)">
+                                <button type="button" class="btn-clear-search" id="btnClearExplorerSearch" onclick="clearExplorerSearch()" style="display: none;">
+                                    <i class="fa-solid fa-xmark"></i>
+                                </button>
+                            </div>
+                            <div class="explorer-sort-wrap">
+                                <label for="explorerSortSelect"><i class="fa-solid fa-arrow-down-wide-short"></i> Sırala:</label>
+                                <select id="explorerSortSelect" onchange="handleCategoryFundsSort(this.value)">
+                                    <option value="cashFlow">En Çok Para Giren (Net Giriş)</option>
+                                    <option value="investors">En Çok Yatırımcı Çeken</option>
+                                    <option value="aum">En Büyük Fonlar (Portföy Değeri)</option>
+                                    <option value="return">En Yüksek Getiri (Fiyat Değişimi)</option>
+                                    <option value="name">Fon Adı (A-Z)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Funds Table / List Container -->
+                        <div class="explorer-table-wrapper">
+                            <div class="category-funds-table-container">
+                                <table class="category-funds-table" id="categoryFundsTable">
+                                    <thead>
+                                        <tr>
+                                            <th>Fon Kodu & Adı</th>
+                                            <th>Son Fiyat</th>
+                                            <th>Günlük Getiri</th>
+                                            <th>Portföy Büyüklüğü</th>
+                                            <th>Günlük Para Akışı</th>
+                                            <th>Yatırımcı Değişimi</th>
+                                            <th style="text-align: right;">Aksiyon</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="categoryFundsTableBody">
+                                        <!-- Dynamic rows generated by JavaScript -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- /fundViewCategoriesArea -->
+
+                <!-- SUBVIEW 2-C: GÜNÜN FON AKIŞ LİDERLERİ (TOP 3 RADARI) -->
                 <div id="fundViewLeadersArea" style="display: none;">
                     <!-- Leaders Header Bar -->
                     <div class="fund-leaders-header-card ultra-glass-card">

@@ -10866,6 +10866,820 @@ body.theme-neo-brutalism .sort-option.active {
     }
 }
 
+/* ==========================================================================
+   TEFAS FUND CATEGORIES & MARKET RADAR STYLES
+   ========================================================================== */
+
+.fund-badge-subnav-cat {
+    display: inline-flex;
+    align-items: center;
+    padding: 1px 6px;
+    border-radius: 9999px;
+    font-size: 0.68rem;
+    font-weight: 700;
+    background: rgba(56, 189, 248, 0.16);
+    color: #38BDF8;
+    border: 1px solid rgba(56, 189, 248, 0.35);
+    margin-left: 3px;
+}
+
+/* Categories Header Bar */
+.fund-categories-header-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 22px;
+    margin-bottom: 16px;
+    border-radius: 20px;
+    gap: 16px;
+    flex-wrap: wrap;
+    background: linear-gradient(135deg, rgba(16, 24, 39, 0.88) 0%, rgba(15, 23, 42, 0.75) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.categories-header-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    min-width: 0;
+}
+
+.categories-header-icon-box {
+    width: 44px;
+    height: 44px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, rgba(56, 189, 248, 0.22) 0%, rgba(99, 102, 241, 0.14) 100%);
+    border: 1px solid rgba(56, 189, 248, 0.4);
+    color: #38BDF8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    box-shadow: 0 0 16px rgba(56, 189, 248, 0.25);
+    flex-shrink: 0;
+}
+
+.categories-hero-tag-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.categories-hero-title {
+    font-size: 1.18rem;
+    font-weight: 800;
+    color: #FFFFFF;
+    margin: 0;
+    letter-spacing: -0.3px;
+}
+
+.categories-live-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: rgba(56, 189, 248, 0.14);
+    color: #38BDF8;
+    border: 1px solid rgba(56, 189, 248, 0.3);
+    padding: 2px 8px;
+    border-radius: 6px;
+    font-size: 0.68rem;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.categories-live-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #38BDF8;
+    box-shadow: 0 0 6px #38BDF8;
+    animation: neon-pulse 1.8s infinite;
+}
+
+.categories-hero-subtitle {
+    font-size: 0.78rem;
+    color: var(--text-secondary);
+    margin-top: 3px;
+    line-height: 1.35;
+}
+
+.categories-header-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.categories-date-pill {
+    padding: 6px 12px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--text-secondary);
+    font-size: 0.76rem;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.btn-refresh-categories {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 13px;
+    border-radius: 10px;
+    background: rgba(56, 189, 248, 0.12);
+    border: 1px solid rgba(56, 189, 248, 0.28);
+    color: #38BDF8;
+    font-size: 0.76rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-refresh-categories:hover {
+    background: rgba(56, 189, 248, 0.24);
+    border-color: #38BDF8;
+    box-shadow: 0 0 12px rgba(56, 189, 248, 0.35);
+}
+
+/* Market Overview 4-KPI Grid */
+.fund-market-kpis-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 22px;
+}
+
+.market-kpi-card {
+    padding: 16px;
+    border-radius: 16px;
+    background: linear-gradient(135deg, rgba(17, 24, 39, 0.8) 0%, rgba(15, 23, 42, 0.6) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.market-kpi-card:hover {
+    transform: translateY(-2px);
+    border-color: rgba(255, 255, 255, 0.18);
+}
+
+.market-kpi-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.market-kpi-title {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    color: var(--text-secondary);
+}
+
+.market-kpi-icon-wrap {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+}
+
+.market-kpi-icon-wrap.cyan {
+    background: rgba(56, 189, 248, 0.15);
+    color: #38BDF8;
+}
+
+.market-kpi-icon-wrap.emerald {
+    background: rgba(16, 185, 129, 0.15);
+    color: #10B981;
+}
+
+.market-kpi-icon-wrap.purple {
+    background: rgba(168, 85, 247, 0.15);
+    color: #A855F7;
+}
+
+.market-kpi-icon-wrap.amber {
+    background: rgba(245, 158, 11, 0.15);
+    color: #F59E0B;
+}
+
+.market-kpi-value {
+    font-size: 1.35rem;
+    font-weight: 800;
+    color: #FFFFFF;
+    letter-spacing: -0.5px;
+    margin-bottom: 4px;
+}
+
+.market-kpi-sub {
+    font-size: 0.74rem;
+    color: var(--text-secondary);
+}
+
+/* Category Grid Section */
+.fund-categories-section {
+    margin-bottom: 24px;
+}
+
+.categories-section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.categories-section-title-wrap {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.categories-section-title-wrap h3 {
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: #F1F5F9;
+    margin: 0;
+}
+
+.categories-click-hint {
+    font-size: 0.75rem;
+    color: #38BDF8;
+    background: rgba(56, 189, 248, 0.1);
+    border: 1px solid rgba(56, 189, 248, 0.25);
+    padding: 3px 10px;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.fund-categories-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+}
+
+/* Individual Category Card */
+.fund-category-card {
+    border-radius: 18px;
+    padding: 16px;
+    background: linear-gradient(135deg, rgba(17, 24, 39, 0.85) 0%, rgba(15, 23, 42, 0.75) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    cursor: pointer;
+    position: relative;
+    transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+    user-select: none;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.fund-category-card:hover {
+    transform: translateY(-3px);
+    border-color: rgba(56, 189, 248, 0.45);
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 0 16px -2px rgba(56, 189, 248, 0.2);
+}
+
+.fund-category-card.active-category {
+    border-color: #38BDF8;
+    box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.35), 0 12px 30px -6px rgba(0, 0, 0, 0.6), 0 0 20px rgba(56, 189, 248, 0.25);
+    background: linear-gradient(135deg, rgba(16, 32, 58, 0.95) 0%, rgba(15, 23, 42, 0.85) 100%);
+}
+
+.cat-card-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 14px;
+}
+
+.cat-top-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+}
+
+.cat-icon-box {
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+}
+
+.cat-name-box {
+    min-width: 0;
+}
+
+.cat-name {
+    font-size: 0.92rem;
+    font-weight: 800;
+    color: #F8FAFC;
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.2;
+}
+
+.cat-fund-count-badge {
+    font-size: 0.72rem;
+    color: var(--text-secondary);
+    margin-top: 2px;
+    display: block;
+}
+
+.cat-share-badge {
+    padding: 3px 8px;
+    border-radius: 8px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+/* Category Metrics 2x2 Grid */
+.cat-metrics-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.cat-metric-item {
+    background: rgba(255, 255, 255, 0.035);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+    padding: 8px 10px;
+}
+
+.cat-metric-label {
+    font-size: 0.68rem;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-bottom: 3px;
+}
+
+.cat-metric-val {
+    font-size: 0.85rem;
+    font-weight: 800;
+    color: #FFFFFF;
+    line-height: 1.2;
+}
+
+.cat-metric-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    font-size: 0.75rem;
+    font-weight: 800;
+    padding: 2px 6px;
+    border-radius: 6px;
+}
+
+.cat-metric-badge.pos {
+    background: rgba(16, 185, 129, 0.15);
+    color: #34D399;
+}
+
+.cat-metric-badge.neg {
+    background: rgba(244, 63, 94, 0.15);
+    color: #FB7185;
+}
+
+/* Category Mini Bar */
+.cat-progress-track {
+    width: 100%;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 9999px;
+    overflow: hidden;
+    margin-bottom: 10px;
+}
+
+.cat-progress-bar {
+    height: 100%;
+    border-radius: 9999px;
+    transition: width 0.4s ease;
+}
+
+/* Category Card Footer */
+.cat-card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.72rem;
+    color: var(--text-secondary);
+    padding-top: 8px;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.cat-footer-action {
+    color: #38BDF8;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* Category Funds Explorer */
+.category-funds-explorer {
+    margin-top: 12px;
+    border-radius: 20px;
+    padding: 20px;
+}
+
+.explorer-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 18px;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.explorer-header-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+}
+
+.explorer-category-icon-badge {
+    width: 42px;
+    height: 42px;
+    border-radius: 14px;
+    background: rgba(56, 189, 248, 0.18);
+    border: 1px solid rgba(56, 189, 248, 0.35);
+    color: #38BDF8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+}
+
+.explorer-title-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.explorer-title-row h3 {
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: #FFFFFF;
+    margin: 0;
+}
+
+.explorer-count-badge {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    color: #94A3B8;
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 6px;
+}
+
+.explorer-subtitle {
+    font-size: 0.76rem;
+    color: var(--text-secondary);
+    margin: 3px 0 0 0;
+}
+
+.explorer-header-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.explorer-stat-pill {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.09);
+    padding: 6px 12px;
+    border-radius: 10px;
+    font-size: 0.76rem;
+    color: var(--text-secondary);
+}
+
+.explorer-stat-pill strong {
+    color: #F8FAFC;
+    margin-left: 4px;
+}
+
+/* Category Switcher Pills */
+.explorer-cat-switcher {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    overflow-x: auto;
+    padding-bottom: 12px;
+    margin-bottom: 16px;
+    scrollbar-width: thin;
+}
+
+.explorer-cat-switcher::-webkit-scrollbar {
+    height: 4px;
+}
+
+.explorer-cat-switcher::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 4px;
+}
+
+.explorer-cat-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 14px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.09);
+    color: var(--text-secondary);
+    font-size: 0.78rem;
+    font-weight: 700;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s ease;
+}
+
+.explorer-cat-pill:hover {
+    color: #FFFFFF;
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.explorer-cat-pill.active {
+    background: linear-gradient(135deg, rgba(56, 189, 248, 0.22) 0%, rgba(99, 102, 241, 0.18) 100%);
+    color: #38BDF8;
+    border-color: rgba(56, 189, 248, 0.45);
+    box-shadow: 0 0 12px rgba(56, 189, 248, 0.25);
+}
+
+/* Explorer Toolbar (Search & Sort) */
+.explorer-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+}
+
+.explorer-search-box {
+    flex: 1;
+    min-width: 260px;
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.explorer-search-box i.fa-magnifying-glass {
+    position: absolute;
+    left: 14px;
+    color: #64748B;
+    font-size: 0.85rem;
+}
+
+.explorer-search-box input {
+    width: 100%;
+    padding: 10px 36px 10px 38px;
+    border-radius: 12px;
+    background: rgba(15, 23, 42, 0.75);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: #FFFFFF;
+    font-size: 0.82rem;
+    outline: none;
+    transition: all 0.2s ease;
+}
+
+.explorer-search-box input:focus {
+    border-color: #38BDF8;
+    box-shadow: 0 0 12px rgba(56, 189, 248, 0.25);
+}
+
+.explorer-search-box .btn-clear-search {
+    position: absolute;
+    right: 10px;
+    background: none;
+    border: none;
+    color: #94A3B8;
+    cursor: pointer;
+    padding: 4px;
+}
+
+.explorer-sort-wrap {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.explorer-sort-wrap label {
+    font-size: 0.78rem;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    white-space: nowrap;
+}
+
+.explorer-sort-wrap select {
+    background: rgba(15, 23, 42, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: #F1F5F9;
+    padding: 8px 14px;
+    border-radius: 10px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    outline: none;
+    transition: border-color 0.2s ease;
+}
+
+.explorer-sort-wrap select:focus {
+    border-color: #38BDF8;
+}
+
+/* Category Funds Table */
+.explorer-table-wrapper {
+    overflow-x: auto;
+    border-radius: 14px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(15, 23, 42, 0.4);
+}
+
+.category-funds-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.8rem;
+    text-align: left;
+}
+
+.category-funds-table thead th {
+    padding: 12px 14px;
+    background: rgba(15, 23, 42, 0.85);
+    color: var(--text-secondary);
+    font-weight: 700;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    white-space: nowrap;
+    font-size: 0.72rem;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+}
+
+.category-funds-table tbody tr {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    transition: background 0.15s ease;
+    cursor: pointer;
+}
+
+.category-funds-table tbody tr:hover {
+    background: rgba(56, 189, 248, 0.06);
+}
+
+.category-funds-table tbody tr:last-child {
+    border-bottom: none;
+}
+
+.category-funds-table tbody td {
+    padding: 12px 14px;
+    vertical-align: middle;
+    white-space: nowrap;
+}
+
+.table-fund-cell {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.table-fund-code-pill {
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-weight: 800;
+    font-size: 0.78rem;
+    background: rgba(56, 189, 248, 0.15);
+    color: #38BDF8;
+    border: 1px solid rgba(56, 189, 248, 0.3);
+    letter-spacing: 0.5px;
+}
+
+.table-fund-name-wrap {
+    max-width: 260px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.table-fund-name {
+    font-weight: 700;
+    color: #F8FAFC;
+    font-size: 0.82rem;
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.table-fund-sub {
+    font-size: 0.7rem;
+    color: var(--text-secondary);
+}
+
+.table-cell-val {
+    font-weight: 700;
+    color: #E2E8F0;
+}
+
+.btn-open-fund-detail {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 5px 12px;
+    border-radius: 8px;
+    background: rgba(56, 189, 248, 0.12);
+    border: 1px solid rgba(56, 189, 248, 0.25);
+    color: #38BDF8;
+    font-size: 0.74rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.18s ease;
+}
+
+.btn-open-fund-detail:hover {
+    background: #38BDF8;
+    color: #0F172A;
+    box-shadow: 0 0 10px rgba(56, 189, 248, 0.4);
+}
+
+/* Media Queries for Categories View */
+@media (max-width: 1100px) {
+    .fund-market-kpis-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .fund-categories-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .fund-categories-header-card {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .categories-header-right {
+        width: 100%;
+        justify-content: space-between;
+    }
+    .fund-market-kpis-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+    .fund-categories-grid {
+        grid-template-columns: 1fr;
+    }
+    .explorer-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .explorer-toolbar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .explorer-sort-wrap {
+        justify-content: flex-end;
+    }
+    .table-fund-name-wrap {
+        max-width: 160px;
+    }
+}
+
+@media (max-width: 480px) {
+    .fund-market-kpis-grid {
+        grid-template-columns: 1fr;
+    }
+    .cat-metrics-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+
 
 
 
