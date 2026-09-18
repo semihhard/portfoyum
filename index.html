@@ -1081,36 +1081,48 @@
                             <div class="moves-card-header">
                                 <div class="moves-title-left">
                                     <div class="fund-header-icon cyan">
-                                        <i class="fa-solid fa-right-left"></i>
+                                        <i class="fa-solid fa-chart-line"></i>
                                     </div>
                                     <div>
                                         <div class="moves-header-title-row">
-                                            <h3>Son Portföy Varlık Dağılımı & Hareketleri</h3>
+                                            <h3 id="fundMovesHeaderTitle">Portföy Hisse Dağılımı & Hareketleri</h3>
                                             <span class="moves-live-pill" id="fundMovesRotationPill">
                                                 <i class="fa-solid fa-arrows-rotate"></i> Net Rotasyon: %0.00
                                             </span>
                                         </div>
                                         <p class="chart-subtitle" id="fundMovesSubtitle">
-                                            Hangi varlıkta ne kadar oran var? Son işlem gününde fon yönetimi neleri aldı, neleri sattı?
+                                            Fonun portföyünde hangi hisseler var? Son dönemde fon yönetimi neleri aldı, neleri sattı?
                                         </p>
                                     </div>
                                 </div>
                                 <div class="moves-header-right">
+                                    <div class="moves-view-mode-switch">
+                                        <button type="button" class="moves-mode-btn active" id="btnMovesModeStocks" onclick="switchMovesDisplayMode('stocks')" title="Hisse senedi bazında dağılımı göster">
+                                            <i class="fa-solid fa-arrow-trend-up"></i>
+                                            <span>Hisseler (KAP)</span>
+                                        </button>
+                                        <button type="button" class="moves-mode-btn" id="btnMovesModeMacro" onclick="switchMovesDisplayMode('macro')" title="TEFAS makro varlık dağılımını göster">
+                                            <i class="fa-solid fa-chart-pie"></i>
+                                            <span>Varlık Sınıfları</span>
+                                        </button>
+                                    </div>
                                     <span class="moves-date-badge" id="fundMovesDateBadge">
-                                        <i class="fa-solid fa-calendar-days"></i> Son İşlem Seansı
+                                        <i class="fa-solid fa-calendar-days"></i> Son Portföy Raporu
                                     </span>
                                 </div>
                             </div>
 
-                            <!-- Bölüm 1: En Son Varlık Dağılımı (Hangi Varlıkta Oran Ne Kadar?) -->
+                            <!-- Bölüm 1: Portföydeki Hisseler & Dağılım Oranları (Hangi Hisseler Vardı?) -->
                             <div class="moves-current-assets-section">
                                 <div class="moves-section-label">
-                                    <i class="fa-solid fa-chart-pie"></i>
-                                    <span>Son Portföy Bileşenleri & Dağılım Oranları (Neler Vardı?)</span>
-                                    <span class="moves-asset-count-badge" id="fundMovesAssetCountBadge">0 Varlık</span>
+                                    <div class="moves-label-title">
+                                        <i class="fa-solid fa-layer-group" id="fundMovesSectionIcon"></i>
+                                        <span id="fundMovesSectionTitle">Portföydeki Hisseler & Ağırlıkları (Hangi Hisse Ne Kadar?)</span>
+                                    </div>
+                                    <span class="moves-asset-count-badge" id="fundMovesAssetCountBadge">0 Hisse</span>
                                 </div>
                                 <div class="moves-asset-chips-grid" id="fundMovesCurrentAssetChips">
-                                    <!-- Dinamik Varlık Çipleri (Oran %, Tahmini Tutar ₺, Dağılım Çubuğu) -->
+                                    <!-- Dinamik Hisse Çipleri (Hisse Kodu, Şirket Adı, Sektör, Oran %, Tutar ₺) -->
                                 </div>
                             </div>
 
@@ -1120,13 +1132,13 @@
                                 <div class="moves-col moves-bought-col">
                                     <div class="moves-col-header emerald">
                                         <div class="moves-col-title">
-                                            <i class="fa-solid fa-arrow-trend-up"></i>
-                                            <span>Neleri Aldı / Ağırlığını Artırdı?</span>
+                                            <i class="fa-solid fa-circle-arrow-up"></i>
+                                            <span id="fundMovesBoughtTitle">Hangi Hisseleri Aldı / Artırdı?</span>
                                         </div>
-                                        <span class="moves-col-badge emerald" id="fundMovesBoughtCount">0 Varlık</span>
+                                        <span class="moves-col-badge emerald" id="fundMovesBoughtCount">0 Alım</span>
                                     </div>
                                     <div class="moves-list" id="fundMovesBoughtList">
-                                        <!-- Dinamik Alım Satırları -->
+                                        <!-- Dinamik Alınan Hisseler Listesi -->
                                     </div>
                                 </div>
 
@@ -1134,13 +1146,13 @@
                                 <div class="moves-col moves-sold-col">
                                     <div class="moves-col-header rose">
                                         <div class="moves-col-title">
-                                            <i class="fa-solid fa-arrow-trend-down"></i>
-                                            <span>Neleri Sattı / Ağırlığını Azalttı?</span>
+                                            <i class="fa-solid fa-circle-arrow-down"></i>
+                                            <span id="fundMovesSoldTitle">Hangi Hisseleri Sattı / Azalttı?</span>
                                         </div>
-                                        <span class="moves-col-badge rose" id="fundMovesSoldCount">0 Varlık</span>
+                                        <span class="moves-col-badge rose" id="fundMovesSoldCount">0 Satış</span>
                                     </div>
                                     <div class="moves-list" id="fundMovesSoldList">
-                                        <!-- Dinamik Satış Satırları -->
+                                        <!-- Dinamik Satılan Hisseler Listesi -->
                                     </div>
                                 </div>
                             </div>
