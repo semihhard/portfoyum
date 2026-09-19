@@ -10545,6 +10545,12 @@ let isSlideDetailActive = false;
 let slideInvestorChartInstance = null;
 let isSlideReportModalOpen = false;
 let slideReportDatasetCache = null;
+let currentSlideFundCode = '';
+let currentSlideFundAUM = 0;
+let currentSlideAllocDateStr = '';
+let currentSlideAllocRibbonHTML = '';
+let currentSlideAllocChipsHTML = '';
+let currentSlideKapFilter = 'all';
 
 function buildSlideReportDataset() {
     let funds = [];
@@ -11199,6 +11205,9 @@ function goToSlide(n) {
     currentSlideIndex = Math.max(1, Math.min(6, n));
     isSlideDetailActive = false;
 
+    const viewport = document.querySelector(".slide-stage-viewport");
+    if (viewport) viewport.scrollTop = 0;
+
     const detailSlide = document.getElementById("slidePage-detail");
     if (detailSlide) {
         detailSlide.classList.remove("active");
@@ -11257,6 +11266,9 @@ async function openSlideFundDetail(fundCode) {
 
     previousSlideIndex = currentSlideIndex;
     isSlideDetailActive = true;
+
+    const viewport = document.querySelector(".slide-stage-viewport");
+    if (viewport) viewport.scrollTop = 0;
 
     // Hide main slides 1-6
     for (let i = 1; i <= 6; i++) {
@@ -11413,11 +11425,22 @@ async function openSlideFundDetail(fundCode) {
         <div class="slide-alloc-segment" style="width: ${item.pct}%; background: ${item.color};" title="${item.label}: %${item.pct.toFixed(2)}"></div>
     `).join('');
 
-    const allocChipsHTML = allocItems.slice(0, 7).map(item => `
-        <div class="slide-alloc-chip-row">
+    const allocChipsHTML = allocItems.slice(0, 7).map(item => {
+        const isStockAsset = item.key === 'yhs' || item.key === 'hs' || item.key === 'yyf' || item.key === 'km';
+        const clickableClass = isStockAsset ? 'clickable' : '';
+        const kapBadge = isStockAsset ? `
+            <span class="slide-alloc-kap-badge" title="KAP hisse portföy dağılımı ve değişim detayları">
+                <i class="fa-solid fa-file-contract"></i> KAP İncele <i class="fa-solid fa-chevron-right" style="font-size: 0.6rem;"></i>
+            </span>
+        ` : '';
+        const clickAttr = isStockAsset ? `onclick="showSlideKapHoldingsView('${fCode}')"` : '';
+
+        return `
+        <div class="slide-alloc-chip-row ${clickableClass}" ${clickAttr} title="${isStockAsset ? 'KAP hisse portföy dağılımı ve değişimlerini görmek için tıklayın' : item.label}">
             <div class="slide-alloc-left">
                 <span class="slide-alloc-color-dot" style="background: ${item.color}; box-shadow: 0 0 6px ${item.color};"></span>
                 <span class="slide-alloc-name" title="${item.label}">${item.label}</span>
+                ${kapBadge}
             </div>
             <div class="slide-alloc-right">
                 <div class="slide-alloc-bar-mini">
@@ -11426,7 +11449,15 @@ async function openSlideFundDetail(fundCode) {
                 <span class="slide-alloc-pct" style="color: ${item.color};">%${item.pct.toFixed(2)}</span>
             </div>
         </div>
-    `).join('');
+        `;
+    }).join('');
+
+    // Cache state for in-slide switching between macro & KAP views
+    currentSlideFundCode = fCode;
+    currentSlideFundAUM = aumVal;
+    currentSlideAllocDateStr = allocDateStr;
+    currentSlideAllocRibbonHTML = allocRibbonSegmentsHTML;
+    currentSlideAllocChipsHTML = allocChipsHTML;
 
     // 5. Resolve 30-Day Investor Trend Metrics
     const currentInvestors = latestHist?.kisiSayisi || totalInvestors;
@@ -11497,7 +11528,7 @@ async function openSlideFundDetail(fundCode) {
             </div>
 
             <div class="slide-detail-body-grid">
-                <div class="slide-detail-panel">
+                <div class="slide-detail-panel" id="slideDetailAllocPanel">
                     <div class="slide-detail-panel-hdr">
                         <div class="slide-detail-panel-title">
                             <span class="slide-detail-panel-icon cyan"><i class="fa-solid fa-chart-pie"></i></span>
@@ -11506,7 +11537,13 @@ async function openSlideFundDetail(fundCode) {
                                 <div class="slide-detail-panel-desc">Fon portföy kompozisyonu & varlık ağırlıkları</div>
                             </div>
                         </div>
-                        <span class="slide-detail-alloc-badge">${allocDateStr}</span>
+                        <div style="display: flex; align-items: center; gap: 6px;">
+                            <button type="button" class="btn-slide-kap-toggle" onclick="showSlideKapHoldingsView('${fCode}')" title="KAP hisse dağılımı ve hareketlerini göster">
+                                <i class="fa-solid fa-file-contract"></i>
+                                <span>KAP Hisseleri</span>
+                            </button>
+                            <span class="slide-detail-alloc-badge">${allocDateStr}</span>
+                        </div>
                     </div>
 
                     <div class="slide-alloc-ribbon" title="Varlık Dağılımı Dağılım Şeridi">
@@ -11652,6 +11689,185 @@ async function openSlideFundDetail(fundCode) {
             }
         });
     }
+}
+
+function showSlideKapHoldingsView(fundCode, activeFilter = 'all') {
+    const panel = document.getElementById("slideDetailAllocPanel");
+    if (!panel) return;
+
+    const fCode = (fundCode || currentSlideFundCode || 'AFT').toUpperCase();
+    currentSlideKapFilter = activeFilter;
+
+    // Retrieve stock holdings using existing TEFAS/KAP data engine
+    const holdingsData = getFundStockHoldings(fCode, currentSlideFundAUM);
+    const stocks = holdingsData.stocks || [];
+
+    // Summary counts
+    const boughtStocks = stocks.filter(s => s.diff > 0.05 && !s.isNew);
+    const soldStocks = stocks.filter(s => s.diff < -0.05 && !s.isExited);
+    const newStocks = stocks.filter(s => s.isNew);
+    const exitedStocks = stocks.filter(s => s.isExited);
+
+    // Apply filtering
+    let filteredStocks = stocks;
+    if (activeFilter === 'bought') {
+        filteredStocks = stocks.filter(s => s.diff > 0.05 || s.isNew);
+    } else if (activeFilter === 'sold') {
+        filteredStocks = stocks.filter(s => s.diff < -0.05 || s.isExited);
+    } else if (activeFilter === 'new') {
+        filteredStocks = stocks.filter(s => s.isNew);
+    }
+
+    // Sort: highest current weight first (exited stocks at the end)
+    filteredStocks.sort((a, b) => b.pct - a.pct);
+
+    // Render stock items
+    const stocksHTML = filteredStocks.length > 0 ? filteredStocks.map(stock => {
+        let diffBadge = '';
+        let cardClass = '';
+
+        if (stock.isNew) {
+            diffBadge = `<span class="slide-kap-badge new"><i class="fa-solid fa-sparkles"></i> +%${stock.pct.toFixed(2)} YENİ GİRİŞ</span>`;
+            cardClass = 'is-new';
+        } else if (stock.isExited) {
+            diffBadge = `<span class="slide-kap-badge exited"><i class="fa-solid fa-arrow-right-from-bracket"></i> PORTFÖYDEN ÇIKTI</span>`;
+            cardClass = 'is-exited';
+        } else if (stock.diff > 0.02) {
+            diffBadge = `<span class="slide-kap-badge pos"><i class="fa-solid fa-arrow-up"></i> +%${stock.diff.toFixed(2)} ARTIRILDI</span>`;
+        } else if (stock.diff < -0.02) {
+            diffBadge = `<span class="slide-kap-badge neg"><i class="fa-solid fa-arrow-down"></i> -%${Math.abs(stock.diff).toFixed(2)} AZALTILDI</span>`;
+        } else {
+            diffBadge = `<span class="slide-kap-badge neutral"><i class="fa-solid fa-minus"></i> SABİT</span>`;
+        }
+
+        const estValStr = stock.estVal > 0 ? `• Değer: ${formatBillionOrMillion(stock.estVal)}` : '';
+        const prevWidth = Math.min(100, Math.max(3, stock.prevPct * 6.5));
+        const currWidth = Math.min(100, Math.max(3, stock.pct * 6.5));
+
+        return `
+            <div class="slide-kap-stock-card ${cardClass}">
+                <div class="slide-kap-stock-top">
+                    <div class="slide-kap-stock-identity">
+                        <span class="slide-kap-ticker" style="color: ${stock.color || '#38BDF8'}; border-color: ${stock.color || '#38BDF8'}40; background: ${stock.color || '#38BDF8'}18;">
+                            ${stock.symbol}
+                        </span>
+                        <div class="slide-kap-stock-meta">
+                            <span class="slide-kap-stock-name" title="${stock.name}">${stock.name}</span>
+                            <span class="slide-kap-stock-sector">${stock.sector}</span>
+                        </div>
+                    </div>
+                    <div class="slide-kap-stock-weights">
+                        <div class="slide-kap-current-pct">%${stock.pct.toFixed(2)}</div>
+                        <div class="slide-kap-prev-pct">Önceki: %${stock.prevPct.toFixed(2)}</div>
+                    </div>
+                </div>
+                <div class="slide-kap-stock-bottom">
+                    <div class="slide-kap-diff-box">
+                        ${diffBadge}
+                        <span class="slide-kap-est-val">${estValStr}</span>
+                    </div>
+                    <div class="slide-kap-dual-bar" title="Ağırlık Kıyaslaması: Önceki %${stock.prevPct.toFixed(2)} vs Güncel %${stock.pct.toFixed(2)}">
+                        <div class="slide-kap-dual-prev" style="width: ${prevWidth}%;"></div>
+                        <div class="slide-kap-dual-curr" style="width: ${currWidth}%; background: ${stock.diff >= 0 ? '#10B981' : '#F43F5E'};"></div>
+                    </div>
+                </div>
+            </div>
+        `;
+    }).join('') : `
+        <div style="text-align: center; padding: 30px 15px; color: #64748B; font-size: 0.8rem;">
+            <i class="fa-solid fa-filter-circle-xmark" style="font-size: 1.5rem; margin-bottom: 8px; display: block; opacity: 0.5;"></i>
+            Bu filtreye uygun hisse senedi hareketi bulunamadı.
+        </div>
+    `;
+
+    panel.innerHTML = `
+        <div class="slide-detail-panel-hdr">
+            <div class="slide-detail-panel-title">
+                <span class="slide-detail-panel-icon cyan"><i class="fa-solid fa-file-contract"></i></span>
+                <div>
+                    <div class="slide-detail-panel-main">KAP Portföy Dağılımı (${fCode})</div>
+                    <div class="slide-detail-panel-desc">${holdingsData.reportPeriod || 'Son KAP Bildirimi'} • Önceki Bildirime Göre Değişimler</div>
+                </div>
+            </div>
+            <div style="display: flex; align-items: center; gap: 6px;">
+                <button type="button" class="btn-slide-back-macro" onclick="showSlideMacroAllocView()" title="Genel varlık dağılımı görünümüne dön">
+                    <i class="fa-solid fa-arrow-left"></i>
+                    <span>Varlık Dağılımı</span>
+                </button>
+                <span class="slide-detail-alloc-badge">${holdingsData.date || currentSlideAllocDateStr}</span>
+            </div>
+        </div>
+
+        <div class="slide-kap-panel-wrap">
+            <div class="slide-kap-summary-strip">
+                <div class="slide-kap-stat-pill pos" title="Ağırlığı artırılan veya portföye yeni katılan hisseler">
+                    <i class="fa-solid fa-arrow-trend-up"></i>
+                    <span><strong>${boughtStocks.length + newStocks.length}</strong> Pay Artırıldı / Yeni</span>
+                </div>
+                <div class="slide-kap-stat-pill neg" title="Ağırlığı azaltılan veya portföyden tamamen çıkan hisseler">
+                    <i class="fa-solid fa-arrow-trend-down"></i>
+                    <span><strong>${soldStocks.length + exitedStocks.length}</strong> Pay Azaltıldı / Çıkış</span>
+                </div>
+            </div>
+
+            <div class="slide-kap-filters-row">
+                <button type="button" class="slide-kap-filter-btn ${activeFilter === 'all' ? 'active' : ''}" onclick="filterSlideKapStocks('all')">
+                    Tümü (${stocks.length})
+                </button>
+                <button type="button" class="slide-kap-filter-btn ${activeFilter === 'bought' ? 'active' : ''}" onclick="filterSlideKapStocks('bought')">
+                    🟢 Artırılanlar (${boughtStocks.length + newStocks.length})
+                </button>
+                <button type="button" class="slide-kap-filter-btn ${activeFilter === 'sold' ? 'active' : ''}" onclick="filterSlideKapStocks('sold')">
+                    🔴 Azaltılanlar (${soldStocks.length + exitedStocks.length})
+                </button>
+                ${newStocks.length > 0 ? `
+                <button type="button" class="slide-kap-filter-btn ${activeFilter === 'new' ? 'active' : ''}" onclick="filterSlideKapStocks('new')">
+                    🚀 Yeni Giriş (${newStocks.length})
+                </button>
+                ` : ''}
+            </div>
+
+            <div class="slide-kap-stocks-list">
+                ${stocksHTML}
+            </div>
+        </div>
+    `;
+}
+
+function filterSlideKapStocks(filterType) {
+    showSlideKapHoldingsView(currentSlideFundCode, filterType);
+}
+
+function showSlideMacroAllocView() {
+    const panel = document.getElementById("slideDetailAllocPanel");
+    if (!panel) return;
+
+    panel.innerHTML = `
+        <div class="slide-detail-panel-hdr">
+            <div class="slide-detail-panel-title">
+                <span class="slide-detail-panel-icon cyan"><i class="fa-solid fa-chart-pie"></i></span>
+                <div>
+                    <div class="slide-detail-panel-main">Portföy Varlık Dağılımı</div>
+                    <div class="slide-detail-panel-desc">Fon portföy kompozisyonu & varlık ağırlıkları</div>
+                </div>
+            </div>
+            <div style="display: flex; align-items: center; gap: 6px;">
+                <button type="button" class="btn-slide-kap-toggle" onclick="showSlideKapHoldingsView('${currentSlideFundCode}')" title="KAP hisse dağılımı ve hareketlerini göster">
+                    <i class="fa-solid fa-file-contract"></i>
+                    <span>KAP Hisseleri</span>
+                </button>
+                <span class="slide-detail-alloc-badge">${currentSlideAllocDateStr}</span>
+            </div>
+        </div>
+
+        <div class="slide-alloc-ribbon" title="Varlık Dağılımı Dağılım Şeridi">
+            ${currentSlideAllocRibbonHTML}
+        </div>
+
+        <div class="slide-alloc-chips-list">
+            ${currentSlideAllocChipsHTML}
+        </div>
+    `;
 }
 
 function toggleSlideFullscreen() {
@@ -11965,6 +12181,9 @@ window.exportToPDF = exportToPDF;
 window.exportToPowerPoint = exportToPowerPoint;
 window.buildSlideReportDataset = buildSlideReportDataset;
 window.renderInteractiveSlides = renderInteractiveSlides;
+window.showSlideKapHoldingsView = showSlideKapHoldingsView;
+window.filterSlideKapStocks = filterSlideKapStocks;
+window.showSlideMacroAllocView = showSlideMacroAllocView;
 
 
 
