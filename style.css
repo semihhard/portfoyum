@@ -12879,6 +12879,76 @@ body.theme-neo-brutalism .sort-option.active {
     border: 1px solid rgba(244, 63, 94, 0.4);
 }
 
+/* Click Hint for Slide Fund Cards (Interactive Drilldown & PPTX/PDF Web Link) */
+.slide-fund-click-hint {
+    margin-top: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 6px 12px;
+    border-radius: 9px;
+    background: rgba(56, 189, 248, 0.08);
+    border: 1px dashed rgba(56, 189, 248, 0.32);
+    color: #38BDF8;
+    font-size: 0.70rem;
+    font-weight: 700;
+    letter-spacing: 0.25px;
+    transition: all 0.22s ease;
+    cursor: pointer;
+}
+
+.slide-fund-click-hint span {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.slide-fund-card:hover .slide-fund-click-hint {
+    background: rgba(56, 189, 248, 0.18);
+    border-color: #38BDF8;
+    color: #F0F9FF;
+    box-shadow: 0 0 14px rgba(56, 189, 248, 0.25);
+}
+
+.slide-fund-card.rank-card-1 .slide-fund-click-hint {
+    background: rgba(245, 158, 11, 0.09);
+    border-color: rgba(245, 158, 11, 0.35);
+    color: #FBBF24;
+}
+
+.slide-fund-card.rank-card-1:hover .slide-fund-click-hint {
+    background: rgba(245, 158, 11, 0.22);
+    border-color: #FBBF24;
+    color: #FFFBEB;
+    box-shadow: 0 0 14px rgba(245, 158, 11, 0.3);
+}
+
+.slide-fund-card.rank-card-2 .slide-fund-click-hint {
+    background: rgba(56, 189, 248, 0.09);
+    border-color: rgba(56, 189, 248, 0.35);
+    color: #38BDF8;
+}
+
+.slide-fund-card.rank-card-2:hover .slide-fund-click-hint {
+    background: rgba(56, 189, 248, 0.22);
+    border-color: #38BDF8;
+    color: #F0F9FF;
+    box-shadow: 0 0 14px rgba(56, 189, 248, 0.3);
+}
+
+.slide-fund-card.rank-card-3 .slide-fund-click-hint {
+    background: rgba(168, 85, 247, 0.09);
+    border-color: rgba(168, 85, 247, 0.35);
+    color: #C084FC;
+}
+
+.slide-fund-card.rank-card-3:hover .slide-fund-click-hint {
+    background: rgba(168, 85, 247, 0.22);
+    border-color: #C084FC;
+    color: #FAF5FF;
+    box-shadow: 0 0 14px rgba(168, 85, 247, 0.3);
+}
+
 /* ==========================================================================
    SLIDE 6: CATEGORIES MATRIX
    ========================================================================== */
@@ -13978,6 +14048,13 @@ body.theme-neo-brutalism .sort-option.active {
     #fundSlideReportModal:-webkit-full-screen .slide-fund-card,
     .slide-modal-dialog.fullscreen-mode .slide-fund-card {
         padding: 14px 16px !important;
+    }
+    #fundSlideReportModal:fullscreen .slide-fund-click-hint,
+    #fundSlideReportModal:-webkit-full-screen .slide-fund-click-hint,
+    .slide-modal-dialog.fullscreen-mode .slide-fund-click-hint {
+        margin-top: 5px !important;
+        padding: 4px 8px !important;
+        font-size: 0.64rem !important;
     }
     #fundSlideReportModal:fullscreen .slide-detail-m-val,
     #fundSlideReportModal:-webkit-full-screen .slide-detail-m-val,

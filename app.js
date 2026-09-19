@@ -9893,6 +9893,9 @@ document.addEventListener("DOMContentLoaded", () => {
     
     // Automatically fetch live prices on startup
     fetchLivePrices();
+
+    // Check for deep link params (?fon=TAU&slide=1) from PowerPoint or PDF exports
+    setTimeout(handleUrlDeepLinkParams, 150);
 });
 
 /* ==========================================================================
@@ -10907,6 +10910,51 @@ let currentSlideAllocRibbonHTML = '';
 let currentSlideAllocChipsHTML = '';
 let currentSlideKapFilter = 'all';
 
+function getFundShareWebUrl(fundCode) {
+    const fCode = encodeURIComponent((fundCode || '').toUpperCase().trim());
+    let baseUrl = 'https://semihhard.github.io/portfoyum/';
+    try {
+        if (typeof window !== 'undefined' && window.location && window.location.origin) {
+            if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+                const path = window.location.pathname.endsWith('/') ? window.location.pathname : window.location.pathname + '/';
+                baseUrl = `${window.location.origin}${path}`;
+            } else if (window.location.origin.includes('github.io')) {
+                const path = window.location.pathname.endsWith('/') ? window.location.pathname : window.location.pathname + '/';
+                baseUrl = `${window.location.origin}${path}`;
+            }
+        }
+    } catch (e) {
+        console.warn("getFundShareWebUrl error:", e);
+    }
+    return `${baseUrl}?fon=${fCode}&slide=1`;
+}
+
+function handleUrlDeepLinkParams() {
+    try {
+        const urlParams = new URLSearchParams(window.location.search);
+        const fonParam = (urlParams.get("fon") || urlParams.get("fund") || "").trim().toUpperCase();
+        const slideParam = urlParams.get("slide");
+
+        if (fonParam) {
+            if (typeof openFundSlideReportModal === "function") {
+                openFundSlideReportModal();
+                setTimeout(() => {
+                    if (typeof openSlideFundDetail === "function") {
+                        openSlideFundDetail(fonParam);
+                    }
+                }, 350);
+            }
+        } else if (slideParam === "1" || slideParam === "true") {
+            if (typeof openFundSlideReportModal === "function") {
+                openFundSlideReportModal();
+            }
+        }
+    } catch (err) {
+        console.warn("URL deep link parameter handling error:", err);
+    }
+}
+window.addEventListener("popstate", handleUrlDeepLinkParams);
+
 function buildSlideReportDataset() {
     let funds = [];
     if (cachedAllCategoryFunds && cachedAllCategoryFunds.length > 0) {
@@ -11116,7 +11164,7 @@ function renderSlideFundCardHTML(fund, rank, mode) {
     }
 
     return `
-        <div class="slide-fund-card rank-card-${rank}" onclick="openSlideFundDetail('${fund.code}')" title="${fund.code} slayt içi derinlik analizini aç">
+        <div class="slide-fund-card rank-card-${rank}" data-fund-code="${fund.code}" onclick="openSlideFundDetail('${fund.code}')" title="${fund.code} detaylı analiz ve KAP dağılımını aç">
             <div>
                 <div class="slide-fund-card-top">
                     ${rankBadgeHTML}
@@ -11161,6 +11209,11 @@ function renderSlideFundCardHTML(fund, rank, mode) {
                 <div class="slide-fund-velocity-bar rank-${rank}">
                     <span class="slide-velocity-lbl"><i class="fa-solid fa-gauge-high"></i> Kişi Başı Net Sermaye Hızı</span>
                     <span class="slide-velocity-val">${perPersonStr}</span>
+                </div>
+
+                <div class="slide-fund-click-hint" title="${fund.code} Canlı Detay & KAP Portföy Dağılımını Aç">
+                    <span><i class="fa-solid fa-arrow-up-right-from-square"></i> Canlı Detay & KAP Hisseleri</span>
+                    <i class="fa-solid fa-chevron-right" style="font-size: 0.64rem; opacity: 0.85;"></i>
                 </div>
             </div>
         </div>
@@ -11682,6 +11735,20 @@ async function openSlideFundDetail(fundCode) {
     }
     if (!fundMeta && typeof BASE_CURATED_CATEGORY_FUNDS !== 'undefined') {
         fundMeta = BASE_CURATED_CATEGORY_FUNDS.find(f => f.code === fCode);
+    }
+    if (!fundMeta) {
+        fundMeta = {
+            code: fCode,
+            name: `${fCode} YATIRIM FONU`,
+            category: typeof detectFundCategoryKey === 'function' ? detectFundCategoryKey('', fCode) : 'DİĞER',
+            price: 1.0,
+            change: 0,
+            aum: 0,
+            cashFlow: 0,
+            deltaInvestors: 0,
+            investors: 0,
+            perPerson: 0
+        };
     }
 
     // 2. Fetch history and allocation data in parallel
@@ -12335,7 +12402,41 @@ async function exportToPDF() {
                 pdf.setFillColor(7, 12, 24);
                 pdf.rect(0, 0, pdfPageW, pdfPageH, 'F');
 
-                pdf.addImage(imgData, 'JPEG', marginX, offsetY, targetW, Math.min(targetH, pdfPageH - 16));
+                const finalH = Math.min(targetH, pdfPageH - 16);
+                pdf.addImage(imgData, 'JPEG', marginX, offsetY, targetW, finalH);
+
+                // Add clickable interactive hyperlinks for all fund cards on this PDF page
+                const pageElem = document.getElementById(`slidePage-${pageNum}`);
+                if (pageElem) {
+                    const cards = pageElem.querySelectorAll('.slide-fund-card');
+                    const containerRect = captureElem.getBoundingClientRect();
+
+                    if (cards && cards.length > 0 && containerRect.width > 0 && containerRect.height > 0) {
+                        cards.forEach(card => {
+                            const fundCode = card.getAttribute('data-fund-code');
+                            if (!fundCode) return;
+
+                            const cardRect = card.getBoundingClientRect();
+                            const relX = (cardRect.left - containerRect.left) / containerRect.width;
+                            const relY = (cardRect.top - containerRect.top) / containerRect.height;
+                            const relW = cardRect.width / containerRect.width;
+                            const relH = cardRect.height / containerRect.height;
+
+                            // Map to PDF page coordinates (mm)
+                            const pdfCardX = marginX + (relX * targetW);
+                            const pdfCardY = offsetY + (relY * finalH);
+                            const pdfCardW = relW * targetW;
+                            const pdfCardH = relH * finalH;
+
+                            const targetUrl = getFundShareWebUrl(fundCode);
+                            try {
+                                pdf.link(pdfCardX, pdfCardY, pdfCardW, pdfCardH, { url: targetUrl });
+                            } catch (linkErr) {
+                                console.warn(`PDF link error for ${fundCode}:`, linkErr);
+                            }
+                        });
+                    }
+                }
             }
         }
 
@@ -12495,6 +12596,51 @@ async function exportToPowerPoint() {
                     w: boxW,
                     h: boxH
                 });
+
+                // Add clickable interactive hyperlinks for all fund cards on this PPTX slide
+                const pageElem = document.getElementById(`slidePage-${pageNum}`);
+                if (pageElem) {
+                    const cards = pageElem.querySelectorAll('.slide-fund-card');
+                    const containerRect = captureElem.getBoundingClientRect();
+
+                    if (cards && cards.length > 0 && containerRect.width > 0 && containerRect.height > 0) {
+                        cards.forEach(card => {
+                            const fundCode = card.getAttribute('data-fund-code');
+                            if (!fundCode) return;
+
+                            const cardRect = card.getBoundingClientRect();
+                            const relX = (cardRect.left - containerRect.left) / containerRect.width;
+                            const relY = (cardRect.top - containerRect.top) / containerRect.height;
+                            const relW = cardRect.width / containerRect.width;
+                            const relH = cardRect.height / containerRect.height;
+
+                            // Map to PPTX slide coordinates (inches)
+                            const cardX = offsetX + (relX * boxW);
+                            const cardY = offsetY + (relY * boxH);
+                            const cardW = relW * boxW;
+                            const cardH = relH * boxH;
+
+                            const targetUrl = getFundShareWebUrl(fundCode);
+                            try {
+                                const shapeType = (pptx.shapes && pptx.shapes.RECTANGLE) || 'rect';
+                                slide.addShape(shapeType, {
+                                    x: cardX,
+                                    y: cardY,
+                                    w: cardW,
+                                    h: cardH,
+                                    fill: { type: 'none' },
+                                    line: { color: 'none' },
+                                    hyperlink: {
+                                        url: targetUrl,
+                                        tooltip: `${fundCode} - Canlı Fon Analizi & KAP Portföy Dağılımını Aç`
+                                    }
+                                });
+                            } catch (shapeErr) {
+                                console.warn(`PowerPoint hyperlink error for ${fundCode}:`, shapeErr);
+                            }
+                        });
+                    }
+                }
             }
         }
 
@@ -12540,6 +12686,8 @@ window.renderInteractiveSlides = renderInteractiveSlides;
 window.showSlideKapHoldingsView = showSlideKapHoldingsView;
 window.filterSlideKapStocks = filterSlideKapStocks;
 window.showSlideMacroAllocView = showSlideMacroAllocView;
+window.getFundShareWebUrl = getFundShareWebUrl;
+window.handleUrlDeepLinkParams = handleUrlDeepLinkParams;
 
 
 
