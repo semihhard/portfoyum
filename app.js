@@ -10703,23 +10703,23 @@ function renderSlideFundCardHTML(fund, rank, mode) {
     let rankBadgeHTML = '';
     if (rank === 1) {
         rankBadgeHTML = `
-            <div class="slide-rank-badge rank-1" title="1. Sıra">
+            <div class="slide-rank-badge rank-1" title="1. Sıra - Günün Şampiyonu">
                 <span class="slide-rank-crown">👑</span>
-                <span class="slide-rank-text">1. SIRA</span>
+                <span class="slide-rank-text">#1 ŞAMPİYON</span>
             </div>
         `;
     } else if (rank === 2) {
         rankBadgeHTML = `
-            <div class="slide-rank-badge rank-2" title="2. Sıra">
+            <div class="slide-rank-badge rank-2" title="2. Sıra - İkinci">
                 <span class="slide-rank-crown">🥈</span>
-                <span class="slide-rank-text">2. SIRA</span>
+                <span class="slide-rank-text">#2 LİDER</span>
             </div>
         `;
     } else {
         rankBadgeHTML = `
-            <div class="slide-rank-badge rank-3" title="3. Sıra">
+            <div class="slide-rank-badge rank-3" title="3. Sıra - Üçüncü">
                 <span class="slide-rank-crown">🥉</span>
-                <span class="slide-rank-text">3. SIRA</span>
+                <span class="slide-rank-text">#3 TAKİPÇİ</span>
             </div>
         `;
     }
@@ -10733,22 +10733,22 @@ function renderSlideFundCardHTML(fund, rank, mode) {
         heroLbl = `<i class="fa-solid fa-arrow-trend-up"></i> GÜNLÜK NET SERMAYE GİRİŞİ`;
         heroNum = cashStr;
         heroClass = "pos";
-        heroSub = `<i class="fa-solid fa-users"></i> Yatırımcı Değişimi: <strong style="color: ${invColor};">${invStr}</strong>`;
+        heroSub = `<i class="fa-solid fa-users"></i> Yatırımcı Değişimi: <strong style="color: ${invColor}; font-weight: 800;">${invStr}</strong>`;
     } else if (mode === "cash-out") {
         heroLbl = `<i class="fa-solid fa-arrow-trend-down"></i> GÜNLÜK NET SERMAYE ÇIKIŞI`;
         heroNum = cashStr;
         heroClass = "neg";
-        heroSub = `<i class="fa-solid fa-users"></i> Yatırımcı Değişimi: <strong style="color: ${invColor};">${invStr}</strong>`;
+        heroSub = `<i class="fa-solid fa-users"></i> Yatırımcı Değişimi: <strong style="color: ${invColor}; font-weight: 800;">${invStr}</strong>`;
     } else if (mode === "inv-in") {
         heroLbl = `<i class="fa-solid fa-user-plus"></i> GÜNLÜK YATIRIMCI ARTIŞI`;
         heroNum = invStr;
         heroClass = "pos";
-        heroSub = `<i class="fa-solid fa-money-bill-wave"></i> Sermaye Akışı: <strong style="color: ${cashColor};">${cashStr}</strong>`;
+        heroSub = `<i class="fa-solid fa-money-bill-wave"></i> Sermaye Akışı: <strong style="color: ${cashColor}; font-weight: 800;">${cashStr}</strong>`;
     } else {
         heroLbl = `<i class="fa-solid fa-user-minus"></i> GÜNLÜK YATIRIMCI KAYBI`;
         heroNum = invStr;
         heroClass = "neg";
-        heroSub = `<i class="fa-solid fa-money-bill-wave"></i> Sermaye Akışı: <strong style="color: ${cashColor};">${cashStr}</strong>`;
+        heroSub = `<i class="fa-solid fa-money-bill-wave"></i> Sermaye Akışı: <strong style="color: ${cashColor}; font-weight: 800;">${cashStr}</strong>`;
     }
 
     return `
@@ -10758,8 +10758,8 @@ function renderSlideFundCardHTML(fund, rank, mode) {
                     ${rankBadgeHTML}
                     <div class="slide-fund-identity">
                         <div class="slide-fund-code-row">
-                            <span class="slide-code-badge">${fund.code}</span>
-                            <span class="slide-fund-cat-name" style="color: ${reg.color};">• ${reg.shortName}</span>
+                            <span class="slide-code-badge rank-${rank}">${fund.code}</span>
+                            <span class="slide-fund-cat-name" style="color: ${reg.color};"><span class="slide-cat-dot" style="background: ${reg.color}; box-shadow: 0 0 8px ${reg.color};"></span> ${reg.shortName}</span>
                         </div>
                         <div class="slide-fund-fullname" title="${fund.name}">${cleanName}</div>
                     </div>
@@ -10774,27 +10774,27 @@ function renderSlideFundCardHTML(fund, rank, mode) {
 
             <div>
                 <div class="slide-fund-metrics-tiles">
-                    <div class="slide-metric-tile">
-                        <div class="slide-tile-lbl"><i class="fa-solid fa-tag"></i> Pay Fiyatı</div>
+                    <div class="slide-metric-tile tile-cyan">
+                        <div class="slide-tile-lbl"><i class="fa-solid fa-tag" style="color: #38BDF8;"></i> Pay Fiyatı</div>
                         <div class="slide-tile-val">${priceStr}</div>
                     </div>
-                    <div class="slide-metric-tile">
-                        <div class="slide-tile-lbl"><i class="fa-solid fa-chart-line"></i> Günlük Getiri</div>
+                    <div class="slide-metric-tile tile-emerald">
+                        <div class="slide-tile-lbl"><i class="fa-solid fa-chart-line" style="color: ${retColor};"></i> Günlük Getiri</div>
                         <div class="slide-tile-val" style="color: ${retColor};">
                             <i class="fa-solid ${retIcon}" style="font-size: 0.72rem;"></i> ${retSign}%${Math.abs(retVal).toFixed(2)}
                         </div>
                     </div>
-                    <div class="slide-metric-tile">
-                        <div class="slide-tile-lbl"><i class="fa-solid fa-vault"></i> Fon Büyüklüğü</div>
+                    <div class="slide-metric-tile tile-amber">
+                        <div class="slide-tile-lbl"><i class="fa-solid fa-vault" style="color: #F59E0B;"></i> Fon Büyüklüğü</div>
                         <div class="slide-tile-val">${aumStr}</div>
                     </div>
-                    <div class="slide-metric-tile">
-                        <div class="slide-tile-lbl"><i class="fa-solid fa-users"></i> Toplam Yatırımcı</div>
+                    <div class="slide-metric-tile tile-purple">
+                        <div class="slide-tile-lbl"><i class="fa-solid fa-users" style="color: #C084FC;"></i> Toplam Yatırımcı</div>
                         <div class="slide-tile-val">${totalInvestorsStr}</div>
                     </div>
                 </div>
 
-                <div class="slide-fund-velocity-bar">
+                <div class="slide-fund-velocity-bar rank-${rank}">
                     <span class="slide-velocity-lbl"><i class="fa-solid fa-gauge-high"></i> Kişi Başı Net Sermaye Hızı</span>
                     <span class="slide-velocity-val">${perPersonStr}</span>
                 </div>
@@ -10840,11 +10840,13 @@ function renderInteractiveSlides(data) {
                 <div class="slide-macro-hero-card ${isCashPos ? 'pos' : 'neg'}">
                     <div class="slide-macro-header-row">
                         <div class="slide-macro-title">
-                            <i class="fa-solid ${isCashPos ? 'fa-arrow-trend-up' : 'fa-arrow-trend-down'}" style="color: ${cashColor};"></i>
+                            <span class="slide-macro-icon-pill ${isCashPos ? 'pos' : 'neg'}">
+                                <i class="fa-solid ${isCashPos ? 'fa-arrow-trend-up' : 'fa-arrow-trend-down'}"></i>
+                            </span>
                             <span>Günün Toplam Net Para Akışı</span>
                         </div>
                         <span class="slide-status-pill ${isCashPos ? 'pos' : 'neg'}">
-                            ${isCashPos ? '🟢 NET GENİŞLEME / GİRİŞ' : '🔴 NET DARALMA / ÇIKIŞ'}
+                            ${isCashPos ? '🟢 NET SERMAYE GENİŞLEMESİ' : '🔴 NET SERMAYE DARALMASI'}
                         </span>
                     </div>
                     <div class="slide-macro-big-num ${isCashPos ? 'pos' : 'neg'}">
@@ -10853,10 +10855,12 @@ function renderInteractiveSlides(data) {
                     <div class="slide-macro-desc">Tüm TEFAS yatırım fonlarında gün içi gerçekleşen toplam net portföy nakit hareketi</div>
                 </div>
 
-                <div class="slide-macro-hero-card ${isInvPos ? 'pos' : 'neg'}">
+                <div class="slide-macro-hero-card ${isInvPos ? 'pos' : 'neg'} inv-card">
                     <div class="slide-macro-header-row">
                         <div class="slide-macro-title">
-                            <i class="fa-solid fa-users" style="color: ${invColor};"></i>
+                            <span class="slide-macro-icon-pill cyan">
+                                <i class="fa-solid fa-users"></i>
+                            </span>
                             <span>Günün Toplam Net Yatırımcı Akışı</span>
                         </div>
                         <span class="slide-status-pill ${isInvPos ? 'pos' : 'neg'}">
@@ -10878,9 +10882,9 @@ function renderInteractiveSlides(data) {
                     </div>
                     <div class="slide-cat-leader-name">${inCat ? inCat.name : '—'}</div>
                     <div class="slide-cat-leader-stats">
-                        <span>Net Sermaye Girişi: <strong class="slide-cat-leader-val pos">+${formatBillionOrMillion(inCat ? inCat.cashFlow : 0)}</strong></span>
-                        <span>Toplam Kategori Hacmi: <strong>${formatBillionOrMillion(inCat ? inCat.displayAUM : 0)}</strong></span>
-                        <span>Pazar Payı: <strong style="color: #38BDF8;">%${inCat ? inCat.sharePct : 0}%</strong></span>
+                        <span>Net Giriş: <strong class="slide-cat-leader-val pos">+${formatBillionOrMillion(inCat ? inCat.cashFlow : 0)}</strong></span>
+                        <span>Toplam Hacim: <strong style="color: #FFFFFF;">${formatBillionOrMillion(inCat ? inCat.displayAUM : 0)}</strong></span>
+                        <span>Pazar Payı: <strong style="color: #38BDF8; font-weight: 800;">%${inCat ? inCat.sharePct : 0}%</strong></span>
                     </div>
                 </div>
 
@@ -10891,33 +10895,41 @@ function renderInteractiveSlides(data) {
                     </div>
                     <div class="slide-cat-leader-name">${outCat ? outCat.name : '—'}</div>
                     <div class="slide-cat-leader-stats">
-                        <span>Net Sermaye Çıkışı: <strong class="slide-cat-leader-val neg">${formatBillionOrMillion(outCat ? outCat.cashFlow : 0)}</strong></span>
-                        <span>Toplam Kategori Hacmi: <strong>${formatBillionOrMillion(outCat ? outCat.displayAUM : 0)}</strong></span>
-                        <span>Pazar Payı: <strong style="color: #38BDF8;">%${outCat ? outCat.sharePct : 0}%</strong></span>
+                        <span>Net Çıkış: <strong class="slide-cat-leader-val neg">${formatBillionOrMillion(outCat ? outCat.cashFlow : 0)}</strong></span>
+                        <span>Toplam Hacim: <strong style="color: #FFFFFF;">${formatBillionOrMillion(outCat ? outCat.displayAUM : 0)}</strong></span>
+                        <span>Pazar Payı: <strong style="color: #38BDF8; font-weight: 800;">%${outCat ? outCat.sharePct : 0}%</strong></span>
                     </div>
                 </div>
             </div>
 
             <div class="slide-macro-grid-bottom">
-                <div class="slide-mini-stat">
-                    <i class="fa-solid fa-list-check" style="color: #38BDF8;"></i>
-                    <span class="slide-mini-stat-lbl">Taranan Fon:</span>
-                    <span class="slide-mini-stat-val">${data.totalFunds.toLocaleString('tr-TR')} Fon</span>
+                <div class="slide-mini-stat stat-cyan">
+                    <div class="slide-mini-icon-disc cyan"><i class="fa-solid fa-list-check"></i></div>
+                    <div class="slide-mini-stat-info">
+                        <span class="slide-mini-stat-lbl">Taranan Fon</span>
+                        <span class="slide-mini-stat-val">${data.totalFunds.toLocaleString('tr-TR')} Fon</span>
+                    </div>
                 </div>
-                <div class="slide-mini-stat">
-                    <i class="fa-solid fa-landmark" style="color: #10B981;"></i>
-                    <span class="slide-mini-stat-lbl">TEFAS Toplam Hacmi:</span>
-                    <span class="slide-mini-stat-val">${formatBillionOrMillion(data.totalAUM)}</span>
+                <div class="slide-mini-stat stat-emerald">
+                    <div class="slide-mini-icon-disc emerald"><i class="fa-solid fa-landmark"></i></div>
+                    <div class="slide-mini-stat-info">
+                        <span class="slide-mini-stat-lbl">TEFAS Toplam Hacmi</span>
+                        <span class="slide-mini-stat-val">${formatBillionOrMillion(data.totalAUM)}</span>
+                    </div>
                 </div>
-                <div class="slide-mini-stat">
-                    <i class="fa-solid fa-layer-group" style="color: #A855F7;"></i>
-                    <span class="slide-mini-stat-lbl">Kategori Adedi:</span>
-                    <span class="slide-mini-stat-val">9 Şemsiye Fonu</span>
+                <div class="slide-mini-stat stat-purple">
+                    <div class="slide-mini-icon-disc purple"><i class="fa-solid fa-layer-group"></i></div>
+                    <div class="slide-mini-stat-info">
+                        <span class="slide-mini-stat-lbl">Kategori Adedi</span>
+                        <span class="slide-mini-stat-val">9 Şemsiye Fonu</span>
+                    </div>
                 </div>
-                <div class="slide-mini-stat">
-                    <i class="fa-solid fa-bolt" style="color: #F59E0B;"></i>
-                    <span class="slide-mini-stat-lbl">Veri Sağlayıcı:</span>
-                    <span class="slide-mini-stat-val" style="color: #38BDF8;">Takasbank Canlı</span>
+                <div class="slide-mini-stat stat-amber">
+                    <div class="slide-mini-icon-disc amber"><i class="fa-solid fa-bolt"></i></div>
+                    <div class="slide-mini-stat-info">
+                        <span class="slide-mini-stat-lbl">Veri Sağlayıcı</span>
+                        <span class="slide-mini-stat-val">Takasbank Canlı</span>
+                    </div>
                 </div>
             </div>
         `;
@@ -10939,7 +10951,7 @@ function renderInteractiveSlides(data) {
                     </div>
                 </div>
                 <h2 class="slide-main-title">Günün En Çok Para Girişi Olan 3 Fonu</h2>
-                <p class="slide-subtitle">Bugün portföyüne en yüksek net sermaye girişi sağlayan fonlar ve ayrıntılı finansal metrikleri</p>
+                <p class="slide-subtitle">Bugün portföyüne en yüksek net sermaye girişi sağlayan lider fonlar ve finansal metrikleri</p>
             </div>
             <div class="slide-funds-grid-3">
                 ${data.topCashInflow.map((f, i) => renderSlideFundCardHTML(f, i + 1, "cash-in")).join('')}
@@ -11038,28 +11050,28 @@ function renderInteractiveSlides(data) {
             const sharePct = cat.sharePct || 0;
 
             return `
-                <tr>
-                    <td style="font-weight: 700; color: #FFFFFF;">
-                        <span style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: ${cat.color}; margin-right: 8px; box-shadow: 0 0 6px ${cat.color};"></span>
+                <tr style="border-left: 3px solid ${cat.color};">
+                    <td style="font-weight: 800; color: #FFFFFF;">
+                        <span style="display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: ${cat.color}; margin-right: 8px; box-shadow: 0 0 8px ${cat.color};"></span>
                         ${cat.name}
                     </td>
-                    <td style="text-align: center; color: #94A3B8; font-weight: 600;">${cat.displayFundCount} Fon</td>
-                    <td style="text-align: right; font-weight: 700; font-family: 'Space Grotesk', sans-serif;">${formatBillionOrMillion(cat.displayAUM)}</td>
+                    <td style="text-align: center; color: #94A3B8; font-weight: 700;">${cat.displayFundCount} Fon</td>
+                    <td style="text-align: right; font-weight: 800; font-family: 'Outfit', sans-serif;">${formatBillionOrMillion(cat.displayAUM)}</td>
                     <td>
                         <div class="slide-share-bar-wrap">
-                            <span style="color: #38BDF8; font-weight: 800; min-width: 44px; font-family: 'Space Grotesk', sans-serif;">%${sharePct}%</span>
+                            <span style="color: ${cat.color}; font-weight: 800; min-width: 44px; font-family: 'Outfit', sans-serif;">%${sharePct}%</span>
                             <div class="slide-share-bar">
-                                <div class="slide-share-fill" style="width: ${Math.max(4, Math.min(100, sharePct * 2))}%;"></div>
+                                <div class="slide-share-fill" style="width: ${Math.max(4, Math.min(100, sharePct * 2))}%; background: ${cat.color};"></div>
                             </div>
                         </div>
                     </td>
-                    <td style="text-align: right; font-weight: 800; color: ${cashColor}; font-family: 'Space Grotesk', sans-serif;">
+                    <td style="text-align: right; font-weight: 800; color: ${cashColor}; font-family: 'Outfit', sans-serif;">
                         ${cashSign}${formatBillionOrMillion(cat.cashFlow)}
                     </td>
-                    <td style="text-align: right; font-weight: 700; color: ${invColor}; font-family: 'Space Grotesk', sans-serif;">
+                    <td style="text-align: right; font-weight: 800; color: ${invColor}; font-family: 'Outfit', sans-serif;">
                         ${invSign}${(cat.deltaInvestors || 0).toLocaleString('tr-TR')}
                     </td>
-                    <td style="text-align: right; font-weight: 800; color: ${retColor}; font-family: 'Space Grotesk', sans-serif;">
+                    <td style="text-align: right; font-weight: 800; color: ${retColor}; font-family: 'Outfit', sans-serif;">
                         ${retSign}%${Math.abs(cat.avgReturn || 0).toFixed(2)}
                     </td>
                 </tr>
