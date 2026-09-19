@@ -10540,6 +10540,9 @@ function closeKapModal() {
    ========================================================================== */
 
 let currentSlideIndex = 1;
+let previousSlideIndex = 1;
+let isSlideDetailActive = false;
+let slideInvestorChartInstance = null;
 let isSlideReportModalOpen = false;
 let slideReportDatasetCache = null;
 
@@ -10752,7 +10755,7 @@ function renderSlideFundCardHTML(fund, rank, mode) {
     }
 
     return `
-        <div class="slide-fund-card rank-card-${rank}" onclick="openSingleFundAnalysis('${fund.code}'); closeFundSlideReportModal();" title="${fund.code} detaylı analizine git">
+        <div class="slide-fund-card rank-card-${rank}" onclick="openSlideFundDetail('${fund.code}')" title="${fund.code} slayt içi derinlik analizini aç">
             <div>
                 <div class="slide-fund-card-top">
                     ${rankBadgeHTML}
@@ -11143,6 +11146,17 @@ function closeFundSlideReportModal() {
     isSlideReportModalOpen = false;
     document.body.style.overflow = "";
 
+    isSlideDetailActive = false;
+    if (slideInvestorChartInstance) {
+        try { slideInvestorChartInstance.destroy(); } catch(e) {}
+        slideInvestorChartInstance = null;
+    }
+    const detailSlide = document.getElementById("slidePage-detail");
+    if (detailSlide) {
+        detailSlide.classList.remove("active");
+        detailSlide.style.display = "none";
+    }
+
     if (document.fullscreenElement || document.webkitFullscreenElement) {
         if (document.exitFullscreen) {
             document.exitFullscreen().catch(() => {});
@@ -11183,6 +11197,18 @@ function syncSlideFullscreenState() {
 
 function goToSlide(n) {
     currentSlideIndex = Math.max(1, Math.min(6, n));
+    isSlideDetailActive = false;
+
+    const detailSlide = document.getElementById("slidePage-detail");
+    if (detailSlide) {
+        detailSlide.classList.remove("active");
+        detailSlide.style.display = "none";
+    }
+
+    if (slideInvestorChartInstance) {
+        try { slideInvestorChartInstance.destroy(); } catch(e) {}
+        slideInvestorChartInstance = null;
+    }
 
     for (let i = 1; i <= 6; i++) {
         const slide = document.getElementById(`slidePage-${i}`);
@@ -11204,7 +11230,428 @@ function goToSlide(n) {
 }
 
 function navigateSlide(dir) {
+    if (isSlideDetailActive) {
+        returnFromSlideDetail();
+        return;
+    }
     goToSlide(currentSlideIndex + dir);
+}
+
+function returnFromSlideDetail() {
+    isSlideDetailActive = false;
+    const detailSlide = document.getElementById("slidePage-detail");
+    if (detailSlide) {
+        detailSlide.classList.remove("active");
+        detailSlide.style.display = "none";
+    }
+    if (slideInvestorChartInstance) {
+        try { slideInvestorChartInstance.destroy(); } catch(e) {}
+        slideInvestorChartInstance = null;
+    }
+    goToSlide(previousSlideIndex || 1);
+}
+
+async function openSlideFundDetail(fundCode) {
+    if (!fundCode) return;
+    const fCode = fundCode.toUpperCase().trim();
+
+    previousSlideIndex = currentSlideIndex;
+    isSlideDetailActive = true;
+
+    // Hide main slides 1-6
+    for (let i = 1; i <= 6; i++) {
+        const slide = document.getElementById(`slidePage-${i}`);
+        if (slide) {
+            slide.classList.remove("active");
+            slide.style.display = "none";
+        }
+    }
+
+    // Remove active state on dots
+    const dots = document.querySelectorAll(".slide-dot");
+    dots.forEach(dot => dot.classList.remove("active"));
+
+    // Update badge
+    const badge = document.getElementById("slideCurrentNumberBadge");
+    if (badge) {
+        badge.innerText = `${fCode} Fon Analizi`;
+    }
+
+    const detailSlide = document.getElementById("slidePage-detail");
+    if (!detailSlide) return;
+
+    detailSlide.style.display = "flex";
+    detailSlide.classList.add("active");
+
+    // Clean loading state
+    detailSlide.innerHTML = `
+        <div class="slide-detail-container">
+            <div class="slide-detail-header">
+                <button type="button" class="btn-slide-back" onclick="returnFromSlideDetail()">
+                    <i class="fa-solid fa-arrow-left"></i>
+                    <span>← Slayt ${previousSlideIndex}'e Geri Dön</span>
+                </button>
+                <div style="color: #38BDF8; font-weight: 700; font-size: 0.85rem; display: flex; align-items: center; gap: 8px;">
+                    <i class="fa-solid fa-circle-notch fa-spin"></i>
+                    <span>${fCode} Detaylı Fon Verileri Yükleniyor...</span>
+                </div>
+            </div>
+        </div>
+    `;
+
+    // 1. Locate metadata from caches
+    let fundMeta = null;
+    if (slideReportDatasetCache) {
+        const candidates = [
+            ...(slideReportDatasetCache.topCashInflow || []),
+            ...(slideReportDatasetCache.topCashOutflow || []),
+            ...(slideReportDatasetCache.topInvestorInflow || []),
+            ...(slideReportDatasetCache.topInvestorOutflow || [])
+        ];
+        fundMeta = candidates.find(f => f.code === fCode);
+    }
+    if (!fundMeta && Array.isArray(cachedAllCategoryFunds)) {
+        fundMeta = cachedAllCategoryFunds.find(f => f.code === fCode);
+    }
+    if (!fundMeta && typeof BASE_CURATED_CATEGORY_FUNDS !== 'undefined') {
+        fundMeta = BASE_CURATED_CATEGORY_FUNDS.find(f => f.code === fCode);
+    }
+
+    // 2. Fetch history and allocation data in parallel
+    let historyData = [];
+    let allocData = [];
+    try {
+        const [hData, aData] = await Promise.all([
+            fetchTefasFundData(fCode, 30),
+            fetchTefasFundAllocation(fCode, 30)
+        ]);
+        historyData = Array.isArray(hData) ? hData : [];
+        allocData = Array.isArray(aData) ? aData : [];
+    } catch (e) {
+        console.warn("Slide fund detail fetch error:", e);
+    }
+
+    if (!isSlideDetailActive) return;
+
+    // 3. Resolve Metrics
+    const latestHist = historyData.length > 0 ? historyData[historyData.length - 1] : null;
+    const firstHist = historyData.length > 0 ? historyData[0] : null;
+
+    const rawPrice = latestHist?.fiyat || fundMeta?.price || 1.0;
+    const priceStr = typeof formatFundPriceDisplay === 'function' ? formatFundPriceDisplay(rawPrice) : `₺${Number(rawPrice).toFixed(4)}`;
+
+    let retVal = fundMeta?.change;
+    if (retVal === undefined || retVal === null) {
+        if (historyData.length >= 2) {
+            const pPrev = historyData[historyData.length - 2].fiyat;
+            const pCurr = historyData[historyData.length - 1].fiyat;
+            retVal = pPrev > 0 ? (((pCurr - pPrev) / pPrev) * 100) : 0;
+        } else {
+            retVal = 0;
+        }
+    }
+    const isRetPos = retVal >= 0;
+    const retSign = isRetPos ? '+' : '';
+    const retColor = isRetPos ? '#34D399' : '#FB7185';
+    const retIcon = isRetPos ? 'fa-arrow-trend-up' : 'fa-arrow-trend-down';
+
+    const aumVal = latestHist?.portfoyBuyukluk || fundMeta?.aum || 0;
+    const aumStr = typeof formatBillionOrMillion === 'function' ? formatBillionOrMillion(aumVal) : `₺${Number(aumVal).toLocaleString('tr-TR')}`;
+
+    const cashVal = fundMeta?.cashFlow || 0;
+    const isCashPos = cashVal >= 0;
+    const cashSign = isCashPos ? '+' : '';
+    const cashColor = isCashPos ? '#34D399' : '#FB7185';
+    const cashStr = typeof formatBillionOrMillion === 'function' ? `${cashSign}${formatBillionOrMillion(cashVal)}` : `${cashSign}₺${cashVal.toLocaleString('tr-TR')}`;
+
+    const deltaInvVal = fundMeta?.deltaInvestors !== undefined ? fundMeta.deltaInvestors : 0;
+    const isInvPos = deltaInvVal >= 0;
+    const invSign = isInvPos ? '+' : '';
+    const invColor = isInvPos ? '#34D399' : '#FB7185';
+    const deltaInvStr = `${invSign}${Number(deltaInvVal).toLocaleString('tr-TR')} Kişi`;
+
+    const totalInvestors = latestHist?.kisiSayisi || fundMeta?.investors || 0;
+    const totalInvestorsStr = `${Number(totalInvestors).toLocaleString('tr-TR')} Kişi`;
+
+    const perPersonVal = fundMeta?.perPerson || (deltaInvVal !== 0 ? Math.round(Math.abs(cashVal / deltaInvVal)) : 0);
+    const perPersonStr = perPersonVal > 0 ? `₺${Number(perPersonVal).toLocaleString('tr-TR')} / Kişi` : '—';
+
+    const fundName = typeof cleanFundTitle === 'function' ? cleanFundTitle(fundMeta?.name || latestHist?.fonUnvan || `${fCode} Fonu`) : (fundMeta?.name || `${fCode} Fonu`);
+    const catKey = fundMeta?.category || (typeof detectFundCategoryKey === 'function' ? detectFundCategoryKey(fundName, fCode) : 'DİĞER');
+    const reg = (typeof TEFAS_CATEGORIES_REGISTRY !== 'undefined' && TEFAS_CATEGORIES_REGISTRY[catKey]) 
+        ? TEFAS_CATEGORIES_REGISTRY[catKey] 
+        : { name: "Yatırım Fonu", shortName: "Fon", color: "#38BDF8" };
+
+    // 4. Resolve Allocation Data
+    const latestAllocRow = allocData.length > 0 ? allocData[allocData.length - 1] : null;
+    const allocItems = [];
+    if (latestAllocRow) {
+        for (const [k, rawVal] of Object.entries(latestAllocRow)) {
+            const key = k.toLowerCase();
+            if (key === 'bilfiyat' || key === 'bil_fiyat' || key === 'tarih' || key === 'fonkodu' || key === 'fon_kodu') continue;
+            const val = parseFloat(rawVal) || 0;
+            if (val > 0.05 && typeof TEFAS_ASSET_MAP !== 'undefined' && TEFAS_ASSET_MAP[key]) {
+                const def = TEFAS_ASSET_MAP[key];
+                allocItems.push({
+                    key,
+                    label: def.label,
+                    color: def.color,
+                    pct: val
+                });
+            }
+        }
+    }
+    allocItems.sort((a, b) => b.pct - a.pct);
+    if (allocItems.length === 0) {
+        allocItems.push({ key: 'd', label: 'Diğer Portföy Varlıkları', color: '#38BDF8', pct: 100 });
+    }
+
+    const allocDateParts = (latestAllocRow?.tarih || '').split('-');
+    const allocDateStr = allocDateParts.length === 3 ? `${allocDateParts[2]}.${allocDateParts[1]}.${allocDateParts[0]}` : (slideReportDatasetCache?.date || 'Güncel');
+
+    const allocRibbonSegmentsHTML = allocItems.map(item => `
+        <div class="slide-alloc-segment" style="width: ${item.pct}%; background: ${item.color};" title="${item.label}: %${item.pct.toFixed(2)}"></div>
+    `).join('');
+
+    const allocChipsHTML = allocItems.slice(0, 7).map(item => `
+        <div class="slide-alloc-chip-row">
+            <div class="slide-alloc-left">
+                <span class="slide-alloc-color-dot" style="background: ${item.color}; box-shadow: 0 0 6px ${item.color};"></span>
+                <span class="slide-alloc-name" title="${item.label}">${item.label}</span>
+            </div>
+            <div class="slide-alloc-right">
+                <div class="slide-alloc-bar-mini">
+                    <div style="width: ${Math.min(100, item.pct)}%; height: 100%; background: ${item.color}; border-radius: 999px;"></div>
+                </div>
+                <span class="slide-alloc-pct" style="color: ${item.color};">%${item.pct.toFixed(2)}</span>
+            </div>
+        </div>
+    `).join('');
+
+    // 5. Resolve 30-Day Investor Trend Metrics
+    const currentInvestors = latestHist?.kisiSayisi || totalInvestors;
+    const firstInvestors = firstHist?.kisiSayisi || currentInvestors;
+    const deltaInvestors30 = currentInvestors - firstInvestors;
+    const isInv30Pos = deltaInvestors30 >= 0;
+    const inv30Sign = isInv30Pos ? '+' : '';
+    const pctChange30 = firstInvestors > 0 ? ((deltaInvestors30 / firstInvestors) * 100).toFixed(2) : '0';
+
+    // 6. Render Full Detail Slide HTML
+    detailSlide.innerHTML = `
+        <div class="slide-detail-container">
+            <div class="slide-detail-header">
+                <div class="slide-detail-header-left">
+                    <button type="button" class="btn-slide-back" onclick="returnFromSlideDetail()" title="Slayt ${previousSlideIndex}'e Geri Dön">
+                        <i class="fa-solid fa-arrow-left"></i>
+                        <span>← Slayt ${previousSlideIndex}'e Geri Dön</span>
+                    </button>
+                    <div class="slide-detail-fund-title-box">
+                        <div class="slide-detail-code-row">
+                            <span class="slide-detail-code-badge">${fCode}</span>
+                            <span class="slide-detail-cat-pill" style="color: ${reg.color}; border-color: ${reg.color}40; background: ${reg.color}15;">
+                                <span class="slide-cat-dot" style="background: ${reg.color}; box-shadow: 0 0 8px ${reg.color};"></span>
+                                ${reg.name || reg.shortName}
+                            </span>
+                        </div>
+                        <div class="slide-detail-fund-name" title="${fundName}">${fundName}</div>
+                    </div>
+                </div>
+                <div class="slide-date-pill">
+                    <span class="slide-live-dot"></span>
+                    <span>${slideReportDatasetCache?.date || 'Canlı'} • FON DERİNLİK ANALİZİ</span>
+                </div>
+            </div>
+
+            <div class="slide-detail-metrics-grid">
+                <div class="slide-detail-metric-card">
+                    <div class="slide-detail-m-lbl"><i class="fa-solid fa-tag" style="color: #38BDF8;"></i> Son Pay Fiyatı</div>
+                    <div class="slide-detail-m-val">${priceStr}</div>
+                    <div class="slide-detail-m-sub">TEFAS Kapanış Değeri</div>
+                </div>
+                <div class="slide-detail-metric-card">
+                    <div class="slide-detail-m-lbl"><i class="fa-solid fa-chart-line" style="color: ${retColor};"></i> Günlük Getiri</div>
+                    <div class="slide-detail-m-val" style="color: ${retColor};">
+                        <i class="fa-solid ${retIcon}"></i> ${retSign}%${Math.abs(retVal).toFixed(2)}
+                    </div>
+                    <div class="slide-detail-m-sub">Günlük Değişim Oranı</div>
+                </div>
+                <div class="slide-detail-metric-card">
+                    <div class="slide-detail-m-lbl"><i class="fa-solid fa-vault" style="color: #F59E0B;"></i> Fon Büyüklüğü</div>
+                    <div class="slide-detail-m-val">${aumStr}</div>
+                    <div class="slide-detail-m-sub">Toplam Portföy (AUM)</div>
+                </div>
+                <div class="slide-detail-metric-card">
+                    <div class="slide-detail-m-lbl"><i class="fa-solid fa-money-bill-transfer" style="color: ${cashColor};"></i> Günlük Para Akışı</div>
+                    <div class="slide-detail-m-val" style="color: ${cashColor};">
+                        ${cashStr}
+                    </div>
+                    <div class="slide-detail-m-sub">Net Sermaye Hareketi</div>
+                </div>
+                <div class="slide-detail-metric-card">
+                    <div class="slide-detail-m-lbl"><i class="fa-solid fa-users" style="color: #C084FC;"></i> Günlük Yatırımcı</div>
+                    <div class="slide-detail-m-val" style="color: ${invColor};">
+                        ${deltaInvStr}
+                    </div>
+                    <div class="slide-detail-m-sub">Toplam: <strong>${totalInvestorsStr}</strong></div>
+                </div>
+            </div>
+
+            <div class="slide-detail-body-grid">
+                <div class="slide-detail-panel">
+                    <div class="slide-detail-panel-hdr">
+                        <div class="slide-detail-panel-title">
+                            <span class="slide-detail-panel-icon cyan"><i class="fa-solid fa-chart-pie"></i></span>
+                            <div>
+                                <div class="slide-detail-panel-main">Portföy Varlık Dağılımı</div>
+                                <div class="slide-detail-panel-desc">Fon portföy kompozisyonu & varlık ağırlıkları</div>
+                            </div>
+                        </div>
+                        <span class="slide-detail-alloc-badge">${allocDateStr}</span>
+                    </div>
+
+                    <div class="slide-alloc-ribbon" title="Varlık Dağılımı Dağılım Şeridi">
+                        ${allocRibbonSegmentsHTML}
+                    </div>
+
+                    <div class="slide-alloc-chips-list">
+                        ${allocChipsHTML}
+                    </div>
+                </div>
+
+                <div class="slide-detail-panel">
+                    <div class="slide-detail-panel-hdr">
+                        <div class="slide-detail-panel-title">
+                            <span class="slide-detail-panel-icon purple"><i class="fa-solid fa-users-line"></i></span>
+                            <div>
+                                <div class="slide-detail-panel-main">30 Günlük Yatırımcı Sayısı Grafiği</div>
+                                <div class="slide-detail-panel-desc">Katılımcı sayısı trendi & yatırımcı iştahı</div>
+                            </div>
+                        </div>
+                        <div class="slide-investor-stats-pill ${isInv30Pos ? 'pos' : 'neg'}">
+                            <span>30 Gün: <strong>${inv30Sign}${deltaInvestors30.toLocaleString('tr-TR')} Kişi (%${pctChange30})</strong></span>
+                        </div>
+                    </div>
+
+                    <div class="slide-investor-chart-box">
+                        <canvas id="slideFundInvestorChart"></canvas>
+                    </div>
+
+                    <div class="slide-investor-footer-bar">
+                        <div class="slide-investor-mini-stat">
+                            <span class="lbl">Mevcut Yatırımcı:</span>
+                            <span class="val">${currentInvestors.toLocaleString('tr-TR')} Kişi</span>
+                        </div>
+                        <div class="slide-investor-mini-stat">
+                            <span class="lbl">30 Gün Önce:</span>
+                            <span class="val">${firstInvestors.toLocaleString('tr-TR')} Kişi</span>
+                        </div>
+                        <div class="slide-investor-mini-stat">
+                            <span class="lbl">Kişi Başı Hız:</span>
+                            <span class="val" style="color: #38BDF8;">${perPersonStr}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+
+    // 7. Instantiate Chart.js for 30-Day Investor Count
+    if (slideInvestorChartInstance) {
+        try { slideInvestorChartInstance.destroy(); } catch(e) {}
+        slideInvestorChartInstance = null;
+    }
+
+    const canvas = document.getElementById("slideFundInvestorChart");
+    if (canvas && historyData.length > 0) {
+        const ctx = canvas.getContext("2d");
+        const labels = historyData.map(d => {
+            const rawT = d.tarih || '';
+            if (rawT.includes('-')) {
+                const p = rawT.split('-');
+                return p.length === 3 ? `${p[2]}.${p[1]}` : rawT;
+            } else if (rawT.includes('.')) {
+                const p = rawT.split('.');
+                return p.length === 3 ? `${p[0]}.${p[1]}` : rawT;
+            }
+            return rawT;
+        });
+        const investorPoints = historyData.map(d => parseInt(d.kisiSayisi) || 0);
+
+        const gradient = ctx.createLinearGradient(0, 0, 0, 200);
+        gradient.addColorStop(0, "rgba(56, 189, 248, 0.35)");
+        gradient.addColorStop(1, "rgba(56, 189, 248, 0.0)");
+
+        slideInvestorChartInstance = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels,
+                datasets: [{
+                    label: 'Yatırımcı Sayısı',
+                    data: investorPoints,
+                    borderColor: '#38BDF8',
+                    backgroundColor: gradient,
+                    borderWidth: 2.5,
+                    fill: true,
+                    tension: 0.35,
+                    pointRadius: 0,
+                    pointHoverRadius: 6,
+                    pointHoverBackgroundColor: '#38BDF8',
+                    pointHoverBorderColor: '#FFFFFF',
+                    pointHoverBorderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: {
+                    mode: 'index',
+                    intersect: false
+                },
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: 'rgba(9, 14, 28, 0.95)',
+                        borderColor: 'rgba(56, 189, 248, 0.4)',
+                        borderWidth: 1,
+                        titleColor: '#F8FAFC',
+                        titleFont: { family: 'Outfit', size: 12, weight: '700' },
+                        bodyColor: '#38BDF8',
+                        bodyFont: { family: 'Outfit', size: 13, weight: '800' },
+                        padding: 10,
+                        displayColors: false,
+                        callbacks: {
+                            title: (items) => `Tarih: ${items[0].label}`,
+                            label: (item) => `Yatırımcı: ${Number(item.raw).toLocaleString('tr-TR')} Kişi`
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.04)',
+                            drawBorder: false
+                        },
+                        ticks: {
+                            color: '#64748B',
+                            font: { family: 'Outfit', size: 10 },
+                            maxTicksLimit: 7
+                        }
+                    },
+                    y: {
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.05)',
+                            drawBorder: false
+                        },
+                        ticks: {
+                            color: '#64748B',
+                            font: { family: 'Outfit', size: 10 },
+                            callback: (val) => Number(val).toLocaleString('tr-TR')
+                        }
+                    }
+                }
+            }
+        });
+    }
 }
 
 function toggleSlideFullscreen() {
@@ -11355,6 +11802,14 @@ function printSlideReport() {
 window.addEventListener("keydown", (e) => {
     if (!isSlideReportModalOpen) return;
 
+    if (isSlideDetailActive) {
+        if (e.key === "Escape" || e.key === "Backspace" || e.key === "ArrowLeft") {
+            e.preventDefault();
+            returnFromSlideDetail();
+            return;
+        }
+    }
+
     if (e.key === "ArrowLeft" || e.key === "PageUp") {
         e.preventDefault();
         navigateSlide(-1);
@@ -11362,6 +11817,9 @@ window.addEventListener("keydown", (e) => {
         e.preventDefault();
         navigateSlide(1);
     } else if (e.key === "Escape") {
+        if (document.fullscreenElement || document.webkitFullscreenElement) {
+            return;
+        }
         e.preventDefault();
         closeFundSlideReportModal();
     }
@@ -11499,11 +11957,14 @@ window.openFundSlideReportModal = openFundSlideReportModal;
 window.closeFundSlideReportModal = closeFundSlideReportModal;
 window.goToSlide = goToSlide;
 window.navigateSlide = navigateSlide;
+window.openSlideFundDetail = openSlideFundDetail;
+window.returnFromSlideDetail = returnFromSlideDetail;
 window.toggleSlideFullscreen = toggleSlideFullscreen;
 window.printSlideReport = printSlideReport;
 window.exportToPDF = exportToPDF;
 window.exportToPowerPoint = exportToPowerPoint;
 window.buildSlideReportDataset = buildSlideReportDataset;
 window.renderInteractiveSlides = renderInteractiveSlides;
+
 
 
