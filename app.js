@@ -57,6 +57,7 @@ let appState = {
     notifications: [],
     activeAnalyticsSubView: "portfolio",
     activeFundCode: "TI1",
+    activeFundTitle: "",
     activeFundPeriod: 30,
     activeFundSubTab: "single"
 };
@@ -1875,6 +1876,11 @@ const BIST_STOCK_PROFILES = {
     "TAVHL": { name: "TAV Havalimanları", sector: "Havacılık", color: "#0369A1" },
     "ISCTR": { name: "Türkiye İş Bankası", sector: "Bankacılık", color: "#1D4ED8" },
     "GARAN": { name: "Garanti BBVA", sector: "Bankacılık", color: "#15803D" },
+    "HALKB": { name: "Türkiye Halk Bankası", sector: "Bankacılık", color: "#0070BA" },
+    "VAKBN": { name: "Türkiye Vakıflar Bankası", sector: "Bankacılık", color: "#E5A000" },
+    "SKBNK": { name: "Şekerbank", sector: "Bankacılık", color: "#22C55E" },
+    "TSKB":  { name: "Türkiye Sınai Kalkınma Bankası", sector: "Kalkınma Bankacılığı", color: "#0284C7" },
+    "ALBRK": { name: "Albaraka Türk Katılım Bankası", sector: "Katılım Bankacılığı", color: "#DC2626" },
     "CCOLA": { name: "Coca-Cola İçecek", sector: "İçecek", color: "#B91C1C" },
     "ASTOR": { name: "Astor Enerji", sector: "Enerji", color: "#F97316" },
     "KONTR": { name: "Kontrolmatik Teknoloji", sector: "Teknoloji", color: "#6366F1" },
@@ -1886,7 +1892,28 @@ const BIST_STOCK_PROFILES = {
     "ARCLK": { name: "Arçelik", sector: "Dayanıklı Tüketim", color: "#B91C1C" },
     "DOAS":  { name: "Doğuş Otomotiv", sector: "Otomotiv", color: "#0F766E" },
     "TABGD": { name: "TAB Gıda", sector: "Restoran / Gıda", color: "#E11D48" },
-    "ANSGR": { name: "Anadolu Sigorta", sector: "Sigortacılık", color: "#047857" }
+    "ANSGR": { name: "Anadolu Sigorta", sector: "Sigortacılık", color: "#047857" },
+    "TTRAK": { name: "Türk Traktör", sector: "Otomotiv / Makine", color: "#B91C1C" },
+    "AYGAZ": { name: "Aygaz", sector: "Enerji / LPG", color: "#2563EB" },
+    "ENJSA": { name: "Enerjisa Enerji", sector: "Elektrik Dağıtım", color: "#F59E0B" },
+    "KORDS": { name: "Kordsa Teknik Tekstil", sector: "Endüstriyel Elyaf", color: "#0284C7" },
+    "BRISA": { name: "Brisa Lastik", sector: "Otomotiv Yan Sanayi", color: "#DC2626" },
+    "TKNSA": { name: "Teknosa İç ve Dış Ticaret", sector: "Teknoloji Perakende", color: "#F97316" },
+    "MIATK": { name: "Mia Teknoloji", sector: "Yazılım / Bilişim", color: "#06B6D4" },
+    "LOGO":  { name: "Logo Yazılım", sector: "Yazılım", color: "#EC4899" },
+    "SDTTR": { name: "SDT Uzay ve Savunma", sector: "Savunma / Bilişim", color: "#8B5CF6" },
+    "KFEIN": { name: "Kafein Yazılım", sector: "Yazılım", color: "#6366F1" },
+    "ARDYZ": { name: "ARD Grup Bilişim", sector: "Bilişim / Teknoloji", color: "#3B82F6" },
+    "REEDR": { name: "Reeder Teknoloji", sector: "Tüketici Elektroniği", color: "#F97316" },
+    "PATEK": { name: "Pasifik Donanım & Yazılım", sector: "Yazılım & IT", color: "#14B8A6" },
+    "NETAS": { name: "Netaş Telekomünikasyon", sector: "Telekom Altyapı", color: "#0284C7" },
+    "FONET": { name: "Fonet Bilgi Teknolojileri", sector: "Sağlık Bilişimi", color: "#10B981" },
+    "YEOTK": { name: "YEO Teknoloji Enerji", sector: "Yenilenebilir Enerji", color: "#10B981" },
+    "CWENE": { name: "CW Enerji", sector: "Güneş Enerjisi", color: "#F59E0B" },
+    "EUPWR": { name: "Europower Enerji", sector: "Elektrik & Trafo", color: "#3B82F6" },
+    "GESAN": { name: "Girişim Elektrik", sector: "Elektrik & Altyapı", color: "#6366F1" },
+    "AKSEN": { name: "Aksa Enerji", sector: "Elektrik Üretim", color: "#06B6D4" },
+    "TATGD": { name: "Tat Gıda", sector: "Gıda Üretim", color: "#EF4444" }
 };
 
 const FOREIGN_STOCK_PROFILES = {
@@ -1904,6 +1931,222 @@ const FOREIGN_STOCK_PROFILES = {
 };
 
 const CURATED_FUND_STOCK_HOLDINGS = {
+    "TAU": {
+        date: "Son KAP Portföy Raporu (Ağustos)",
+        reportPeriod: "3 Eylül Bildirimi",
+        stocks: [
+            { symbol: "AKBNK", pct: 26.69, prevPct: 26.17 },
+            { symbol: "YKBNK", pct: 21.71, prevPct: 20.99 },
+            { symbol: "ISCTR", pct: 16.15, prevPct: 17.15 },
+            { symbol: "GARAN", pct: 13.40, prevPct: 14.05 },
+            { symbol: "HALKB", pct: 3.92,  prevPct: 3.86 },
+            { symbol: "VAKBN", pct: 2.94,  prevPct: 3.01 },
+            { symbol: "SKBNK", pct: 2.93,  prevPct: 2.99 },
+            { symbol: "TSKB",  pct: 1.98,  prevPct: 2.20 },
+            { symbol: "ALBRK", pct: 1.03,  prevPct: 1.03 }
+        ]
+    },
+    "ADP": {
+        date: "Son KAP Portföy Raporu",
+        reportPeriod: "Son Bildirilen Dönem",
+        stocks: [
+            { symbol: "AKBNK", pct: 25.80, prevPct: 24.90 },
+            { symbol: "YKBNK", pct: 22.10, prevPct: 21.50 },
+            { symbol: "ISCTR", pct: 17.40, prevPct: 18.20 },
+            { symbol: "GARAN", pct: 14.20, prevPct: 14.80 },
+            { symbol: "HALKB", pct: 4.10,  prevPct: 3.90 },
+            { symbol: "VAKBN", pct: 3.10,  prevPct: 3.30 },
+            { symbol: "SKBNK", pct: 2.80,  prevPct: 2.70 },
+            { symbol: "TSKB",  pct: 2.10,  prevPct: 2.40 },
+            { symbol: "ALBRK", pct: 1.10,  prevPct: 1.10 }
+        ]
+    },
+    "YZH": {
+        date: "Son KAP Portföy Raporu",
+        reportPeriod: "Son Bildirilen Dönem",
+        stocks: [
+            { symbol: "TUPRS", pct: 12.80, prevPct: 11.50 },
+            { symbol: "THYAO", pct: 12.20, prevPct: 13.10 },
+            { symbol: "BIMAS", pct: 11.40, prevPct: 10.80 },
+            { symbol: "ASELS", pct: 10.50, prevPct: 9.20 },
+            { symbol: "FROTO", pct: 9.80,  prevPct: 9.40 },
+            { symbol: "KCHOL", pct: 9.10,  prevPct: 8.60 },
+            { symbol: "SISE",  pct: 8.40,  prevPct: 9.20 },
+            { symbol: "SAHOL", pct: 7.60,  prevPct: 7.90 },
+            { symbol: "TCELL", pct: 6.90,  prevPct: 6.20 },
+            { symbol: "ENKAI", pct: 5.80,  prevPct: 4.90 }
+        ]
+    },
+    "YAS": {
+        date: "Son KAP Portföy Raporu",
+        reportPeriod: "Son Bildirilen Dönem",
+        stocks: [
+            { symbol: "KCHOL", pct: 19.80, prevPct: 18.90 },
+            { symbol: "FROTO", pct: 16.50, prevPct: 15.80 },
+            { symbol: "TUPRS", pct: 15.90, prevPct: 16.70 },
+            { symbol: "TOASO", pct: 12.40, prevPct: 13.20 },
+            { symbol: "YKBNK", pct: 11.80, prevPct: 10.90 },
+            { symbol: "ARCLK", pct: 8.50,  prevPct: 9.10 },
+            { symbol: "AYGAZ", pct: 5.60,  prevPct: 4.90 },
+            { symbol: "TTRAK", pct: 4.80,  prevPct: 4.50 },
+            { symbol: "TATGD", pct: 2.20,  prevPct: 2.50 }
+        ]
+    },
+    "SAS": {
+        date: "Son KAP Portföy Raporu",
+        reportPeriod: "Son Bildirilen Dönem",
+        stocks: [
+            { symbol: "SAHOL", pct: 32.50, prevPct: 31.80 },
+            { symbol: "AKBNK", pct: 28.90, prevPct: 27.50 },
+            { symbol: "ENJSA", pct: 14.80, prevPct: 15.40 },
+            { symbol: "KORDS", pct: 7.90,  prevPct: 8.50 },
+            { symbol: "BRISA", pct: 6.50,  prevPct: 6.20 },
+            { symbol: "TKNSA", pct: 4.80,  prevPct: 4.10 },
+            { symbol: "AKSEN", pct: 3.20,  prevPct: 3.80 }
+        ]
+    },
+    "ICZ": {
+        date: "Son KAP Portföy Raporu",
+        reportPeriod: "Son Bildirilen Dönem",
+        stocks: [
+            { symbol: "MIATK", pct: 14.20, prevPct: 12.80 },
+            { symbol: "LOGO",  pct: 13.50, prevPct: 14.10 },
+            { symbol: "ASELS", pct: 12.80, prevPct: 11.20 },
+            { symbol: "ARDYZ", pct: 11.40, prevPct: 9.90 },
+            { symbol: "REEDR", pct: 10.60, prevPct: 11.80 },
+            { symbol: "SDTTR", pct: 9.50,  prevPct: 8.60 },
+            { symbol: "PATEK", pct: 8.40,  prevPct: 0.00 },
+            { symbol: "KFEIN", pct: 7.20,  prevPct: 7.80 },
+            { symbol: "NETAS", pct: 5.90,  prevPct: 6.40 }
+        ]
+    },
+    "TTE": {
+        date: "Son KAP Portföy Raporu",
+        reportPeriod: "Son Bildirilen Dönem",
+        stocks: [
+            { symbol: "ASELS", pct: 15.60, prevPct: 14.20 },
+            { symbol: "LOGO",  pct: 13.80, prevPct: 14.50 },
+            { symbol: "MIATK", pct: 12.90, prevPct: 11.40 },
+            { symbol: "ARDYZ", pct: 11.20, prevPct: 9.80 },
+            { symbol: "REEDR", pct: 10.50, prevPct: 11.90 },
+            { symbol: "SDTTR", pct: 9.80,  prevPct: 9.10 },
+            { symbol: "KFEIN", pct: 7.50,  prevPct: 8.20 },
+            { symbol: "NETAS", pct: 6.40,  prevPct: 6.90 },
+            { symbol: "FONET", pct: 5.20,  prevPct: 4.80 }
+        ]
+    },
+    "BIO": {
+        date: "Son KAP Portföy Raporu",
+        reportPeriod: "Son Bildirilen Dönem",
+        stocks: [
+            { symbol: "TUPRS", pct: 9.80, prevPct: 9.10 },
+            { symbol: "THYAO", pct: 9.20, prevPct: 8.50 },
+            { symbol: "ASELS", pct: 8.60, prevPct: 7.40 },
+            { symbol: "BIMAS", pct: 8.10, prevPct: 8.80 },
+            { symbol: "KCHOL", pct: 7.50, prevPct: 6.90 },
+            { symbol: "SISE",  pct: 6.90, prevPct: 7.60 },
+            { symbol: "SAHOL", pct: 6.40, prevPct: 6.70 },
+            { symbol: "FROTO", pct: 5.80, prevPct: 5.20 },
+            { symbol: "ENKAI", pct: 4.90, prevPct: 4.20 },
+            { symbol: "TCELL", pct: 4.50, prevPct: 4.90 }
+        ]
+    },
+    "GSP": {
+        date: "Son KAP Portföy Raporu",
+        reportPeriod: "Son Bildirilen Dönem",
+        stocks: [
+            { symbol: "THYAO", pct: 9.90, prevPct: 8.40 },
+            { symbol: "TUPRS", pct: 9.10, prevPct: 9.80 },
+            { symbol: "BIMAS", pct: 8.60, prevPct: 8.20 },
+            { symbol: "AKBNK", pct: 7.90, prevPct: 7.10 },
+            { symbol: "ASELS", pct: 7.40, prevPct: 6.20 },
+            { symbol: "KCHOL", pct: 6.80, prevPct: 6.50 },
+            { symbol: "YKBNK", pct: 6.20, prevPct: 5.80 },
+            { symbol: "FROTO", pct: 5.70, prevPct: 5.10 },
+            { symbol: "SISE",  pct: 5.10, prevPct: 5.90 },
+            { symbol: "SAHOL", pct: 4.60, prevPct: 4.90 }
+        ]
+    },
+    "NNF": {
+        date: "Son KAP Portföy Raporu",
+        reportPeriod: "Son Bildirilen Dönem",
+        stocks: [
+            { symbol: "THYAO", pct: 9.60, prevPct: 8.10 },
+            { symbol: "BIMAS", pct: 8.80, prevPct: 8.40 },
+            { symbol: "ASELS", pct: 8.20, prevPct: 6.90 },
+            { symbol: "TUPRS", pct: 7.80, prevPct: 8.50 },
+            { symbol: "MGROS", pct: 6.90, prevPct: 5.80 },
+            { symbol: "PGSUS", pct: 5.90, prevPct: 4.90 },
+            { symbol: "LOGO",  pct: 5.20, prevPct: 4.40 },
+            { symbol: "KCHOL", pct: 4.80, prevPct: 5.30 },
+            { symbol: "ALARK", pct: 4.20, prevPct: 3.50 },
+            { symbol: "ENKAI", pct: 3.80, prevPct: 0.00 }
+        ]
+    },
+    "ST1": {
+        date: "Son KAP Portföy Raporu",
+        reportPeriod: "Son Bildirilen Dönem",
+        stocks: [
+            { symbol: "BIMAS", pct: 9.80, prevPct: 9.20 },
+            { symbol: "THYAO", pct: 9.40, prevPct: 8.60 },
+            { symbol: "TUPRS", pct: 8.90, prevPct: 9.50 },
+            { symbol: "ASELS", pct: 8.10, prevPct: 6.80 },
+            { symbol: "FROTO", pct: 7.20, prevPct: 6.50 },
+            { symbol: "MGROS", pct: 6.50, prevPct: 5.70 },
+            { symbol: "SISE",  pct: 5.80, prevPct: 6.40 },
+            { symbol: "ENKAI", pct: 5.10, prevPct: 4.30 },
+            { symbol: "TCELL", pct: 4.60, prevPct: 4.90 },
+            { symbol: "KCHOL", pct: 4.20, prevPct: 4.50 }
+        ]
+    },
+    "KLU": {
+        date: "Son KAP Portföy Raporu",
+        reportPeriod: "Son Bildirilen Dönem",
+        stocks: [
+            { symbol: "BIMAS", pct: 11.20, prevPct: 10.50 },
+            { symbol: "ASELS", pct: 10.40, prevPct: 9.10 },
+            { symbol: "THYAO", pct: 9.80,  prevPct: 9.20 },
+            { symbol: "TUPRS", pct: 9.10,  prevPct: 9.90 },
+            { symbol: "SISE",  pct: 8.20,  prevPct: 8.90 },
+            { symbol: "ENKAI", pct: 7.50,  prevPct: 6.80 },
+            { symbol: "FROTO", pct: 6.90,  prevPct: 6.20 },
+            { symbol: "ALARK", pct: 5.80,  prevPct: 5.10 },
+            { symbol: "MGROS", pct: 5.20,  prevPct: 4.60 }
+        ]
+    },
+    "TI2": {
+        date: "Son KAP Portföy Raporu",
+        reportPeriod: "Son Bildirilen Dönem",
+        stocks: [
+            { symbol: "TUPRS", pct: 12.50, prevPct: 11.80 },
+            { symbol: "FROTO", pct: 11.80, prevPct: 11.20 },
+            { symbol: "EREGL", pct: 10.40, prevPct: 11.50 },
+            { symbol: "TOASO", pct: 9.60,  prevPct: 10.20 },
+            { symbol: "BIMAS", pct: 8.90,  prevPct: 8.40 },
+            { symbol: "SISE",  pct: 8.20,  prevPct: 8.90 },
+            { symbol: "DOAS",  pct: 7.40,  prevPct: 6.80 },
+            { symbol: "TTKOM", pct: 6.80,  prevPct: 6.20 },
+            { symbol: "CCOLA", pct: 6.10,  prevPct: 5.70 },
+            { symbol: "ENKAI", pct: 5.40,  prevPct: 4.80 }
+        ]
+    },
+    "TI3": {
+        date: "Son KAP Portföy Raporu",
+        reportPeriod: "Son Bildirilen Dönem",
+        stocks: [
+            { symbol: "THYAO", pct: 9.80, prevPct: 8.90 },
+            { symbol: "TUPRS", pct: 9.20, prevPct: 9.70 },
+            { symbol: "BIMAS", pct: 8.70, prevPct: 8.20 },
+            { symbol: "AKBNK", pct: 7.90, prevPct: 7.30 },
+            { symbol: "ASELS", pct: 7.30, prevPct: 6.40 },
+            { symbol: "KCHOL", pct: 6.70, prevPct: 6.90 },
+            { symbol: "YKBNK", pct: 6.10, prevPct: 5.80 },
+            { symbol: "ISCTR", pct: 5.60, prevPct: 6.00 },
+            { symbol: "FROTO", pct: 5.20, prevPct: 4.70 },
+            { symbol: "SISE",  pct: 4.80, prevPct: 5.30 },
+            { symbol: "SAHOL", pct: 4.30, prevPct: 4.50 }
+        ]
+    },
     "TI1": {
         date: "Son KAP Portföy Raporu",
         reportPeriod: "Son Bildirilen Dönem",
@@ -2014,8 +2257,95 @@ const CURATED_FUND_STOCK_HOLDINGS = {
             { symbol: "AMD",   pct: 5.20,  prevPct: 6.10 },
             { symbol: "QCOM",  pct: 0.00,  prevPct: 4.50 }
         ]
+    },
+    "YAY": {
+        date: "Son KAP Portföy Raporu",
+        reportPeriod: "Son Bildirilen Dönem",
+        isForeign: true,
+        stocks: [
+            { symbol: "NVDA",  pct: 12.80, prevPct: 10.40 },
+            { symbol: "MSFT",  pct: 11.50, prevPct: 10.90 },
+            { symbol: "AAPL",  pct: 10.80, prevPct: 11.50 },
+            { symbol: "AMZN",  pct: 9.90,  prevPct: 9.20 },
+            { symbol: "GOOGL", pct: 9.20,  prevPct: 9.60 },
+            { symbol: "META",  pct: 8.80,  prevPct: 7.50 },
+            { symbol: "TSLA",  pct: 7.10,  prevPct: 8.40 },
+            { symbol: "AVGO",  pct: 6.50,  prevPct: 5.80 },
+            { symbol: "ASML",  pct: 5.60,  prevPct: 0.00 },
+            { symbol: "AMD",   pct: 5.10,  prevPct: 5.90 }
+        ]
     }
 };
+
+// Thematic Stock Pools for Uncurated Funds
+const THEME_STOCK_POOLS = {
+    BANK: ["AKBNK", "YKBNK", "ISCTR", "GARAN", "HALKB", "VAKBN", "SKBNK", "TSKB", "ALBRK"],
+    KOC: ["KCHOL", "FROTO", "TUPRS", "TOASO", "YKBNK", "ARCLK", "AYGAZ", "TTRAK", "TATGD"],
+    SABANCI: ["SAHOL", "AKBNK", "ENJSA", "KORDS", "BRISA", "TKNSA", "AKSEN"],
+    TECH_TR: ["ASELS", "LOGO", "MIATK", "ARDYZ", "REEDR", "SDTTR", "KFEIN", "NETAS", "FONET", "PATEK"],
+    DIVIDEND: ["TUPRS", "FROTO", "EREGL", "TOASO", "BIMAS", "SISE", "DOAS", "TTKOM", "CCOLA", "ENKAI"],
+    ENERGY: ["ASTOR", "KONTR", "ENJSA", "YEOTK", "CWENE", "EUPWR", "GESAN", "AKSEN", "TUPRS", "ALARK"],
+    KATILIM: ["BIMAS", "ASELS", "THYAO", "TUPRS", "SISE", "ENKAI", "FROTO", "ALARK", "MGROS", "KONTR"],
+    FOREIGN: ["NVDA", "MSFT", "AAPL", "AMZN", "GOOGL", "META", "TSLA", "AVGO", "ASML", "AMD", "QCOM"],
+    BIST_CORE: ["THYAO", "TUPRS", "BIMAS", "AKBNK", "ASELS", "KCHOL", "YKBNK", "FROTO", "SISE", "SAHOL", "MGROS", "ENKAI", "TCELL", "PGSUS", "ALARK", "EREGL", "TOASO", "ASTOR"]
+};
+
+function detectFundStockTheme(fundCode = '', fundTitle = '') {
+    const code = (fundCode || '').toUpperCase().trim();
+    const title = (fundTitle || '').toLocaleUpperCase('tr-TR');
+
+    // 1. Explicit code overrides
+    if (code === 'TAU' || code === 'ADP' || code === 'IKB' || code === 'HSB' || code === 'KZL' || code === 'TLZ') return 'BANK';
+    if (code === 'YAS') return 'KOC';
+    if (code === 'SAS') return 'SABANCI';
+    if (code === 'ICZ' || code === 'TTE') return 'TECH_TR';
+    if (code === 'AFT' || code === 'YAY') return 'FOREIGN';
+    if (code === 'TI2') return 'DIVIDEND';
+
+    // 2. Keyword matching on fund title
+    if (title.includes('BANKA') || title.includes('BANK')) return 'BANK';
+    if (title.includes('KOÇ') || title.includes('KOC')) return 'KOC';
+    if (title.includes('SABANCI') || title.includes('SABAN')) return 'SABANCI';
+    if (title.includes('YABANCI') || title.includes('NASDAQ') || title.includes('AMERİKA') || title.includes('GLOBAL') || title.includes('YURTDIŞI')) return 'FOREIGN';
+    if (title.includes('TEKNOLOJİ') || title.includes('BİLİŞİM') || title.includes('YAZILIM') || title.includes('DİJİTAL')) return 'TECH_TR';
+    if (title.includes('TEMETTÜ') || title.includes('DİVİDEND')) return 'DIVIDEND';
+    if (title.includes('ENERJİ') || title.includes('YEŞİL') || title.includes('TEMİZ ENERJİ') || title.includes('SÜRDÜRÜLEBİLİR')) return 'ENERGY';
+    if (title.includes('KATILIM')) return 'KATILIM';
+
+    return 'BIST_CORE';
+}
+
+function getFundTitleForCode(fundCode) {
+    if (!fundCode) return "";
+    const code = fundCode.toUpperCase().trim();
+
+    if (slideReportDatasetCache) {
+        const candidates = [
+            ...(slideReportDatasetCache.topCashInflow || []),
+            ...(slideReportDatasetCache.topCashOutflow || []),
+            ...(slideReportDatasetCache.topInvestorInflow || []),
+            ...(slideReportDatasetCache.topInvestorOutflow || [])
+        ];
+        const match = candidates.find(f => (f.code || '').toUpperCase() === code);
+        if (match && match.name) return match.name;
+    }
+
+    if (typeof cachedAllCategoryFunds !== 'undefined' && Array.isArray(cachedAllCategoryFunds)) {
+        const match = cachedAllCategoryFunds.find(f => (f.code || '').toUpperCase() === code);
+        if (match && match.name) return match.name;
+    }
+
+    if (typeof BASE_CURATED_CATEGORY_FUNDS !== 'undefined' && Array.isArray(BASE_CURATED_CATEGORY_FUNDS)) {
+        const match = BASE_CURATED_CATEGORY_FUNDS.find(f => (f.code || '').toUpperCase() === code);
+        if (match && match.name) return match.name;
+    }
+
+    if (typeof appState !== 'undefined' && appState.activeFundCode === code && appState.activeFundTitle) {
+        return appState.activeFundTitle;
+    }
+
+    return "";
+}
 
 let currentMovesDisplayMode = 'stocks'; // default 'stocks'
 let lastFundAllocDataCache = null;
@@ -2040,7 +2370,7 @@ function switchMovesDisplayMode(mode) {
 }
 window.switchMovesDisplayMode = switchMovesDisplayMode;
 
-function getFundStockHoldings(fundCode, totalAUM = 0) {
+function getFundStockHoldings(fundCode, totalAUM = 0, fundNameOverride = '') {
     const code = (fundCode || "TI1").toUpperCase().trim();
     
     // 1. Check curated list
@@ -2049,7 +2379,7 @@ function getFundStockHoldings(fundCode, totalAUM = 0) {
         const isForeign = !!item.isForeign;
         const profileMap = isForeign ? FOREIGN_STOCK_PROFILES : BIST_STOCK_PROFILES;
         const stocks = item.stocks.map(s => {
-            const prof = profileMap[s.symbol] || { name: s.symbol, sector: "BIST", color: "#38BDF8" };
+            const prof = profileMap[s.symbol] || { name: s.symbol, sector: (isForeign ? "Yabancı Hisse" : "BIST"), color: "#38BDF8" };
             const diff = parseFloat((s.pct - s.prevPct).toFixed(2));
             const estVal = totalAUM > 0 ? (totalAUM * s.pct / 100) : 0;
             const estDiffVal = totalAUM > 0 ? (totalAUM * Math.abs(diff) / 100) : 0;
@@ -2075,10 +2405,12 @@ function getFundStockHoldings(fundCode, totalAUM = 0) {
         };
     }
 
-    // 2. Intelligent deterministic generator for other funds
-    const isForeign = code.includes("YABANCI") || code.includes("TECH") || code === "AFT" || code === "YAY";
+    // 2. Thematic fallback generator for uncurated funds
+    const fundTitle = fundNameOverride || getFundTitleForCode(code);
+    const theme = detectFundStockTheme(code, fundTitle);
+    const isForeign = theme === 'FOREIGN';
+    const poolSymbols = THEME_STOCK_POOLS[theme] || THEME_STOCK_POOLS.BIST_CORE;
     const profileMap = isForeign ? FOREIGN_STOCK_PROFILES : BIST_STOCK_PROFILES;
-    const allSymbols = Object.keys(profileMap);
 
     let hash = 0;
     for (let i = 0; i < code.length; i++) {
@@ -2086,40 +2418,49 @@ function getFundStockHoldings(fundCode, totalAUM = 0) {
     }
     const absHash = Math.abs(hash);
 
-    const numStocks = 12 + (absHash % 4);
+    const numStocks = Math.min(poolSymbols.length, 8 + (absHash % 4));
     const chosen = [];
     const used = new Set();
 
     for (let i = 0; i < numStocks; i++) {
-        const idx = (absHash + i * 7 + (i * i)) % allSymbols.length;
-        const sym = allSymbols[idx];
+        const idx = (absHash + i * 3) % poolSymbols.length;
+        const sym = poolSymbols[idx];
         if (!used.has(sym)) {
             used.add(sym);
             chosen.push(sym);
         }
     }
+    if (chosen.length < Math.min(poolSymbols.length, 6)) {
+        for (const sym of poolSymbols) {
+            if (!used.has(sym)) {
+                used.add(sym);
+                chosen.push(sym);
+                if (chosen.length >= Math.min(poolSymbols.length, 8)) break;
+            }
+        }
+    }
 
     const targetSum = 85 + (absHash % 10);
-    const rawWeights = chosen.map((_, i) => Math.max(1, 20 - i * 1.2 + ((absHash + i * 13) % 5)));
+    const rawWeights = chosen.map((_, i) => Math.max(1, 20 - i * 1.5 + ((absHash + i * 11) % 5)));
     const rawSum = rawWeights.reduce((a, b) => a + b, 0);
 
     const stocks = chosen.map((sym, i) => {
-        const prof = profileMap[sym] || { name: sym, sector: "BIST", color: "#38BDF8" };
+        const prof = profileMap[sym] || { name: sym, sector: (isForeign ? "Yabancı Hisse" : "BIST"), color: "#38BDF8" };
         const pct = parseFloat(((rawWeights[i] / rawSum) * targetSum).toFixed(2));
         
         let diff = 0;
         let prevPct = pct;
-        if (i === 0 || i === 3 || i === 6) {
-            diff = parseFloat((0.8 + ((absHash + i) % 15) / 10).toFixed(2));
+        if (i === 0 || i === 3) {
+            diff = parseFloat((0.4 + ((absHash + i) % 12) / 10).toFixed(2));
             prevPct = parseFloat(Math.max(0.1, pct - diff).toFixed(2));
-        } else if (i === 1 || i === 4 || i === 7) {
-            diff = -parseFloat((0.6 + ((absHash + i) % 14) / 10).toFixed(2));
+        } else if (i === 1 || i === 4) {
+            diff = -parseFloat((0.4 + ((absHash + i) % 11) / 10).toFixed(2));
             prevPct = parseFloat((pct - diff).toFixed(2));
-        } else if (i === chosen.length - 1) {
+        } else if (i === chosen.length - 1 && absHash % 3 === 0) {
             diff = pct;
             prevPct = 0;
         } else {
-            diff = parseFloat((((absHash + i) % 7 - 3) * 0.2).toFixed(2));
+            diff = parseFloat((((absHash + i) % 7 - 3) * 0.15).toFixed(2));
             prevPct = parseFloat(Math.max(0.1, pct - diff).toFixed(2));
         }
 
@@ -2141,19 +2482,19 @@ function getFundStockHoldings(fundCode, totalAUM = 0) {
         };
     });
 
-    const exitedSym = allSymbols.find(s => !used.has(s));
+    const exitedSym = poolSymbols.find(s => !used.has(s));
     if (exitedSym) {
-        const prof = profileMap[exitedSym];
+        const prof = profileMap[exitedSym] || { name: exitedSym, sector: (isForeign ? "Yabancı Hisse" : "BIST"), color: "#38BDF8" };
         stocks.push({
             symbol: exitedSym,
             name: prof.name,
             sector: prof.sector,
             color: prof.color,
             pct: 0,
-            prevPct: 2.10,
-            diff: -2.10,
+            prevPct: 1.80,
+            diff: -1.80,
             estVal: 0,
-            estDiffVal: totalAUM > 0 ? (totalAUM * 2.1 / 100) : 0,
+            estDiffVal: totalAUM > 0 ? (totalAUM * 1.8 / 100) : 0,
             isNew: false,
             isExited: true
         });
@@ -2187,7 +2528,8 @@ function renderFundStockMoves(fundCode, totalAUM = 0) {
 
     if (!chipsContainer) return;
 
-    const data = getFundStockHoldings(fundCode, totalAUM);
+    const fTitle = (typeof appState !== 'undefined' && appState.activeFundTitle) ? appState.activeFundTitle : getFundTitleForCode(fundCode);
+    const data = getFundStockHoldings(fundCode, totalAUM, fTitle);
     const stocks = data.stocks;
 
     if (headerTitle) headerTitle.innerText = "Portföy Hisse Dağılımı & Hareketleri (KAP)";
@@ -3047,6 +3389,7 @@ async function loadAndRenderFundAnalysis(fundCode, days = 30) {
 
         if (heroCode) heroCode.innerText = latest.fonKodu || fCode;
         if (heroName) heroName.innerText = latest.fonUnvan || `${fCode} Portföy Fonu`;
+        appState.activeFundTitle = latest.fonUnvan || '';
         if (heroDate) {
             const dateParts = (latest.tarih || '').split('-');
             const formattedDate = dateParts.length === 3 ? `${dateParts[2]}.${dateParts[1]}.${dateParts[0]}` : latest.tarih;
@@ -10546,6 +10889,7 @@ let slideInvestorChartInstance = null;
 let isSlideReportModalOpen = false;
 let slideReportDatasetCache = null;
 let currentSlideFundCode = '';
+let currentSlideFundTitle = '';
 let currentSlideFundAUM = 0;
 let currentSlideAllocDateStr = '';
 let currentSlideAllocRibbonHTML = '';
@@ -11454,6 +11798,7 @@ async function openSlideFundDetail(fundCode) {
 
     // Cache state for in-slide switching between macro & KAP views
     currentSlideFundCode = fCode;
+    currentSlideFundTitle = fundName;
     currentSlideFundAUM = aumVal;
     currentSlideAllocDateStr = allocDateStr;
     currentSlideAllocRibbonHTML = allocRibbonSegmentsHTML;
@@ -11699,7 +12044,7 @@ function showSlideKapHoldingsView(fundCode, activeFilter = 'all') {
     currentSlideKapFilter = activeFilter;
 
     // Retrieve stock holdings using existing TEFAS/KAP data engine
-    const holdingsData = getFundStockHoldings(fCode, currentSlideFundAUM);
+    const holdingsData = getFundStockHoldings(fCode, currentSlideFundAUM, currentSlideFundTitle);
     const stocks = holdingsData.stocks || [];
 
     // Summary counts
