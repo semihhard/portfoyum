@@ -11806,9 +11806,11 @@ body.theme-neo-brutalism .sort-option.active {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 16px 24px;
+    padding: 14px 24px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-    background: rgba(15, 23, 42, 0.6);
+    background: rgba(11, 17, 32, 0.8);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
     flex-wrap: wrap;
     gap: 12px;
 }
@@ -11820,17 +11822,17 @@ body.theme-neo-brutalism .sort-option.active {
 }
 
 .slide-topbar-icon {
-    width: 40px;
-    height: 40px;
-    border-radius: 12px;
-    background: linear-gradient(135deg, rgba(168, 85, 247, 0.24) 0%, rgba(139, 92, 246, 0.12) 100%);
-    border: 1px solid rgba(168, 85, 247, 0.45);
-    color: #C084FC;
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, rgba(56, 189, 248, 0.2) 0%, rgba(99, 102, 241, 0.15) 100%);
+    border: 1px solid rgba(56, 189, 248, 0.4);
+    color: #38BDF8;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.2rem;
-    box-shadow: 0 0 14px rgba(168, 85, 247, 0.3);
+    font-size: 1.15rem;
+    box-shadow: 0 0 16px rgba(56, 189, 248, 0.25);
 }
 
 .slide-topbar-title-row {
@@ -11840,26 +11842,28 @@ body.theme-neo-brutalism .sort-option.active {
 }
 
 .slide-topbar-title {
-    font-size: 1.12rem;
+    font-size: 1.05rem;
     font-weight: 800;
     color: #FFFFFF;
     margin: 0;
     letter-spacing: -0.3px;
+    font-family: 'Space Grotesk', -apple-system, sans-serif;
 }
 
 .slide-badge-pill {
-    background: rgba(168, 85, 247, 0.16);
-    border: 1px solid rgba(168, 85, 247, 0.35);
-    color: #C084FC;
+    background: rgba(56, 189, 248, 0.14);
+    border: 1px solid rgba(56, 189, 248, 0.35);
+    color: #38BDF8;
     font-size: 0.72rem;
     font-weight: 800;
-    padding: 2px 9px;
-    border-radius: 6px;
+    padding: 2px 10px;
+    border-radius: 20px;
+    letter-spacing: 0.3px;
 }
 
 .slide-topbar-sub {
-    font-size: 0.75rem;
-    color: var(--text-secondary);
+    font-size: 0.74rem;
+    color: #94A3B8;
 }
 
 .slide-topbar-actions {
@@ -11877,39 +11881,57 @@ body.theme-neo-brutalism .sort-option.active {
     font-size: 0.78rem;
     font-weight: 700;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
     user-select: none;
+    text-decoration: none;
 }
 
 .btn-slide-action.pptx {
-    background: linear-gradient(135deg, rgba(234, 88, 12, 0.22) 0%, rgba(249, 115, 22, 0.12) 100%);
-    border: 1px solid rgba(249, 115, 22, 0.45);
-    color: #FB923C;
+    background: linear-gradient(135deg, #EA580C 0%, #C2410C 100%);
+    border: 1px solid rgba(251, 146, 60, 0.5);
+    color: #FFFFFF;
+    box-shadow: 0 4px 14px -2px rgba(234, 88, 12, 0.4);
 }
 
 .btn-slide-action.pptx:hover {
-    background: linear-gradient(135deg, rgba(234, 88, 12, 0.35) 0%, rgba(249, 115, 22, 0.22) 100%);
-    color: #FFFFFF;
-    border-color: #FB923C;
-    box-shadow: 0 0 14px rgba(249, 115, 22, 0.35);
+    background: linear-gradient(135deg, #F97316 0%, #EA580C 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px -2px rgba(234, 88, 12, 0.6);
 }
 
 .btn-slide-action.pdf {
-    background: rgba(255, 255, 255, 0.06);
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    color: #E2E8F0;
+    background: linear-gradient(135deg, #E11D48 0%, #BE123C 100%);
+    border: 1px solid rgba(251, 113, 133, 0.5);
+    color: #FFFFFF;
+    box-shadow: 0 4px 14px -2px rgba(225, 29, 72, 0.4);
 }
 
 .btn-slide-action.pdf:hover {
-    background: rgba(255, 255, 255, 0.12);
+    background: linear-gradient(135deg, #F43F5E 0%, #E11D48 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px -2px rgba(225, 29, 72, 0.6);
+}
+
+.slide-btn-badge {
+    font-size: 0.62rem;
+    font-weight: 800;
+    padding: 1px 5px;
+    border-radius: 4px;
+    background: rgba(0, 0, 0, 0.25);
     color: #FFFFFF;
+    letter-spacing: 0.4px;
 }
 
 .btn-slide-action.fullscreen {
     background: rgba(255, 255, 255, 0.06);
     border: 1px solid rgba(255, 255, 255, 0.12);
     color: #E2E8F0;
-    padding: 7px 10px;
+    padding: 7px 11px;
+}
+
+.btn-slide-action.fullscreen:hover {
+    background: rgba(255, 255, 255, 0.14);
+    color: #FFFFFF;
 }
 
 .btn-slide-close {
@@ -11942,19 +11964,24 @@ body.theme-neo-brutalism .sort-option.active {
     display: flex;
     align-items: center;
     justify-content: center;
-    background: #090E1A;
+    background: #060913;
     padding: 24px;
+    background-image: 
+        radial-gradient(circle at 10% 20%, rgba(56, 189, 248, 0.03) 0%, transparent 40%),
+        radial-gradient(circle at 90% 80%, rgba(168, 85, 247, 0.03) 0%, transparent 40%);
 }
 
 .slide-aspect-box {
     width: 100%;
     max-width: 1160px;
-    min-height: 540px;
+    min-height: 560px;
     position: relative;
-    background: linear-gradient(135deg, rgba(17, 24, 39, 0.95) 0%, rgba(13, 20, 36, 0.98) 100%);
-    border: 1px solid rgba(255, 255, 255, 0.09);
-    border-radius: 20px;
-    box-shadow: 0 16px 40px -10px rgba(0, 0, 0, 0.8);
+    background: linear-gradient(145deg, #0B1120 0%, #070C18 100%);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 22px;
+    box-shadow: 
+        0 30px 70px -15px rgba(0, 0, 0, 0.9),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
     display: flex;
     overflow: hidden;
 }
@@ -11968,9 +11995,9 @@ body.theme-neo-brutalism .sort-option.active {
 .slide-page {
     width: 100%;
     display: none;
-    padding: 32px 36px;
+    padding: 30px 36px;
     box-sizing: border-box;
-    animation: fadeInSlide 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+    animation: fadeInSlide 0.26s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .slide-page.active {
@@ -11982,11 +12009,11 @@ body.theme-neo-brutalism .sort-option.active {
 @keyframes fadeInSlide {
     from {
         opacity: 0;
-        transform: translateX(14px);
+        transform: scale(0.98) translateY(6px);
     }
     to {
         opacity: 1;
-        transform: translateX(0);
+        transform: scale(1) translateY(0);
     }
 }
 
@@ -11998,24 +12025,27 @@ body.theme-neo-brutalism .sort-option.active {
     width: 44px;
     height: 44px;
     border-radius: 50%;
-    background: rgba(15, 23, 42, 0.85);
-    border: 1px solid rgba(255, 255, 255, 0.15);
+    background: rgba(11, 17, 32, 0.85);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.12);
     color: #FFFFFF;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.1rem;
+    font-size: 1.05rem;
     cursor: pointer;
     z-index: 10;
-    transition: all 0.2s ease;
-    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.5);
+    transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
 }
 
 .slide-arrow-btn:hover {
     background: #38BDF8;
-    color: #0F172A;
+    color: #070C18;
     border-color: #38BDF8;
-    box-shadow: 0 0 16px rgba(56, 189, 248, 0.5);
+    box-shadow: 0 0 20px rgba(56, 189, 248, 0.6);
+    transform: translateY(-50%) scale(1.08);
 }
 
 .slide-arrow-btn.prev {
@@ -12026,122 +12056,287 @@ body.theme-neo-brutalism .sort-option.active {
     right: 8px;
 }
 
-/* Slide Typography & Structure */
+/* Slide Typography & Header Banner */
 .slide-header-block {
-    margin-bottom: 24px;
+    margin-bottom: 20px;
+}
+
+.slide-header-meta-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
 }
 
 .slide-category-tag {
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    padding: 3px 10px;
-    border-radius: 8px;
+    padding: 4px 12px;
+    border-radius: 20px;
     font-size: 0.72rem;
     font-weight: 800;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.6px;
     text-transform: uppercase;
-    margin-bottom: 8px;
 }
 
 .slide-category-tag.cyan {
-    background: rgba(56, 189, 248, 0.14);
+    background: rgba(56, 189, 248, 0.12);
     color: #38BDF8;
     border: 1px solid rgba(56, 189, 248, 0.35);
 }
 
 .slide-category-tag.emerald {
-    background: rgba(16, 185, 129, 0.14);
+    background: rgba(16, 185, 129, 0.12);
     color: #34D399;
     border: 1px solid rgba(16, 185, 129, 0.35);
 }
 
 .slide-category-tag.rose {
-    background: rgba(244, 63, 94, 0.14);
+    background: rgba(244, 63, 94, 0.12);
     color: #FB7185;
     border: 1px solid rgba(244, 63, 94, 0.35);
 }
 
 .slide-category-tag.purple {
-    background: rgba(168, 85, 247, 0.14);
+    background: rgba(168, 85, 247, 0.12);
     color: #C084FC;
     border: 1px solid rgba(168, 85, 247, 0.35);
 }
 
+.slide-date-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.73rem;
+    font-weight: 600;
+    color: #94A3B8;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 3px 10px;
+    border-radius: 14px;
+}
+
+.slide-live-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #10B981;
+    box-shadow: 0 0 8px #10B981;
+    animation: livePulse 2s infinite ease-in-out;
+}
+
+@keyframes livePulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.3); opacity: 0.6; }
+}
+
 .slide-main-title {
-    font-size: 1.55rem;
+    font-size: 1.6rem;
     font-weight: 800;
     color: #FFFFFF;
-    margin: 0 0 6px 0;
+    margin: 0 0 4px 0;
     letter-spacing: -0.4px;
+    font-family: 'Space Grotesk', -apple-system, sans-serif;
 }
 
 .slide-subtitle {
-    font-size: 0.84rem;
-    color: var(--text-secondary);
+    font-size: 0.82rem;
+    color: #94A3B8;
     margin: 0;
 }
 
-/* Slide 1: Executive Macro Cards Grid */
+/* ==========================================================================
+   SLIDE 1: EXECUTIVE MACRO DASHBOARD
+   ========================================================================== */
 .slide-macro-grid-top {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 16px;
-    margin-bottom: 16px;
+    margin-bottom: 14px;
 }
 
-.slide-macro-card {
-    padding: 20px;
+.slide-macro-hero-card {
+    padding: 22px 24px;
     border-radius: 18px;
-    background: rgba(255, 255, 255, 0.035);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0.015) 100%);
     border: 1px solid rgba(255, 255, 255, 0.09);
     position: relative;
     overflow: hidden;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
 }
 
-.slide-macro-card.emerald {
+.slide-macro-hero-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+}
+
+.slide-macro-hero-card.pos {
     border-color: rgba(16, 185, 129, 0.35);
-    background: linear-gradient(135deg, rgba(16, 185, 129, 0.12) 0%, rgba(5, 150, 105, 0.04) 100%);
+    background: linear-gradient(145deg, rgba(16, 185, 129, 0.12) 0%, rgba(11, 17, 32, 0.95) 100%);
 }
 
-.slide-macro-card.rose {
+.slide-macro-hero-card.pos::before {
+    background: linear-gradient(90deg, #10B981 0%, #34D399 100%);
+}
+
+.slide-macro-hero-card.neg {
     border-color: rgba(244, 63, 94, 0.35);
-    background: linear-gradient(135deg, rgba(244, 63, 94, 0.12) 0%, rgba(225, 29, 72, 0.04) 100%);
+    background: linear-gradient(145deg, rgba(244, 63, 94, 0.12) 0%, rgba(11, 17, 32, 0.95) 100%);
 }
 
-.slide-macro-card.cyan {
-    border-color: rgba(56, 189, 248, 0.35);
-    background: linear-gradient(135deg, rgba(56, 189, 248, 0.12) 0%, rgba(14, 165, 233, 0.04) 100%);
+.slide-macro-hero-card.neg::before {
+    background: linear-gradient(90deg, #F43F5E 0%, #FB7185 100%);
 }
 
-.slide-macro-card.purple {
-    border-color: rgba(168, 85, 247, 0.35);
-    background: linear-gradient(135deg, rgba(168, 85, 247, 0.12) 0%, rgba(139, 92, 246, 0.04) 100%);
-}
-
-.slide-macro-label {
-    font-size: 0.74rem;
-    font-weight: 700;
-    letter-spacing: 0.5px;
-    color: var(--text-secondary);
+.slide-macro-header-row {
     display: flex;
     align-items: center;
-    gap: 6px;
-    margin-bottom: 8px;
+    justify-content: space-between;
+    margin-bottom: 10px;
 }
 
-.slide-macro-val {
-    font-size: 1.85rem;
+.slide-macro-title {
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.6px;
+    color: #94A3B8;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+}
+
+.slide-status-pill {
+    font-size: 0.68rem;
+    font-weight: 800;
+    padding: 2px 8px;
+    border-radius: 6px;
+    letter-spacing: 0.4px;
+}
+
+.slide-status-pill.pos {
+    background: rgba(16, 185, 129, 0.2);
+    color: #34D399;
+    border: 1px solid rgba(16, 185, 129, 0.4);
+}
+
+.slide-status-pill.neg {
+    background: rgba(244, 63, 94, 0.2);
+    color: #FB7185;
+    border: 1px solid rgba(244, 63, 94, 0.4);
+}
+
+.slide-macro-big-num {
+    font-size: 2.2rem;
     font-weight: 800;
     line-height: 1.1;
     margin-bottom: 6px;
+    font-family: 'Space Grotesk', -apple-system, sans-serif;
+    letter-spacing: -0.5px;
 }
 
-.slide-macro-sub {
-    font-size: 0.78rem;
-    color: var(--text-secondary);
+.slide-macro-big-num.pos {
+    color: #34D399;
+    text-shadow: 0 0 24px rgba(52, 211, 153, 0.4);
 }
 
+.slide-macro-big-num.neg {
+    color: #FB7185;
+    text-shadow: 0 0 24px rgba(251, 113, 133, 0.4);
+}
+
+.slide-macro-desc {
+    font-size: 0.77rem;
+    color: #94A3B8;
+}
+
+/* Category Leaders Highlight Row (Slide 1) */
+.slide-cat-leaders-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 14px;
+}
+
+.slide-cat-leader-card {
+    padding: 16px 20px;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.slide-cat-leader-card.inflow {
+    border-color: rgba(16, 185, 129, 0.3);
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.09) 0%, rgba(15, 23, 42, 0.6) 100%);
+}
+
+.slide-cat-leader-card.outflow {
+    border-color: rgba(244, 63, 94, 0.3);
+    background: linear-gradient(135deg, rgba(244, 63, 94, 0.09) 0%, rgba(15, 23, 42, 0.6) 100%);
+}
+
+.slide-cat-leader-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 6px;
+}
+
+.slide-cat-badge {
+    font-size: 0.7rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.slide-cat-badge.inflow {
+    color: #34D399;
+}
+
+.slide-cat-badge.outflow {
+    color: #FB7185;
+}
+
+.slide-cat-leader-name {
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: #FFFFFF;
+    margin-bottom: 8px;
+    font-family: 'Space Grotesk', -apple-system, sans-serif;
+}
+
+.slide-cat-leader-stats {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 8px;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    font-size: 0.76rem;
+}
+
+.slide-cat-leader-val {
+    font-weight: 800;
+}
+
+.slide-cat-leader-val.pos {
+    color: #34D399;
+}
+
+.slide-cat-leader-val.neg {
+    color: #FB7185;
+}
+
+/* Macro Footer Chips */
 .slide-macro-grid-bottom {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -12149,25 +12344,30 @@ body.theme-neo-brutalism .sort-option.active {
 }
 
 .slide-mini-stat {
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.06);
+    background: rgba(255, 255, 255, 0.025);
+    border: 1px solid rgba(255, 255, 255, 0.07);
     border-radius: 12px;
-    padding: 12px 14px;
+    padding: 10px 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 }
 
 .slide-mini-stat-lbl {
-    font-size: 0.68rem;
-    color: var(--text-secondary);
-    margin-bottom: 4px;
+    font-size: 0.7rem;
+    color: #94A3B8;
 }
 
 .slide-mini-stat-val {
-    font-size: 1rem;
+    font-size: 0.95rem;
     font-weight: 800;
     color: #FFFFFF;
+    font-family: 'Space Grotesk', -apple-system, sans-serif;
 }
 
-/* Slides 2, 3, 4, 5: 3-Fund Detailed Cards Grid */
+/* ==========================================================================
+   SLIDES 2, 3, 4, 5: PODIUM LEADERBOARD (TOP 3 FUNDS)
+   ========================================================================== */
 .slide-funds-grid-3 {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -12176,51 +12376,75 @@ body.theme-neo-brutalism .sort-option.active {
 }
 
 .slide-fund-card {
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0.015) 100%);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 18px;
-    padding: 18px;
+    background: linear-gradient(145deg, rgba(17, 24, 39, 0.7) 0%, rgba(10, 15, 29, 0.85) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.09);
+    border-radius: 20px;
+    padding: 18px 20px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     position: relative;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
+    box-shadow: 0 14px 30px rgba(0, 0, 0, 0.5);
+    transition: all 0.24s cubic-bezier(0.16, 1, 0.3, 1);
+    cursor: pointer;
 }
 
+.slide-fund-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(56, 189, 248, 0.4);
+    box-shadow: 0 20px 40px -10px rgba(56, 189, 248, 0.2);
+}
+
+/* Rank 1 Gold Glow */
+.slide-fund-card.rank-card-1 {
+    border-color: rgba(245, 158, 11, 0.35);
+    background: linear-gradient(145deg, rgba(245, 158, 11, 0.08) 0%, rgba(10, 15, 29, 0.9) 100%);
+    box-shadow: 0 16px 36px -8px rgba(245, 158, 11, 0.25);
+}
+
+.slide-fund-card.rank-card-1:hover {
+    border-color: rgba(245, 158, 11, 0.6);
+    box-shadow: 0 20px 45px -5px rgba(245, 158, 11, 0.4);
+}
+
+/* Card Header */
 .slide-fund-card-top {
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
-    gap: 10px;
+    gap: 12px;
     margin-bottom: 12px;
 }
 
 .slide-rank-badge {
-    width: 30px;
-    height: 30px;
-    border-radius: 8px;
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 0.82rem;
+    font-size: 0.88rem;
     font-weight: 800;
     flex-shrink: 0;
+    font-family: 'Space Grotesk', -apple-system, sans-serif;
 }
 
 .slide-rank-badge.rank-1 {
     background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
     color: #FFFFFF;
-    box-shadow: 0 0 10px rgba(245, 158, 11, 0.5);
+    box-shadow: 0 0 14px rgba(245, 158, 11, 0.6);
 }
 
 .slide-rank-badge.rank-2 {
     background: linear-gradient(135deg, #94A3B8 0%, #64748B 100%);
     color: #FFFFFF;
+    box-shadow: 0 0 10px rgba(148, 163, 184, 0.3);
 }
 
 .slide-rank-badge.rank-3 {
     background: linear-gradient(135deg, #B45309 0%, #78350F 100%);
     color: #FFFFFF;
+    box-shadow: 0 0 10px rgba(180, 83, 9, 0.3);
 }
 
 .slide-fund-identity {
@@ -12231,59 +12455,77 @@ body.theme-neo-brutalism .sort-option.active {
 .slide-fund-code-row {
     display: flex;
     align-items: center;
-    gap: 6px;
-    margin-bottom: 3px;
+    gap: 8px;
+    margin-bottom: 4px;
 }
 
 .slide-code-badge {
-    font-size: 0.88rem;
+    font-size: 0.92rem;
     font-weight: 800;
     color: #38BDF8;
-    background: rgba(56, 189, 248, 0.14);
-    border: 1px solid rgba(56, 189, 248, 0.3);
-    padding: 2px 7px;
+    background: rgba(56, 189, 248, 0.15);
+    border: 1px solid rgba(56, 189, 248, 0.35);
+    padding: 2px 8px;
     border-radius: 6px;
-    letter-spacing: 0.4px;
+    letter-spacing: 0.6px;
+    font-family: 'Space Grotesk', -apple-system, sans-serif;
+}
+
+.slide-fund-cat-name {
+    font-size: 0.72rem;
+    font-weight: 700;
 }
 
 .slide-fund-fullname {
     font-size: 0.82rem;
     font-weight: 700;
-    color: #F1F5F9;
-    white-space: nowrap;
+    color: #F8FAFC;
+    line-height: 1.3;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
     overflow: hidden;
     text-overflow: ellipsis;
-    display: block;
-    margin-bottom: 2px;
+    min-height: 2.1em;
 }
 
-.slide-fund-cat-name {
-    font-size: 0.7rem;
-    color: var(--text-secondary);
-}
-
-/* Slide Fund Hero Metric */
-.slide-fund-hero-box {
-    background: rgba(0, 0, 0, 0.25);
-    border-radius: 12px;
-    padding: 12px;
+/* Hero Metric Capsule */
+.slide-fund-hero-capsule {
+    border-radius: 14px;
+    padding: 12px 14px;
     margin-bottom: 12px;
-    border: 1px solid rgba(255, 255, 255, 0.05);
+    position: relative;
+    overflow: hidden;
+}
+
+.slide-fund-hero-capsule.pos {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.16) 0%, rgba(16, 185, 129, 0.05) 100%);
+    border: 1px solid rgba(16, 185, 129, 0.32);
+}
+
+.slide-fund-hero-capsule.neg {
+    background: linear-gradient(135deg, rgba(244, 63, 94, 0.16) 0%, rgba(244, 63, 94, 0.05) 100%);
+    border: 1px solid rgba(244, 63, 94, 0.32);
 }
 
 .slide-fund-hero-lbl {
     font-size: 0.68rem;
-    color: var(--text-secondary);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #94A3B8;
     display: flex;
     align-items: center;
-    gap: 4px;
+    gap: 5px;
     margin-bottom: 2px;
 }
 
 .slide-fund-hero-num {
-    font-size: 1.45rem;
+    font-size: 1.55rem;
     font-weight: 800;
-    letter-spacing: -0.3px;
+    line-height: 1.1;
+    font-family: 'Space Grotesk', -apple-system, sans-serif;
+    letter-spacing: -0.4px;
 }
 
 .slide-fund-hero-num.pos {
@@ -12294,48 +12536,77 @@ body.theme-neo-brutalism .sort-option.active {
     color: #FB7185;
 }
 
-/* Slide Fund Detail Metrics Table */
-.slide-fund-detail-table {
-    display: flex;
-    flex-direction: column;
-    gap: 7px;
-    font-size: 0.74rem;
+.slide-fund-hero-sub {
+    font-size: 0.72rem;
+    color: #94A3B8;
+    margin-top: 3px;
 }
 
-.slide-fund-detail-row {
+/* 2x2 Micro-Tiles Grid */
+.slide-fund-metrics-tiles {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+.slide-metric-tile {
+    background: rgba(0, 0, 0, 0.28);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+    padding: 7px 10px;
+}
+
+.slide-tile-lbl {
+    font-size: 0.65rem;
+    font-weight: 600;
+    color: #94A3B8;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    margin-bottom: 2px;
+}
+
+.slide-tile-val {
+    font-size: 0.85rem;
+    font-weight: 800;
+    color: #F1F5F9;
+    font-family: 'Space Grotesk', -apple-system, sans-serif;
+}
+
+/* Per-Person Capital Velocity Full-Width Strip */
+.slide-fund-velocity-bar {
+    background: rgba(56, 189, 248, 0.08);
+    border: 1px solid rgba(56, 189, 248, 0.2);
+    border-radius: 9px;
+    padding: 6px 10px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding-bottom: 5px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    font-size: 0.72rem;
 }
 
-.slide-fund-detail-row:last-child {
-    border-bottom: none;
+.slide-velocity-lbl {
+    color: #94A3B8;
+    display: flex;
+    align-items: center;
+    gap: 5px;
 }
 
-.slide-detail-lbl {
-    color: var(--text-secondary);
+.slide-velocity-val {
+    font-weight: 800;
+    color: #38BDF8;
+    font-family: 'Space Grotesk', -apple-system, sans-serif;
 }
 
-.slide-detail-val {
-    font-weight: 700;
-    color: #E2E8F0;
-}
-
-/* Slide 6: Category Comparison Table */
-.slide-cat-comparison-wrap {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
-    margin-bottom: 16px;
-}
-
+/* ==========================================================================
+   SLIDE 6: CATEGORIES MATRIX
+   ========================================================================== */
 .slide-cat-summary-table-wrap {
-    background: rgba(0, 0, 0, 0.25);
-    border-radius: 14px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 16px;
     border: 1px solid rgba(255, 255, 255, 0.08);
     overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
 }
 
 .slide-cat-summary-table {
@@ -12345,16 +12616,19 @@ body.theme-neo-brutalism .sort-option.active {
 }
 
 .slide-cat-summary-table th {
-    background: rgba(15, 23, 42, 0.85);
-    color: var(--text-secondary);
-    padding: 9px 12px;
+    background: rgba(15, 23, 42, 0.95);
+    color: #94A3B8;
+    padding: 10px 14px;
     text-align: left;
     font-weight: 700;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .slide-cat-summary-table td {
-    padding: 8px 12px;
+    padding: 8px 14px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.04);
 }
 
@@ -12362,14 +12636,40 @@ body.theme-neo-brutalism .sort-option.active {
     border-bottom: none;
 }
 
+.slide-cat-summary-table tr:hover td {
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.slide-share-bar-wrap {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.slide-share-bar {
+    flex: 1;
+    height: 5px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.08);
+    overflow: hidden;
+}
+
+.slide-share-fill {
+    height: 100%;
+    border-radius: 999px;
+    background: linear-gradient(90deg, #38BDF8 0%, #818CF8 100%);
+}
+
 /* Modal Bottom Navigation Bar */
 .slide-bottom-bar {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 14px 24px;
+    padding: 12px 24px;
     border-top: 1px solid rgba(255, 255, 255, 0.08);
-    background: rgba(15, 23, 42, 0.7);
+    background: rgba(11, 17, 32, 0.85);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
     flex-wrap: wrap;
     gap: 12px;
 }
@@ -12399,9 +12699,9 @@ body.theme-neo-brutalism .sort-option.active {
 .btn-slide-nav-prev:hover,
 .btn-slide-nav-next:hover {
     background: #38BDF8;
-    color: #0F172A;
+    color: #070C18;
     border-color: #38BDF8;
-    box-shadow: 0 0 12px rgba(56, 189, 248, 0.4);
+    box-shadow: 0 0 14px rgba(56, 189, 248, 0.4);
 }
 
 .slide-dots-group {
@@ -12417,7 +12717,7 @@ body.theme-neo-brutalism .sort-option.active {
     background: rgba(255, 255, 255, 0.2);
     border: none;
     cursor: pointer;
-    transition: all 0.24s ease;
+    transition: all 0.24s cubic-bezier(0.16, 1, 0.3, 1);
     padding: 0;
 }
 
@@ -12427,15 +12727,15 @@ body.theme-neo-brutalism .sort-option.active {
 }
 
 .slide-dot.active {
-    width: 26px;
+    width: 28px;
     border-radius: 9999px;
     background: linear-gradient(135deg, #38BDF8 0%, #818CF8 100%);
-    box-shadow: 0 0 10px rgba(56, 189, 248, 0.6);
+    box-shadow: 0 0 12px rgba(56, 189, 248, 0.6);
 }
 
 .slide-bottom-hint {
     font-size: 0.74rem;
-    color: var(--text-secondary);
+    color: #94A3B8;
     display: flex;
     align-items: center;
     gap: 6px;
