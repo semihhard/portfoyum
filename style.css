@@ -13024,18 +13024,197 @@ body.theme-neo-brutalism .sort-option.active {
     font-weight: 500;
 }
 
-/* Fullscreen Mode */
-.slide-modal-dialog.fullscreen-mode {
-    max-width: 100vw;
-    width: 100vw;
-    max-height: 100vh;
-    height: 100vh;
-    border-radius: 0;
-    border: none;
+/* ==========================================================================
+   TEFAS SLIDE PRESENTATION - CINEMATIC FULLSCREEN MODE
+   ========================================================================== */
+#fundSlideReportModal:fullscreen,
+#fundSlideReportModal:-webkit-full-screen,
+#fundSlideReportModal.is-fullscreen {
+    padding: 0 !important;
+    margin: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    max-width: 100vw !important;
+    max-height: 100vh !important;
+    background: #050811 !important;
 }
 
+#fundSlideReportModal:fullscreen .slide-modal-backdrop,
+#fundSlideReportModal:-webkit-full-screen .slide-modal-backdrop,
+#fundSlideReportModal.is-fullscreen .slide-modal-backdrop {
+    display: none !important;
+}
+
+#fundSlideReportModal:fullscreen .slide-modal-dialog,
+#fundSlideReportModal:-webkit-full-screen .slide-modal-dialog,
+#fundSlideReportModal.is-fullscreen .slide-modal-dialog,
+.slide-modal-dialog.fullscreen-mode {
+    width: 100vw !important;
+    height: 100vh !important;
+    max-width: 100vw !important;
+    max-height: 100vh !important;
+    border-radius: 0 !important;
+    border: none !important;
+    box-shadow: none !important;
+    animation: none !important;
+    background: #050811 !important;
+    display: flex !important;
+    flex-direction: column !important;
+}
+
+/* Hide download buttons in fullscreen mode */
+#fundSlideReportModal:fullscreen #btnSlideExportPptx,
+#fundSlideReportModal:fullscreen #btnSlideExportPdf,
+#fundSlideReportModal:-webkit-full-screen #btnSlideExportPptx,
+#fundSlideReportModal:-webkit-full-screen #btnSlideExportPdf,
+#fundSlideReportModal.is-fullscreen #btnSlideExportPptx,
+#fundSlideReportModal.is-fullscreen #btnSlideExportPdf,
+.slide-modal-dialog.fullscreen-mode #btnSlideExportPptx,
+.slide-modal-dialog.fullscreen-mode #btnSlideExportPdf {
+    display: none !important;
+}
+
+/* Fullscreen Top & Bottom Toolbars */
+#fundSlideReportModal:fullscreen .slide-modal-topbar,
+#fundSlideReportModal:-webkit-full-screen .slide-modal-topbar,
+#fundSlideReportModal.is-fullscreen .slide-modal-topbar,
+.slide-modal-dialog.fullscreen-mode .slide-modal-topbar {
+    padding: 12px 36px !important;
+    background: rgba(9, 14, 28, 0.95) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+#fundSlideReportModal:fullscreen .slide-bottom-bar,
+#fundSlideReportModal:-webkit-full-screen .slide-bottom-bar,
+#fundSlideReportModal.is-fullscreen .slide-bottom-bar,
+.slide-modal-dialog.fullscreen-mode .slide-bottom-bar {
+    padding: 12px 36px !important;
+    background: rgba(9, 14, 28, 0.95) !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+/* Fullscreen Stage Viewport & 16:9 Cinema Aspect Box */
+#fundSlideReportModal:fullscreen .slide-stage-viewport,
+#fundSlideReportModal:-webkit-full-screen .slide-stage-viewport,
+#fundSlideReportModal.is-fullscreen .slide-stage-viewport,
 .slide-modal-dialog.fullscreen-mode .slide-stage-viewport {
-    padding: 40px;
+    flex: 1 !important;
+    width: 100% !important;
+    height: calc(100vh - 124px) !important;
+    padding: 14px 40px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    box-sizing: border-box !important;
+    overflow: hidden !important;
+}
+
+#fundSlideReportModal:fullscreen .slide-aspect-box,
+#fundSlideReportModal:-webkit-full-screen .slide-aspect-box,
+#fundSlideReportModal.is-fullscreen .slide-aspect-box,
+.slide-modal-dialog.fullscreen-mode .slide-aspect-box {
+    width: 100% !important;
+    height: 100% !important;
+    max-width: min(calc(100vw - 120px), calc((100vh - 140px) * 16 / 9)) !important;
+    max-height: calc(100vh - 140px) !important;
+    aspect-ratio: 16 / 9 !important;
+    margin: auto !important;
+    display: flex !important;
+    border-radius: 20px !important;
+}
+
+/* Fullscreen Slide Internal Scaling */
+#fundSlideReportModal:fullscreen .slide-page,
+#fundSlideReportModal:-webkit-full-screen .slide-page,
+#fundSlideReportModal.is-fullscreen .slide-page,
+.slide-modal-dialog.fullscreen-mode .slide-page {
+    padding: 32px 42px !important;
+    height: 100% !important;
+    box-sizing: border-box !important;
+}
+
+#fundSlideReportModal:fullscreen .slide-main-title,
+#fundSlideReportModal:-webkit-full-screen .slide-main-title,
+#fundSlideReportModal.is-fullscreen .slide-main-title,
+.slide-modal-dialog.fullscreen-mode .slide-main-title {
+    font-size: 2.1rem !important;
+    margin-bottom: 5px !important;
+}
+
+#fundSlideReportModal:fullscreen .slide-subtitle,
+#fundSlideReportModal:-webkit-full-screen .slide-subtitle,
+#fundSlideReportModal.is-fullscreen .slide-subtitle,
+.slide-modal-dialog.fullscreen-mode .slide-subtitle {
+    font-size: 0.98rem !important;
+}
+
+#fundSlideReportModal:fullscreen .slide-macro-hero-card,
+#fundSlideReportModal:-webkit-full-screen .slide-macro-hero-card,
+#fundSlideReportModal.is-fullscreen .slide-macro-hero-card,
+.slide-modal-dialog.fullscreen-mode .slide-macro-hero-card {
+    padding: 26px 30px !important;
+    border-radius: 20px !important;
+}
+
+#fundSlideReportModal:fullscreen .slide-macro-big-num,
+#fundSlideReportModal:-webkit-full-screen .slide-macro-big-num,
+#fundSlideReportModal.is-fullscreen .slide-macro-big-num,
+.slide-modal-dialog.fullscreen-mode .slide-macro-big-num {
+    font-size: 3rem !important;
+}
+
+#fundSlideReportModal:fullscreen .slide-cat-leader-card,
+#fundSlideReportModal:-webkit-full-screen .slide-cat-leader-card,
+#fundSlideReportModal.is-fullscreen .slide-cat-leader-card,
+.slide-modal-dialog.fullscreen-mode .slide-cat-leader-card {
+    padding: 20px 24px !important;
+    border-radius: 18px !important;
+}
+
+#fundSlideReportModal:fullscreen .slide-mini-stat,
+#fundSlideReportModal:-webkit-full-screen .slide-mini-stat,
+#fundSlideReportModal.is-fullscreen .slide-mini-stat,
+.slide-modal-dialog.fullscreen-mode .slide-mini-stat {
+    padding: 15px 18px !important;
+    border-radius: 16px !important;
+}
+
+#fundSlideReportModal:fullscreen .slide-fund-card,
+#fundSlideReportModal:-webkit-full-screen .slide-fund-card,
+#fundSlideReportModal.is-fullscreen .slide-fund-card,
+.slide-modal-dialog.fullscreen-mode .slide-fund-card {
+    padding: 24px 26px !important;
+    border-radius: 22px !important;
+}
+
+#fundSlideReportModal:fullscreen .slide-fund-code,
+#fundSlideReportModal:-webkit-full-screen .slide-fund-code,
+#fundSlideReportModal.is-fullscreen .slide-fund-code,
+.slide-modal-dialog.fullscreen-mode .slide-fund-code {
+    font-size: 2rem !important;
+}
+
+#fundSlideReportModal:fullscreen .slide-fund-hero-val,
+#fundSlideReportModal:-webkit-full-screen .slide-fund-hero-val,
+#fundSlideReportModal.is-fullscreen .slide-fund-hero-val,
+.slide-modal-dialog.fullscreen-mode .slide-fund-hero-val {
+    font-size: 2.35rem !important;
+}
+
+#fundSlideReportModal:fullscreen .slide-cat-summary-table th,
+#fundSlideReportModal:-webkit-full-screen .slide-cat-summary-table th,
+#fundSlideReportModal.is-fullscreen .slide-cat-summary-table th,
+.slide-modal-dialog.fullscreen-mode .slide-cat-summary-table th {
+    padding: 14px 16px !important;
+    font-size: 0.84rem !important;
+}
+
+#fundSlideReportModal:fullscreen .slide-cat-summary-table td,
+#fundSlideReportModal:-webkit-full-screen .slide-cat-summary-table td,
+#fundSlideReportModal.is-fullscreen .slide-cat-summary-table td,
+.slide-modal-dialog.fullscreen-mode .slide-cat-summary-table td {
+    padding: 13px 16px !important;
+    font-size: 0.94rem !important;
 }
 
 /* Print Styles for PDF Export */

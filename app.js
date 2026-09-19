@@ -11143,8 +11143,41 @@ function closeFundSlideReportModal() {
     isSlideReportModalOpen = false;
     document.body.style.overflow = "";
 
-    if (document.fullscreenElement) {
-        document.exitFullscreen().catch(() => {});
+    if (document.fullscreenElement || document.webkitFullscreenElement) {
+        if (document.exitFullscreen) {
+            document.exitFullscreen().catch(() => {});
+        } else if (document.webkitExitFullscreen) {
+            document.webkitExitFullscreen();
+        }
+    }
+    syncSlideFullscreenState();
+}
+
+function syncSlideFullscreenState() {
+    const modal = document.getElementById("fundSlideReportModal");
+    const icon = document.getElementById("iconSlideFullscreen");
+    const isFull = Boolean(document.fullscreenElement || document.webkitFullscreenElement);
+    if (modal) {
+        modal.classList.toggle("is-fullscreen", isFull);
+        const dialog = modal.querySelector(".slide-modal-dialog");
+        if (dialog) {
+            dialog.classList.toggle("fullscreen-mode", isFull);
+        }
+    }
+    if (icon) {
+        if (isFull) {
+            icon.classList.remove("fa-expand");
+            icon.classList.add("fa-compress");
+            if (icon.parentElement) {
+                icon.parentElement.title = "Tam Ekrandan Çık (ESC)";
+            }
+        } else {
+            icon.classList.remove("fa-compress");
+            icon.classList.add("fa-expand");
+            if (icon.parentElement) {
+                icon.parentElement.title = "Tam Ekran Sunum Modu";
+            }
+        }
     }
 }
 
@@ -11176,28 +11209,22 @@ function navigateSlide(dir) {
 
 function toggleSlideFullscreen() {
     const modal = document.getElementById("fundSlideReportModal");
-    const icon = document.getElementById("iconSlideFullscreen");
     if (!modal) return;
 
-    if (!document.fullscreenElement) {
+    if (!document.fullscreenElement && !document.webkitFullscreenElement) {
         if (modal.requestFullscreen) {
-            modal.requestFullscreen();
+            modal.requestFullscreen().catch(() => {});
         } else if (modal.webkitRequestFullscreen) {
             modal.webkitRequestFullscreen();
         }
-        if (icon) {
-            icon.classList.remove("fa-expand");
-            icon.classList.add("fa-compress");
-        }
     } else {
         if (document.exitFullscreen) {
-            document.exitFullscreen();
-        }
-        if (icon) {
-            icon.classList.remove("fa-compress");
-            icon.classList.add("fa-expand");
+            document.exitFullscreen().catch(() => {});
+        } else if (document.webkitExitFullscreen) {
+            document.webkitExitFullscreen();
         }
     }
+    setTimeout(syncSlideFullscreenState, 60);
 }
 
 // Dedicated Real Multi-Page PDF Exporter (jsPDF + html2canvas)
@@ -11340,19 +11367,9 @@ window.addEventListener("keydown", (e) => {
     }
 });
 
-// Sync Fullscreen icon on change
-document.addEventListener("fullscreenchange", () => {
-    const icon = document.getElementById("iconSlideFullscreen");
-    if (icon) {
-        if (document.fullscreenElement) {
-            icon.classList.remove("fa-expand");
-            icon.classList.add("fa-compress");
-        } else {
-            icon.classList.remove("fa-compress");
-            icon.classList.add("fa-expand");
-        }
-    }
-});
+// Sync Fullscreen icon & responsive classes on change
+document.addEventListener("fullscreenchange", syncSlideFullscreenState);
+document.addEventListener("webkitfullscreenchange", syncSlideFullscreenState);
 
 // PowerPoint (.pptx) Generator - 100% High-Fidelity Direct Slide Presentation Deck
 async function exportToPowerPoint() {
