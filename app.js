@@ -1913,7 +1913,19 @@ const BIST_STOCK_PROFILES = {
     "EUPWR": { name: "Europower Enerji", sector: "Elektrik & Trafo", color: "#3B82F6" },
     "GESAN": { name: "Girişim Elektrik", sector: "Elektrik & Altyapı", color: "#6366F1" },
     "AKSEN": { name: "Aksa Enerji", sector: "Elektrik Üretim", color: "#06B6D4" },
-    "TATGD": { name: "Tat Gıda", sector: "Gıda Üretim", color: "#EF4444" }
+    "TATGD": { name: "Tat Gıda", sector: "Gıda Üretim", color: "#EF4444" },
+    "TERA":  { name: "Tera Yatırım Menkul Değerler", sector: "Aracı Kurum / Finans", color: "#0284C7" },
+    "KARCL": { name: "Karçel Demir Çelik", sector: "Demir Çelik & Sanayi", color: "#F59E0B" },
+    "TRHOL": { name: "Tera Holding", sector: "Holding", color: "#3B82F6" },
+    "ANFLE": { name: "Anadolu Finansal Kiralama", sector: "Finans & Leasing", color: "#10B981" },
+    "SELEC": { name: "Selçuk Ecza Deposu", sector: "Sağlık & Dağıtım", color: "#14B8A6" },
+    "ALKLC": { name: "Alkim Kağıt Sanayi", sector: "Kağıt & Ambalaj", color: "#6366F1" },
+    "DSTKF": { name: "Destek Finans Faktoring", sector: "Finans & Faktoring", color: "#EC4899" },
+    "BIGEN": { name: "Biotrend / Bigen Çevre", sector: "Çevre & Biyoteknoloji", color: "#8B5CF6" },
+    "OZATD": { name: "Özata Denizcilik", sector: "Denizcilik & Tersane", color: "#06B6D4" },
+    "BRSAN": { name: "Borusan Boru Sanayi", sector: "Çelik & Boru Sanayi", color: "#B91C1C" },
+    "KGYO":  { name: "Koray GYO", sector: "GYO / Gayrimenkul", color: "#F97316" },
+    "ORCAX": { name: "Orçay Ortaköy Çay Sanayi", sector: "Gıda Sanayi", color: "#16A34A" }
 };
 
 const FOREIGN_STOCK_PROFILES = {
@@ -2170,23 +2182,22 @@ const CURATED_FUND_STOCK_HOLDINGS = {
         ]
     },
     "THF": {
-        date: "Son KAP Portföy Raporu",
-        reportPeriod: "Son Bildirilen Dönem",
+        date: "Son KAP Portföy Raporu (Ağustos)",
+        reportPeriod: "2 Eylül Bildirimi",
         stocks: [
-            { symbol: "TUPRS", pct: 9.40, prevPct: 8.20 },
-            { symbol: "THYAO", pct: 8.90, prevPct: 7.50 },
-            { symbol: "ASELS", pct: 7.80, prevPct: 6.10 },
-            { symbol: "BIMAS", pct: 7.20, prevPct: 7.60 },
-            { symbol: "KCHOL", pct: 6.80, prevPct: 6.40 },
-            { symbol: "AKBNK", pct: 6.10, prevPct: 6.90 },
-            { symbol: "FROTO", pct: 5.50, prevPct: 4.80 },
-            { symbol: "SISE",  pct: 4.90, prevPct: 5.70 },
-            { symbol: "MGROS", pct: 4.20, prevPct: 3.30 },
-            { symbol: "ASTOR", pct: 3.80, prevPct: 0.00 },
-            { symbol: "TCELL", pct: 3.50, prevPct: 3.90 },
-            { symbol: "TOASO", pct: 2.90, prevPct: 4.10 },
-            { symbol: "ENKAI", pct: 2.60, prevPct: 2.20 },
-            { symbol: "YKBNK", pct: 0.00, prevPct: 3.10 }
+            { symbol: "TERA",  pct: 8.63, prevPct: 6.69 },
+            { symbol: "KARCL", pct: 7.49, prevPct: 4.67 },
+            { symbol: "TRHOL", pct: 6.54, prevPct: 4.10 },
+            { symbol: "ANFLE", pct: 5.44, prevPct: 2.81 },
+            { symbol: "SELEC", pct: 5.27, prevPct: 0.00 },
+            { symbol: "ALKLC", pct: 4.13, prevPct: 0.00 },
+            { symbol: "DSTKF", pct: 2.90, prevPct: 0.00 },
+            { symbol: "BIGEN", pct: 2.68, prevPct: 0.00 },
+            { symbol: "ASELS", pct: 2.77, prevPct: 7.16 },
+            { symbol: "OZATD", pct: 2.20, prevPct: 8.01 },
+            { symbol: "BRSAN", pct: 0.17, prevPct: 3.64 },
+            { symbol: "KGYO",  pct: 0.06, prevPct: 3.62 },
+            { symbol: "ORCAX", pct: 0.00, prevPct: 3.63 }
         ]
     },
     "MAC": {
