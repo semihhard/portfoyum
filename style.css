@@ -11759,9 +11759,19 @@ body.theme-neo-brutalism .sort-option.active {
     -moz-osx-font-smoothing: grayscale;
 }
 
-#fundSlideReportModal * {
-    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+#fundSlideReportModal *,
+#fundSlideReportModal *::before,
+#fundSlideReportModal *::after {
     box-sizing: border-box;
+}
+
+#fundSlideReportModal i,
+#fundSlideReportModal .fa-solid,
+#fundSlideReportModal .fa-regular,
+#fundSlideReportModal .fa-brands,
+#fundSlideReportModal .fa,
+#fundSlideReportModal [class*="fa-"] {
+    font-family: "Font Awesome 6 Free", "FontAwesome" !important;
 }
 
 .slide-modal-container {
@@ -12179,9 +12189,6 @@ body.theme-neo-brutalism .sort-option.active {
     color: #FFFFFF;
     margin: 0 0 4px 0;
     letter-spacing: -0.02em;
-    background: linear-gradient(180deg, #FFFFFF 0%, #E2E8F0 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
 }
 
 .slide-subtitle {
