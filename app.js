@@ -10534,3 +10534,951 @@ function closeKapModal() {
         e.preventDefault();
     }, { passive: false });
 })();
+
+/* ==========================================================================
+   TEFAS DAILY FLOW SLIDE PRESENTATION & POWERPOINT (.PPTX) EXPORT ENGINE
+   ========================================================================== */
+
+let currentSlideIndex = 1;
+let isSlideReportModalOpen = false;
+let slideReportDatasetCache = null;
+
+function buildSlideReportDataset() {
+    let funds = [];
+    if (cachedAllCategoryFunds && cachedAllCategoryFunds.length > 0) {
+        funds = cachedAllCategoryFunds.slice();
+    } else {
+        const map = new Map();
+        if (typeof BASE_CURATED_CATEGORY_FUNDS !== 'undefined' && Array.isArray(BASE_CURATED_CATEGORY_FUNDS)) {
+            BASE_CURATED_CATEGORY_FUNDS.forEach(f => map.set(f.code, { ...f }));
+        }
+        if (fundLeadersDataCache && fundLeadersDataCache.categories) {
+            const leaderCats = [
+                ...(fundLeadersDataCache.categories.topInvestorInflow || []),
+                ...(fundLeadersDataCache.categories.topInvestorOutflow || []),
+                ...(fundLeadersDataCache.categories.topCashInflow || []),
+                ...(fundLeadersDataCache.categories.topCashOutflow || [])
+            ];
+            leaderCats.forEach(f => {
+                if (!f || !f.code) return;
+                const existing = map.get(f.code);
+                const cat = typeof detectFundCategoryKey === 'function' ? detectFundCategoryKey(f.name, f.code) : "DİĞER";
+                map.set(f.code, {
+                    code: f.code,
+                    name: f.name || (existing ? existing.name : `${f.code} FONU`),
+                    category: cat,
+                    price: parseFloat(f.price) || (existing ? existing.price : 1.0),
+                    change: existing ? existing.change : ((parseFloat(f.cashFlow) || 0) > 0 ? 1.25 : -0.65),
+                    aum: parseFloat(f.aum) || (existing ? existing.aum : 1000000000),
+                    cashFlow: parseFloat(f.cashFlow) || (existing ? existing.cashFlow : 0),
+                    deltaInvestors: parseInt(f.deltaInvestors) || (existing ? existing.deltaInvestors : 0),
+                    investors: parseInt(f.investors) || (existing ? existing.investors : 5000),
+                    perPerson: parseFloat(f.perPerson) || (existing ? existing.perPerson : 0)
+                });
+            });
+        }
+        funds = Array.from(map.values());
+    }
+
+    // Ensure perPerson calculation for each fund
+    funds.forEach(f => {
+        if (!f.perPerson) {
+            if (f.deltaInvestors && f.deltaInvestors !== 0 && f.cashFlow) {
+                f.perPerson = Math.round(Math.abs(f.cashFlow / f.deltaInvestors));
+            } else {
+                f.perPerson = 0;
+            }
+        }
+    });
+
+    const stats = typeof calculateCategoryMetrics === 'function' 
+        ? calculateCategoryMetrics(funds) 
+        : { categories: {}, marketOverview: { totalFunds: funds.length, totalAUM: 0, dailyCashFlow: 0, dailyInvestors: 0 } };
+
+    // 1. Top 3 Cash Inflow (> 0)
+    let topCashInflow = funds
+        .slice()
+        .filter(f => (f.cashFlow || 0) > 0)
+        .sort((a, b) => (b.cashFlow || 0) - (a.cashFlow || 0))
+        .slice(0, 3);
+    if (topCashInflow.length < 3) {
+        const sorted = funds.slice().sort((a, b) => (b.cashFlow || 0) - (a.cashFlow || 0));
+        topCashInflow = sorted.slice(0, 3);
+    }
+
+    // 2. Top 3 Cash Outflow (< 0, most negative first)
+    let topCashOutflow = funds
+        .slice()
+        .filter(f => (f.cashFlow || 0) < 0)
+        .sort((a, b) => (a.cashFlow || 0) - (b.cashFlow || 0))
+        .slice(0, 3);
+    if (topCashOutflow.length < 3) {
+        const sorted = funds.slice().sort((a, b) => (a.cashFlow || 0) - (b.cashFlow || 0));
+        topCashOutflow = sorted.slice(0, 3);
+    }
+
+    // 3. Top 3 Investor Inflow (> 0)
+    let topInvestorInflow = funds
+        .slice()
+        .filter(f => (f.deltaInvestors || 0) > 0)
+        .sort((a, b) => (b.deltaInvestors || 0) - (a.deltaInvestors || 0))
+        .slice(0, 3);
+    if (topInvestorInflow.length < 3) {
+        const sorted = funds.slice().sort((a, b) => (b.deltaInvestors || 0) - (a.deltaInvestors || 0));
+        topInvestorInflow = sorted.slice(0, 3);
+    }
+
+    // 4. Top 3 Investor Outflow (< 0, most negative first)
+    let topInvestorOutflow = funds
+        .slice()
+        .filter(f => (f.deltaInvestors || 0) < 0)
+        .sort((a, b) => (a.deltaInvestors || 0) - (b.deltaInvestors || 0))
+        .slice(0, 3);
+    if (topInvestorOutflow.length < 3) {
+        const sorted = funds.slice().sort((a, b) => (a.deltaInvestors || 0) - (b.deltaInvestors || 0));
+        topInvestorOutflow = sorted.slice(0, 3);
+    }
+
+    // 5. Category leaders (Inflow & Outflow)
+    const catList = Object.values(stats.categories || {});
+    const sortedCatsByCashDesc = catList.slice().sort((a, b) => (b.cashFlow || 0) - (a.cashFlow || 0));
+    const sortedCatsByCashAsc = catList.slice().sort((a, b) => (a.cashFlow || 0) - (b.cashFlow || 0));
+
+    const topCashInflowCategory = sortedCatsByCashDesc[0] || null;
+    const topCashOutflowCategory = sortedCatsByCashAsc[0] || null;
+
+    const reportDate = (fundLeadersDataCache && fundLeadersDataCache.date) 
+        ? fundLeadersDataCache.date 
+        : new Date().toLocaleDateString('tr-TR', { year: 'numeric', month: 'long', day: 'numeric' });
+
+    return {
+        date: reportDate,
+        totalFunds: stats.marketOverview ? stats.marketOverview.totalFunds : funds.length,
+        totalAUM: stats.marketOverview ? stats.marketOverview.totalAUM : 0,
+        totalDailyCashFlow: stats.marketOverview ? stats.marketOverview.dailyCashFlow : 0,
+        totalDailyInvestors: stats.marketOverview ? stats.marketOverview.dailyInvestors : 0,
+        topCashInflowCategory,
+        topCashOutflowCategory,
+        topCashInflow,
+        topCashOutflow,
+        topInvestorInflow,
+        topInvestorOutflow,
+        categories: stats.categories,
+        marketOverview: stats.marketOverview
+    };
+}
+
+function renderSlideFundCardHTML(fund, rank, mode) {
+    if (!fund) return '';
+    const catKey = fund.category || (typeof detectFundCategoryKey === 'function' ? detectFundCategoryKey(fund.name, fund.code) : 'DİĞER');
+    const reg = (typeof TEFAS_CATEGORIES_REGISTRY !== 'undefined' && TEFAS_CATEGORIES_REGISTRY[catKey]) 
+        ? TEFAS_CATEGORIES_REGISTRY[catKey] 
+        : { shortName: "Fon", color: "#38BDF8" };
+
+    const cleanName = typeof cleanFundTitle === 'function' ? cleanFundTitle(fund.name) : (fund.name || fund.code);
+    const priceStr = typeof formatFundPriceDisplay === 'function' ? formatFundPriceDisplay(fund.price) : `₺${(fund.price || 0).toFixed(4)}`;
+    
+    const retVal = fund.change || 0;
+    const isRetPos = retVal >= 0;
+    const retSign = isRetPos ? '+' : '';
+    const retColor = isRetPos ? '#34D399' : '#FB7185';
+
+    const cashVal = fund.cashFlow || 0;
+    const isCashPos = cashVal >= 0;
+    const cashSign = isCashPos ? '+' : '';
+    const cashColor = isCashPos ? '#34D399' : '#FB7185';
+    const cashStr = typeof formatBillionOrMillion === 'function' ? `${cashSign}${formatBillionOrMillion(cashVal)}` : `${cashSign}₺${cashVal.toLocaleString('tr-TR')}`;
+
+    const invVal = fund.deltaInvestors || 0;
+    const isInvPos = invVal >= 0;
+    const invSign = isInvPos ? '+' : '';
+    const invColor = isInvPos ? '#34D399' : '#FB7185';
+    const invStr = `${invSign}${invVal.toLocaleString('tr-TR')} Kişi`;
+
+    const aumStr = typeof formatBillionOrMillion === 'function' ? formatBillionOrMillion(fund.aum || 0) : `₺${(fund.aum || 0).toLocaleString('tr-TR')}`;
+    const perPersonStr = fund.perPerson ? `₺${Math.round(fund.perPerson).toLocaleString('tr-TR')}` : '—';
+    const totalInvestorsStr = (fund.investors || 0).toLocaleString('tr-TR');
+
+    let heroLbl = "";
+    let heroNum = "";
+    let heroClass = "";
+    let heroSub = "";
+
+    if (mode === "cash-in") {
+        heroLbl = `<i class="fa-solid fa-arrow-trend-up"></i> Günlük Net Para Girişi`;
+        heroNum = cashStr;
+        heroClass = "pos";
+        heroSub = `Yatırımcı Değişimi: <strong style="color: ${invColor};">${invStr}</strong>`;
+    } else if (mode === "cash-out") {
+        heroLbl = `<i class="fa-solid fa-arrow-trend-down"></i> Günlük Net Para Çıkışı`;
+        heroNum = cashStr;
+        heroClass = "neg";
+        heroSub = `Yatırımcı Değişimi: <strong style="color: ${invColor};">${invStr}</strong>`;
+    } else if (mode === "inv-in") {
+        heroLbl = `<i class="fa-solid fa-user-plus"></i> Günlük Yatırımcı Artışı`;
+        heroNum = invStr;
+        heroClass = "pos";
+        heroSub = `Para Akışı: <strong style="color: ${cashColor};">${cashStr}</strong>`;
+    } else { // inv-out
+        heroLbl = `<i class="fa-solid fa-user-minus"></i> Günlük Yatırımcı Kaybı`;
+        heroNum = invStr;
+        heroClass = "neg";
+        heroSub = `Para Akışı: <strong style="color: ${cashColor};">${cashStr}</strong>`;
+    }
+
+    return `
+        <div class="slide-fund-card" onclick="openSingleFundAnalysis('${fund.code}'); closeFundSlideReportModal();" style="cursor: pointer;" title="${fund.code} tekil analiz sayfasına gitmek için tıklayın">
+            <div>
+                <div class="slide-fund-card-top">
+                    <div class="slide-rank-badge rank-${rank}">#${rank}</div>
+                    <div class="slide-fund-identity">
+                        <div class="slide-fund-code-row">
+                            <span class="slide-code-badge">${fund.code}</span>
+                            <span class="slide-fund-cat-name" style="color: ${reg.color}; font-weight: 700;">• ${reg.shortName}</span>
+                        </div>
+                        <div class="slide-fund-fullname" title="${fund.name}">${cleanName}</div>
+                    </div>
+                </div>
+
+                <div class="slide-fund-hero-box">
+                    <div class="slide-fund-hero-lbl">${heroLbl}</div>
+                    <div class="slide-fund-hero-num ${heroClass}">${heroNum}</div>
+                    <div style="font-size: 0.72rem; color: var(--text-secondary); margin-top: 4px;">${heroSub}</div>
+                </div>
+            </div>
+
+            <div class="slide-fund-detail-table">
+                <div class="slide-fund-detail-row">
+                    <span class="slide-detail-lbl">Pay Fiyatı</span>
+                    <span class="slide-detail-val">${priceStr}</span>
+                </div>
+                <div class="slide-fund-detail-row">
+                    <span class="slide-detail-lbl">Günlük Getiri</span>
+                    <span class="slide-detail-val" style="color: ${retColor};">
+                        <i class="fa-solid ${isRetPos ? 'fa-arrow-trend-up' : 'fa-arrow-trend-down'}"></i> ${retSign}%${Math.abs(retVal).toFixed(2)}
+                    </span>
+                </div>
+                <div class="slide-fund-detail-row">
+                    <span class="slide-detail-lbl">Fon Toplam Değeri (AUM)</span>
+                    <span class="slide-detail-val">${aumStr}</span>
+                </div>
+                <div class="slide-fund-detail-row">
+                    <span class="slide-detail-lbl">Toplam Yatırımcı Sayısı</span>
+                    <span class="slide-detail-val">${totalInvestorsStr} Kişi</span>
+                </div>
+                <div class="slide-fund-detail-row">
+                    <span class="slide-detail-lbl">Kişi Başına Net Akış</span>
+                    <span class="slide-detail-val" style="color: #38BDF8;">${perPersonStr}</span>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+function renderInteractiveSlides(data) {
+    if (!data) return;
+
+    // Slide 1: Executive Overview
+    const p1 = document.getElementById("slidePage-1");
+    if (p1) {
+        const isCashPos = (data.totalDailyCashFlow || 0) >= 0;
+        const cashSign = isCashPos ? '+' : '';
+        const cashColor = isCashPos ? '#34D399' : '#FB7185';
+
+        const isInvPos = (data.totalDailyInvestors || 0) >= 0;
+        const invSign = isInvPos ? '+' : '';
+        const invColor = isInvPos ? '#34D399' : '#FB7185';
+
+        const inCat = data.topCashInflowCategory;
+        const outCat = data.topCashOutflowCategory;
+
+        p1.innerHTML = `
+            <div class="slide-header-block">
+                <div class="slide-category-tag cyan"><i class="fa-solid fa-chart-pie"></i> MAKRO PİYASA RAPORU</div>
+                <h2 class="slide-main-title">TEFAS Günlük Fon & Sermaye Akışı Özeti</h2>
+                <p class="slide-subtitle">${data.date} • Tüm Yatırım Fonlarında Gün İçi Para ve Yatırımcı Hareketi Dengesi</p>
+            </div>
+
+            <div class="slide-macro-grid-top">
+                <div class="slide-macro-card ${isCashPos ? 'emerald' : 'rose'}">
+                    <div class="slide-macro-label">
+                        <i class="fa-solid ${isCashPos ? 'fa-arrow-trend-up' : 'fa-arrow-trend-down'}"></i>
+                        <span>Günün Toplam Net Para Akışı</span>
+                    </div>
+                    <div class="slide-macro-val" style="color: ${cashColor};">
+                        ${cashSign}${formatBillionOrMillion(data.totalDailyCashFlow)}
+                    </div>
+                    <div class="slide-macro-sub">Tüm TEFAS yatırım fonlarında gün içi gerçekleşen kümülatif net nakit sermaye hareketi</div>
+                </div>
+
+                <div class="slide-macro-card ${isInvPos ? 'emerald' : 'rose'}">
+                    <div class="slide-macro-label">
+                        <i class="fa-solid fa-users"></i>
+                        <span>Günün Toplam Net Yatırımcı Akışı</span>
+                    </div>
+                    <div class="slide-macro-val" style="color: ${invColor};">
+                        ${invSign}${data.totalDailyInvestors.toLocaleString('tr-TR')} Kişi
+                    </div>
+                    <div class="slide-macro-sub">TEFAS fonlarındaki toplam tekil yatırımcı sayısı net günlük değişimi</div>
+                </div>
+            </div>
+
+            <div class="slide-macro-grid-top">
+                <div class="slide-macro-card emerald">
+                    <div class="slide-macro-label" style="color: #34D399;">
+                        <i class="fa-solid fa-trophy"></i>
+                        <span>En Çok Para Giren Fon Kategorisi</span>
+                    </div>
+                    <div class="slide-macro-val" style="color: #FFFFFF; font-size: 1.35rem;">
+                        ${inCat ? inCat.name : '—'}
+                    </div>
+                    <div class="slide-macro-sub" style="display: flex; justify-content: space-between; margin-top: 6px;">
+                        <span>Net Sermaye Girişi: <strong style="color: #34D399;">+${formatBillionOrMillion(inCat ? inCat.cashFlow : 0)}</strong></span>
+                        <span>Kategori Hacmi: <strong>${formatBillionOrMillion(inCat ? inCat.displayAUM : 0)}</strong></span>
+                    </div>
+                </div>
+
+                <div class="slide-macro-card rose">
+                    <div class="slide-macro-label" style="color: #FB7185;">
+                        <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                        <span>En Çok Para Çıkan Fon Kategorisi</span>
+                    </div>
+                    <div class="slide-macro-val" style="color: #FFFFFF; font-size: 1.35rem;">
+                        ${outCat ? outCat.name : '—'}
+                    </div>
+                    <div class="slide-macro-sub" style="display: flex; justify-content: space-between; margin-top: 6px;">
+                        <span>Net Sermaye Çıkışı: <strong style="color: #FB7185;">${formatBillionOrMillion(outCat ? outCat.cashFlow : 0)}</strong></span>
+                        <span>Kategori Hacmi: <strong>${formatBillionOrMillion(outCat ? outCat.displayAUM : 0)}</strong></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="slide-macro-grid-bottom">
+                <div class="slide-mini-stat">
+                    <div class="slide-mini-stat-lbl">Taranan Fon Sayısı</div>
+                    <div class="slide-mini-stat-val">${data.totalFunds.toLocaleString('tr-TR')} Fon</div>
+                </div>
+                <div class="slide-mini-stat">
+                    <div class="slide-mini-stat-lbl">Toplam Portföy Büyüklüğü</div>
+                    <div class="slide-mini-stat-val">${formatBillionOrMillion(data.totalAUM)}</div>
+                </div>
+                <div class="slide-mini-stat">
+                    <div class="slide-mini-stat-lbl">Şemsiye Fon Kategorisi</div>
+                    <div class="slide-mini-stat-val">9 Kategori</div>
+                </div>
+                <div class="slide-mini-stat">
+                    <div class="slide-mini-stat-lbl">Veri & Akış Kaynağı</div>
+                    <div class="slide-mini-stat-val" style="color: #38BDF8;">TEFAS / Takasbank</div>
+                </div>
+            </div>
+        `;
+    }
+
+    // Slide 2: Top 3 Cash Inflow
+    const p2 = document.getElementById("slidePage-2");
+    if (p2) {
+        p2.innerHTML = `
+            <div class="slide-header-block">
+                <div class="slide-category-tag emerald"><i class="fa-solid fa-arrow-trend-up"></i> SERMAYE GİRİŞİ LİDERLERİ</div>
+                <h2 class="slide-main-title">Günün En Çok Para Girişi Olan 3 Fonu</h2>
+                <p class="slide-subtitle">${data.date} • Bugün TEFAS'ta portföyüne en yüksek net nakit girişi sağlayan lider 3 fon</p>
+            </div>
+            <div class="slide-funds-grid-3">
+                ${data.topCashInflow.map((f, i) => renderSlideFundCardHTML(f, i + 1, "cash-in")).join('')}
+            </div>
+        `;
+    }
+
+    // Slide 3: Top 3 Cash Outflow
+    const p3 = document.getElementById("slidePage-3");
+    if (p3) {
+        p3.innerHTML = `
+            <div class="slide-header-block">
+                <div class="slide-category-tag rose"><i class="fa-solid fa-arrow-trend-down"></i> SERMAYE ÇIKIŞI LİDERLERİ</div>
+                <h2 class="slide-main-title">Günün En Çok Para Çıkışı Olan 3 Fonu</h2>
+                <p class="slide-subtitle">${data.date} • Bugün portföyünden en yüksek net sermaye çıkışı gerçekleşen fonlar ve ayrıntıları</p>
+            </div>
+            <div class="slide-funds-grid-3">
+                ${data.topCashOutflow.map((f, i) => renderSlideFundCardHTML(f, i + 1, "cash-out")).join('')}
+            </div>
+        `;
+    }
+
+    // Slide 4: Top 3 Investor Inflow
+    const p4 = document.getElementById("slidePage-4");
+    if (p4) {
+        p4.innerHTML = `
+            <div class="slide-header-block">
+                <div class="slide-category-tag cyan"><i class="fa-solid fa-user-plus"></i> YATIRIMCI TERCİHİ</div>
+                <h2 class="slide-main-title">Günün En Çok Yatırımcı Giren 3 Fonu</h2>
+                <p class="slide-subtitle">${data.date} • Yatırımcı sayısı gün içinde en çok artış gösteren ve en çok yeni ortak çeken fonlar</p>
+            </div>
+            <div class="slide-funds-grid-3">
+                ${data.topInvestorInflow.map((f, i) => renderSlideFundCardHTML(f, i + 1, "inv-in")).join('')}
+            </div>
+        `;
+    }
+
+    // Slide 5: Top 3 Investor Outflow
+    const p5 = document.getElementById("slidePage-5");
+    if (p5) {
+        p5.innerHTML = `
+            <div class="slide-header-block">
+                <div class="slide-category-tag purple"><i class="fa-solid fa-user-minus"></i> YATIRIMCI ÇIKIŞI</div>
+                <h2 class="slide-main-title">Günün En Çok Yatırımcı Çıkan 3 Fonu</h2>
+                <p class="slide-subtitle">${data.date} • Gün içinde yatırımcı sayısı en çok azalan veya çıkış yaşanan 3 fon ve detayları</p>
+            </div>
+            <div class="slide-funds-grid-3">
+                ${data.topInvestorOutflow.map((f, i) => renderSlideFundCardHTML(f, i + 1, "inv-out")).join('')}
+            </div>
+        `;
+    }
+
+    // Slide 6: Category Breakdown
+    const p6 = document.getElementById("slidePage-6");
+    if (p6) {
+        const catRows = Object.values(data.categories || {}).map(cat => {
+            const isCashPos = (cat.cashFlow || 0) >= 0;
+            const cashSign = isCashPos ? '+' : '';
+            const cashColor = isCashPos ? '#34D399' : '#FB7185';
+
+            const isInvPos = (cat.deltaInvestors || 0) >= 0;
+            const invSign = isInvPos ? '+' : '';
+            const invColor = isInvPos ? '#34D399' : '#FB7185';
+
+            const isRetPos = (cat.avgReturn || 0) >= 0;
+            const retSign = isRetPos ? '+' : '';
+            const retColor = isRetPos ? '#34D399' : '#FB7185';
+
+            return `
+                <tr>
+                    <td style="padding: 6px 12px; font-weight: 700; color: #FFFFFF;">
+                        <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: ${cat.color}; margin-right: 6px;"></span>
+                        ${cat.name}
+                    </td>
+                    <td style="padding: 6px 12px; text-align: center; color: var(--text-secondary);">${cat.displayFundCount} Fon</td>
+                    <td style="padding: 6px 12px; text-align: right; font-weight: 700;">${formatBillionOrMillion(cat.displayAUM)}</td>
+                    <td style="padding: 6px 12px; text-align: center; color: #38BDF8; font-weight: 700;">%${cat.sharePct}%</td>
+                    <td style="padding: 6px 12px; text-align: right; font-weight: 800; color: ${cashColor};">
+                        ${cashSign}${formatBillionOrMillion(cat.cashFlow)}
+                    </td>
+                    <td style="padding: 6px 12px; text-align: right; font-weight: 700; color: ${invColor};">
+                        ${invSign}${(cat.deltaInvestors || 0).toLocaleString('tr-TR')}
+                    </td>
+                    <td style="padding: 6px 12px; text-align: right; font-weight: 800; color: ${retColor};">
+                        ${retSign}%${Math.abs(cat.avgReturn || 0).toFixed(2)}
+                    </td>
+                </tr>
+            `;
+        }).join('');
+
+        p6.innerHTML = `
+            <div class="slide-header-block">
+                <div class="slide-category-tag purple"><i class="fa-solid fa-layer-group"></i> ŞEMSİYE KATEGORİ DAĞILIMI</div>
+                <h2 class="slide-main-title">Fon Kategorileri Sermaye Dağılımı ve Liderleri</h2>
+                <p class="slide-subtitle">${data.date} • TEFAS 9 Ana Şemsiye Fon Kategorisinde Büyüklük, Para Girişi/Çıkışı ve Yatırımcı Hareketleri</p>
+            </div>
+
+            <div class="slide-cat-summary-table-wrap" style="flex: 1; overflow-y: auto;">
+                <table class="slide-cat-summary-table" style="width: 100%; border-collapse: collapse; font-size: 0.76rem;">
+                    <thead>
+                        <tr style="background: rgba(15, 23, 42, 0.9); color: var(--text-secondary); text-align: left; border-bottom: 1px solid rgba(255, 255, 255, 0.1);">
+                            <th style="padding: 8px 12px;">Fon Kategorisi</th>
+                            <th style="padding: 8px 12px; text-align: center;">Fon Sayısı</th>
+                            <th style="padding: 8px 12px; text-align: right;">Toplam Hacim (AUM)</th>
+                            <th style="padding: 8px 12px; text-align: center;">Pazar Payı</th>
+                            <th style="padding: 8px 12px; text-align: right;">Günlük Para Akışı</th>
+                            <th style="padding: 8px 12px; text-align: right;">Yatırımcı Değişimi</th>
+                            <th style="padding: 8px 12px; text-align: right;">Ort. Günlük Getiri</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${catRows}
+                    </tbody>
+                </table>
+            </div>
+        `;
+    }
+}
+
+function openFundSlideReportModal() {
+    const modal = document.getElementById("fundSlideReportModal");
+    if (!modal) return;
+
+    const data = buildSlideReportDataset();
+    slideReportDatasetCache = data;
+
+    const dateSub = document.getElementById("slideReportDateSub");
+    if (dateSub) {
+        dateSub.innerText = `${data.date} Tarihli TEFAS Piyasası Verileri`;
+    }
+
+    renderInteractiveSlides(data);
+    goToSlide(1);
+
+    modal.style.display = "flex";
+    isSlideReportModalOpen = true;
+    document.body.style.overflow = "hidden";
+}
+
+function closeFundSlideReportModal() {
+    const modal = document.getElementById("fundSlideReportModal");
+    if (!modal) return;
+    modal.style.display = "none";
+    isSlideReportModalOpen = false;
+    document.body.style.overflow = "";
+
+    if (document.fullscreenElement) {
+        document.exitFullscreen().catch(() => {});
+    }
+}
+
+function goToSlide(n) {
+    currentSlideIndex = Math.max(1, Math.min(6, n));
+
+    for (let i = 1; i <= 6; i++) {
+        const slide = document.getElementById(`slidePage-${i}`);
+        if (slide) {
+            slide.classList.toggle("active", i === currentSlideIndex);
+        }
+    }
+
+    const dots = document.querySelectorAll(".slide-dot");
+    dots.forEach((dot, idx) => {
+        dot.classList.toggle("active", idx === currentSlideIndex - 1);
+    });
+
+    const badge = document.getElementById("slideCurrentNumberBadge");
+    if (badge) {
+        badge.innerText = `Slayt ${currentSlideIndex} / 6`;
+    }
+}
+
+function navigateSlide(dir) {
+    goToSlide(currentSlideIndex + dir);
+}
+
+function toggleSlideFullscreen() {
+    const modal = document.getElementById("fundSlideReportModal");
+    const icon = document.getElementById("iconSlideFullscreen");
+    if (!modal) return;
+
+    if (!document.fullscreenElement) {
+        if (modal.requestFullscreen) {
+            modal.requestFullscreen();
+        } else if (modal.webkitRequestFullscreen) {
+            modal.webkitRequestFullscreen();
+        }
+        if (icon) {
+            icon.classList.remove("fa-expand");
+            icon.classList.add("fa-compress");
+        }
+    } else {
+        if (document.exitFullscreen) {
+            document.exitFullscreen();
+        }
+        if (icon) {
+            icon.classList.remove("fa-compress");
+            icon.classList.add("fa-expand");
+        }
+    }
+}
+
+function printSlideReport() {
+    window.print();
+}
+
+// Global Keyboard Navigation
+window.addEventListener("keydown", (e) => {
+    if (!isSlideReportModalOpen) return;
+
+    if (e.key === "ArrowLeft" || e.key === "PageUp") {
+        e.preventDefault();
+        navigateSlide(-1);
+    } else if (e.key === "ArrowRight" || e.key === "PageDown" || e.key === " " || e.key === "Enter") {
+        e.preventDefault();
+        navigateSlide(1);
+    } else if (e.key === "Escape") {
+        e.preventDefault();
+        closeFundSlideReportModal();
+    }
+});
+
+// Sync Fullscreen icon on change
+document.addEventListener("fullscreenchange", () => {
+    const icon = document.getElementById("iconSlideFullscreen");
+    if (icon) {
+        if (document.fullscreenElement) {
+            icon.classList.remove("fa-expand");
+            icon.classList.add("fa-compress");
+        } else {
+            icon.classList.remove("fa-compress");
+            icon.classList.add("fa-expand");
+        }
+    }
+});
+
+// PowerPoint (.pptx) Generator
+async function exportToPowerPoint() {
+    if (!window.PptxGenJS) {
+        alert("PowerPoint oluşturma modülü (PptxGenJS) yüklenemedi. Lütfen internet bağlantınızı kontrol edin.");
+        return;
+    }
+
+    try {
+        const data = buildSlideReportDataset();
+        const pptx = new window.PptxGenJS();
+
+        pptx.layout = 'LAYOUT_16x9';
+        pptx.author = 'Portföyüm App';
+        pptx.company = 'Portföyüm - TEFAS Fon Analiz';
+        pptx.title = `TEFAS Günlük Fon & Sermaye Akış Slayt Raporu - ${data.date}`;
+
+        const C_BG = '090E1A';
+        const C_CARD = '111827';
+        const C_BORDER = '1F2937';
+        const C_WHITE = 'FFFFFF';
+        const C_MUTED = '94A3B8';
+        const C_CYAN = '38BDF8';
+        const C_EMERALD = '10B981';
+        const C_ROSE = 'F43F5E';
+        const C_AMBER = 'F59E0B';
+        const C_PURPLE = 'A855F7';
+
+        function addSlideHeader(slide, categoryTag, title, subtitle, tagColor) {
+            slide.background = { color: C_BG };
+
+            slide.addShape(pptx.ShapeType.roundRect, {
+                x: 0.6, y: 0.4, w: 2.2, h: 0.28,
+                rectRadius: 0.06,
+                fill: { color: C_CARD },
+                line: { color: tagColor || C_CYAN, width: 1 }
+            });
+            slide.addText(categoryTag, {
+                x: 0.6, y: 0.4, w: 2.2, h: 0.28,
+                fontSize: 8.5, bold: true, color: tagColor || C_CYAN,
+                align: 'center', valign: 'middle'
+            });
+
+            slide.addText(title, {
+                x: 0.6, y: 0.72, w: 7.2, h: 0.42,
+                fontSize: 18, bold: true, color: C_WHITE,
+                fontFace: 'Arial'
+            });
+
+            slide.addText(subtitle, {
+                x: 0.6, y: 1.15, w: 7.2, h: 0.28,
+                fontSize: 9.5, color: C_MUTED,
+                fontFace: 'Arial'
+            });
+
+            slide.addText(`PORTFÖYÜM  |  ${data.date}`, {
+                x: 7.2, y: 0.45, w: 2.2, h: 0.3,
+                fontSize: 9, bold: true, color: C_CYAN,
+                align: 'right', fontFace: 'Arial'
+            });
+        }
+
+        // SLIDE 1: Executive Overview
+        const s1 = pptx.addSlide();
+        addSlideHeader(s1, 'MAKRO PİYASA RAPORU', 'TEFAS Günlük Fon & Sermaye Akışı Özeti', `${data.date} • Tüm Yatırım Fonlarında Gün İçi Para ve Yatırımcı Hareketi Dengesi`, C_CYAN);
+
+        const isCashPos = (data.totalDailyCashFlow || 0) >= 0;
+        const isInvPos = (data.totalDailyInvestors || 0) >= 0;
+
+        s1.addShape(pptx.ShapeType.roundRect, {
+            x: 0.6, y: 1.55, w: 4.25, h: 1.35,
+            rectRadius: 0.1,
+            fill: { color: C_CARD },
+            line: { color: isCashPos ? C_EMERALD : C_ROSE, width: 1.5 }
+        });
+        s1.addText('GÜNÜN TOPLAM NET PARA AKIŞI', {
+            x: 0.8, y: 1.65, w: 3.8, h: 0.25,
+            fontSize: 9, bold: true, color: C_MUTED
+        });
+        s1.addText(`${isCashPos ? '+' : ''}${formatBillionOrMillion(data.totalDailyCashFlow)}`, {
+            x: 0.8, y: 1.92, w: 3.8, h: 0.5,
+            fontSize: 22, bold: true, color: isCashPos ? C_EMERALD : C_ROSE
+        });
+        s1.addText('Tüm TEFAS fonlarında gün içi toplam net nakit sermaye hareketi', {
+            x: 0.8, y: 2.45, w: 3.8, h: 0.35,
+            fontSize: 8.5, color: C_MUTED
+        });
+
+        s1.addShape(pptx.ShapeType.roundRect, {
+            x: 5.15, y: 1.55, w: 4.25, h: 1.35,
+            rectRadius: 0.1,
+            fill: { color: C_CARD },
+            line: { color: isInvPos ? C_EMERALD : C_ROSE, width: 1.5 }
+        });
+        s1.addText('GÜNÜN TOPLAM NET YATIRIMCI AKIŞI', {
+            x: 5.35, y: 1.65, w: 3.8, h: 0.25,
+            fontSize: 9, bold: true, color: C_MUTED
+        });
+        s1.addText(`${isInvPos ? '+' : ''}${data.totalDailyInvestors.toLocaleString('tr-TR')} Kişi`, {
+            x: 5.35, y: 1.92, w: 3.8, h: 0.5,
+            fontSize: 22, bold: true, color: isInvPos ? C_EMERALD : C_ROSE
+        });
+        s1.addText('TEFAS fonlarındaki toplam tekil yatırımcı sayısı net günlük değişimi', {
+            x: 5.35, y: 2.45, w: 3.8, h: 0.35,
+            fontSize: 8.5, color: C_MUTED
+        });
+
+        const inCat = data.topCashInflowCategory;
+        s1.addShape(pptx.ShapeType.roundRect, {
+            x: 0.6, y: 3.05, w: 4.25, h: 1.35,
+            rectRadius: 0.1,
+            fill: { color: C_CARD },
+            line: { color: C_EMERALD, width: 1 }
+        });
+        s1.addText('EN ÇOK PARA GİREN FON KATEGORİSİ', {
+            x: 0.8, y: 3.15, w: 3.8, h: 0.25,
+            fontSize: 8.5, bold: true, color: C_EMERALD
+        });
+        s1.addText(inCat ? inCat.name : '—', {
+            x: 0.8, y: 3.42, w: 3.8, h: 0.45,
+            fontSize: 13, bold: true, color: C_WHITE
+        });
+        s1.addText(`Net Giriş: +${formatBillionOrMillion(inCat ? inCat.cashFlow : 0)}   |   Toplam Hacim: ${formatBillionOrMillion(inCat ? inCat.displayAUM : 0)}`, {
+            x: 0.8, y: 3.95, w: 3.8, h: 0.35,
+            fontSize: 8.5, color: C_MUTED
+        });
+
+        const outCat = data.topCashOutflowCategory;
+        s1.addShape(pptx.ShapeType.roundRect, {
+            x: 5.15, y: 3.05, w: 4.25, h: 1.35,
+            rectRadius: 0.1,
+            fill: { color: C_CARD },
+            line: { color: C_ROSE, width: 1 }
+        });
+        s1.addText('EN ÇOK PARA ÇIKAN FON KATEGORİSİ', {
+            x: 5.35, y: 3.15, w: 3.8, h: 0.25,
+            fontSize: 8.5, bold: true, color: C_ROSE
+        });
+        s1.addText(outCat ? outCat.name : '—', {
+            x: 5.35, y: 3.42, w: 3.8, h: 0.45,
+            fontSize: 13, bold: true, color: C_WHITE
+        });
+        s1.addText(`Net Çıkış: ${formatBillionOrMillion(outCat ? outCat.cashFlow : 0)}   |   Toplam Hacim: ${formatBillionOrMillion(outCat ? outCat.displayAUM : 0)}`, {
+            x: 5.35, y: 3.95, w: 3.8, h: 0.35,
+            fontSize: 8.5, color: C_MUTED
+        });
+
+        s1.addShape(pptx.ShapeType.roundRect, {
+            x: 0.6, y: 4.55, w: 8.8, h: 0.55,
+            rectRadius: 0.08,
+            fill: { color: '0D1527' },
+            line: { color: C_BORDER, width: 1 }
+        });
+        s1.addText(`Toplam Taranan Fon: ${data.totalFunds.toLocaleString('tr-TR')} Fon   •   Toplam Portföy Büyüklüğü: ${formatBillionOrMillion(data.totalAUM)}   •   Şemsiye Kategori Sayısı: 9   •   Kaynak: TEFAS / Takasbank`, {
+            x: 0.8, y: 4.55, w: 8.4, h: 0.55,
+            fontSize: 9, bold: true, color: C_CYAN,
+            align: 'center', valign: 'middle'
+        });
+
+        function addTop3FundsSlide(categoryTag, title, subtitle, tagColor, fundsList, mode) {
+            const slide = pptx.addSlide();
+            addSlideHeader(slide, categoryTag, title, subtitle, tagColor);
+
+            const cardW = 2.8;
+            const gap = 0.2;
+            const startX = 0.6;
+            const cardY = 1.55;
+            const cardH = 3.65;
+
+            (fundsList || []).slice(0, 3).forEach((f, idx) => {
+                const x = startX + idx * (cardW + gap);
+                const catKey = f.category || (typeof detectFundCategoryKey === 'function' ? detectFundCategoryKey(f.name, f.code) : 'DİĞER');
+                const reg = (typeof TEFAS_CATEGORIES_REGISTRY !== 'undefined' && TEFAS_CATEGORIES_REGISTRY[catKey]) 
+                    ? TEFAS_CATEGORIES_REGISTRY[catKey] 
+                    : { shortName: "Fon", color: "#38BDF8" };
+
+                const cleanName = typeof cleanFundTitle === 'function' ? cleanFundTitle(f.name) : (f.name || f.code);
+                const isRetPos = (f.change || 0) >= 0;
+                const isCashPos = (f.cashFlow || 0) >= 0;
+                const isInvPos = (f.deltaInvestors || 0) >= 0;
+
+                slide.addShape(pptx.ShapeType.roundRect, {
+                    x, y: cardY, w: cardW, h: cardH,
+                    rectRadius: 0.1,
+                    fill: { color: C_CARD },
+                    line: { color: C_BORDER, width: 1 }
+                });
+
+                const rankColors = [C_AMBER, '94A3B8', 'B45309'];
+                slide.addShape(pptx.ShapeType.roundRect, {
+                    x: x + 0.15, y: cardY + 0.15, w: 0.45, h: 0.35,
+                    rectRadius: 0.06,
+                    fill: { color: rankColors[idx] || C_MUTED }
+                });
+                slide.addText(`#${idx + 1}`, {
+                    x: x + 0.15, y: cardY + 0.15, w: 0.45, h: 0.35,
+                    fontSize: 10, bold: true, color: C_WHITE,
+                    align: 'center', valign: 'middle'
+                });
+
+                slide.addText(f.code, {
+                    x: x + 0.68, y: cardY + 0.12, w: 1.95, h: 0.25,
+                    fontSize: 13, bold: true, color: C_CYAN
+                });
+
+                slide.addText(reg.shortName, {
+                    x: x + 0.68, y: cardY + 0.34, w: 1.95, h: 0.2,
+                    fontSize: 7.5, bold: true, color: C_MUTED
+                });
+
+                slide.addText(cleanName, {
+                    x: x + 0.15, y: cardY + 0.58, w: cardW - 0.3, h: 0.4,
+                    fontSize: 8.5, bold: true, color: C_WHITE
+                });
+
+                slide.addShape(pptx.ShapeType.roundRect, {
+                    x: x + 0.15, y: cardY + 1.05, w: cardW - 0.3, h: 0.85,
+                    rectRadius: 0.08,
+                    fill: { color: '0A101D' },
+                    line: { color: '1E293B', width: 1 }
+                });
+
+                let heroLbl = "";
+                let heroVal = "";
+                let heroCol = C_WHITE;
+                let subText = "";
+
+                if (mode === "cash-in") {
+                    heroLbl = "GÜNLÜK NET PARA GİRİŞİ";
+                    heroVal = `+${formatBillionOrMillion(f.cashFlow)}`;
+                    heroCol = C_EMERALD;
+                    subText = `Yatırımcı: ${isInvPos ? '+' : ''}${f.deltaInvestors.toLocaleString('tr-TR')} Kişi`;
+                } else if (mode === "cash-out") {
+                    heroLbl = "GÜNLÜK NET PARA ÇIKIŞI";
+                    heroVal = `${formatBillionOrMillion(f.cashFlow)}`;
+                    heroCol = C_ROSE;
+                    subText = `Yatırımcı: ${isInvPos ? '+' : ''}${f.deltaInvestors.toLocaleString('tr-TR')} Kişi`;
+                } else if (mode === "inv-in") {
+                    heroLbl = "YATIRIMCI ARTIŞI";
+                    heroVal = `+${f.deltaInvestors.toLocaleString('tr-TR')} Kişi`;
+                    heroCol = C_EMERALD;
+                    subText = `Para Akışı: ${isCashPos ? '+' : ''}${formatBillionOrMillion(f.cashFlow)}`;
+                } else {
+                    heroLbl = "YATIRIMCI AZALIŞI";
+                    heroVal = `${f.deltaInvestors.toLocaleString('tr-TR')} Kişi`;
+                    heroCol = C_ROSE;
+                    subText = `Para Akışı: ${isCashPos ? '+' : ''}${formatBillionOrMillion(f.cashFlow)}`;
+                }
+
+                slide.addText(heroLbl, {
+                    x: x + 0.22, y: cardY + 1.1, w: cardW - 0.44, h: 0.2,
+                    fontSize: 7.5, bold: true, color: C_MUTED
+                });
+                slide.addText(heroVal, {
+                    x: x + 0.22, y: cardY + 1.28, w: cardW - 0.44, h: 0.38,
+                    fontSize: 15, bold: true, color: heroCol
+                });
+                slide.addText(subText, {
+                    x: x + 0.22, y: cardY + 1.66, w: cardW - 0.44, h: 0.2,
+                    fontSize: 7.5, color: C_MUTED
+                });
+
+                const rows = [
+                    [{ text: "Pay Fiyatı", options: { color: C_MUTED, fontSize: 8 } }, { text: formatFundPriceDisplay(f.price), options: { color: C_WHITE, bold: true, fontSize: 8, align: 'right' } }],
+                    [{ text: "Günlük Getiri", options: { color: C_MUTED, fontSize: 8 } }, { text: `${isRetPos ? '+' : ''}%${Math.abs(f.change || 0).toFixed(2)}`, options: { color: isRetPos ? C_EMERALD : C_ROSE, bold: true, fontSize: 8, align: 'right' } }],
+                    [{ text: "Fon Büyüklüğü", options: { color: C_MUTED, fontSize: 8 } }, { text: formatBillionOrMillion(f.aum), options: { color: C_WHITE, bold: true, fontSize: 8, align: 'right' } }],
+                    [{ text: "Toplam Yatırımcı", options: { color: C_MUTED, fontSize: 8 } }, { text: `${(f.investors || 0).toLocaleString('tr-TR')} Kişi`, options: { color: C_WHITE, bold: true, fontSize: 8, align: 'right' } }],
+                    [{ text: "Kişi Başı Akış", options: { color: C_MUTED, fontSize: 8 } }, { text: f.perPerson ? `₺${Math.round(f.perPerson).toLocaleString('tr-TR')}` : '—', options: { color: C_CYAN, bold: true, fontSize: 8, align: 'right' } }]
+                ];
+
+                slide.addTable(rows, {
+                    x: x + 0.15, y: cardY + 2.05, w: cardW - 0.3, h: 1.45,
+                    border: { type: 'none' },
+                    colW: [1.3, 1.2],
+                    rowH: 0.27
+                });
+            });
+        }
+
+        addTop3FundsSlide('SERMAYE GİRİŞİ LİDERLERİ', 'Günün En Çok Para Girişi Olan 3 Fonu', `${data.date} • Bugün TEFAS'ta portföyüne en yüksek net nakit girişi sağlayan lider 3 fon`, C_EMERALD, data.topCashInflow, 'cash-in');
+        addTop3FundsSlide('SERMAYE ÇIKIŞI LİDERLERİ', 'Günün En Çok Para Çıkışı Olan 3 Fonu', `${data.date} • Bugün portföyünden en yüksek net sermaye çıkışı gerçekleşen fonlar ve ayrıntıları`, C_ROSE, data.topCashOutflow, 'cash-out');
+        addTop3FundsSlide('YATIRIMCI TERCİHİ', 'Günün En Çok Yatırımcı Giren 3 Fonu', `${data.date} • Yatırımcı sayısı gün içinde en çok artış gösteren ve en çok yeni ortak çeken fonlar`, C_CYAN, data.topInvestorInflow, 'inv-in');
+        addTop3FundsSlide('YATIRIMCI ÇIKIŞI', 'Günün En Çok Yatırımcı Çıkan 3 Fonu', `${data.date} • Gün içinde yatırımcı sayısı en çok azalan veya çıkış yaşanan 3 fon ve detayları`, C_PURPLE, data.topInvestorOutflow, 'inv-out');
+
+        // SLIDE 6: Categories Breakdown Table
+        const s6 = pptx.addSlide();
+        addSlideHeader(s6, 'ŞEMSİYE KATEGORİ DAĞILIMI', 'Fon Kategorileri Sermaye Dağılımı ve Liderleri', `${data.date} • TEFAS 9 Ana Şemsiye Fon Kategorisinde Büyüklük, Para Girişi/Çıkışı ve Yatırımcı Hareketleri`, C_PURPLE);
+
+        s6.addShape(pptx.ShapeType.roundRect, {
+            x: 0.6, y: 1.5, w: 4.25, h: 0.75,
+            rectRadius: 0.08,
+            fill: { color: C_CARD },
+            line: { color: C_EMERALD, width: 1 }
+        });
+        s6.addText(`GİRİŞ LİDERİ: ${inCat ? inCat.name : '—'} (+${formatBillionOrMillion(inCat ? inCat.cashFlow : 0)})`, {
+            x: 0.8, y: 1.5, w: 3.8, h: 0.75,
+            fontSize: 9.5, bold: true, color: C_EMERALD, valign: 'middle'
+        });
+
+        s6.addShape(pptx.ShapeType.roundRect, {
+            x: 5.15, y: 1.5, w: 4.25, h: 0.75,
+            rectRadius: 0.08,
+            fill: { color: C_CARD },
+            line: { color: C_ROSE, width: 1 }
+        });
+        s6.addText(`ÇIKIŞ LİDERİ: ${outCat ? outCat.name : '—'} (${formatBillionOrMillion(outCat ? outCat.cashFlow : 0)})`, {
+            x: 5.35, y: 1.5, w: 3.8, h: 0.75,
+            fontSize: 9.5, bold: true, color: C_ROSE, valign: 'middle'
+        });
+
+        const catTableRows = [
+            [
+                { text: "Fon Kategorisi", options: { bold: true, color: C_MUTED, fill: { color: '1E293B' } } },
+                { text: "Fon Sayısı", options: { bold: true, color: C_MUTED, align: 'center', fill: { color: '1E293B' } } },
+                { text: "Hacim (AUM)", options: { bold: true, color: C_MUTED, align: 'right', fill: { color: '1E293B' } } },
+                { text: "Pazar Payı", options: { bold: true, color: C_MUTED, align: 'center', fill: { color: '1E293B' } } },
+                { text: "Günlük Para Akışı", options: { bold: true, color: C_MUTED, align: 'right', fill: { color: '1E293B' } } },
+                { text: "Yatırımcı Değişimi", options: { bold: true, color: C_MUTED, align: 'right', fill: { color: '1E293B' } } },
+                { text: "Ort. Getiri", options: { bold: true, color: C_MUTED, align: 'right', fill: { color: '1E293B' } } }
+            ]
+        ];
+
+        Object.values(data.categories || {}).forEach(cat => {
+            const isCashP = (cat.cashFlow || 0) >= 0;
+            const isInvP = (cat.deltaInvestors || 0) >= 0;
+            const isRetP = (cat.avgReturn || 0) >= 0;
+
+            catTableRows.push([
+                { text: cat.name, options: { color: C_WHITE, bold: true, fontSize: 8 } },
+                { text: `${cat.displayFundCount}`, options: { color: C_MUTED, align: 'center', fontSize: 8 } },
+                { text: formatBillionOrMillion(cat.displayAUM), options: { color: C_WHITE, align: 'right', fontSize: 8, bold: true } },
+                { text: `%${cat.sharePct}%`, options: { color: C_CYAN, align: 'center', fontSize: 8, bold: true } },
+                { text: `${isCashP ? '+' : ''}${formatBillionOrMillion(cat.cashFlow)}`, options: { color: isCashP ? C_EMERALD : C_ROSE, align: 'right', fontSize: 8, bold: true } },
+                { text: `${isInvP ? '+' : ''}${(cat.deltaInvestors || 0).toLocaleString('tr-TR')}`, options: { color: isInvP ? C_EMERALD : C_ROSE, align: 'right', fontSize: 8, bold: true } },
+                { text: `${isRetP ? '+' : ''}%${Math.abs(cat.avgReturn || 0).toFixed(2)}`, options: { color: isRetP ? C_EMERALD : C_ROSE, align: 'right', fontSize: 8, bold: true } }
+            ]);
+        });
+
+        s6.addTable(catTableRows, {
+            x: 0.6, y: 2.4, w: 8.8, h: 2.8,
+            colW: [2.5, 0.9, 1.2, 0.9, 1.3, 1.1, 0.9],
+            rowH: 0.26,
+            border: { type: 'solid', color: '1F2937', pt: 0.5 }
+        });
+
+        const safeDate = (data.date || 'bugun').replace(/[^0-9a-zA-Z_-]/g, '_');
+        await pptx.writeFile({ fileName: `TEFAS_Gunluk_Akis_Slayt_Raporu_${safeDate}.pptx` });
+
+    } catch (err) {
+        console.error("PowerPoint generation error:", err);
+        alert("PowerPoint dosyası oluşturulurken bir hata oluştu: " + (err.message || err));
+    }
+}
+
+// Global window bindings
+window.openFundSlideReportModal = openFundSlideReportModal;
+window.closeFundSlideReportModal = closeFundSlideReportModal;
+window.goToSlide = goToSlide;
+window.navigateSlide = navigateSlide;
+window.toggleSlideFullscreen = toggleSlideFullscreen;
+window.printSlideReport = printSlideReport;
+window.exportToPowerPoint = exportToPowerPoint;
+window.buildSlideReportDataset = buildSlideReportDataset;
+window.renderInteractiveSlides = renderInteractiveSlides;
+

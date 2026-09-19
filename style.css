@@ -11679,6 +11679,827 @@ body.theme-neo-brutalism .sort-option.active {
     }
 }
 
+/* ==========================================================================
+   TEFAS SLIDE PRESENTATION & POWERPOINT EXPORT STYLES
+   ========================================================================== */
+
+/* Subnav Export Trigger Pill */
+.fund-subnav-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 22px;
+}
+
+.btn-slide-export-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 18px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, rgba(168, 85, 247, 0.22) 0%, rgba(139, 92, 246, 0.12) 100%);
+    border: 1px solid rgba(168, 85, 247, 0.45);
+    color: #C084FC;
+    font-size: 0.85rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.24s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 4px 16px -2px rgba(168, 85, 247, 0.3);
+    user-select: none;
+}
+
+.btn-slide-export-pill:hover {
+    background: linear-gradient(135deg, rgba(168, 85, 247, 0.35) 0%, rgba(139, 92, 246, 0.22) 100%);
+    color: #FFFFFF;
+    border-color: #C084FC;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px -4px rgba(168, 85, 247, 0.45);
+}
+
+.slide-export-badge {
+    background: linear-gradient(135deg, #A855F7 0%, #7C3AED 100%);
+    color: #FFFFFF;
+    font-size: 0.65rem;
+    font-weight: 800;
+    padding: 2px 7px;
+    border-radius: 6px;
+    letter-spacing: 0.5px;
+    box-shadow: 0 0 8px rgba(168, 85, 247, 0.5);
+}
+
+/* Header Mini Trigger Button */
+.btn-slide-export-mini {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 13px;
+    border-radius: 10px;
+    background: rgba(168, 85, 247, 0.14);
+    border: 1px solid rgba(168, 85, 247, 0.32);
+    color: #C084FC;
+    font-size: 0.76rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-slide-export-mini:hover {
+    background: rgba(168, 85, 247, 0.25);
+    border-color: #C084FC;
+    color: #FFFFFF;
+    box-shadow: 0 0 12px rgba(168, 85, 247, 0.35);
+}
+
+/* Slide Modal Overlay */
+.slide-modal-container {
+    position: fixed;
+    inset: 0;
+    z-index: 100000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.slide-modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(6, 10, 22, 0.88);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    z-index: 100001;
+    animation: fadeIn 0.2s ease;
+}
+
+.slide-modal-dialog {
+    position: relative;
+    z-index: 100002;
+    width: 100%;
+    max-width: 1240px;
+    max-height: 94vh;
+    display: flex;
+    flex-direction: column;
+    background: linear-gradient(145deg, rgba(15, 23, 42, 0.97) 0%, rgba(10, 15, 29, 0.98) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 24px;
+    box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.85), 0 0 40px rgba(168, 85, 247, 0.2);
+    overflow: hidden;
+    animation: slideUpScale 0.26s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes slideUpScale {
+    from {
+        opacity: 0;
+        transform: scale(0.96) translateY(12px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+/* Modal Top Bar */
+.slide-modal-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 24px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(15, 23, 42, 0.6);
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.slide-topbar-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.slide-topbar-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, rgba(168, 85, 247, 0.24) 0%, rgba(139, 92, 246, 0.12) 100%);
+    border: 1px solid rgba(168, 85, 247, 0.45);
+    color: #C084FC;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    box-shadow: 0 0 14px rgba(168, 85, 247, 0.3);
+}
+
+.slide-topbar-title-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.slide-topbar-title {
+    font-size: 1.12rem;
+    font-weight: 800;
+    color: #FFFFFF;
+    margin: 0;
+    letter-spacing: -0.3px;
+}
+
+.slide-badge-pill {
+    background: rgba(168, 85, 247, 0.16);
+    border: 1px solid rgba(168, 85, 247, 0.35);
+    color: #C084FC;
+    font-size: 0.72rem;
+    font-weight: 800;
+    padding: 2px 9px;
+    border-radius: 6px;
+}
+
+.slide-topbar-sub {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+.slide-topbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-slide-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 14px;
+    border-radius: 10px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    user-select: none;
+}
+
+.btn-slide-action.pptx {
+    background: linear-gradient(135deg, rgba(234, 88, 12, 0.22) 0%, rgba(249, 115, 22, 0.12) 100%);
+    border: 1px solid rgba(249, 115, 22, 0.45);
+    color: #FB923C;
+}
+
+.btn-slide-action.pptx:hover {
+    background: linear-gradient(135deg, rgba(234, 88, 12, 0.35) 0%, rgba(249, 115, 22, 0.22) 100%);
+    color: #FFFFFF;
+    border-color: #FB923C;
+    box-shadow: 0 0 14px rgba(249, 115, 22, 0.35);
+}
+
+.btn-slide-action.pdf {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: #E2E8F0;
+}
+
+.btn-slide-action.pdf:hover {
+    background: rgba(255, 255, 255, 0.12);
+    color: #FFFFFF;
+}
+
+.btn-slide-action.fullscreen {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: #E2E8F0;
+    padding: 7px 10px;
+}
+
+.btn-slide-close {
+    width: 32px;
+    height: 32px;
+    border-radius: 9px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #94A3B8;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.95rem;
+    transition: all 0.2s ease;
+}
+
+.btn-slide-close:hover {
+    background: rgba(244, 63, 94, 0.2);
+    border-color: rgba(244, 63, 94, 0.4);
+    color: #FB7185;
+}
+
+/* 16:9 Presentation Stage */
+.slide-stage-viewport {
+    position: relative;
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #090E1A;
+    padding: 24px;
+}
+
+.slide-aspect-box {
+    width: 100%;
+    max-width: 1160px;
+    min-height: 540px;
+    position: relative;
+    background: linear-gradient(135deg, rgba(17, 24, 39, 0.95) 0%, rgba(13, 20, 36, 0.98) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.09);
+    border-radius: 20px;
+    box-shadow: 0 16px 40px -10px rgba(0, 0, 0, 0.8);
+    display: flex;
+    overflow: hidden;
+}
+
+.slide-deck-container {
+    width: 100%;
+    display: flex;
+    position: relative;
+}
+
+.slide-page {
+    width: 100%;
+    display: none;
+    padding: 32px 36px;
+    box-sizing: border-box;
+    animation: fadeInSlide 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.slide-page.active {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+@keyframes fadeInSlide {
+    from {
+        opacity: 0;
+        transform: translateX(14px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* Floating Stage Navigation Arrows */
+.slide-arrow-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: rgba(15, 23, 42, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #FFFFFF;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    cursor: pointer;
+    z-index: 10;
+    transition: all 0.2s ease;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.5);
+}
+
+.slide-arrow-btn:hover {
+    background: #38BDF8;
+    color: #0F172A;
+    border-color: #38BDF8;
+    box-shadow: 0 0 16px rgba(56, 189, 248, 0.5);
+}
+
+.slide-arrow-btn.prev {
+    left: 8px;
+}
+
+.slide-arrow-btn.next {
+    right: 8px;
+}
+
+/* Slide Typography & Structure */
+.slide-header-block {
+    margin-bottom: 24px;
+}
+
+.slide-category-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 10px;
+    border-radius: 8px;
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+}
+
+.slide-category-tag.cyan {
+    background: rgba(56, 189, 248, 0.14);
+    color: #38BDF8;
+    border: 1px solid rgba(56, 189, 248, 0.35);
+}
+
+.slide-category-tag.emerald {
+    background: rgba(16, 185, 129, 0.14);
+    color: #34D399;
+    border: 1px solid rgba(16, 185, 129, 0.35);
+}
+
+.slide-category-tag.rose {
+    background: rgba(244, 63, 94, 0.14);
+    color: #FB7185;
+    border: 1px solid rgba(244, 63, 94, 0.35);
+}
+
+.slide-category-tag.purple {
+    background: rgba(168, 85, 247, 0.14);
+    color: #C084FC;
+    border: 1px solid rgba(168, 85, 247, 0.35);
+}
+
+.slide-main-title {
+    font-size: 1.55rem;
+    font-weight: 800;
+    color: #FFFFFF;
+    margin: 0 0 6px 0;
+    letter-spacing: -0.4px;
+}
+
+.slide-subtitle {
+    font-size: 0.84rem;
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+/* Slide 1: Executive Macro Cards Grid */
+.slide-macro-grid-top {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+.slide-macro-card {
+    padding: 20px;
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.035);
+    border: 1px solid rgba(255, 255, 255, 0.09);
+    position: relative;
+    overflow: hidden;
+}
+
+.slide-macro-card.emerald {
+    border-color: rgba(16, 185, 129, 0.35);
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.12) 0%, rgba(5, 150, 105, 0.04) 100%);
+}
+
+.slide-macro-card.rose {
+    border-color: rgba(244, 63, 94, 0.35);
+    background: linear-gradient(135deg, rgba(244, 63, 94, 0.12) 0%, rgba(225, 29, 72, 0.04) 100%);
+}
+
+.slide-macro-card.cyan {
+    border-color: rgba(56, 189, 248, 0.35);
+    background: linear-gradient(135deg, rgba(56, 189, 248, 0.12) 0%, rgba(14, 165, 233, 0.04) 100%);
+}
+
+.slide-macro-card.purple {
+    border-color: rgba(168, 85, 247, 0.35);
+    background: linear-gradient(135deg, rgba(168, 85, 247, 0.12) 0%, rgba(139, 92, 246, 0.04) 100%);
+}
+
+.slide-macro-label {
+    font-size: 0.74rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 8px;
+}
+
+.slide-macro-val {
+    font-size: 1.85rem;
+    font-weight: 800;
+    line-height: 1.1;
+    margin-bottom: 6px;
+}
+
+.slide-macro-sub {
+    font-size: 0.78rem;
+    color: var(--text-secondary);
+}
+
+.slide-macro-grid-bottom {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+}
+
+.slide-mini-stat {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 12px;
+    padding: 12px 14px;
+}
+
+.slide-mini-stat-lbl {
+    font-size: 0.68rem;
+    color: var(--text-secondary);
+    margin-bottom: 4px;
+}
+
+.slide-mini-stat-val {
+    font-size: 1rem;
+    font-weight: 800;
+    color: #FFFFFF;
+}
+
+/* Slides 2, 3, 4, 5: 3-Fund Detailed Cards Grid */
+.slide-funds-grid-3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    flex: 1;
+}
+
+.slide-fund-card {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0.015) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 18px;
+    padding: 18px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
+}
+
+.slide-fund-card-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 12px;
+}
+
+.slide-rank-badge {
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.82rem;
+    font-weight: 800;
+    flex-shrink: 0;
+}
+
+.slide-rank-badge.rank-1 {
+    background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+    color: #FFFFFF;
+    box-shadow: 0 0 10px rgba(245, 158, 11, 0.5);
+}
+
+.slide-rank-badge.rank-2 {
+    background: linear-gradient(135deg, #94A3B8 0%, #64748B 100%);
+    color: #FFFFFF;
+}
+
+.slide-rank-badge.rank-3 {
+    background: linear-gradient(135deg, #B45309 0%, #78350F 100%);
+    color: #FFFFFF;
+}
+
+.slide-fund-identity {
+    flex: 1;
+    min-width: 0;
+}
+
+.slide-fund-code-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 3px;
+}
+
+.slide-code-badge {
+    font-size: 0.88rem;
+    font-weight: 800;
+    color: #38BDF8;
+    background: rgba(56, 189, 248, 0.14);
+    border: 1px solid rgba(56, 189, 248, 0.3);
+    padding: 2px 7px;
+    border-radius: 6px;
+    letter-spacing: 0.4px;
+}
+
+.slide-fund-fullname {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: #F1F5F9;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
+    margin-bottom: 2px;
+}
+
+.slide-fund-cat-name {
+    font-size: 0.7rem;
+    color: var(--text-secondary);
+}
+
+/* Slide Fund Hero Metric */
+.slide-fund-hero-box {
+    background: rgba(0, 0, 0, 0.25);
+    border-radius: 12px;
+    padding: 12px;
+    margin-bottom: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.slide-fund-hero-lbl {
+    font-size: 0.68rem;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-bottom: 2px;
+}
+
+.slide-fund-hero-num {
+    font-size: 1.45rem;
+    font-weight: 800;
+    letter-spacing: -0.3px;
+}
+
+.slide-fund-hero-num.pos {
+    color: #34D399;
+}
+
+.slide-fund-hero-num.neg {
+    color: #FB7185;
+}
+
+/* Slide Fund Detail Metrics Table */
+.slide-fund-detail-table {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    font-size: 0.74rem;
+}
+
+.slide-fund-detail-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 5px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.slide-fund-detail-row:last-child {
+    border-bottom: none;
+}
+
+.slide-detail-lbl {
+    color: var(--text-secondary);
+}
+
+.slide-detail-val {
+    font-weight: 700;
+    color: #E2E8F0;
+}
+
+/* Slide 6: Category Comparison Table */
+.slide-cat-comparison-wrap {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+.slide-cat-summary-table-wrap {
+    background: rgba(0, 0, 0, 0.25);
+    border-radius: 14px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    overflow: hidden;
+}
+
+.slide-cat-summary-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.76rem;
+}
+
+.slide-cat-summary-table th {
+    background: rgba(15, 23, 42, 0.85);
+    color: var(--text-secondary);
+    padding: 9px 12px;
+    text-align: left;
+    font-weight: 700;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.slide-cat-summary-table td {
+    padding: 8px 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.slide-cat-summary-table tr:last-child td {
+    border-bottom: none;
+}
+
+/* Modal Bottom Navigation Bar */
+.slide-bottom-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 24px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(15, 23, 42, 0.7);
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.slide-nav-controls {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.btn-slide-nav-prev,
+.btn-slide-nav-next {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 16px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: #FFFFFF;
+    font-size: 0.8rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-slide-nav-prev:hover,
+.btn-slide-nav-next:hover {
+    background: #38BDF8;
+    color: #0F172A;
+    border-color: #38BDF8;
+    box-shadow: 0 0 12px rgba(56, 189, 248, 0.4);
+}
+
+.slide-dots-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.slide-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    cursor: pointer;
+    transition: all 0.24s ease;
+    padding: 0;
+}
+
+.slide-dot:hover {
+    background: rgba(255, 255, 255, 0.5);
+    transform: scale(1.2);
+}
+
+.slide-dot.active {
+    width: 26px;
+    border-radius: 9999px;
+    background: linear-gradient(135deg, #38BDF8 0%, #818CF8 100%);
+    box-shadow: 0 0 10px rgba(56, 189, 248, 0.6);
+}
+
+.slide-bottom-hint {
+    font-size: 0.74rem;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* Fullscreen Mode */
+.slide-modal-dialog.fullscreen-mode {
+    max-width: 100vw;
+    width: 100vw;
+    max-height: 100vh;
+    height: 100vh;
+    border-radius: 0;
+    border: none;
+}
+
+.slide-modal-dialog.fullscreen-mode .slide-stage-viewport {
+    padding: 40px;
+}
+
+/* Print Styles for PDF Export */
+@media print {
+    body * {
+        visibility: hidden;
+    }
+    #fundSlideReportModal, #fundSlideReportModal * {
+        visibility: visible;
+    }
+    #fundSlideReportModal {
+        position: absolute;
+        inset: 0;
+        background: #FFFFFF !important;
+        padding: 0 !important;
+    }
+    .slide-modal-topbar,
+    .slide-bottom-bar,
+    .slide-arrow-btn,
+    .slide-modal-backdrop {
+        display: none !important;
+    }
+    .slide-page {
+        display: block !important;
+        page-break-after: always;
+        color: #000000 !important;
+        background: #FFFFFF !important;
+    }
+}
+
+/* Media Queries for Smaller Screens */
+@media (max-width: 900px) {
+    .slide-funds-grid-3 {
+        grid-template-columns: 1fr;
+    }
+    .slide-macro-grid-top {
+        grid-template-columns: 1fr;
+    }
+    .slide-macro-grid-bottom {
+        grid-template-columns: 1fr 1fr;
+    }
+    .slide-cat-comparison-wrap {
+        grid-template-columns: 1fr;
+    }
+}
+
+
 
 
 

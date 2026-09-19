@@ -23,6 +23,8 @@
     <!-- ExcelJS for Modern Excel Export -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <!-- PptxGenJS for PowerPoint (.pptx) Slide Presentation Export -->
+    <script src="https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js"></script>
     <link rel="stylesheet" href="style.css?v=21">    <style>
         /* Refresh Button Loading Animation */
         .icon-btn.loading i {
@@ -859,6 +861,11 @@
                                 <span class="fund-pulse-dot"></span>
                             </button>
                         </div>
+                        <button type="button" class="btn-slide-export-pill" onclick="openFundSlideReportModal()" title="Günün TEFAS verilerini PowerPoint (.pptx) ve canlı slayt sunumu olarak dışarı aktar">
+                            <i class="fa-solid fa-file-powerpoint"></i>
+                            <span>Slayt Raporu İndir</span>
+                            <span class="slide-export-badge">PPTX</span>
+                        </button>
                     </div>
 
                     <!-- SUBVIEW 2-A: TEKİL FON ANALİZİ (MEVCUT) -->
@@ -1310,6 +1317,10 @@
                                 <i class="fa-solid fa-arrows-rotate"></i>
                                 <span>Yenile</span>
                             </button>
+                            <button type="button" class="btn-slide-export-mini" onclick="openFundSlideReportModal()" title="Günün Slayt Raporu ve PPTX İndir">
+                                <i class="fa-solid fa-file-powerpoint"></i>
+                                <span>Slayt Raporu</span>
+                            </button>
                         </div>
                     </div>
 
@@ -1468,6 +1479,10 @@
                             <button type="button" class="btn-refresh-leaders" onclick="loadAndRenderFundLeaders(true)" title="Verileri Yenile">
                                 <i class="fa-solid fa-arrows-rotate"></i>
                                 <span>Yenile</span>
+                            </button>
+                            <button type="button" class="btn-slide-export-mini" onclick="openFundSlideReportModal()" title="Günün Slayt Raporu ve PPTX İndir">
+                                <i class="fa-solid fa-file-powerpoint"></i>
+                                <span>Slayt Raporu</span>
                             </button>
                         </div>
                     </div>
@@ -2492,6 +2507,105 @@
                             </table>
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==========================================================================
+         TEFAS SLIDE PRESENTATION & REPORT MODAL (16:9 Cinema / Full Screen / PPTX Export)
+         ========================================================================== -->
+    <div id="fundSlideReportModal" class="slide-modal-container" style="display: none;">
+        <div class="slide-modal-backdrop" onclick="closeFundSlideReportModal()"></div>
+        <div class="slide-modal-dialog">
+            <!-- Modal Header Toolbar -->
+            <div class="slide-modal-topbar">
+                <div class="slide-topbar-left">
+                    <div class="slide-topbar-icon">
+                        <i class="fa-solid fa-file-powerpoint"></i>
+                    </div>
+                    <div>
+                        <div class="slide-topbar-title-row">
+                            <h3 class="slide-topbar-title">TEFAS Günlük Fon & Sermaye Akış Slayt Raporu</h3>
+                            <span class="slide-badge-pill" id="slideCurrentNumberBadge">Slayt 1 / 6</span>
+                        </div>
+                        <span class="slide-topbar-sub" id="slideReportDateSub">Canlı TEFAS Verileri</span>
+                    </div>
+                </div>
+                <div class="slide-topbar-actions">
+                    <button type="button" class="btn-slide-action pptx" onclick="exportToPowerPoint()" title="Düzenlenebilir PowerPoint (.pptx) Dosyası Olarak İndir">
+                        <i class="fa-solid fa-download"></i>
+                        <span>PowerPoint (.pptx) İndir</span>
+                    </button>
+                    <button type="button" class="btn-slide-action pdf" onclick="printSlideReport()" title="Yazdır veya PDF Olarak Kaydet">
+                        <i class="fa-solid fa-print"></i>
+                        <span>PDF / Yazdır</span>
+                    </button>
+                    <button type="button" class="btn-slide-action fullscreen" onclick="toggleSlideFullscreen()" title="Tam Ekran Sunum Modu">
+                        <i class="fa-solid fa-expand" id="iconSlideFullscreen"></i>
+                    </button>
+                    <button type="button" class="btn-slide-close" onclick="closeFundSlideReportModal()" title="Kapat (ESC)">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- 16:9 Presentation Stage Viewport -->
+            <div class="slide-stage-viewport">
+                <div class="slide-aspect-box" id="slideAspectBox">
+                    <!-- Slides Deck Container -->
+                    <div class="slide-deck-container" id="slideDeckContainer">
+                        <!-- Slide 1: Executive Overview -->
+                        <div class="slide-page active" id="slidePage-1" data-slide="1"></div>
+                        <!-- Slide 2: Top 3 Cash Inflow Funds -->
+                        <div class="slide-page" id="slidePage-2" data-slide="2"></div>
+                        <!-- Slide 3: Top 3 Cash Outflow Funds -->
+                        <div class="slide-page" id="slidePage-3" data-slide="3"></div>
+                        <!-- Slide 4: Top 3 Investor Inflow Funds -->
+                        <div class="slide-page" id="slidePage-4" data-slide="4"></div>
+                        <!-- Slide 5: Top 3 Investor Outflow Funds -->
+                        <div class="slide-page" id="slidePage-5" data-slide="5"></div>
+                        <!-- Slide 6: Category Breakdown & Flow Leader Categories -->
+                        <div class="slide-page" id="slidePage-6" data-slide="6"></div>
+                    </div>
+                </div>
+
+                <!-- Floating Prev / Next Controls on Stage -->
+                <button type="button" class="slide-arrow-btn prev" onclick="navigateSlide(-1)" title="Önceki Slayt (Sol Ok)">
+                    <i class="fa-solid fa-chevron-left"></i>
+                </button>
+                <button type="button" class="slide-arrow-btn next" onclick="navigateSlide(1)" title="Sonraki Slayt (Sağ Ok)">
+                    <i class="fa-solid fa-chevron-right"></i>
+                </button>
+            </div>
+
+            <!-- Bottom Navigation Bar -->
+            <div class="slide-bottom-bar">
+                <div class="slide-nav-controls">
+                    <button type="button" class="btn-slide-nav-prev" onclick="navigateSlide(-1)">
+                        <i class="fa-solid fa-arrow-left"></i>
+                        <span>Önceki</span>
+                    </button>
+                    
+                    <!-- 6 Slide Indicator Dots -->
+                    <div class="slide-dots-group" id="slideDotsGroup">
+                        <button type="button" class="slide-dot active" onclick="goToSlide(1)" title="1. Genel Pazar Özeti"></button>
+                        <button type="button" class="slide-dot" onclick="goToSlide(2)" title="2. En Çok Para Giren 3 Fon"></button>
+                        <button type="button" class="slide-dot" onclick="goToSlide(3)" title="3. En Çok Para Çıkan 3 Fon"></button>
+                        <button type="button" class="slide-dot" onclick="goToSlide(4)" title="4. En Çok Yatırımcı Giren 3 Fon"></button>
+                        <button type="button" class="slide-dot" onclick="goToSlide(5)" title="5. En Çok Yatırımcı Çıkan 3 Fon"></button>
+                        <button type="button" class="slide-dot" onclick="goToSlide(6)" title="6. Kategori Pazar Özeti"></button>
+                    </div>
+
+                    <button type="button" class="btn-slide-nav-next" onclick="navigateSlide(1)">
+                        <span>Sonraki</span>
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+
+                <div class="slide-bottom-hint">
+                    <i class="fa-solid fa-keyboard"></i>
+                    <span>Klavye: <strong>← Sol</strong> / <strong>Sağ →</strong> ok tuşları ile sunum yapabilirsiniz</span>
                 </div>
             </div>
         </div>
