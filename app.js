@@ -10702,11 +10702,26 @@ function renderSlideFundCardHTML(fund, rank, mode) {
 
     let rankBadgeHTML = '';
     if (rank === 1) {
-        rankBadgeHTML = `<div class="slide-rank-badge rank-1" title="1. Sıra">👑 #1</div>`;
+        rankBadgeHTML = `
+            <div class="slide-rank-badge rank-1" title="1. Sıra">
+                <span class="slide-rank-crown">👑</span>
+                <span class="slide-rank-text">1. SIRA</span>
+            </div>
+        `;
     } else if (rank === 2) {
-        rankBadgeHTML = `<div class="slide-rank-badge rank-2" title="2. Sıra">🥈 #2</div>`;
+        rankBadgeHTML = `
+            <div class="slide-rank-badge rank-2" title="2. Sıra">
+                <span class="slide-rank-crown">🥈</span>
+                <span class="slide-rank-text">2. SIRA</span>
+            </div>
+        `;
     } else {
-        rankBadgeHTML = `<div class="slide-rank-badge rank-3" title="3. Sıra">🥉 #3</div>`;
+        rankBadgeHTML = `
+            <div class="slide-rank-badge rank-3" title="3. Sıra">
+                <span class="slide-rank-crown">🥉</span>
+                <span class="slide-rank-text">3. SIRA</span>
+            </div>
+        `;
     }
 
     let heroLbl = "";
@@ -10715,25 +10730,25 @@ function renderSlideFundCardHTML(fund, rank, mode) {
     let heroSub = "";
 
     if (mode === "cash-in") {
-        heroLbl = `<i class="fa-solid fa-arrow-trend-up"></i> GÜNLÜK NET PARA GİRİŞİ`;
+        heroLbl = `<i class="fa-solid fa-arrow-trend-up"></i> GÜNLÜK NET SERMAYE GİRİŞİ`;
         heroNum = cashStr;
         heroClass = "pos";
-        heroSub = `Yatırımcı Değişimi: <strong style="color: ${invColor};">${invStr}</strong>`;
+        heroSub = `<i class="fa-solid fa-users"></i> Yatırımcı Değişimi: <strong style="color: ${invColor};">${invStr}</strong>`;
     } else if (mode === "cash-out") {
-        heroLbl = `<i class="fa-solid fa-arrow-trend-down"></i> GÜNLÜK NET PARA ÇIKIŞI`;
+        heroLbl = `<i class="fa-solid fa-arrow-trend-down"></i> GÜNLÜK NET SERMAYE ÇIKIŞI`;
         heroNum = cashStr;
         heroClass = "neg";
-        heroSub = `Yatırımcı Değişimi: <strong style="color: ${invColor};">${invStr}</strong>`;
+        heroSub = `<i class="fa-solid fa-users"></i> Yatırımcı Değişimi: <strong style="color: ${invColor};">${invStr}</strong>`;
     } else if (mode === "inv-in") {
         heroLbl = `<i class="fa-solid fa-user-plus"></i> GÜNLÜK YATIRIMCI ARTIŞI`;
         heroNum = invStr;
         heroClass = "pos";
-        heroSub = `Para Akışı: <strong style="color: ${cashColor};">${cashStr}</strong>`;
+        heroSub = `<i class="fa-solid fa-money-bill-wave"></i> Sermaye Akışı: <strong style="color: ${cashColor};">${cashStr}</strong>`;
     } else {
         heroLbl = `<i class="fa-solid fa-user-minus"></i> GÜNLÜK YATIRIMCI KAYBI`;
         heroNum = invStr;
         heroClass = "neg";
-        heroSub = `Para Akışı: <strong style="color: ${cashColor};">${cashStr}</strong>`;
+        heroSub = `<i class="fa-solid fa-money-bill-wave"></i> Sermaye Akışı: <strong style="color: ${cashColor};">${cashStr}</strong>`;
     }
 
     return `
@@ -10760,27 +10775,27 @@ function renderSlideFundCardHTML(fund, rank, mode) {
             <div>
                 <div class="slide-fund-metrics-tiles">
                     <div class="slide-metric-tile">
-                        <div class="slide-tile-lbl">Pay Fiyatı</div>
+                        <div class="slide-tile-lbl"><i class="fa-solid fa-tag"></i> Pay Fiyatı</div>
                         <div class="slide-tile-val">${priceStr}</div>
                     </div>
                     <div class="slide-metric-tile">
-                        <div class="slide-tile-lbl">Günlük Getiri</div>
+                        <div class="slide-tile-lbl"><i class="fa-solid fa-chart-line"></i> Günlük Getiri</div>
                         <div class="slide-tile-val" style="color: ${retColor};">
                             <i class="fa-solid ${retIcon}" style="font-size: 0.72rem;"></i> ${retSign}%${Math.abs(retVal).toFixed(2)}
                         </div>
                     </div>
                     <div class="slide-metric-tile">
-                        <div class="slide-tile-lbl">Fon Hacmi (AUM)</div>
+                        <div class="slide-tile-lbl"><i class="fa-solid fa-vault"></i> Fon Büyüklüğü</div>
                         <div class="slide-tile-val">${aumStr}</div>
                     </div>
                     <div class="slide-metric-tile">
-                        <div class="slide-tile-lbl">Yatırımcı Sayısı</div>
+                        <div class="slide-tile-lbl"><i class="fa-solid fa-users"></i> Toplam Yatırımcı</div>
                         <div class="slide-tile-val">${totalInvestorsStr}</div>
                     </div>
                 </div>
 
                 <div class="slide-fund-velocity-bar">
-                    <span class="slide-velocity-lbl"><i class="fa-solid fa-arrows-split-up-and-left"></i> Kişi Başı Net Akış</span>
+                    <span class="slide-velocity-lbl"><i class="fa-solid fa-gauge-high"></i> Kişi Başı Net Sermaye Hızı</span>
                     <span class="slide-velocity-val">${perPersonStr}</span>
                 </div>
             </div>
@@ -10808,14 +10823,17 @@ function renderInteractiveSlides(data) {
         p1.innerHTML = `
             <div class="slide-header-block">
                 <div class="slide-header-meta-row">
-                    <div class="slide-category-tag cyan"><i class="fa-solid fa-chart-line"></i> MAKRO PİYASA RAPORU</div>
+                    <div class="slide-meta-left">
+                        <span class="slide-page-number-capsule">SLAYT 01 / 06</span>
+                        <div class="slide-category-tag cyan"><i class="fa-solid fa-chart-pie"></i> MAKRO PİYASA LİKİDİTE RAPORU</div>
+                    </div>
                     <div class="slide-date-pill">
                         <span class="slide-live-dot"></span>
                         <span>${data.date} • CANLI TEFAS VERİLERİ</span>
                     </div>
                 </div>
                 <h2 class="slide-main-title">TEFAS Fon Piyasası Günlük Likidite & Sermaye Akışı</h2>
-                <p class="slide-subtitle">Yatırım fonları genelinde gerçekleşen kümülatif nakit hareketleri, yatırımcı iştahı ve kategori liderleri</p>
+                <p class="slide-subtitle">Yatırım fonları genelinde kümülatif nakit hareketleri, yatırımcı iştahı ve pazar liderleri</p>
             </div>
 
             <div class="slide-macro-grid-top">
@@ -10826,13 +10844,13 @@ function renderInteractiveSlides(data) {
                             <span>Günün Toplam Net Para Akışı</span>
                         </div>
                         <span class="slide-status-pill ${isCashPos ? 'pos' : 'neg'}">
-                            ${isCashPos ? 'NET GENİŞLEME / GİRİŞ' : 'NET DARALMA / ÇIKIŞ'}
+                            ${isCashPos ? '🟢 NET GENİŞLEME / GİRİŞ' : '🔴 NET DARALMA / ÇIKIŞ'}
                         </span>
                     </div>
                     <div class="slide-macro-big-num ${isCashPos ? 'pos' : 'neg'}">
                         ${cashSign}${formatBillionOrMillion(data.totalDailyCashFlow)}
                     </div>
-                    <div class="slide-macro-desc">Tüm TEFAS yatırım fonlarında gün içi gerçekleşen toplam net portföy sermaye hareketi</div>
+                    <div class="slide-macro-desc">Tüm TEFAS yatırım fonlarında gün içi gerçekleşen toplam net portföy nakit hareketi</div>
                 </div>
 
                 <div class="slide-macro-hero-card ${isInvPos ? 'pos' : 'neg'}">
@@ -10842,7 +10860,7 @@ function renderInteractiveSlides(data) {
                             <span>Günün Toplam Net Yatırımcı Akışı</span>
                         </div>
                         <span class="slide-status-pill ${isInvPos ? 'pos' : 'neg'}">
-                            ${isInvPos ? 'YATIRIMCI ARTIŞI' : 'YATIRIMCI AZALIŞI'}
+                            ${isInvPos ? '🟢 YATIRIMCI ARTIŞI' : '🔴 YATIRIMCI AZALIŞI'}
                         </span>
                     </div>
                     <div class="slide-macro-big-num ${isInvPos ? 'pos' : 'neg'}">
@@ -10855,8 +10873,8 @@ function renderInteractiveSlides(data) {
             <div class="slide-cat-leaders-grid">
                 <div class="slide-cat-leader-card inflow">
                     <div class="slide-cat-leader-top">
-                        <span class="slide-cat-badge inflow"><i class="fa-solid fa-trophy"></i> EN ÇOK PARA GİREN FON KATEGORİSİ</span>
-                        <span style="font-size: 0.72rem; color: #34D399; font-weight: 800;">LİDER</span>
+                        <span class="slide-cat-badge inflow"><i class="fa-solid fa-crown"></i> EN ÇOK PARA GİREN KATEGORİ</span>
+                        <span class="slide-cat-status-tag inflow">SERMAYE LİDERİ</span>
                     </div>
                     <div class="slide-cat-leader-name">${inCat ? inCat.name : '—'}</div>
                     <div class="slide-cat-leader-stats">
@@ -10868,8 +10886,8 @@ function renderInteractiveSlides(data) {
 
                 <div class="slide-cat-leader-card outflow">
                     <div class="slide-cat-leader-top">
-                        <span class="slide-cat-badge outflow"><i class="fa-solid fa-arrow-right-from-bracket"></i> EN ÇOK PARA ÇIKAN FON KATEGORİSİ</span>
-                        <span style="font-size: 0.72rem; color: #FB7185; font-weight: 800;">ÇIKIŞ</span>
+                        <span class="slide-cat-badge outflow"><i class="fa-solid fa-arrow-right-from-bracket"></i> EN ÇOK PARA ÇIKAN KATEGORİ</span>
+                        <span class="slide-cat-status-tag outflow">ÇIKIŞ LİDERİ</span>
                     </div>
                     <div class="slide-cat-leader-name">${outCat ? outCat.name : '—'}</div>
                     <div class="slide-cat-leader-stats">
@@ -10882,20 +10900,24 @@ function renderInteractiveSlides(data) {
 
             <div class="slide-macro-grid-bottom">
                 <div class="slide-mini-stat">
-                    <span class="slide-mini-stat-lbl">Taranan Toplam Fon:</span>
+                    <i class="fa-solid fa-list-check" style="color: #38BDF8;"></i>
+                    <span class="slide-mini-stat-lbl">Taranan Fon:</span>
                     <span class="slide-mini-stat-val">${data.totalFunds.toLocaleString('tr-TR')} Fon</span>
                 </div>
                 <div class="slide-mini-stat">
-                    <span class="slide-mini-stat-lbl">TEFAS Toplam Büyüklüğü:</span>
+                    <i class="fa-solid fa-landmark" style="color: #10B981;"></i>
+                    <span class="slide-mini-stat-lbl">TEFAS Toplam Hacmi:</span>
                     <span class="slide-mini-stat-val">${formatBillionOrMillion(data.totalAUM)}</span>
                 </div>
                 <div class="slide-mini-stat">
-                    <span class="slide-mini-stat-lbl">Şemsiye Kategori Adedi:</span>
-                    <span class="slide-mini-stat-val">9 Kategori</span>
+                    <i class="fa-solid fa-layer-group" style="color: #A855F7;"></i>
+                    <span class="slide-mini-stat-lbl">Kategori Adedi:</span>
+                    <span class="slide-mini-stat-val">9 Şemsiye Fonu</span>
                 </div>
                 <div class="slide-mini-stat">
-                    <span class="slide-mini-stat-lbl">Resmi Veri Kaynağı:</span>
-                    <span class="slide-mini-stat-val" style="color: #38BDF8;">Takasbank / TEFAS</span>
+                    <i class="fa-solid fa-bolt" style="color: #F59E0B;"></i>
+                    <span class="slide-mini-stat-lbl">Veri Sağlayıcı:</span>
+                    <span class="slide-mini-stat-val" style="color: #38BDF8;">Takasbank Canlı</span>
                 </div>
             </div>
         `;
@@ -10907,14 +10929,17 @@ function renderInteractiveSlides(data) {
         p2.innerHTML = `
             <div class="slide-header-block">
                 <div class="slide-header-meta-row">
-                    <div class="slide-category-tag emerald"><i class="fa-solid fa-arrow-trend-up"></i> SERMAYE GİRİŞİ LİDERLERİ</div>
+                    <div class="slide-meta-left">
+                        <span class="slide-page-number-capsule">SLAYT 02 / 06</span>
+                        <div class="slide-category-tag emerald"><i class="fa-solid fa-arrow-trend-up"></i> SERMAYE GİRİŞİ LİDERLERİ</div>
+                    </div>
                     <div class="slide-date-pill">
                         <span class="slide-live-dot"></span>
                         <span>${data.date} • TOP 3 FON</span>
                     </div>
                 </div>
                 <h2 class="slide-main-title">Günün En Çok Para Girişi Olan 3 Fonu</h2>
-                <p class="slide-subtitle">Bugün TEFAS genelinde portföyüne en yüksek net sermaye akışı çeken lider fonlar ve ayrıntılı analizi</p>
+                <p class="slide-subtitle">Bugün portföyüne en yüksek net sermaye girişi sağlayan fonlar ve ayrıntılı finansal metrikleri</p>
             </div>
             <div class="slide-funds-grid-3">
                 ${data.topCashInflow.map((f, i) => renderSlideFundCardHTML(f, i + 1, "cash-in")).join('')}
@@ -10928,14 +10953,17 @@ function renderInteractiveSlides(data) {
         p3.innerHTML = `
             <div class="slide-header-block">
                 <div class="slide-header-meta-row">
-                    <div class="slide-category-tag rose"><i class="fa-solid fa-arrow-trend-down"></i> SERMAYE ÇIKIŞI LİDERLERİ</div>
+                    <div class="slide-meta-left">
+                        <span class="slide-page-number-capsule">SLAYT 03 / 06</span>
+                        <div class="slide-category-tag rose"><i class="fa-solid fa-arrow-trend-down"></i> SERMAYE ÇIKIŞI LİDERLERİ</div>
+                    </div>
                     <div class="slide-date-pill">
                         <span class="slide-live-dot" style="background: #FB7185; box-shadow: 0 0 8px #FB7185;"></span>
                         <span>${data.date} • TOP 3 ÇIKIŞ</span>
                     </div>
                 </div>
                 <h2 class="slide-main-title">Günün En Çok Para Çıkışı Olan 3 Fonu</h2>
-                <p class="slide-subtitle">Bugün portföyünden en yüksek net sermaye çıkışı gerçekleşen fonlar ve sermaye hareketleri analizi</p>
+                <p class="slide-subtitle">Bugün portföyünden en yüksek net sermaye çıkışı gerçekleşen fonlar ve sermaye hareketleri</p>
             </div>
             <div class="slide-funds-grid-3">
                 ${data.topCashOutflow.map((f, i) => renderSlideFundCardHTML(f, i + 1, "cash-out")).join('')}
@@ -10949,14 +10977,17 @@ function renderInteractiveSlides(data) {
         p4.innerHTML = `
             <div class="slide-header-block">
                 <div class="slide-header-meta-row">
-                    <div class="slide-category-tag cyan"><i class="fa-solid fa-user-plus"></i> YATIRIMCI TERCİHİ</div>
+                    <div class="slide-meta-left">
+                        <span class="slide-page-number-capsule">SLAYT 04 / 06</span>
+                        <div class="slide-category-tag cyan"><i class="fa-solid fa-user-plus"></i> YATIRIMCI TERCİHİ</div>
+                    </div>
                     <div class="slide-date-pill">
                         <span class="slide-live-dot"></span>
                         <span>${data.date} • YATIRIMCI GİRİŞİ</span>
                     </div>
                 </div>
                 <h2 class="slide-main-title">Günün En Çok Yatırımcı Giren 3 Fonu</h2>
-                <p class="slide-subtitle">Gün içinde tekil yatırımcı sayısı en çok artış gösteren ve en çok yeni katılımcı çeken lider fonlar</p>
+                <p class="slide-subtitle">Gün içinde tekil yatırımcı sayısı en çok artış gösteren ve yeni katılımcı çeken lider fonlar</p>
             </div>
             <div class="slide-funds-grid-3">
                 ${data.topInvestorInflow.map((f, i) => renderSlideFundCardHTML(f, i + 1, "inv-in")).join('')}
@@ -10970,14 +11001,17 @@ function renderInteractiveSlides(data) {
         p5.innerHTML = `
             <div class="slide-header-block">
                 <div class="slide-header-meta-row">
-                    <div class="slide-category-tag purple"><i class="fa-solid fa-user-minus"></i> YATIRIMCI ÇIKIŞI</div>
+                    <div class="slide-meta-left">
+                        <span class="slide-page-number-capsule">SLAYT 05 / 06</span>
+                        <div class="slide-category-tag purple"><i class="fa-solid fa-user-minus"></i> YATIRIMCI ÇIKIŞI</div>
+                    </div>
                     <div class="slide-date-pill">
                         <span class="slide-live-dot" style="background: #C084FC; box-shadow: 0 0 8px #C084FC;"></span>
                         <span>${data.date} • YATIRIMCI ÇIKIŞI</span>
                     </div>
                 </div>
                 <h2 class="slide-main-title">Günün En Çok Yatırımcı Çıkan 3 Fonu</h2>
-                <p class="slide-subtitle">Gün içinde en çok yatırımcı kaybeden veya ortak sayısı en çok azalan fonlar ve detayları</p>
+                <p class="slide-subtitle">Gün içinde en çok yatırımcı kaybeden veya katılımcı sayısı en çok azalan fonlar ve detayları</p>
             </div>
             <div class="slide-funds-grid-3">
                 ${data.topInvestorOutflow.map((f, i) => renderSlideFundCardHTML(f, i + 1, "inv-out")).join('')}
@@ -11013,9 +11047,9 @@ function renderInteractiveSlides(data) {
                     <td style="text-align: right; font-weight: 700; font-family: 'Space Grotesk', sans-serif;">${formatBillionOrMillion(cat.displayAUM)}</td>
                     <td>
                         <div class="slide-share-bar-wrap">
-                            <span style="color: #38BDF8; font-weight: 800; min-width: 42px; font-family: 'Space Grotesk', sans-serif;">%${sharePct}%</span>
+                            <span style="color: #38BDF8; font-weight: 800; min-width: 44px; font-family: 'Space Grotesk', sans-serif;">%${sharePct}%</span>
                             <div class="slide-share-bar">
-                                <div class="slide-share-fill" style="width: ${Math.min(100, sharePct * 2)}%;"></div>
+                                <div class="slide-share-fill" style="width: ${Math.max(4, Math.min(100, sharePct * 2))}%;"></div>
                             </div>
                         </div>
                     </td>
@@ -11035,14 +11069,17 @@ function renderInteractiveSlides(data) {
         p6.innerHTML = `
             <div class="slide-header-block">
                 <div class="slide-header-meta-row">
-                    <div class="slide-category-tag purple"><i class="fa-solid fa-layer-group"></i> ŞEMSİYE KATEGORİ MATRİSİ</div>
+                    <div class="slide-meta-left">
+                        <span class="slide-page-number-capsule">SLAYT 06 / 06</span>
+                        <div class="slide-category-tag purple"><i class="fa-solid fa-layer-group"></i> ŞEMSİYE KATEGORİ MATRİSİ</div>
+                    </div>
                     <div class="slide-date-pill">
                         <span class="slide-live-dot"></span>
-                        <span>${data.date} • 9 KATEGORİ</span>
+                        <span>${data.date} • TÜM KATEGORİLER</span>
                     </div>
                 </div>
-                <h2 class="slide-main-title">Fon Kategorileri Sermaye Dağılımı ve Liderleri</h2>
-                <p class="slide-subtitle">9 Ana Şemsiye Fon Kategorisinde Fon Sayısı, Portföy Büyüklüğü, Günlük Nakit Girişi/Çıkışı ve Getiri</p>
+                <h2 class="slide-main-title">TEFAS Fon Kategorileri Karşılaştırma & Dağılım</h2>
+                <p class="slide-subtitle">9 Şemsiye kategorisinin pazar payları, büyüklükleri, getiri ortalamaları ve günlük net sermaye hareketleri</p>
             </div>
 
             <div class="slide-cat-summary-table-wrap" style="flex: 1; overflow-y: auto;">
@@ -11161,6 +11198,18 @@ async function exportToPDF() {
         return;
     }
 
+    // Safety guard against html2canvas createPattern bug on 0-dimension canvas
+    const origCreatePattern = CanvasRenderingContext2D.prototype.createPattern;
+    CanvasRenderingContext2D.prototype.createPattern = function(image, repetition) {
+        if (!image || image.width === 0 || image.height === 0) {
+            const dummy = document.createElement('canvas');
+            dummy.width = 1;
+            dummy.height = 1;
+            return origCreatePattern.call(this, dummy, repetition || 'repeat');
+        }
+        return origCreatePattern.apply(this, arguments);
+    };
+
     try {
         if (btn) {
             btn.disabled = true;
@@ -11181,36 +11230,43 @@ async function exportToPDF() {
         renderInteractiveSlides(data);
 
         const totalPages = 6;
+        const aspectBox = document.getElementById("slideAspectBox");
+
         for (let pageNum = 1; pageNum <= totalPages; pageNum++) {
             if (btn) {
                 btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> <span>Sayfa ${pageNum}/${totalPages}...</span>`;
             }
 
-            for (let i = 1; i <= totalPages; i++) {
-                const s = document.getElementById(`slidePage-${i}`);
-                if (s) {
-                    s.style.display = (i === pageNum) ? 'flex' : 'none';
-                    s.style.animation = 'none';
-                }
-            }
+            // Switch to target slide properly
+            goToSlide(pageNum);
 
-            // Yield frame to ensure paint
-            await new Promise(r => setTimeout(r, 60));
+            // Yield frame to ensure paint and layout
+            await new Promise(r => setTimeout(r, 120));
 
-            const slideElem = document.getElementById(`slidePage-${pageNum}`);
-            if (slideElem) {
-                const canvas = await window.html2canvas(slideElem, {
+            const captureElem = aspectBox || document.getElementById(`slidePage-${pageNum}`);
+            if (captureElem) {
+                const canvas = await window.html2canvas(captureElem, {
                     scale: 2,
                     useCORS: true,
                     backgroundColor: '#070C18',
-                    logging: false
+                    logging: false,
+                    allowTaint: true
                 });
 
                 const imgData = canvas.toDataURL('image/jpeg', 0.95);
                 if (pageNum > 1) {
                     pdf.addPage('a4', 'landscape');
                 }
-                pdf.addImage(imgData, 'JPEG', 0, 0, 297, 210);
+
+                // A4 landscape is 297mm x 210mm
+                const marginX = 10;
+                const pdfPageW = 297;
+                const pdfPageH = 210;
+                const targetW = pdfPageW - (marginX * 2); // 277mm
+                const targetH = (canvas.height * targetW) / canvas.width;
+                const offsetY = Math.max(8, (pdfPageH - targetH) / 2);
+
+                pdf.addImage(imgData, 'JPEG', marginX, offsetY, targetW, Math.min(targetH, pdfPageH - 16));
             }
         }
 
@@ -11236,6 +11292,8 @@ async function exportToPDF() {
             btn.innerHTML = originalBtnHTML || `<i class="fa-solid fa-file-pdf"></i> <span>PDF İndir</span>`;
         }
         goToSlide(currentSlideIndex);
+    } finally {
+        CanvasRenderingContext2D.prototype.createPattern = origCreatePattern;
     }
 }
 
