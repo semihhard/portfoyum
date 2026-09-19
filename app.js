@@ -11263,14 +11263,16 @@ async function exportToPDF() {
             const captureElem = aspectBox || document.getElementById(`slidePage-${pageNum}`);
             if (captureElem) {
                 const canvas = await window.html2canvas(captureElem, {
-                    scale: 2,
+                    scale: 3,
+                    dpi: 300,
                     useCORS: true,
                     backgroundColor: '#070C18',
                     logging: false,
-                    allowTaint: true
+                    allowTaint: true,
+                    imageTimeout: 0
                 });
 
-                const imgData = canvas.toDataURL('image/jpeg', 0.95);
+                const imgData = canvas.toDataURL('image/jpeg', 0.98);
                 if (pageNum > 1) {
                     pdf.addPage('a4', 'landscape');
                 }
@@ -11414,11 +11416,13 @@ async function exportToPowerPoint() {
             const captureElem = aspectBox || document.getElementById(`slidePage-${pageNum}`);
             if (captureElem) {
                 const canvas = await window.html2canvas(captureElem, {
-                    scale: 2,
+                    scale: 3,
+                    dpi: 300,
                     useCORS: true,
                     backgroundColor: '#070C18',
                     logging: false,
-                    allowTaint: true
+                    allowTaint: true,
+                    imageTimeout: 0
                 });
 
                 const imgData = canvas.toDataURL('image/png');
