@@ -11343,15 +11343,23 @@ document.addEventListener("fullscreenchange", () => {
     }
 });
 
-// PowerPoint (.pptx) Generator
+// PowerPoint (.pptx) Generator - High-Fidelity Modern Presentation Deck
 async function exportToPowerPoint() {
+    const btn = document.getElementById("btnSlideExportPptx");
+    const originalBtnHTML = btn ? btn.innerHTML : '';
+
     if (!window.PptxGenJS) {
         alert("PowerPoint oluşturma modülü (PptxGenJS) yüklenemedi. Lütfen internet bağlantınızı kontrol edin.");
         return;
     }
 
     try {
-        const data = buildSlideReportDataset();
+        if (btn) {
+            btn.disabled = true;
+            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> <span>PPTX Hazırlanıyor...</span>`;
+        }
+
+        const data = slideReportDatasetCache || buildSlideReportDataset();
         const pptx = new window.PptxGenJS();
 
         pptx.layout = 'LAYOUT_16x9';
@@ -11359,159 +11367,261 @@ async function exportToPowerPoint() {
         pptx.company = 'Portföyüm - TEFAS Fon Analiz';
         pptx.title = `TEFAS Günlük Fon & Sermaye Akış Slayt Raporu - ${data.date}`;
 
+        const FONT = 'Segoe UI';
         const C_BG = '070C18';
-        const C_CARD = '111827';
-        const C_BORDER = '1F2937';
+        const C_CARD = '0C1222';
+        const C_CARD_DARK = '0A0E1A';
+        const C_BORDER = '1E293B';
         const C_WHITE = 'FFFFFF';
         const C_MUTED = '94A3B8';
         const C_CYAN = '38BDF8';
+        const C_CYAN_LIGHT = '7DD3FC';
         const C_EMERALD = '10B981';
+        const C_EMERALD_LIGHT = '34D399';
         const C_ROSE = 'F43F5E';
+        const C_ROSE_LIGHT = 'FB7185';
         const C_AMBER = 'F59E0B';
+        const C_AMBER_LIGHT = 'FBBF24';
         const C_PURPLE = 'A855F7';
+        const C_PURPLE_LIGHT = 'C084FC';
 
-        function addSlideHeader(slide, categoryTag, title, subtitle, tagColor) {
+        function addSlideHeader(slide, pageNum, categoryTag, title, subtitle, tagColor) {
             slide.background = { color: C_BG };
 
+            // Page capsule
             slide.addShape(pptx.ShapeType.roundRect, {
-                x: 0.6, y: 0.4, w: 2.2, h: 0.28,
-                rectRadius: 0.06,
-                fill: { color: C_CARD },
+                x: 0.6, y: 0.35, w: 1.15, h: 0.26,
+                rectRadius: 0.05,
+                fill: { color: '0D1E36' },
+                line: { color: C_CYAN, width: 1 }
+            });
+            slide.addText(`SLAYT 0${pageNum} / 06`, {
+                x: 0.6, y: 0.35, w: 1.15, h: 0.26,
+                fontSize: 7.5, bold: true, color: C_CYAN,
+                align: 'center', valign: 'middle', fontFace: FONT
+            });
+
+            // Category tag
+            slide.addShape(pptx.ShapeType.roundRect, {
+                x: 1.85, y: 0.35, w: 2.6, h: 0.26,
+                rectRadius: 0.05,
+                fill: { color: '0D1E36' },
                 line: { color: tagColor || C_CYAN, width: 1 }
             });
             slide.addText(categoryTag, {
-                x: 0.6, y: 0.4, w: 2.2, h: 0.28,
-                fontSize: 8.5, bold: true, color: tagColor || C_CYAN,
-                align: 'center', valign: 'middle'
+                x: 1.85, y: 0.35, w: 2.6, h: 0.26,
+                fontSize: 7.5, bold: true, color: tagColor || C_CYAN,
+                align: 'center', valign: 'middle', fontFace: FONT
             });
 
+            // Date pill right
+            slide.addText(`●  ${data.date} • CANLI TEFAS VERİLERİ`, {
+                x: 6.6, y: 0.35, w: 2.8, h: 0.26,
+                fontSize: 8, bold: true, color: C_MUTED,
+                align: 'right', valign: 'middle', fontFace: FONT
+            });
+
+            // Slide Title
             slide.addText(title, {
-                x: 0.6, y: 0.72, w: 7.2, h: 0.42,
-                fontSize: 18, bold: true, color: C_WHITE,
-                fontFace: 'Arial'
+                x: 0.6, y: 0.66, w: 8.8, h: 0.38,
+                fontSize: 17, bold: true, color: C_WHITE,
+                fontFace: FONT
             });
 
+            // Slide Subtitle
             slide.addText(subtitle, {
-                x: 0.6, y: 1.15, w: 7.2, h: 0.28,
-                fontSize: 9.5, color: C_MUTED,
-                fontFace: 'Arial'
-            });
-
-            slide.addText(`PORTFÖYÜM  |  ${data.date}`, {
-                x: 7.2, y: 0.45, w: 2.2, h: 0.3,
-                fontSize: 9, bold: true, color: C_CYAN,
-                align: 'right', fontFace: 'Arial'
+                x: 0.6, y: 1.04, w: 8.8, h: 0.24,
+                fontSize: 8.5, color: C_MUTED,
+                fontFace: FONT
             });
         }
 
-        // SLIDE 1: Executive Overview
+        // ==========================================================================
+        // SLIDE 1: Executive Macro Liquidity Dashboard
+        // ==========================================================================
         const s1 = pptx.addSlide();
-        addSlideHeader(s1, 'MAKRO PİYASA RAPORU', 'TEFAS Günlük Fon & Sermaye Akışı Özeti', `${data.date} • Tüm Yatırım Fonlarında Gün İçi Para ve Yatırımcı Hareketi Dengesi`, C_CYAN);
+        addSlideHeader(s1, 1, 'MAKRO PİYASA LİKİDİTE RAPORU', 'TEFAS Fon Piyasası Günlük Likidite & Sermaye Akışı', 'Yatırım fonları genelinde kümülatif nakit hareketleri, yatırımcı iştahı ve pazar liderleri', C_CYAN);
 
         const isCashPos = (data.totalDailyCashFlow || 0) >= 0;
         const isInvPos = (data.totalDailyInvestors || 0) >= 0;
 
+        // Hero Card 1: Toplam Net Para Akışı
         s1.addShape(pptx.ShapeType.roundRect, {
-            x: 0.6, y: 1.55, w: 4.25, h: 1.35,
-            rectRadius: 0.1,
-            fill: { color: C_CARD },
-            line: { color: isCashPos ? C_EMERALD : C_ROSE, width: 1.5 }
+            x: 0.6, y: 1.38, w: 4.25, h: 1.32,
+            rectRadius: 0.08,
+            fill: { color: isCashPos ? '0A1E18' : '1E0C15' },
+            line: { color: isCashPos ? C_EMERALD : C_ROSE, width: 2 }
         });
         s1.addText('GÜNÜN TOPLAM NET PARA AKIŞI', {
-            x: 0.8, y: 1.65, w: 3.8, h: 0.25,
-            fontSize: 9, bold: true, color: C_MUTED
+            x: 0.8, y: 1.48, w: 2.3, h: 0.22,
+            fontSize: 8, bold: true, color: C_MUTED, fontFace: FONT
+        });
+        s1.addShape(pptx.ShapeType.roundRect, {
+            x: 2.9, y: 1.46, w: 1.8, h: 0.22,
+            rectRadius: 0.04,
+            fill: { color: isCashPos ? '063B2C' : '3B0D1A' },
+            line: { color: isCashPos ? C_EMERALD : C_ROSE, width: 1 }
+        });
+        s1.addText(isCashPos ? '🟢 NET SERMAYE GENİŞLEMESİ' : '🔴 NET SERMAYE DARALMASI', {
+            x: 2.9, y: 1.46, w: 1.8, h: 0.22,
+            fontSize: 6.5, bold: true, color: isCashPos ? C_EMERALD_LIGHT : C_ROSE_LIGHT,
+            align: 'center', valign: 'middle', fontFace: FONT
         });
         s1.addText(`${isCashPos ? '+' : ''}${formatBillionOrMillion(data.totalDailyCashFlow)}`, {
-            x: 0.8, y: 1.92, w: 3.8, h: 0.5,
-            fontSize: 22, bold: true, color: isCashPos ? C_EMERALD : C_ROSE
+            x: 0.8, y: 1.74, w: 3.8, h: 0.52,
+            fontSize: 24, bold: true, color: isCashPos ? C_EMERALD_LIGHT : C_ROSE_LIGHT,
+            fontFace: FONT
         });
-        s1.addText('Tüm TEFAS fonlarında gün içi toplam net nakit sermaye hareketi', {
-            x: 0.8, y: 2.45, w: 3.8, h: 0.35,
-            fontSize: 8.5, color: C_MUTED
+        s1.addText('Tüm TEFAS yatırım fonlarında gün içi gerçekleşen toplam net portföy nakit hareketi', {
+            x: 0.8, y: 2.34, w: 3.8, h: 0.26,
+            fontSize: 7.5, color: C_MUTED, fontFace: FONT
         });
 
+        // Hero Card 2: Toplam Net Yatırımcı Akışı
         s1.addShape(pptx.ShapeType.roundRect, {
-            x: 5.15, y: 1.55, w: 4.25, h: 1.35,
-            rectRadius: 0.1,
-            fill: { color: C_CARD },
-            line: { color: isInvPos ? C_EMERALD : C_ROSE, width: 1.5 }
+            x: 5.15, y: 1.38, w: 4.25, h: 1.32,
+            rectRadius: 0.08,
+            fill: { color: isInvPos ? '0A1E30' : '1E0C15' },
+            line: { color: isInvPos ? C_CYAN : C_ROSE, width: 2 }
         });
         s1.addText('GÜNÜN TOPLAM NET YATIRIMCI AKIŞI', {
-            x: 5.35, y: 1.65, w: 3.8, h: 0.25,
-            fontSize: 9, bold: true, color: C_MUTED
+            x: 5.35, y: 1.48, w: 2.3, h: 0.22,
+            fontSize: 8, bold: true, color: C_MUTED, fontFace: FONT
+        });
+        s1.addShape(pptx.ShapeType.roundRect, {
+            x: 7.45, y: 1.46, w: 1.8, h: 0.22,
+            rectRadius: 0.04,
+            fill: { color: isInvPos ? '0B3454' : '3B0D1A' },
+            line: { color: isInvPos ? C_CYAN : C_ROSE, width: 1 }
+        });
+        s1.addText(isInvPos ? '🟢 YATIRIMCI ARTIŞI' : '🔴 YATIRIMCI AZALIŞI', {
+            x: 7.45, y: 1.46, w: 1.8, h: 0.22,
+            fontSize: 6.5, bold: true, color: isInvPos ? C_CYAN_LIGHT : C_ROSE_LIGHT,
+            align: 'center', valign: 'middle', fontFace: FONT
         });
         s1.addText(`${isInvPos ? '+' : ''}${data.totalDailyInvestors.toLocaleString('tr-TR')} Kişi`, {
-            x: 5.35, y: 1.92, w: 3.8, h: 0.5,
-            fontSize: 22, bold: true, color: isInvPos ? C_EMERALD : C_ROSE
+            x: 5.35, y: 1.74, w: 3.8, h: 0.52,
+            fontSize: 24, bold: true, color: isInvPos ? C_CYAN_LIGHT : C_ROSE_LIGHT,
+            fontFace: FONT
         });
         s1.addText('TEFAS fonlarındaki toplam tekil yatırımcı sayısı net günlük değişimi', {
-            x: 5.35, y: 2.45, w: 3.8, h: 0.35,
-            fontSize: 8.5, color: C_MUTED
+            x: 5.35, y: 2.34, w: 3.8, h: 0.26,
+            fontSize: 7.5, color: C_MUTED, fontFace: FONT
         });
 
+        // Category Leaders Highlight Row
         const inCat = data.topCashInflowCategory;
+        const outCat = data.topCashOutflowCategory;
+
+        // Inflow Champion Card
         s1.addShape(pptx.ShapeType.roundRect, {
-            x: 0.6, y: 3.05, w: 4.25, h: 1.35,
-            rectRadius: 0.1,
-            fill: { color: C_CARD },
+            x: 0.6, y: 2.82, w: 4.25, h: 1.25,
+            rectRadius: 0.08,
+            fill: { color: '0B1C17' },
+            line: { color: C_EMERALD, width: 1.5 }
+        });
+        s1.addText('👑 EN ÇOK PARA GİREN KATEGORİ', {
+            x: 0.8, y: 2.92, w: 2.5, h: 0.22,
+            fontSize: 8, bold: true, color: C_EMERALD, fontFace: FONT
+        });
+        s1.addShape(pptx.ShapeType.roundRect, {
+            x: 3.55, y: 2.92, w: 1.15, h: 0.22,
+            rectRadius: 0.04,
+            fill: { color: '063B2C' },
             line: { color: C_EMERALD, width: 1 }
         });
-        s1.addText('EN ÇOK PARA GİREN FON KATEGORİSİ', {
-            x: 0.8, y: 3.15, w: 3.8, h: 0.25,
-            fontSize: 8.5, bold: true, color: C_EMERALD
+        s1.addText('SERMAYE LİDERİ', {
+            x: 3.55, y: 2.92, w: 1.15, h: 0.22,
+            fontSize: 6.5, bold: true, color: C_EMERALD_LIGHT,
+            align: 'center', valign: 'middle', fontFace: FONT
         });
         s1.addText(inCat ? inCat.name : '—', {
-            x: 0.8, y: 3.42, w: 3.8, h: 0.45,
-            fontSize: 13, bold: true, color: C_WHITE
+            x: 0.8, y: 3.18, w: 3.8, h: 0.38,
+            fontSize: 13, bold: true, color: C_WHITE, fontFace: FONT
         });
-        s1.addText(`Net Giriş: +${formatBillionOrMillion(inCat ? inCat.cashFlow : 0)}   |   Toplam Hacim: ${formatBillionOrMillion(inCat ? inCat.displayAUM : 0)}`, {
-            x: 0.8, y: 3.95, w: 3.8, h: 0.35,
-            fontSize: 8.5, color: C_MUTED
+        s1.addText(`Net Giriş: +${formatBillionOrMillion(inCat ? inCat.cashFlow : 0)}   |   Toplam Hacim: ${formatBillionOrMillion(inCat ? inCat.displayAUM : 0)}   |   Pazar Payı: %${inCat ? inCat.sharePct : 0}%`, {
+            x: 0.8, y: 3.65, w: 3.8, h: 0.32,
+            fontSize: 8, color: C_MUTED, fontFace: FONT
         });
 
-        const outCat = data.topCashOutflowCategory;
+        // Outflow Champion Card (Dark Slate with Rose Border - NEVER SOLID RED)
         s1.addShape(pptx.ShapeType.roundRect, {
-            x: 5.15, y: 3.05, w: 4.25, h: 1.35,
-            rectRadius: 0.1,
-            fill: { color: C_ROSE, width: 1 }
+            x: 5.15, y: 2.82, w: 4.25, h: 1.25,
+            rectRadius: 0.08,
+            fill: { color: '1A0C14' },
+            line: { color: C_ROSE, width: 1.5 }
         });
-        s1.addText('EN ÇOK PARA ÇIKAN FON KATEGORİSİ', {
-            x: 5.35, y: 3.15, w: 3.8, h: 0.25,
-            fontSize: 8.5, bold: true, color: C_ROSE
+        s1.addText('EN ÇOK PARA ÇIKAN KATEGORİ', {
+            x: 5.35, y: 2.92, w: 2.5, h: 0.22,
+            fontSize: 8, bold: true, color: C_ROSE, fontFace: FONT
+        });
+        s1.addShape(pptx.ShapeType.roundRect, {
+            x: 8.1, y: 2.92, w: 1.15, h: 0.22,
+            rectRadius: 0.04,
+            fill: { color: '3B0D1A' },
+            line: { color: C_ROSE, width: 1 }
+        });
+        s1.addText('ÇIKIŞ LİDERİ', {
+            x: 8.1, y: 2.92, w: 1.15, h: 0.22,
+            fontSize: 6.5, bold: true, color: C_ROSE_LIGHT,
+            align: 'center', valign: 'middle', fontFace: FONT
         });
         s1.addText(outCat ? outCat.name : '—', {
-            x: 5.35, y: 3.42, w: 3.8, h: 0.45,
-            fontSize: 13, bold: true, color: C_WHITE
+            x: 5.35, y: 3.18, w: 3.8, h: 0.38,
+            fontSize: 13, bold: true, color: C_WHITE, fontFace: FONT
         });
-        s1.addText(`Net Çıkış: ${formatBillionOrMillion(outCat ? outCat.cashFlow : 0)}   |   Toplam Hacim: ${formatBillionOrMillion(outCat ? outCat.displayAUM : 0)}`, {
-            x: 5.35, y: 3.95, w: 3.8, h: 0.35,
-            fontSize: 8.5, color: C_MUTED
-        });
-
-        s1.addShape(pptx.ShapeType.roundRect, {
-            x: 0.6, y: 4.55, w: 8.8, h: 0.55,
-            rectRadius: 0.08,
-            fill: { color: '0D1527' },
-            line: { color: C_BORDER, width: 1 }
-        });
-        s1.addText(`Toplam Taranan Fon: ${data.totalFunds.toLocaleString('tr-TR')} Fon   •   Toplam Portföy Büyüklüğü: ${formatBillionOrMillion(data.totalAUM)}   •   Şemsiye Kategori Sayısı: 9   •   Kaynak: TEFAS / Takasbank`, {
-            x: 0.8, y: 4.55, w: 8.4, h: 0.55,
-            fontSize: 9, bold: true, color: C_CYAN,
-            align: 'center', valign: 'middle'
+        s1.addText(`Net Çıkış: ${formatBillionOrMillion(outCat ? outCat.cashFlow : 0)}   |   Toplam Hacim: ${formatBillionOrMillion(outCat ? outCat.displayAUM : 0)}   |   Pazar Payı: %${outCat ? outCat.sharePct : 0}%`, {
+            x: 5.35, y: 3.65, w: 3.8, h: 0.32,
+            fontSize: 8, color: C_MUTED, fontFace: FONT
         });
 
-        function addTop3FundsSlide(categoryTag, title, subtitle, tagColor, fundsList, mode) {
+        // 4 Bottom Colorful Micro-Stat Chips
+        const chipsData = [
+            { title: 'TARANAN FON', val: `${data.totalFunds.toLocaleString('tr-TR')} Fon`, col: C_CYAN, fill: '0C1A2E' },
+            { title: 'TEFAS TOPLAM HACMİ', val: formatBillionOrMillion(data.totalAUM), col: C_EMERALD, fill: '0A241C' },
+            { title: 'KATEGORİ ADEDİ', val: '9 Şemsiye Fonu', col: C_PURPLE, fill: '1C1028' },
+            { title: 'VERİ SAĞLAYICI', val: 'Takasbank Canlı', col: C_AMBER, fill: '22180A' }
+        ];
+
+        const chipW = 2.06;
+        const chipGap = 0.18;
+        const chipY = 4.22;
+        const chipH = 0.82;
+
+        chipsData.forEach((chip, i) => {
+            const cx = 0.6 + i * (chipW + chipGap);
+            s1.addShape(pptx.ShapeType.roundRect, {
+                x: cx, y: chipY, w: chipW, h: chipH,
+                rectRadius: 0.06,
+                fill: { color: chip.fill },
+                line: { color: chip.col, width: 1 }
+            });
+            s1.addText(chip.title, {
+                x: cx + 0.1, y: chipY + 0.1, w: chipW - 0.2, h: 0.2,
+                fontSize: 6.5, bold: true, color: chip.col, fontFace: FONT
+            });
+            s1.addText(chip.val, {
+                x: cx + 0.1, y: chipY + 0.32, w: chipW - 0.2, h: 0.4,
+                fontSize: 11.5, bold: true, color: C_WHITE, fontFace: FONT
+            });
+        });
+
+        // ==========================================================================
+        // SLIDES 2, 3, 4, 5: Top 3 Fund Podium Cards (Gold #1, Cyan #2, Violet #3)
+        // ==========================================================================
+        function addTop3FundsSlide(pageNum, categoryTag, title, subtitle, tagColor, fundsList, mode) {
             const slide = pptx.addSlide();
-            addSlideHeader(slide, categoryTag, title, subtitle, tagColor);
+            addSlideHeader(slide, pageNum, categoryTag, title, subtitle, tagColor);
 
-            const cardW = 2.8;
-            const gap = 0.2;
+            const cardW = 2.76;
+            const gap = 0.25;
             const startX = 0.6;
-            const cardY = 1.55;
-            const cardH = 3.65;
+            const cardY = 1.35;
+            const cardH = 3.90;
 
             (fundsList || []).slice(0, 3).forEach((f, idx) => {
                 const x = startX + idx * (cardW + gap);
+                const rank = idx + 1;
                 const catKey = f.category || (typeof detectFundCategoryKey === 'function' ? detectFundCategoryKey(f.name, f.code) : 'DİĞER');
                 const reg = (typeof TEFAS_CATEGORIES_REGISTRY !== 'undefined' && TEFAS_CATEGORIES_REGISTRY[catKey]) 
                     ? TEFAS_CATEGORIES_REGISTRY[catKey] 
@@ -11522,145 +11632,281 @@ async function exportToPowerPoint() {
                 const isCashPos = (f.cashFlow || 0) >= 0;
                 const isInvPos = (f.deltaInvestors || 0) >= 0;
 
+                // Rank Themes
+                let rankBorderColor = C_BORDER;
+                let rankBgColor = C_CARD;
+                let rankBadgeBg = C_AMBER;
+                let rankBadgeText = C_WHITE;
+                let rankBadgeLabel = '';
+                let rankCodeColor = C_CYAN;
+                let rankCodeFill = '0D1829';
+
+                if (rank === 1) {
+                    rankBorderColor = C_AMBER;
+                    rankBgColor = '16121E';
+                    rankBadgeBg = C_AMBER;
+                    rankBadgeText = '0F172A';
+                    rankBadgeLabel = '👑 #1 ŞAMPİYON';
+                    rankCodeColor = C_AMBER_LIGHT;
+                    rankCodeFill = '2E200A';
+                } else if (rank === 2) {
+                    rankBorderColor = C_CYAN;
+                    rankBgColor = '0C1628';
+                    rankBadgeBg = C_CYAN;
+                    rankBadgeText = '070C18';
+                    rankBadgeLabel = '🥈 #2 LİDER';
+                    rankCodeColor = C_CYAN;
+                    rankCodeFill = '0D243A';
+                } else {
+                    rankBorderColor = C_PURPLE;
+                    rankBgColor = '181024';
+                    rankBadgeBg = C_PURPLE;
+                    rankBadgeText = C_WHITE;
+                    rankBadgeLabel = '🥉 #3 TAKİPÇİ';
+                    rankCodeColor = C_PURPLE_LIGHT;
+                    rankCodeFill = '28123C';
+                }
+
+                // Outer Card
                 slide.addShape(pptx.ShapeType.roundRect, {
                     x, y: cardY, w: cardW, h: cardH,
                     rectRadius: 0.1,
-                    fill: { color: C_CARD },
-                    line: { color: idx === 0 ? C_AMBER : C_BORDER, width: idx === 0 ? 1.5 : 1 }
+                    fill: { color: rankBgColor },
+                    line: { color: rankBorderColor, width: 2 }
                 });
 
-                const rankLabels = ['👑 #1', '🥈 #2', '🥉 #3'];
-                const rankColors = [C_AMBER, '94A3B8', 'B45309'];
+                // Top: Rank Badge
                 slide.addShape(pptx.ShapeType.roundRect, {
-                    x: x + 0.15, y: cardY + 0.15, w: 0.55, h: 0.35,
-                    rectRadius: 0.06,
-                    fill: { color: rankColors[idx] || C_MUTED }
+                    x: x + 0.12, y: cardY + 0.12, w: 1.08, h: 0.28,
+                    rectRadius: 0.05,
+                    fill: { color: rankBadgeBg }
                 });
-                slide.addText(rankLabels[idx] || `#${idx + 1}`, {
-                    x: x + 0.15, y: cardY + 0.15, w: 0.55, h: 0.35,
-                    fontSize: 9, bold: true, color: C_WHITE,
-                    align: 'center', valign: 'middle'
+                slide.addText(rankBadgeLabel, {
+                    x: x + 0.12, y: cardY + 0.12, w: 1.08, h: 0.28,
+                    fontSize: 7.5, bold: true, color: rankBadgeText,
+                    align: 'center', valign: 'middle', fontFace: FONT
                 });
 
+                // Top: Fund Code Pill
+                slide.addShape(pptx.ShapeType.roundRect, {
+                    x: x + 1.25, y: cardY + 0.12, w: 0.62, h: 0.28,
+                    rectRadius: 0.05,
+                    fill: { color: rankCodeFill },
+                    line: { color: rankBorderColor, width: 1 }
+                });
                 slide.addText(f.code, {
-                    x: x + 0.76, y: cardY + 0.12, w: 1.85, h: 0.25,
-                    fontSize: 13, bold: true, color: C_CYAN
+                    x: x + 1.25, y: cardY + 0.12, w: 0.62, h: 0.28,
+                    fontSize: 8.5, bold: true, color: rankCodeColor,
+                    align: 'center', valign: 'middle', fontFace: FONT
                 });
 
+                // Top: Category Name
                 slide.addText(reg.shortName, {
-                    x: x + 0.76, y: cardY + 0.34, w: 1.85, h: 0.2,
-                    fontSize: 7.5, bold: true, color: C_MUTED
+                    x: x + 1.90, y: cardY + 0.12, w: 0.74, h: 0.28,
+                    fontSize: 7.5, bold: true, color: reg.color ? reg.color.replace('#', '') : C_MUTED,
+                    align: 'right', valign: 'middle', fontFace: FONT
                 });
 
+                // Fund Full Name
                 slide.addText(cleanName, {
-                    x: x + 0.15, y: cardY + 0.58, w: cardW - 0.3, h: 0.4,
-                    fontSize: 8.5, bold: true, color: C_WHITE
+                    x: x + 0.12, y: cardY + 0.44, w: cardW - 0.24, h: 0.40,
+                    fontSize: 8, bold: true, color: C_WHITE,
+                    fontFace: FONT
                 });
 
-                slide.addShape(pptx.ShapeType.roundRect, {
-                    x: x + 0.15, y: cardY + 1.05, w: cardW - 0.3, h: 0.85,
-                    rectRadius: 0.08,
-                    fill: { color: '0A101D' },
-                    line: { color: '1E293B', width: 1 }
-                });
-
+                // Hero Metric Capsule
                 let heroLbl = "";
                 let heroVal = "";
                 let heroCol = C_WHITE;
+                let heroCapsuleFill = '0B221B';
+                let heroCapsuleLine = C_EMERALD;
                 let subText = "";
 
                 if (mode === "cash-in") {
-                    heroLbl = "GÜNLÜK NET PARA GİRİŞİ";
+                    heroLbl = "GÜNLÜK NET SERMAYE GİRİŞİ";
                     heroVal = `+${formatBillionOrMillion(f.cashFlow)}`;
-                    heroCol = C_EMERALD;
-                    subText = `Yatırımcı: ${isInvPos ? '+' : ''}${f.deltaInvestors.toLocaleString('tr-TR')} Kişi`;
+                    heroCol = C_EMERALD_LIGHT;
+                    heroCapsuleFill = '0B221B';
+                    heroCapsuleLine = C_EMERALD;
+                    subText = `Yatırımcı Değişimi: ${isInvPos ? '+' : ''}${f.deltaInvestors.toLocaleString('tr-TR')} Kişi`;
                 } else if (mode === "cash-out") {
-                    heroLbl = "GÜNLÜK NET PARA ÇIKIŞI";
+                    heroLbl = "GÜNLÜK NET SERMAYE ÇIKIŞI";
                     heroVal = `${formatBillionOrMillion(f.cashFlow)}`;
-                    heroCol = C_ROSE;
-                    subText = `Yatırımcı: ${isInvPos ? '+' : ''}${f.deltaInvestors.toLocaleString('tr-TR')} Kişi`;
+                    heroCol = C_ROSE_LIGHT;
+                    heroCapsuleFill = '240E18';
+                    heroCapsuleLine = C_ROSE;
+                    subText = `Yatırımcı Değişimi: ${isInvPos ? '+' : ''}${f.deltaInvestors.toLocaleString('tr-TR')} Kişi`;
                 } else if (mode === "inv-in") {
-                    heroLbl = "YATIRIMCI ARTIŞI";
+                    heroLbl = "GÜNLÜK YATIRIMCI ARTIŞI";
                     heroVal = `+${f.deltaInvestors.toLocaleString('tr-TR')} Kişi`;
-                    heroCol = C_EMERALD;
-                    subText = `Para Akışı: ${isCashPos ? '+' : ''}${formatBillionOrMillion(f.cashFlow)}`;
+                    heroCol = C_EMERALD_LIGHT;
+                    heroCapsuleFill = '0B221B';
+                    heroCapsuleLine = C_EMERALD;
+                    subText = `Sermaye Akışı: ${isCashPos ? '+' : ''}${formatBillionOrMillion(f.cashFlow)}`;
                 } else {
-                    heroLbl = "YATIRIMCI AZALIŞI";
+                    heroLbl = "GÜNLÜK YATIRIMCI KAYBI";
                     heroVal = `${f.deltaInvestors.toLocaleString('tr-TR')} Kişi`;
-                    heroCol = C_ROSE;
-                    subText = `Para Akışı: ${isCashPos ? '+' : ''}${formatBillionOrMillion(f.cashFlow)}`;
+                    heroCol = C_ROSE_LIGHT;
+                    heroCapsuleFill = '240E18';
+                    heroCapsuleLine = C_ROSE;
+                    subText = `Sermaye Akışı: ${isCashPos ? '+' : ''}${formatBillionOrMillion(f.cashFlow)}`;
                 }
 
+                slide.addShape(pptx.ShapeType.roundRect, {
+                    x: x + 0.12, y: cardY + 0.88, w: cardW - 0.24, h: 0.90,
+                    rectRadius: 0.06,
+                    fill: { color: heroCapsuleFill },
+                    line: { color: heroCapsuleLine, width: 1.5 }
+                });
                 slide.addText(heroLbl, {
-                    x: x + 0.22, y: cardY + 1.1, w: cardW - 0.44, h: 0.2,
-                    fontSize: 7.5, bold: true, color: C_MUTED
+                    x: x + 0.2, y: cardY + 0.92, w: cardW - 0.4, h: 0.2,
+                    fontSize: 6.5, bold: true, color: C_MUTED, fontFace: FONT
                 });
                 slide.addText(heroVal, {
-                    x: x + 0.22, y: cardY + 1.28, w: cardW - 0.44, h: 0.38,
-                    fontSize: 15, bold: true, color: heroCol
+                    x: x + 0.2, y: cardY + 1.10, w: cardW - 0.4, h: 0.42,
+                    fontSize: 17, bold: true, color: heroCol, fontFace: FONT
                 });
                 slide.addText(subText, {
-                    x: x + 0.22, y: cardY + 1.66, w: cardW - 0.44, h: 0.2,
-                    fontSize: 7.5, color: C_MUTED
+                    x: x + 0.2, y: cardY + 1.54, w: cardW - 0.4, h: 0.2,
+                    fontSize: 7, bold: true, color: C_WHITE, fontFace: FONT
                 });
 
-                const rows = [
-                    [{ text: "Pay Fiyatı", options: { color: C_MUTED, fontSize: 8 } }, { text: formatFundPriceDisplay(f.price), options: { color: C_WHITE, bold: true, fontSize: 8, align: 'right' } }],
-                    [{ text: "Günlük Getiri", options: { color: C_MUTED, fontSize: 8 } }, { text: `${isRetPos ? '+' : ''}%${Math.abs(f.change || 0).toFixed(2)}`, options: { color: isRetPos ? C_EMERALD : C_ROSE, bold: true, fontSize: 8, align: 'right' } }],
-                    [{ text: "Fon Büyüklüğü", options: { color: C_MUTED, fontSize: 8 } }, { text: formatBillionOrMillion(f.aum), options: { color: C_WHITE, bold: true, fontSize: 8, align: 'right' } }],
-                    [{ text: "Toplam Yatırımcı", options: { color: C_MUTED, fontSize: 8 } }, { text: `${(f.investors || 0).toLocaleString('tr-TR')} Kişi`, options: { color: C_WHITE, bold: true, fontSize: 8, align: 'right' } }],
-                    [{ text: "Kişi Başı Akış", options: { color: C_MUTED, fontSize: 8 } }, { text: f.perPerson ? `₺${Math.round(f.perPerson).toLocaleString('tr-TR')}` : '—', options: { color: C_CYAN, bold: true, fontSize: 8, align: 'right' } }]
-                ];
+                // ==========================================
+                // 2x2 MICRO-METRIC TILES
+                // ==========================================
+                const tileW = 1.22;
+                const tileH = 0.52;
+                const tileX1 = x + 0.12;
+                const tileX2 = x + 1.42;
+                const tileY1 = cardY + 1.84;
+                const tileY2 = cardY + 2.40;
 
-                slide.addTable(rows, {
-                    x: x + 0.15, y: cardY + 2.05, w: cardW - 0.3, h: 1.45,
-                    border: { type: 'none' },
-                    colW: [1.3, 1.2],
-                    rowH: 0.27
+                // Tile 1: Pay Fiyatı (Cyan)
+                slide.addShape(pptx.ShapeType.roundRect, {
+                    x: tileX1, y: tileY1, w: tileW, h: tileH,
+                    rectRadius: 0.04,
+                    fill: { color: '0B1A2C' },
+                    line: { color: C_CYAN, width: 1 }
+                });
+                slide.addText('PAY FİYATI', {
+                    x: tileX1 + 0.06, y: tileY1 + 0.05, w: tileW - 0.12, h: 0.18,
+                    fontSize: 6, bold: true, color: C_CYAN, fontFace: FONT
+                });
+                slide.addText(formatFundPriceDisplay(f.price), {
+                    x: tileX1 + 0.06, y: tileY1 + 0.22, w: tileW - 0.12, h: 0.26,
+                    fontSize: 8.5, bold: true, color: C_WHITE, fontFace: FONT
+                });
+
+                // Tile 2: Günlük Getiri (Emerald / Rose)
+                slide.addShape(pptx.ShapeType.roundRect, {
+                    x: tileX2, y: tileY1, w: tileW, h: tileH,
+                    rectRadius: 0.04,
+                    fill: { color: isRetPos ? '0A241C' : '240E18' },
+                    line: { color: isRetPos ? C_EMERALD : C_ROSE, width: 1 }
+                });
+                slide.addText('GÜNLÜK GETİRİ', {
+                    x: tileX2 + 0.06, y: tileY1 + 0.05, w: tileW - 0.12, h: 0.18,
+                    fontSize: 6, bold: true, color: C_MUTED, fontFace: FONT
+                });
+                slide.addText(`${isRetPos ? '+' : ''}%${Math.abs(f.change || 0).toFixed(2)}`, {
+                    x: tileX2 + 0.06, y: tileY1 + 0.22, w: tileW - 0.12, h: 0.26,
+                    fontSize: 8.5, bold: true, color: isRetPos ? C_EMERALD_LIGHT : C_ROSE_LIGHT, fontFace: FONT
+                });
+
+                // Tile 3: Fon Büyüklüğü (Amber)
+                slide.addShape(pptx.ShapeType.roundRect, {
+                    x: tileX1, y: tileY2, w: tileW, h: tileH,
+                    rectRadius: 0.04,
+                    fill: { color: '22180A' },
+                    line: { color: C_AMBER, width: 1 }
+                });
+                slide.addText('FON BÜYÜKLÜĞÜ', {
+                    x: tileX1 + 0.06, y: tileY2 + 0.05, w: tileW - 0.12, h: 0.18,
+                    fontSize: 6, bold: true, color: C_AMBER, fontFace: FONT
+                });
+                slide.addText(formatBillionOrMillion(f.aum), {
+                    x: tileX1 + 0.06, y: tileY2 + 0.22, w: tileW - 0.12, h: 0.26,
+                    fontSize: 8.5, bold: true, color: C_WHITE, fontFace: FONT
+                });
+
+                // Tile 4: Toplam Yatırımcı (Purple)
+                slide.addShape(pptx.ShapeType.roundRect, {
+                    x: tileX2, y: tileY2, w: tileW, h: tileH,
+                    rectRadius: 0.04,
+                    fill: { color: '1C1028' },
+                    line: { color: C_PURPLE, width: 1 }
+                });
+                slide.addText('TOPLAM YATIRIMCI', {
+                    x: tileX2 + 0.06, y: tileY2 + 0.05, w: tileW - 0.12, h: 0.18,
+                    fontSize: 6, bold: true, color: C_PURPLE, fontFace: FONT
+                });
+                slide.addText(`${(f.investors || 0).toLocaleString('tr-TR')}`, {
+                    x: tileX2 + 0.06, y: tileY2 + 0.22, w: tileW - 0.12, h: 0.26,
+                    fontSize: 8.5, bold: true, color: C_WHITE, fontFace: FONT
+                });
+
+                // Velocity Bar Strip
+                const perPersonStr = f.perPerson ? `₺${Math.round(f.perPerson).toLocaleString('tr-TR')}` : '—';
+                slide.addShape(pptx.ShapeType.roundRect, {
+                    x: x + 0.12, y: cardY + 2.98, w: cardW - 0.24, h: 0.36,
+                    rectRadius: 0.04,
+                    fill: { color: '0E1626' },
+                    line: { color: rankBorderColor, width: 1 }
+                });
+                slide.addText('Kişi Başı Net Hız:', {
+                    x: x + 0.18, y: cardY + 2.98, w: 1.2, h: 0.36,
+                    fontSize: 6.5, color: C_MUTED, valign: 'middle', fontFace: FONT
+                });
+                slide.addText(perPersonStr, {
+                    x: x + 1.38, y: cardY + 2.98, w: cardW - 1.48, h: 0.36,
+                    fontSize: 7.5, bold: true, color: rankBorderColor,
+                    align: 'right', valign: 'middle', fontFace: FONT
                 });
             });
         }
 
-        addTop3FundsSlide('SERMAYE GİRİŞİ LİDERLERİ', 'Günün En Çok Para Girişi Olan 3 Fonu', `${data.date} • Bugün TEFAS'ta portföyüne en yüksek net nakit girişi sağlayan lider 3 fon`, C_EMERALD, data.topCashInflow, 'cash-in');
-        addTop3FundsSlide('SERMAYE ÇIKIŞI LİDERLERİ', 'Günün En Çok Para Çıkışı Olan 3 Fonu', `${data.date} • Bugün portföyünden en yüksek net sermaye çıkışı gerçekleşen fonlar ve ayrıntıları`, C_ROSE, data.topCashOutflow, 'cash-out');
-        addTop3FundsSlide('YATIRIMCI TERCİHİ', 'Günün En Çok Yatırımcı Giren 3 Fonu', `${data.date} • Yatırımcı sayısı gün içinde en çok artış gösteren ve en çok yeni ortak çeken fonlar`, C_CYAN, data.topInvestorInflow, 'inv-in');
-        addTop3FundsSlide('YATIRIMCI ÇIKIŞI', 'Günün En Çok Yatırımcı Çıkan 3 Fonu', `${data.date} • Gün içinde yatırımcı sayısı en çok azalan veya çıkış yaşanan 3 fon ve detayları`, C_PURPLE, data.topInvestorOutflow, 'inv-out');
+        addTop3FundsSlide(2, 'SERMAYE GİRİŞİ LİDERLERİ', 'Günün En Çok Para Girişi Olan 3 Fonu', 'Bugün portföyüne en yüksek net sermaye girişi sağlayan lider fonlar ve finansal metrikleri', C_EMERALD, data.topCashInflow, 'cash-in');
+        addTop3FundsSlide(3, 'SERMAYE ÇIKIŞI LİDERLERİ', 'Günün En Çok Para Çıkışı Olan 3 Fonu', 'Bugün portföyünden en yüksek net sermaye çıkışı gerçekleşen fonlar ve finansal metrikleri', C_ROSE, data.topCashOutflow, 'cash-out');
+        addTop3FundsSlide(4, 'YATIRIMCI TERCİHİ', 'Günün En Çok Yatırımcı Giren 3 Fonu', 'Yatırımcı sayısı gün içinde en çok artış gösteren ve en çok yeni ortak çeken fonlar', C_CYAN, data.topInvestorInflow, 'inv-in');
+        addTop3FundsSlide(5, 'YATIRIMCI ÇIKIŞI', 'Günün En Çok Yatırımcı Çıkan 3 Fonu', 'Gün içinde yatırımcı sayısı en çok azalan veya çıkış yaşanan 3 fon ve detayları', C_PURPLE, data.topInvestorOutflow, 'inv-out');
 
+        // ==========================================================================
         // SLIDE 6: Categories Breakdown Table
+        // ==========================================================================
         const s6 = pptx.addSlide();
-        addSlideHeader(s6, 'ŞEMSİYE KATEGORİ DAĞILIMI', 'Fon Kategorileri Sermaye Dağılımı ve Liderleri', `${data.date} • TEFAS 9 Ana Şemsiye Fon Kategorisinde Büyüklük, Para Girişi/Çıkışı ve Yatırımcı Hareketleri`, C_PURPLE);
+        addSlideHeader(s6, 6, 'ŞEMSİYE KATEGORİ MATRİSİ', 'TEFAS Fon Kategorileri Karşılaştırma & Dağılım', '9 Şemsiye kategorisinin pazar payları, büyüklükleri, getiri ortalamaları ve günlük net sermaye hareketleri', C_PURPLE);
 
         s6.addShape(pptx.ShapeType.roundRect, {
-            x: 0.6, y: 1.5, w: 4.25, h: 0.75,
-            rectRadius: 0.08,
-            fill: { color: C_CARD },
-            line: { color: C_EMERALD, width: 1 }
+            x: 0.6, y: 1.38, w: 4.25, h: 0.55,
+            rectRadius: 0.06,
+            fill: { color: '0B1C17' },
+            line: { color: C_EMERALD, width: 1.5 }
         });
-        s6.addText(`GİRİŞ LİDERİ: ${inCat ? inCat.name : '—'} (+${formatBillionOrMillion(inCat ? inCat.cashFlow : 0)})`, {
-            x: 0.8, y: 1.5, w: 3.8, h: 0.75,
-            fontSize: 9.5, bold: true, color: C_EMERALD, valign: 'middle'
+        s6.addText(`👑 SERMAYE LİDERİ: ${inCat ? inCat.name : '—'} (+${formatBillionOrMillion(inCat ? inCat.cashFlow : 0)})`, {
+            x: 0.8, y: 1.38, w: 3.8, h: 0.55,
+            fontSize: 8.5, bold: true, color: C_EMERALD_LIGHT, valign: 'middle', fontFace: FONT
         });
 
         s6.addShape(pptx.ShapeType.roundRect, {
-            x: 5.15, y: 1.5, w: 4.25, h: 0.75,
-            rectRadius: 0.08,
-            fill: { color: C_CARD },
-            line: { color: C_ROSE, width: 1 }
+            x: 5.15, y: 1.38, w: 4.25, h: 0.55,
+            rectRadius: 0.06,
+            fill: { color: '1A0C14' },
+            line: { color: C_ROSE, width: 1.5 }
         });
         s6.addText(`ÇIKIŞ LİDERİ: ${outCat ? outCat.name : '—'} (${formatBillionOrMillion(outCat ? outCat.cashFlow : 0)})`, {
-            x: 5.35, y: 1.5, w: 3.8, h: 0.75,
-            fontSize: 9.5, bold: true, color: C_ROSE, valign: 'middle'
+            x: 5.35, y: 1.38, w: 3.8, h: 0.55,
+            fontSize: 8.5, bold: true, color: C_ROSE_LIGHT, valign: 'middle', fontFace: FONT
         });
 
         const catTableRows = [
             [
-                { text: "Fon Kategorisi", options: { bold: true, color: C_MUTED, fill: { color: '1E293B' } } },
-                { text: "Fon Sayısı", options: { bold: true, color: C_MUTED, align: 'center', fill: { color: '1E293B' } } },
-                { text: "Hacim (AUM)", options: { bold: true, color: C_MUTED, align: 'right', fill: { color: '1E293B' } } },
-                { text: "Pazar Payı", options: { bold: true, color: C_MUTED, align: 'center', fill: { color: '1E293B' } } },
-                { text: "Günlük Para Akışı", options: { bold: true, color: C_MUTED, align: 'right', fill: { color: '1E293B' } } },
-                { text: "Yatırımcı Değişimi", options: { bold: true, color: C_MUTED, align: 'right', fill: { color: '1E293B' } } },
-                { text: "Ort. Getiri", options: { bold: true, color: C_MUTED, align: 'right', fill: { color: '1E293B' } } }
+                { text: "Fon Kategorisi", options: { bold: true, color: C_MUTED, fill: { color: '0F172A' }, fontFace: FONT } },
+                { text: "Fon Sayısı", options: { bold: true, color: C_MUTED, align: 'center', fill: { color: '0F172A' }, fontFace: FONT } },
+                { text: "Toplam Hacim (AUM)", options: { bold: true, color: C_MUTED, align: 'right', fill: { color: '0F172A' }, fontFace: FONT } },
+                { text: "Pazar Payı", options: { bold: true, color: C_MUTED, align: 'center', fill: { color: '0F172A' }, fontFace: FONT } },
+                { text: "Günlük Para Akışı", options: { bold: true, color: C_MUTED, align: 'right', fill: { color: '0F172A' }, fontFace: FONT } },
+                { text: "Yatırımcı Değişimi", options: { bold: true, color: C_MUTED, align: 'right', fill: { color: '0F172A' }, fontFace: FONT } },
+                { text: "Ort. Günlük Getiri", options: { bold: true, color: C_MUTED, align: 'right', fill: { color: '0F172A' }, fontFace: FONT } }
             ]
         ];
 
@@ -11670,29 +11916,41 @@ async function exportToPowerPoint() {
             const isRetP = (cat.avgReturn || 0) >= 0;
 
             catTableRows.push([
-                { text: cat.name, options: { color: C_WHITE, bold: true, fontSize: 8 } },
-                { text: `${cat.displayFundCount}`, options: { color: C_MUTED, align: 'center', fontSize: 8 } },
-                { text: formatBillionOrMillion(cat.displayAUM), options: { color: C_WHITE, align: 'right', fontSize: 8, bold: true } },
-                { text: `%${cat.sharePct}%`, options: { color: C_CYAN, align: 'center', fontSize: 8, bold: true } },
-                { text: `${isCashP ? '+' : ''}${formatBillionOrMillion(cat.cashFlow)}`, options: { color: isCashP ? C_EMERALD : C_ROSE, align: 'right', fontSize: 8, bold: true } },
-                { text: `${isInvP ? '+' : ''}${(cat.deltaInvestors || 0).toLocaleString('tr-TR')}`, options: { color: isInvP ? C_EMERALD : C_ROSE, align: 'right', fontSize: 8, bold: true } },
-                { text: `${isRetP ? '+' : ''}%${Math.abs(cat.avgReturn || 0).toFixed(2)}`, options: { color: isRetP ? C_EMERALD : C_ROSE, align: 'right', fontSize: 8, bold: true } }
+                { text: cat.name, options: { color: C_WHITE, bold: true, fontSize: 8, fontFace: FONT } },
+                { text: `${cat.displayFundCount}`, options: { color: C_MUTED, align: 'center', fontSize: 8, fontFace: FONT } },
+                { text: formatBillionOrMillion(cat.displayAUM), options: { color: C_WHITE, align: 'right', fontSize: 8, bold: true, fontFace: FONT } },
+                { text: `%${cat.sharePct}%`, options: { color: C_CYAN, align: 'center', fontSize: 8, bold: true, fontFace: FONT } },
+                { text: `${isCashP ? '+' : ''}${formatBillionOrMillion(cat.cashFlow)}`, options: { color: isCashP ? C_EMERALD_LIGHT : C_ROSE_LIGHT, align: 'right', fontSize: 8, bold: true, fontFace: FONT } },
+                { text: `${isInvP ? '+' : ''}${(cat.deltaInvestors || 0).toLocaleString('tr-TR')}`, options: { color: isInvP ? C_EMERALD_LIGHT : C_ROSE_LIGHT, align: 'right', fontSize: 8, bold: true, fontFace: FONT } },
+                { text: `${isRetP ? '+' : ''}%${Math.abs(cat.avgReturn || 0).toFixed(2)}`, options: { color: isRetP ? C_EMERALD_LIGHT : C_ROSE_LIGHT, align: 'right', fontSize: 8, bold: true, fontFace: FONT } }
             ]);
         });
 
         s6.addTable(catTableRows, {
-            x: 0.6, y: 2.4, w: 8.8, h: 2.8,
+            x: 0.6, y: 2.05, w: 8.8, h: 3.2,
             colW: [2.5, 0.9, 1.2, 0.9, 1.3, 1.1, 0.9],
-            rowH: 0.26,
-            border: { type: 'solid', color: '1F2937', pt: 0.5 }
+            rowH: 0.28,
+            border: { type: 'solid', color: '1E293B', pt: 0.5 }
         });
 
         const safeDate = (data.date || 'bugun').replace(/[^0-9a-zA-Z_-]/g, '_');
         await pptx.writeFile({ fileName: `TEFAS_Gunluk_Akis_Slayt_Raporu_${safeDate}.pptx` });
 
+        if (btn) {
+            btn.innerHTML = `<i class="fa-solid fa-check"></i> <span>İndirildi!</span>`;
+            setTimeout(() => {
+                btn.disabled = false;
+                btn.innerHTML = originalBtnHTML || `<i class="fa-solid fa-file-powerpoint"></i> <span>PowerPoint İndir</span> <span class="slide-btn-badge pptx">PPTX</span>`;
+            }, 2500);
+        }
+
     } catch (err) {
         console.error("PowerPoint generation error:", err);
         alert("PowerPoint dosyası oluşturulurken bir hata oluştu: " + (err.message || err));
+        if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = originalBtnHTML || `<i class="fa-solid fa-file-powerpoint"></i> <span>PowerPoint İndir</span>`;
+        }
     }
 }
 
