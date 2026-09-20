@@ -15801,167 +15801,362 @@ body.theme-neo-brutalism .sort-option.active {
 }
 
 /* ==========================================================================
-   FUND DETAIL SLIDE: FULL SUNSET PANELS & KAP INTEGRATION
+   FUND DETAIL SLIDE: SUNSET HORIZON EXECUTIVE COMMAND DECK
    ========================================================================== */
+
+/* 1. Header Canopy */
+.slide-aspect-box.theme-sunset .slide-detail-container {
+    height: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+}
+
+.slide-aspect-box.theme-sunset .slide-detail-header {
+    background: linear-gradient(135deg, rgba(42, 14, 68, 0.75) 0%, rgba(18, 6, 32, 0.9) 100%) !important;
+    border: 1.5px solid rgba(244, 63, 94, 0.4) !important;
+    border-radius: 16px !important;
+    padding: 10px 18px !important;
+    margin-bottom: 12px !important;
+    box-shadow: 0 8px 25px rgba(10, 2, 20, 0.5) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    flex-shrink: 0 !important;
+}
+
 .slide-aspect-box.theme-sunset .btn-slide-back {
-    background: linear-gradient(135deg, rgba(244, 63, 94, 0.25) 0%, rgba(251, 146, 60, 0.2) 100%) !important;
-    border: 1.5px solid #FB923C !important;
+    background: linear-gradient(135deg, #F43F5E 0%, #FB923C 100%) !important;
+    border: 1px solid #FDE047 !important;
     color: #FFFFFF !important;
-    box-shadow: 0 0 14px rgba(251, 146, 60, 0.25) !important;
-    border-radius: 9px !important;
-    font-weight: 700 !important;
+    box-shadow: 0 0 16px rgba(244, 63, 94, 0.5) !important;
+    border-radius: 20px !important;
+    padding: 7px 18px !important;
+    font-weight: 800 !important;
+    font-size: 0.8rem !important;
     transition: all 0.2s ease !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 8px !important;
 }
 
 .slide-aspect-box.theme-sunset .btn-slide-back:hover {
-    background: linear-gradient(135deg, #F43F5E 0%, #FB923C 100%) !important;
+    transform: translateY(-2px) scale(1.04) !important;
+    box-shadow: 0 0 24px rgba(251, 146, 60, 0.7) !important;
     color: #FFFFFF !important;
-    border-color: #FDE047 !important;
-    box-shadow: 0 0 20px rgba(244, 63, 94, 0.5) !important;
-    transform: translateY(-1px) !important;
 }
 
 .slide-aspect-box.theme-sunset .slide-detail-code-badge {
-    background: linear-gradient(135deg, #F43F5E 0%, #FB923C 100%) !important;
-    color: #FFFFFF !important;
+    background: linear-gradient(135deg, #F59E0B 0%, #FDE047 100%) !important;
+    color: #240800 !important;
     font-weight: 900 !important;
-    box-shadow: 0 0 12px rgba(244, 63, 94, 0.4) !important;
+    font-size: 1.15rem !important;
+    letter-spacing: 0.8px !important;
+    padding: 3px 14px !important;
+    border-radius: 8px !important;
+    box-shadow: 0 0 18px rgba(251, 191, 36, 0.6) !important;
+}
+
+.slide-aspect-box.theme-sunset .slide-detail-cat-pill {
+    background: rgba(244, 63, 94, 0.18) !important;
+    border: 1.5px solid rgba(244, 63, 94, 0.45) !important;
+    color: #FECDD3 !important;
+    border-radius: 20px !important;
+    padding: 3px 12px !important;
+    font-size: 0.72rem !important;
+    font-weight: 800 !important;
 }
 
 .slide-aspect-box.theme-sunset .slide-detail-fund-name {
     color: #FFFFFF !important;
-    font-weight: 800 !important;
+    font-size: 1.15rem !important;
+    font-weight: 900 !important;
+    margin-top: 2px !important;
+    background: linear-gradient(135deg, #FFFFFF 20%, #FECDD3 60%, #FDE047 100%) !important;
+    -webkit-background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+    filter: drop-shadow(0 2px 8px rgba(251, 146, 60, 0.3));
+}
+
+/* 2. Top Metric Ticker Deck (Asymmetric Hero Emphasis: Getiri & Para Akışı) */
+.slide-aspect-box.theme-sunset .slide-detail-metrics-grid {
+    display: grid !important;
+    grid-template-columns: 1fr 1.25fr 1fr 1.25fr 1fr !important;
+    gap: 12px !important;
+    margin-bottom: 12px !important;
+    flex-shrink: 0 !important;
 }
 
 .slide-aspect-box.theme-sunset .slide-detail-metric-card {
-    background: linear-gradient(160deg, rgba(32, 10, 52, 0.88) 0%, rgba(18, 5, 30, 0.96) 100%) !important;
-    border: 1px solid rgba(244, 63, 94, 0.28) !important;
-    border-top: 3px solid #FB923C !important;
-    border-radius: 10px !important;
-    box-shadow: 0 6px 20px rgba(10, 2, 18, 0.5) !important;
+    border-radius: 14px !important;
+    padding: 10px 14px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+    backdrop-filter: blur(12px) !important;
+    transition: transform 0.2s ease, box-shadow 0.2s ease !important;
 }
 
-.slide-aspect-box.theme-sunset .slide-detail-metric-card.card-return.pos,
-.slide-aspect-box.theme-sunset .slide-detail-metric-card.card-cash.pos,
-.slide-aspect-box.theme-sunset .slide-detail-metric-card.card-inv.pos {
-    border-top-color: #FDE047 !important;
+.slide-aspect-box.theme-sunset .slide-detail-metric-card:hover {
+    transform: translateY(-3px) !important;
 }
 
-.slide-aspect-box.theme-sunset .slide-detail-metric-card.card-return.neg,
-.slide-aspect-box.theme-sunset .slide-detail-metric-card.card-cash.neg,
-.slide-aspect-box.theme-sunset .slide-detail-metric-card.card-inv.neg {
-    border-top-color: #C084FC !important;
+/* Standard Flankers: Fiyat, AUM, Yatırımcı */
+.slide-aspect-box.theme-sunset .slide-detail-metric-card.card-price,
+.slide-aspect-box.theme-sunset .slide-detail-metric-card.card-aum,
+.slide-aspect-box.theme-sunset .slide-detail-metric-card.card-inv {
+    background: linear-gradient(165deg, rgba(28, 10, 46, 0.88) 0%, rgba(14, 4, 24, 0.96) 100%) !important;
+    border: 1.5px solid rgba(244, 63, 94, 0.3) !important;
+    border-top: 3.5px solid rgba(251, 146, 60, 0.6) !important;
+    box-shadow: 0 8px 25px rgba(10, 2, 20, 0.5) !important;
 }
 
+/* HERO CARD 1: Günlük Getiri (Daily Return) - Golden Sunrise Glow */
+.slide-aspect-box.theme-sunset .slide-detail-metric-card.card-return {
+    background: linear-gradient(165deg, rgba(251, 146, 60, 0.25) 0%, rgba(42, 14, 68, 0.94) 50%, rgba(18, 5, 30, 0.98) 100%) !important;
+    border: 2px solid rgba(251, 191, 36, 0.75) !important;
+    border-top: 4.5px solid #FDE047 !important;
+    box-shadow: 0 10px 30px -5px rgba(251, 146, 60, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.25) !important;
+}
+
+.slide-aspect-box.theme-sunset .slide-detail-metric-card.card-return .slide-detail-m-val {
+    font-size: 1.55rem !important;
+    font-weight: 900 !important;
+    color: #FDE047 !important;
+    text-shadow: 0 0 20px rgba(251, 146, 60, 0.7) !important;
+}
+
+.slide-aspect-box.theme-sunset .slide-detail-metric-card.card-return .slide-detail-m-lbl {
+    color: #FDE047 !important;
+}
+
+/* HERO CARD 2: Günlük Para Akışı (Daily Cash Flow) - Coral Flame Glow */
+.slide-aspect-box.theme-sunset .slide-detail-metric-card.card-cash {
+    background: linear-gradient(165deg, rgba(244, 63, 94, 0.25) 0%, rgba(38, 12, 60, 0.94) 50%, rgba(18, 5, 30, 0.98) 100%) !important;
+    border: 2px solid rgba(244, 63, 94, 0.75) !important;
+    border-top: 4.5px solid #FB7185 !important;
+    box-shadow: 0 10px 30px -5px rgba(244, 63, 94, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
+}
+
+.slide-aspect-box.theme-sunset .slide-detail-metric-card.card-cash .slide-detail-m-val {
+    font-size: 1.55rem !important;
+    font-weight: 900 !important;
+    text-shadow: 0 0 18px rgba(244, 63, 94, 0.6) !important;
+}
+
+.slide-aspect-box.theme-sunset .slide-detail-metric-card.card-cash .slide-detail-m-lbl {
+    color: #FB7185 !important;
+}
+
+/* Card Typography */
 .slide-aspect-box.theme-sunset .slide-detail-m-lbl {
     color: #FDA4AF !important;
     font-size: 0.68rem !important;
-    font-weight: 600 !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.5px !important;
+    margin-bottom: 3px !important;
 }
 
 .slide-aspect-box.theme-sunset .slide-detail-m-val {
     color: #FFFFFF !important;
     font-weight: 800 !important;
-}
-
-.slide-aspect-box.theme-sunset .slide-detail-m-val.pos {
-    color: #FDE047 !important;
-    text-shadow: 0 0 12px rgba(251, 146, 60, 0.4) !important;
-}
-
-.slide-aspect-box.theme-sunset .slide-detail-m-val.neg {
-    color: #FB7185 !important;
-    text-shadow: 0 0 12px rgba(244, 63, 94, 0.4) !important;
+    font-size: 1.25rem !important;
+    line-height: 1.15 !important;
 }
 
 .slide-aspect-box.theme-sunset .slide-detail-m-sub {
     color: #FECDD3 !important;
-    opacity: 0.85;
+    opacity: 0.85 !important;
+    font-size: 0.68rem !important;
+    margin-top: 3px !important;
+}
+
+/* 3. Bottom Panels: Floating Canopies */
+.slide-aspect-box.theme-sunset .slide-detail-body-grid {
+    display: grid !important;
+    grid-template-columns: 1fr 1.35fr !important;
+    gap: 14px !important;
+    flex: 1 !important;
+    min-height: 0 !important;
 }
 
 .slide-aspect-box.theme-sunset .slide-detail-panel {
-    background: linear-gradient(165deg, rgba(28, 10, 46, 0.88) 0%, rgba(14, 4, 24, 0.95) 100%) !important;
-    border: 1.5px solid rgba(244, 63, 94, 0.28) !important;
-    border-radius: 12px !important;
-    box-shadow: 0 10px 30px rgba(10, 2, 18, 0.6) !important;
+    border-radius: 16px !important;
+    padding: 14px 18px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+    backdrop-filter: blur(12px) !important;
+    box-shadow: 0 14px 40px -10px rgba(10, 2, 20, 0.7) !important;
+}
+
+/* Left Panel: Varlık Dağılımı (Amber Canopy) */
+.slide-aspect-box.theme-sunset #slideDetailAllocPanel.slide-detail-panel {
+    background: linear-gradient(165deg, rgba(32, 12, 54, 0.92) 0%, rgba(16, 5, 28, 0.98) 100%) !important;
+    border: 1.5px solid rgba(251, 146, 60, 0.4) !important;
+    border-top: 4px solid #FB923C !important;
+}
+
+/* Right Panel: 30 Günlük Grafik (Golden Canopy) */
+.slide-aspect-box.theme-sunset .slide-detail-body-grid > .slide-detail-panel:last-child {
+    background: linear-gradient(165deg, rgba(32, 10, 52, 0.92) 0%, rgba(16, 5, 28, 0.98) 100%) !important;
+    border: 1.5px solid rgba(251, 191, 36, 0.4) !important;
+    border-top: 4px solid #FDE047 !important;
 }
 
 .slide-aspect-box.theme-sunset .slide-detail-panel-hdr {
-    border-bottom: 1px solid rgba(244, 63, 94, 0.2) !important;
+    border-bottom: 1px solid rgba(244, 63, 94, 0.25) !important;
+    padding-bottom: 8px !important;
+    margin-bottom: 8px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
 }
 
 .slide-aspect-box.theme-sunset .slide-detail-panel-main {
     color: #FFFFFF !important;
     font-weight: 800 !important;
+    font-size: 0.95rem !important;
 }
 
 .slide-aspect-box.theme-sunset .slide-detail-panel-desc {
     color: #E9D5FF !important;
+    font-size: 0.72rem !important;
 }
 
 .slide-aspect-box.theme-sunset .slide-detail-panel-icon.cyan {
-    background: rgba(251, 146, 60, 0.18) !important;
-    color: #FB923C !important;
-    border: 1px solid rgba(251, 146, 60, 0.4) !important;
+    background: linear-gradient(135deg, #F43F5E 0%, #FB923C 100%) !important;
+    color: #FFFFFF !important;
+    border: none !important;
+    box-shadow: 0 0 12px rgba(244, 63, 94, 0.5) !important;
 }
 
 .slide-aspect-box.theme-sunset .slide-detail-panel-icon.purple {
-    background: rgba(244, 63, 94, 0.18) !important;
-    color: #F43F5E !important;
-    border: 1px solid rgba(244, 63, 94, 0.4) !important;
+    background: linear-gradient(135deg, #F59E0B 0%, #FDE047 100%) !important;
+    color: #260A00 !important;
+    border: none !important;
+    box-shadow: 0 0 12px rgba(251, 191, 36, 0.5) !important;
+}
+
+.slide-aspect-box.theme-sunset .btn-slide-kap-toggle {
+    background: linear-gradient(135deg, rgba(244, 63, 94, 0.28) 0%, rgba(251, 146, 60, 0.22) 100%) !important;
+    border: 1.5px solid #FB923C !important;
+    color: #FDE047 !important;
+    font-weight: 800 !important;
+    font-size: 0.74rem !important;
+    border-radius: 8px !important;
+    padding: 4px 12px !important;
+    box-shadow: 0 0 12px rgba(251, 146, 60, 0.3) !important;
+    transition: all 0.2s ease !important;
+}
+
+.slide-aspect-box.theme-sunset .btn-slide-kap-toggle:hover {
+    background: linear-gradient(135deg, #F43F5E 0%, #FB923C 100%) !important;
+    color: #FFFFFF !important;
+    border-color: #FDE047 !important;
 }
 
 .slide-aspect-box.theme-sunset .slide-detail-alloc-badge {
-    background: rgba(244, 63, 94, 0.15) !important;
-    border: 1px solid rgba(244, 63, 94, 0.35) !important;
+    background: rgba(244, 63, 94, 0.18) !important;
+    border: 1px solid rgba(244, 63, 94, 0.4) !important;
     color: #FECDD3 !important;
+    font-size: 0.72rem !important;
+    border-radius: 8px !important;
+}
+
+.slide-aspect-box.theme-sunset .slide-alloc-ribbon {
+    height: 14px !important;
+    border-radius: 10px !important;
+    box-shadow: 0 0 16px rgba(251, 146, 60, 0.35) !important;
+    margin: 8px 0 10px 0 !important;
 }
 
 .slide-aspect-box.theme-sunset .slide-alloc-chip-row {
-    background: rgba(36, 12, 58, 0.65) !important;
-    border: 1px solid rgba(244, 63, 94, 0.2) !important;
-    border-radius: 8px !important;
+    background: rgba(38, 14, 62, 0.8) !important;
+    border: 1px solid rgba(244, 63, 94, 0.25) !important;
+    border-radius: 9px !important;
+    padding: 7px 12px !important;
+    margin-bottom: 5px !important;
     transition: all 0.2s ease !important;
 }
 
 .slide-aspect-box.theme-sunset .slide-alloc-chip-row:hover {
     background: rgba(244, 63, 94, 0.25) !important;
-    border-color: #FB923C !important;
-    box-shadow: 0 0 12px rgba(251, 146, 60, 0.25) !important;
-}
-
-.slide-aspect-box.theme-sunset .slide-alloc-kap-badge {
-    background: rgba(251, 146, 60, 0.2) !important;
-    border: 1px solid #FB923C !important;
-    color: #FDE047 !important;
-    font-weight: 800 !important;
+    border-color: #FDE047 !important;
+    transform: translateX(4px) !important;
+    box-shadow: 0 0 14px rgba(251, 146, 60, 0.3) !important;
 }
 
 .slide-aspect-box.theme-sunset .slide-alloc-pct {
     color: #FDE047 !important;
     font-family: 'JetBrains Mono', monospace !important;
+    font-weight: 900 !important;
+    font-size: 0.84rem !important;
+}
+
+.slide-aspect-box.theme-sunset .slide-alloc-kap-badge {
+    background: rgba(251, 146, 60, 0.22) !important;
+    border: 1px solid #FB923C !important;
+    color: #FDE047 !important;
     font-weight: 800 !important;
+    border-radius: 6px !important;
 }
 
-.slide-aspect-box.theme-sunset .slide-alloc-bar-mini {
-    background: rgba(14, 4, 24, 0.6) !important;
+.slide-aspect-box.theme-sunset .slide-investor-stats-pill {
+    background: linear-gradient(135deg, rgba(244, 63, 94, 0.28) 0%, rgba(251, 146, 60, 0.24) 100%) !important;
+    border: 1.5px solid #FB923C !important;
+    color: #FDE047 !important;
+    border-radius: 20px !important;
+    padding: 4px 14px !important;
+    font-weight: 800 !important;
+    font-size: 0.72rem !important;
+    box-shadow: 0 0 14px rgba(251, 146, 60, 0.35) !important;
 }
 
-.slide-aspect-box.theme-sunset .slide-alloc-bar-mini-fill {
-    background: linear-gradient(90deg, #F43F5E 0%, #FB923C 100%) !important;
+.slide-aspect-box.theme-sunset .slide-investor-chart-box {
+    background: rgba(14, 4, 24, 0.65) !important;
+    border: 1px solid rgba(244, 63, 94, 0.22) !important;
+    border-radius: 12px !important;
+    padding: 8px 12px !important;
+    flex: 1 !important;
+    min-height: 180px !important;
+}
+
+.slide-aspect-box.theme-sunset .slide-investor-footer-bar {
+    background: rgba(22, 6, 36, 0.9) !important;
+    border: 1.5px solid rgba(244, 63, 94, 0.3) !important;
+    border-radius: 12px !important;
+    padding: 8px 16px !important;
+    margin-top: 8px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+}
+
+.slide-aspect-box.theme-sunset .slide-investor-footer-bar .lbl {
+    color: #FDA4AF !important;
+    font-size: 0.72rem !important;
+    font-weight: 600 !important;
+}
+
+.slide-aspect-box.theme-sunset .slide-investor-footer-bar .val {
+    color: #FFFFFF !important;
+    font-weight: 800 !important;
+    font-size: 0.82rem !important;
 }
 
 .slide-aspect-box.theme-sunset .slide-kap-stock-card {
-    background: rgba(36, 12, 58, 0.65) !important;
-    border: 1px solid rgba(244, 63, 94, 0.2) !important;
-    border-radius: 8px !important;
+    background: rgba(36, 12, 58, 0.7) !important;
+    border: 1px solid rgba(244, 63, 94, 0.25) !important;
+    border-radius: 9px !important;
     transition: all 0.2s ease !important;
 }
 
 .slide-aspect-box.theme-sunset .slide-kap-stock-card:hover {
-    background: rgba(244, 63, 94, 0.2) !important;
+    background: rgba(244, 63, 94, 0.25) !important;
     border-color: #FB923C !important;
-    transform: translateX(3px) !important;
+    transform: translateX(4px) !important;
 }
 
 .slide-aspect-box.theme-sunset .slide-kap-ticker {
