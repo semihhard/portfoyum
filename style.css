@@ -15530,14 +15530,18 @@ body.theme-neo-brutalism .sort-option.active {
 #fundSlideReportModal:fullscreen .slide-page,
 #fundSlideReportModal:-webkit-full-screen .slide-page,
 #fundSlideReportModal.is-fullscreen .slide-page,
-.slide-modal-dialog.fullscreen-mode .slide-page {
+.slide-modal-dialog.fullscreen-mode .slide-page,
+#fundSlideReportModal:fullscreen #slidePage-detail,
+#fundSlideReportModal:-webkit-full-screen #slidePage-detail,
+#fundSlideReportModal.is-fullscreen #slidePage-detail,
+.slide-modal-dialog.fullscreen-mode #slidePage-detail {
     width: 100% !important;
     height: 100% !important;
-    flex: 1 !important;
+    flex: 1 1 100% !important;
     min-height: 0 !important;
     padding: clamp(14px, 2.3vh, 30px) clamp(20px, 2.5vw, 40px) !important;
     box-sizing: border-box !important;
-    display: none;
+    display: none !important;
     flex-direction: column !important;
     justify-content: space-between !important;
 }
@@ -15545,7 +15549,11 @@ body.theme-neo-brutalism .sort-option.active {
 #fundSlideReportModal:fullscreen .slide-page.active,
 #fundSlideReportModal:-webkit-full-screen .slide-page.active,
 #fundSlideReportModal.is-fullscreen .slide-page.active,
-.slide-modal-dialog.fullscreen-mode .slide-page.active {
+.slide-modal-dialog.fullscreen-mode .slide-page.active,
+#fundSlideReportModal:fullscreen #slidePage-detail.active,
+#fundSlideReportModal:-webkit-full-screen #slidePage-detail.active,
+#fundSlideReportModal.is-fullscreen #slidePage-detail.active,
+.slide-modal-dialog.fullscreen-mode #slidePage-detail.active {
     display: flex !important;
 }
 
@@ -15905,13 +15913,22 @@ body.theme-neo-brutalism .sort-option.active {
 #fundSlideReportModal:-webkit-full-screen #slidePage-detail,
 #fundSlideReportModal.is-fullscreen #slidePage-detail,
 .slide-modal-dialog.fullscreen-mode #slidePage-detail {
+    display: none !important;
+}
+
+#fundSlideReportModal:fullscreen #slidePage-detail.active,
+#fundSlideReportModal:-webkit-full-screen #slidePage-detail.active,
+#fundSlideReportModal.is-fullscreen #slidePage-detail.active,
+.slide-modal-dialog.fullscreen-mode #slidePage-detail.active {
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: flex-start !important;
+    width: 100% !important;
     height: 100% !important;
-    flex: 1 !important;
+    flex: 1 1 100% !important;
     min-height: 0 !important;
     max-height: 100% !important;
     padding: clamp(12px, 1.8vh, 24px) clamp(18px, 2.2vw, 34px) !important;
-    display: flex !important;
-    flex-direction: column !important;
     box-sizing: border-box !important;
 }
 
