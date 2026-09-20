@@ -14385,37 +14385,54 @@ body.theme-neo-brutalism .sort-option.active {
 }
 
 /* ==========================================================================
-   SLIDES 2-5 RADICAL LAYOUT REDESIGN: 2-TIER HORIZONTAL EXECUTIVE ROWS
-   (Standart 3 dikey kolon yerine, tam genişlikte 3 şık yatay yönetici şeridi)
+   SLIDES 2-5: BENTO THEME HORIZONTAL LEADERSHIP STRIPS (BALANCED PROPORTIONS)
    ========================================================================== */
+.slide-aspect-box.theme-bento .slide-deck-container {
+    height: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+}
+
 .slide-aspect-box.theme-bento .slide-page {
-    padding: 16px 26px !important;
+    padding: 24px 34px !important;
     box-sizing: border-box !important;
+    height: 100% !important;
+    display: none !important;
+}
+
+.slide-aspect-box.theme-bento .slide-page.active {
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
     height: 100% !important;
 }
 
 .slide-aspect-box.theme-bento .slide-header-block {
-    margin-bottom: 8px !important;
+    margin-bottom: 12px !important;
+    flex-shrink: 0 !important;
 }
 
 .slide-aspect-box.theme-bento .slide-header-meta-row {
-    margin-bottom: 5px !important;
+    margin-bottom: 6px !important;
 }
 
 .slide-aspect-box.theme-bento .slide-main-title {
-    font-size: 1.35rem !important;
-    margin-bottom: 2px !important;
+    font-size: 1.65rem !important;
+    font-weight: 800 !important;
+    margin-bottom: 3px !important;
+    color: #FFFFFF !important;
 }
 
 .slide-aspect-box.theme-bento .slide-subtitle {
-    font-size: 0.76rem !important;
+    font-size: 0.86rem !important;
+    color: #94A3B8 !important;
 }
 
 .slide-aspect-box.theme-bento .slide-funds-grid-3 {
     display: flex !important;
     flex-direction: column !important;
     justify-content: space-between !important;
-    gap: 8px !important;
+    gap: 12px !important;
     flex: 1 !important;
     min-height: 0 !important;
     margin-top: 0 !important;
@@ -14425,14 +14442,14 @@ body.theme-neo-brutalism .sort-option.active {
     display: flex !important;
     flex-direction: column !important;
     justify-content: space-between !important;
-    padding: 8px 16px !important;
-    border-radius: 12px !important;
-    background: rgba(14, 18, 28, 0.92) !important;
+    padding: 12px 20px !important;
+    border-radius: 14px !important;
+    background: rgba(14, 18, 28, 0.94) !important;
     border: 1px solid rgba(226, 232, 240, 0.12) !important;
     box-shadow: 0 4px 18px rgba(0, 0, 0, 0.4) !important;
-    gap: 6px !important;
+    gap: 8px !important;
     flex: 1 !important;
-    min-height: 0 !important;
+    min-height: 100px !important;
     overflow: hidden !important;
     transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1) !important;
 }
@@ -14443,7 +14460,7 @@ body.theme-neo-brutalism .sort-option.active {
 
 /* Rank 1: Electric Lime Zirve */
 .slide-aspect-box.theme-bento .slide-fund-card.rank-card-1 {
-    background: linear-gradient(135deg, rgba(24, 32, 18, 0.95) 0%, rgba(12, 16, 26, 0.98) 100%) !important;
+    background: linear-gradient(135deg, rgba(24, 34, 18, 0.95) 0%, rgba(12, 16, 26, 0.98) 100%) !important;
     border: 1.5px solid #D4F63C !important;
     border-left: 5px solid #D4F63C !important;
     box-shadow: 0 0 25px rgba(212, 246, 60, 0.18) !important;
@@ -14465,7 +14482,7 @@ body.theme-neo-brutalism .sort-option.active {
     box-shadow: 0 0 20px rgba(168, 85, 247, 0.15) !important;
 }
 
-/* ---------------- TIER 1 (TOP ROW: IDENTITY & HERO STAT) ---------------- */
+/* Tier 1: Identity & Hero Stat */
 .slide-aspect-box.theme-bento .slide-fund-card > div:first-child {
     display: flex !important;
     align-items: center !important;
@@ -14486,10 +14503,11 @@ body.theme-neo-brutalism .sort-option.active {
 }
 
 .slide-aspect-box.theme-bento .slide-rank-badge {
-    height: 25px !important;
-    padding: 2px 8px !important;
+    height: 26px !important;
+    padding: 3px 10px !important;
     border-radius: 6px !important;
-    font-size: 0.68rem !important;
+    font-size: 0.74rem !important;
+    font-weight: 800 !important;
     flex-shrink: 0 !important;
 }
 
@@ -14517,9 +14535,10 @@ body.theme-neo-brutalism .sort-option.active {
 }
 
 .slide-aspect-box.theme-bento .slide-code-badge {
-    font-size: 0.84rem !important;
-    padding: 2px 7px !important;
-    border-radius: 5px !important;
+    font-size: 0.95rem !important;
+    padding: 3px 9px !important;
+    border-radius: 6px !important;
+    font-weight: 900 !important;
 }
 
 .slide-aspect-box.theme-bento .slide-fund-card.rank-card-1 .slide-code-badge {
@@ -14529,12 +14548,12 @@ body.theme-neo-brutalism .sort-option.active {
 }
 
 .slide-aspect-box.theme-bento .slide-fund-cat-name {
-    font-size: 0.70rem !important;
+    font-size: 0.74rem !important;
     flex-shrink: 0 !important;
 }
 
 .slide-aspect-box.theme-bento .slide-fund-fullname {
-    font-size: 0.82rem !important;
+    font-size: 0.92rem !important;
     font-weight: 700 !important;
     color: #FFFFFF !important;
     white-space: nowrap !important;
@@ -14553,9 +14572,9 @@ body.theme-neo-brutalism .sort-option.active {
     grid-template-rows: auto auto !important;
     align-items: center !important;
     column-gap: 12px !important;
-    row-gap: 1px !important;
+    row-gap: 2px !important;
     margin-bottom: 0 !important;
-    padding: 3px 12px !important;
+    padding: 4px 14px !important;
     border-radius: 8px !important;
     background: rgba(0, 0, 0, 0.45) !important;
     border: 1px solid rgba(255, 255, 255, 0.10) !important;
@@ -14565,16 +14584,17 @@ body.theme-neo-brutalism .sort-option.active {
 .slide-aspect-box.theme-bento .slide-fund-hero-lbl {
     grid-column: 1 / 2 !important;
     grid-row: 1 / 2 !important;
-    font-size: 0.55rem !important;
+    font-size: 0.65rem !important;
     margin-bottom: 0 !important;
     color: #94A3B8 !important;
     text-transform: uppercase !important;
+    font-weight: 700 !important;
 }
 
 .slide-aspect-box.theme-bento .slide-fund-hero-sub {
     grid-column: 1 / 2 !important;
     grid-row: 2 / 3 !important;
-    font-size: 0.62rem !important;
+    font-size: 0.72rem !important;
     margin-top: 0 !important;
     color: #CBD5E1 !important;
 }
@@ -14582,7 +14602,7 @@ body.theme-neo-brutalism .sort-option.active {
 .slide-aspect-box.theme-bento .slide-fund-hero-num {
     grid-column: 2 / 3 !important;
     grid-row: 1 / 3 !important;
-    font-size: 1.22rem !important;
+    font-size: 1.55rem !important;
     font-weight: 900 !important;
     margin: 0 !important;
     line-height: 1 !important;
@@ -14605,7 +14625,7 @@ body.theme-neo-brutalism .sort-option.active {
     text-shadow: 0 0 14px rgba(251, 113, 133, 0.35) !important;
 }
 
-/* ---------------- TIER 2 (BOTTOM ROW: METRICS & ACTION) ---------------- */
+/* Tier 2: Bottom Row: Metrics & Action */
 .slide-aspect-box.theme-bento .slide-fund-card > div:last-child {
     display: flex !important;
     align-items: center !important;
@@ -14613,8 +14633,8 @@ body.theme-neo-brutalism .sort-option.active {
     gap: 8px !important;
     width: 100% !important;
     flex-shrink: 0 !important;
-    padding-top: 4px !important;
-    border-top: 1px solid rgba(255, 255, 255, 0.07) !important;
+    padding-top: 6px !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
     min-width: 0 !important;
 }
 
@@ -14632,7 +14652,7 @@ body.theme-neo-brutalism .sort-option.active {
     align-items: flex-start !important;
     justify-content: center !important;
     gap: 1px !important;
-    padding: 2px 7px !important;
+    padding: 4px 8px !important;
     border-radius: 6px !important;
     background: rgba(0, 0, 0, 0.35) !important;
     border: 1px solid rgba(255, 255, 255, 0.08) !important;
@@ -14641,7 +14661,7 @@ body.theme-neo-brutalism .sort-option.active {
 }
 
 .slide-aspect-box.theme-bento .slide-tile-lbl {
-    font-size: 0.52rem !important;
+    font-size: 0.62rem !important;
     color: #94A3B8 !important;
     margin-bottom: 0 !important;
     white-space: nowrap !important;
@@ -14649,11 +14669,12 @@ body.theme-neo-brutalism .sort-option.active {
     text-overflow: ellipsis !important;
     width: 100% !important;
     text-transform: uppercase !important;
-    letter-spacing: 0.2px !important;
+    letter-spacing: 0.3px !important;
+    font-weight: 700 !important;
 }
 
 .slide-aspect-box.theme-bento .slide-tile-val {
-    font-size: 0.74rem !important;
+    font-size: 0.86rem !important;
     font-weight: 800 !important;
     white-space: nowrap !important;
     overflow: hidden !important;
@@ -14665,8 +14686,8 @@ body.theme-neo-brutalism .sort-option.active {
     display: flex !important;
     align-items: center !important;
     gap: 6px !important;
-    padding: 3px 9px !important;
-    font-size: 0.64rem !important;
+    padding: 4px 10px !important;
+    font-size: 0.72rem !important;
     border-radius: 6px !important;
     background: rgba(0, 0, 0, 0.40) !important;
     border: 1px solid rgba(255, 255, 255, 0.08) !important;
@@ -14675,18 +14696,18 @@ body.theme-neo-brutalism .sort-option.active {
 }
 
 .slide-aspect-box.theme-bento .slide-velocity-lbl {
-    font-size: 0.55rem !important;
+    font-size: 0.64rem !important;
     color: #94A3B8 !important;
+    font-weight: 700 !important;
 }
 
 .slide-aspect-box.theme-bento .slide-velocity-val {
-    font-size: 0.72rem !important;
+    font-size: 0.82rem !important;
     font-weight: 800 !important;
 }
 
 .slide-aspect-box.theme-bento .slide-fund-card.rank-card-1 .slide-velocity-val {
     color: #D4F63C !important;
-    font-weight: 800 !important;
 }
 
 .slide-aspect-box.theme-bento .slide-fund-click-hint {
@@ -14694,11 +14715,11 @@ body.theme-neo-brutalism .sort-option.active {
     align-items: center !important;
     gap: 5px !important;
     margin-top: 0 !important;
-    padding: 4px 10px !important;
+    padding: 5px 12px !important;
     border-radius: 6px !important;
-    font-size: 0.65rem !important;
-    font-weight: 700 !important;
-    background: rgba(212, 246, 60, 0.12) !important;
+    font-size: 0.74rem !important;
+    font-weight: 800 !important;
+    background: rgba(212, 246, 60, 0.14) !important;
     border: 1px solid rgba(212, 246, 60, 0.4) !important;
     color: #D4F63C !important;
     white-space: nowrap !important;
@@ -14710,9 +14731,10 @@ body.theme-neo-brutalism .sort-option.active {
 .slide-aspect-box.theme-bento .slide-fund-click-hint:hover {
     background: #D4F63C !important;
     color: #080B11 !important;
+    box-shadow: 0 0 12px rgba(212, 246, 60, 0.4) !important;
 }
 
-/* Slide 6 Matrix Table */
+/* Slide 6 Matrix Table in Bento */
 .slide-aspect-box.theme-bento .slide-cat-summary-table-wrap {
     background: rgba(16, 22, 34, 0.9) !important;
     border: 1px solid rgba(255, 255, 255, 0.1) !important;
@@ -14726,19 +14748,15 @@ body.theme-neo-brutalism .sort-option.active {
 }
 
 /* ==========================================================================
-   BENTO THEME: ADVANCED FUND DETAIL SLIDE ARCHITECTURE (ASİMETRİK BENTO DETAY)
+   BENTO THEME: BALANCED & PROPORTIONAL FUND DETAIL SLIDE ARCHITECTURE
+   (5 Yatay Metrik Kartı + 2 Yan Yana Dengeli Panel)
    ========================================================================== */
 
-/* ==========================================================================
-   BENTO THEME: RADICAL ASYMMETRIC BENTO COMMAND CENTER (SOL KULE + SAĞ SAHNE)
-   ========================================================================== */
-
-/* Detail Container: 2-Column Master Bento Layout */
+/* Detail Container: Natural Vertical Flow */
 .slide-aspect-box.theme-bento .slide-detail-container {
-    display: grid !important;
-    grid-template-columns: 310px 1fr !important;
-    grid-template-rows: auto 1fr !important;
-    gap: 8px 14px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 10px !important;
     width: 100% !important;
     height: 100% !important;
     min-height: 0 !important;
@@ -14746,11 +14764,13 @@ body.theme-neo-brutalism .sort-option.active {
     box-sizing: border-box !important;
 }
 
-/* Header Bar Spans Full Width Top */
+/* Detail Header */
 .slide-aspect-box.theme-bento .slide-detail-header {
-    grid-column: 1 / 3 !important;
-    grid-row: 1 / 2 !important;
-    margin-bottom: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    margin-bottom: 2px !important;
+    flex-shrink: 0 !important;
 }
 
 .slide-aspect-box.theme-bento .btn-slide-back {
@@ -14777,7 +14797,7 @@ body.theme-neo-brutalism .sort-option.active {
     color: #D4F63C !important;
     font-family: 'JetBrains Mono', monospace !important;
     font-weight: 900 !important;
-    font-size: 1.15rem !important;
+    font-size: 1.10rem !important;
     border-radius: 8px !important;
     padding: 2px 10px !important;
     box-shadow: 0 0 16px rgba(212, 246, 60, 0.3) !important;
@@ -14785,7 +14805,7 @@ body.theme-neo-brutalism .sort-option.active {
 
 .slide-aspect-box.theme-bento .slide-detail-cat-pill {
     border-radius: 6px !important;
-    font-size: 0.70rem !important;
+    font-size: 0.72rem !important;
     font-weight: 800 !important;
     letter-spacing: 0.4px !important;
 }
@@ -14793,26 +14813,24 @@ body.theme-neo-brutalism .sort-option.active {
 .slide-aspect-box.theme-bento .slide-detail-fund-name {
     color: #FFFFFF !important;
     font-weight: 700 !important;
-    font-size: 0.88rem !important;
+    font-size: 0.90rem !important;
 }
 
-/* ---------------- LEFT WING: EXECUTIVE FINANCIAL BENTO TOWER ---------------- */
+/* 5 Top Metric Cards: 1 Horizontal Row Across The Top */
 .slide-aspect-box.theme-bento .slide-detail-metrics-grid {
-    grid-column: 1 / 2 !important;
-    grid-row: 2 / 3 !important;
-    display: flex !important;
-    flex-direction: column !important;
-    justify-content: space-between !important;
-    gap: 7px !important;
-    height: 100% !important;
-    min-height: 0 !important;
+    display: grid !important;
+    grid-template-columns: repeat(5, 1fr) !important;
+    gap: 10px !important;
+    margin-bottom: 2px !important;
+    flex-shrink: 0 !important;
+    height: auto !important;
 }
 
 .slide-aspect-box.theme-bento .slide-detail-metric-card {
-    background: rgba(14, 18, 28, 0.92) !important;
+    background: rgba(14, 18, 28, 0.94) !important;
     border: 1px solid rgba(226, 232, 240, 0.12) !important;
-    border-radius: 10px !important;
-    padding: 7px 12px !important;
+    border-radius: 12px !important;
+    padding: 9px 13px !important;
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4) !important;
     position: relative !important;
     overflow: hidden !important;
@@ -14823,224 +14841,93 @@ body.theme-neo-brutalism .sort-option.active {
 }
 
 .slide-aspect-box.theme-bento .slide-detail-metric-card:hover {
-    transform: translateX(3px) !important;
+    transform: translateY(-2px) !important;
     border-color: #D4F63C !important;
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5), 0 0 14px rgba(212, 246, 60, 0.2) !important;
 }
 
-/* Card 2 / .card-return: HERO BENTO TILE (Günlük Getiri) - Zirvede Büyük Vitrin */
-.slide-aspect-box.theme-bento .slide-detail-metric-card.card-return,
-.slide-aspect-box.theme-bento .slide-detail-metric-card:nth-child(2) {
-    order: 1 !important;
-    padding: 10px 14px !important;
-    flex: 1.15 !important;
-}
-
-.slide-aspect-box.theme-bento .slide-detail-metric-card.card-return.pos,
-.slide-aspect-box.theme-bento .slide-detail-metric-card:nth-child(2).pos {
-    background: linear-gradient(135deg, rgba(28, 42, 20, 0.95) 0%, rgba(10, 14, 24, 0.98) 100%) !important;
+/* Card 2 / .card-return: Günlük Getiri Highlight */
+.slide-aspect-box.theme-bento .slide-detail-metric-card.card-return.pos {
     border: 1.5px solid #D4F63C !important;
-    border-left: 6px solid #D4F63C !important;
-    box-shadow: 0 0 25px rgba(212, 246, 60, 0.18) !important;
+    border-top: 3.5px solid #D4F63C !important;
+    box-shadow: 0 0 20px rgba(212, 246, 60, 0.15) !important;
 }
 
 .slide-aspect-box.theme-bento .slide-detail-metric-card.card-return.pos .slide-detail-m-lbl {
     color: #D4F63C !important;
-    font-size: 0.65rem !important;
 }
 
 .slide-aspect-box.theme-bento .slide-detail-metric-card.card-return.pos .slide-detail-m-val {
-    font-size: 1.75rem !important;
     color: #D4F63C !important;
-    text-shadow: 0 0 16px rgba(212, 246, 60, 0.4) !important;
-    margin: 3px 0 !important;
+    text-shadow: 0 0 14px rgba(212, 246, 60, 0.4) !important;
 }
 
-.slide-aspect-box.theme-bento .slide-detail-metric-card.card-return.neg,
-.slide-aspect-box.theme-bento .slide-detail-metric-card:nth-child(2).neg {
-    background: linear-gradient(135deg, rgba(42, 16, 24, 0.95) 0%, rgba(14, 10, 18, 0.98) 100%) !important;
+.slide-aspect-box.theme-bento .slide-detail-metric-card.card-return.neg {
     border: 1.5px solid #F43F5E !important;
-    border-left: 6px solid #F43F5E !important;
-    box-shadow: 0 0 25px rgba(244, 63, 94, 0.22) !important;
+    border-top: 3.5px solid #F43F5E !important;
 }
 
-.slide-aspect-box.theme-bento .slide-detail-metric-card.card-return.neg .slide-detail-m-lbl {
-    color: #FB7185 !important;
-    font-size: 0.65rem !important;
+/* Card 4 / .card-cash */
+.slide-aspect-box.theme-bento .slide-detail-metric-card.card-cash.pos {
+    border-top: 3.5px solid #34D399 !important;
 }
 
-.slide-aspect-box.theme-bento .slide-detail-metric-card.card-return.neg .slide-detail-m-val {
-    font-size: 1.75rem !important;
-    color: #FB7185 !important;
-    text-shadow: 0 0 16px rgba(251, 113, 133, 0.45) !important;
-    margin: 3px 0 !important;
+.slide-aspect-box.theme-bento .slide-detail-metric-card.card-cash.neg {
+    border-top: 3.5px solid #F43F5E !important;
 }
 
-/* Card 4 / .card-cash: SUB-HERO TILE (Günlük Para Akışı - Giriş Yeşil / Çıkış Kırmızı) */
-.slide-aspect-box.theme-bento .slide-detail-metric-card.card-cash,
-.slide-aspect-box.theme-bento .slide-detail-metric-card:nth-child(4) {
-    order: 2 !important;
-    padding: 8px 12px !important;
-    flex: 1 !important;
-}
-
-.slide-aspect-box.theme-bento .slide-detail-metric-card.card-cash.pos,
-.slide-aspect-box.theme-bento .slide-detail-metric-card:nth-child(4).pos {
-    background: linear-gradient(135deg, rgba(16, 36, 28, 0.95) 0%, rgba(10, 14, 24, 0.98) 100%) !important;
-    border: 1.5px solid #34D399 !important;
-    border-left: 5px solid #34D399 !important;
-    box-shadow: 0 0 20px rgba(52, 211, 153, 0.18) !important;
-}
-
-.slide-aspect-box.theme-bento .slide-detail-metric-card.card-cash.pos .slide-detail-m-lbl {
-    color: #34D399 !important;
-}
-
-.slide-aspect-box.theme-bento .slide-detail-metric-card.card-cash.pos .slide-detail-m-val {
-    font-size: 1.30rem !important;
-    color: #34D399 !important;
-    text-shadow: 0 0 14px rgba(52, 211, 153, 0.4) !important;
-}
-
-.slide-aspect-box.theme-bento .slide-detail-metric-card.card-cash.pos .slide-detail-m-sub {
-    color: #6EE7B7 !important;
-}
-
-.slide-aspect-box.theme-bento .slide-detail-metric-card.card-cash.neg,
-.slide-aspect-box.theme-bento .slide-detail-metric-card:nth-child(4).neg {
-    background: linear-gradient(135deg, rgba(38, 14, 22, 0.95) 0%, rgba(14, 10, 18, 0.98) 100%) !important;
-    border: 1.5px solid #F43F5E !important;
-    border-left: 5px solid #F43F5E !important;
-    box-shadow: 0 0 20px rgba(244, 63, 94, 0.18) !important;
-}
-
-.slide-aspect-box.theme-bento .slide-detail-metric-card.card-cash.neg .slide-detail-m-lbl {
-    color: #FB7185 !important;
-}
-
-.slide-aspect-box.theme-bento .slide-detail-metric-card.card-cash.neg .slide-detail-m-val {
-    font-size: 1.30rem !important;
-    color: #FB7185 !important;
-    text-shadow: 0 0 14px rgba(251, 113, 133, 0.45) !important;
-}
-
-.slide-aspect-box.theme-bento .slide-detail-metric-card.card-cash.neg .slide-detail-m-sub {
-    color: #FDA4AF !important;
-}
-
-/* Cards 3, 5, 1: Supporting Tiles */
-/* Card 3: Fon Büyüklüğü */
-.slide-aspect-box.theme-bento .slide-detail-metric-card.card-aum,
-.slide-aspect-box.theme-bento .slide-detail-metric-card:nth-child(3) {
-    order: 3 !important;
-    border-left: 4px solid #F59E0B !important;
-    padding: 6px 12px !important;
-    flex: 0.8 !important;
-}
-
-/* Card 5: Günlük Yatırımcı (Artış Yeşil / Azalış Kırmızı) */
-.slide-aspect-box.theme-bento .slide-detail-metric-card.card-inv,
-.slide-aspect-box.theme-bento .slide-detail-metric-card:nth-child(5) {
-    order: 4 !important;
-    border-left: 4px solid #38BDF8 !important;
-    padding: 6px 12px !important;
-    flex: 0.8 !important;
-}
-
-.slide-aspect-box.theme-bento .slide-detail-metric-card.card-inv.pos,
-.slide-aspect-box.theme-bento .slide-detail-metric-card:nth-child(5).pos {
-    border-left: 4px solid #34D399 !important;
-    border-color: rgba(52, 211, 153, 0.25) !important;
-}
-
-.slide-aspect-box.theme-bento .slide-detail-metric-card.card-inv.pos .slide-detail-m-val {
-    color: #34D399 !important;
-    text-shadow: 0 0 12px rgba(52, 211, 153, 0.35) !important;
-}
-
-.slide-aspect-box.theme-bento .slide-detail-metric-card.card-inv.pos .slide-detail-m-lbl {
-    color: #34D399 !important;
-}
-
-.slide-aspect-box.theme-bento .slide-detail-metric-card.card-inv.neg,
-.slide-aspect-box.theme-bento .slide-detail-metric-card:nth-child(5).neg {
-    border-left: 4px solid #F43F5E !important;
-    border-color: rgba(244, 63, 94, 0.25) !important;
-}
-
-.slide-aspect-box.theme-bento .slide-detail-metric-card.card-inv.neg .slide-detail-m-val {
-    color: #FB7185 !important;
-    text-shadow: 0 0 12px rgba(251, 113, 133, 0.35) !important;
-}
-
-.slide-aspect-box.theme-bento .slide-detail-metric-card.card-inv.neg .slide-detail-m-lbl {
-    color: #FB7185 !important;
-}
-
-/* Card 1: Son Pay Fiyatı */
-.slide-aspect-box.theme-bento .slide-detail-metric-card.card-price,
-.slide-aspect-box.theme-bento .slide-detail-metric-card:nth-child(1) {
-    order: 5 !important;
-    border-left: 4px solid #38BDF8 !important;
-    padding: 6px 12px !important;
-    flex: 0.8 !important;
-}
-
+/* Labels, Values, Subs */
 .slide-aspect-box.theme-bento .slide-detail-m-lbl {
-    font-size: 0.60rem !important;
+    font-size: 0.68rem !important;
     color: #94A3B8 !important;
-    font-weight: 800 !important;
-    letter-spacing: 0.4px !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.3px !important;
     text-transform: uppercase !important;
+    margin-bottom: 2px !important;
 }
 
 .slide-aspect-box.theme-bento .slide-detail-m-val {
-    font-size: 1.05rem !important;
+    font-size: 1.20rem !important;
     font-weight: 900 !important;
     color: #FFFFFF !important;
-    font-family: 'JetBrains Mono', 'Plus Jakarta Sans', sans-serif !important;
     letter-spacing: -0.02em !important;
 }
 
-.slide-aspect-box.theme-bento .slide-detail-m-val.pos {
-    color: #34D399 !important;
-}
-
-.slide-aspect-box.theme-bento .slide-detail-m-val.neg {
-    color: #FB7185 !important;
-}
-
 .slide-aspect-box.theme-bento .slide-detail-m-sub {
-    font-size: 0.58rem !important;
+    font-size: 0.66rem !important;
     color: #64748B !important;
     font-weight: 600 !important;
+    margin-top: 2px !important;
 }
 
-/* ---------------- RIGHT WING: VISUAL INTELLIGENCE PANELS ---------------- */
+/* 2 Balanced Body Panels Side-by-Side */
 .slide-aspect-box.theme-bento .slide-detail-body-grid {
-    grid-column: 2 / 3 !important;
-    grid-row: 2 / 3 !important;
-    display: flex !important;
-    flex-direction: column !important;
-    justify-content: space-between !important;
-    gap: 8px !important;
-    height: 100% !important;
+    display: grid !important;
+    grid-template-columns: 1fr 1.35fr !important;
+    gap: 12px !important;
+    flex: 1 !important;
     min-height: 0 !important;
-    max-height: none !important;
+    height: auto !important;
 }
 
-/* 1. Panel 2 (30-Day Investor Trend Chart) -> PANORAMIC TOP STAGE */
-.slide-aspect-box.theme-bento .slide-detail-panel:last-child {
-    order: 1 !important;
-    flex: 1.35 !important;
-    max-height: none !important;
-    min-height: 0 !important;
+/* Panel Styling */
+.slide-aspect-box.theme-bento .slide-detail-panel {
     background: linear-gradient(165deg, rgba(14, 20, 32, 0.94) 0%, rgba(8, 12, 20, 0.98) 100%) !important;
     border: 1px solid rgba(226, 232, 240, 0.12) !important;
-    border-radius: 12px !important;
-    padding: 8px 14px !important;
+    border-radius: 14px !important;
+    padding: 11px 14px !important;
     display: flex !important;
     flex-direction: column !important;
+    box-sizing: border-box !important;
+    height: auto !important;
+    max-height: 385px !important;
+}
+
+.slide-aspect-box.theme-bento .slide-detail-panel-icon.cyan {
+    background: rgba(212, 246, 60, 0.15) !important;
+    border: 1px solid rgba(212, 246, 60, 0.45) !important;
+    color: #D4F63C !important;
+    border-radius: 8px !important;
 }
 
 .slide-aspect-box.theme-bento .slide-detail-panel-icon.purple {
@@ -15058,58 +14945,30 @@ body.theme-neo-brutalism .sort-option.active {
     font-weight: 800 !important;
 }
 
-.slide-aspect-box.theme-bento .slide-investor-stats-pill.neg {
-    background: rgba(244, 63, 94, 0.15) !important;
-    border: 1px solid #F43F5E !important;
-    color: #FB7185 !important;
-    box-shadow: 0 0 12px rgba(244, 63, 94, 0.25) !important;
-    font-weight: 800 !important;
-}
-
 .slide-aspect-box.theme-bento .slide-investor-chart-box {
-    flex: 1 !important;
-    min-height: 120px !important;
+    height: 220px !important;
+    min-height: 220px !important;
+    max-height: 220px !important;
     position: relative !important;
+    flex: unset !important;
 }
 
 .slide-aspect-box.theme-bento .slide-investor-footer-bar {
     background: rgba(8, 12, 20, 0.95) !important;
     border: 1px solid rgba(255, 255, 255, 0.08) !important;
     border-radius: 8px !important;
-    padding: 4px 12px !important;
-    margin-top: 4px !important;
+    padding: 6px 14px !important;
+    margin-top: 6px !important;
 }
 
 .slide-aspect-box.theme-bento .slide-investor-mini-stat .lbl {
-    font-size: 0.64rem !important;
+    font-size: 0.68rem !important;
     color: #94A3B8 !important;
 }
 
 .slide-aspect-box.theme-bento .slide-investor-mini-stat .val {
-    font-size: 0.74rem !important;
+    font-size: 0.82rem !important;
     font-weight: 800 !important;
-    font-family: 'JetBrains Mono', sans-serif !important;
-}
-
-/* 2. Panel 1 (Asset Allocation `#slideDetailAllocPanel`) -> WIDE BOTTOM STRIP */
-.slide-aspect-box.theme-bento .slide-detail-panel:first-child {
-    order: 2 !important;
-    flex: 1 !important;
-    max-height: none !important;
-    min-height: 0 !important;
-    background: linear-gradient(165deg, rgba(14, 20, 32, 0.94) 0%, rgba(8, 12, 20, 0.98) 100%) !important;
-    border: 1px solid rgba(226, 232, 240, 0.12) !important;
-    border-radius: 12px !important;
-    padding: 8px 14px !important;
-    display: flex !important;
-    flex-direction: column !important;
-}
-
-.slide-aspect-box.theme-bento .slide-detail-panel-icon.cyan {
-    background: rgba(212, 246, 60, 0.15) !important;
-    border: 1px solid rgba(212, 246, 60, 0.45) !important;
-    color: #D4F63C !important;
-    border-radius: 8px !important;
 }
 
 .slide-aspect-box.theme-bento .btn-slide-kap-toggle {
@@ -15118,8 +14977,8 @@ body.theme-neo-brutalism .sort-option.active {
     color: #D4F63C !important;
     font-weight: 800 !important;
     border-radius: 6px !important;
-    padding: 3px 9px !important;
-    font-size: 0.68rem !important;
+    padding: 3px 10px !important;
+    font-size: 0.72rem !important;
     box-shadow: 0 0 10px rgba(212, 246, 60, 0.2) !important;
     transition: all 0.2s ease !important;
 }
@@ -15131,35 +14990,31 @@ body.theme-neo-brutalism .sort-option.active {
 }
 
 .slide-aspect-box.theme-bento .slide-alloc-ribbon {
-    height: 10px !important;
-    border-radius: 5px !important;
-    background: rgba(0, 0, 0, 0.5) !important;
-    border: 1px solid rgba(255, 255, 255, 0.12) !important;
-    box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.6) !important;
-    margin: 2px 0 6px 0 !important;
+    height: 12px !important;
+    border-radius: 6px !important;
+    margin: 4px 0 8px 0 !important;
 }
 
-/* 2-Column Asset Chips Grid in Bento */
 .slide-aspect-box.theme-bento .slide-alloc-chips-list {
-    display: grid !important;
-    grid-template-columns: repeat(2, 1fr) !important;
-    gap: 4px 8px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 4px !important;
+    max-height: 255px !important;
     overflow-y: auto !important;
-    max-height: 110px !important;
 }
 
 .slide-aspect-box.theme-bento .slide-alloc-chip-row {
     background: rgba(18, 24, 38, 0.75) !important;
     border: 1px solid rgba(255, 255, 255, 0.06) !important;
-    border-radius: 7px !important;
-    padding: 3px 8px !important;
-    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    border-radius: 8px !important;
+    padding: 6px 10px !important;
+    font-size: 0.76rem !important;
+    transition: all 0.2s ease !important;
 }
 
 .slide-aspect-box.theme-bento .slide-alloc-chip-row:hover {
     background: rgba(28, 36, 56, 0.9) !important;
     border-color: rgba(212, 246, 60, 0.4) !important;
-    transform: translateX(3px) !important;
 }
 
 .slide-aspect-box.theme-bento .slide-alloc-chip-row.clickable {
@@ -15177,6 +15032,7 @@ body.theme-neo-brutalism .sort-option.active {
     border: 1px solid rgba(212, 246, 60, 0.4) !important;
     color: #D4F63C !important;
     border-radius: 5px !important;
+    font-size: 0.66rem !important;
 }
 
 .slide-aspect-box.theme-bento .slide-alloc-pct {
@@ -15191,20 +15047,20 @@ body.theme-neo-brutalism .sort-option.active {
     background: rgba(0, 0, 0, 0.5) !important;
 }
 
-/* KAP Stock Cards in Bento 2-Column Grid */
+/* KAP Stock Cards in Bento */
 .slide-aspect-box.theme-bento .slide-kap-stocks-scroll {
-    display: grid !important;
-    grid-template-columns: repeat(2, 1fr) !important;
-    gap: 6px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 5px !important;
     overflow-y: auto !important;
-    max-height: 110px !important;
+    max-height: 255px !important;
 }
 
 .slide-aspect-box.theme-bento .slide-kap-stock-card {
     background: rgba(18, 24, 38, 0.75) !important;
     border: 1px solid rgba(255, 255, 255, 0.08) !important;
     border-radius: 8px !important;
-    padding: 5px 9px !important;
+    padding: 6px 10px !important;
     transition: all 0.2s ease !important;
 }
 
