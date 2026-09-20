@@ -15095,7 +15095,7 @@ body.theme-neo-brutalism .sort-option.active {
 }
 
 /* ==========================================================================
-   THEME 3: SUNSET AURA (ASYMMETRIC SPOTLIGHT VITRIN & LUMINOUS GLASSMORPHISM)
+   THEME 3: SUNSET AURA (OLYMPIC VICTORY PODIUM: [3: SOLDA] - [1: ORTADA ZİRVE] - [2: SAĞDA])
    ========================================================================== */
 .slide-aspect-box.theme-sunset {
     background: 
@@ -15129,7 +15129,7 @@ body.theme-neo-brutalism .sort-option.active {
 }
 
 .slide-aspect-box.theme-sunset .slide-header-block {
-    margin-bottom: 12px !important;
+    margin-bottom: 10px !important;
     flex-shrink: 0 !important;
 }
 
@@ -15177,13 +15177,13 @@ body.theme-neo-brutalism .sort-option.active {
 }
 
 /* ==========================================================================
-   SLIDE 1: MACRO CARDS & CATEGORY LEADERS (HORIZON SPLIT)
+   SLIDE 1: MACRO CARDS & CATEGORY LEADERS
    ========================================================================== */
 .slide-aspect-box.theme-sunset .slide-macro-grid-top {
     display: grid !important;
-    grid-template-columns: 1.15fr 1fr !important;
+    grid-template-columns: 1.1fr 1fr !important;
     gap: 14px !important;
-    margin-bottom: 14px !important;
+    margin-bottom: 12px !important;
     flex: 1 !important;
 }
 
@@ -15294,37 +15294,52 @@ body.theme-neo-brutalism .sort-option.active {
 }
 
 /* ==========================================================================
-   SLIDE 2 - 5: ASYMMETRIC SPOTLIGHT VITRIN ARCHITECTURE
-   (Left: Grand Hero Spotlight #1 / Right: Dual Panoramic Contenders #2 & #3)
+   SLIDE 2 - 5: THE OLYMPIC VICTORY PODIUM ([3: SOLDA] - [1: ORTADA ZİRVE] - [2: SAĞDA])
    ========================================================================== */
 .slide-aspect-box.theme-sunset .slide-funds-grid-3 {
     display: grid !important;
-    grid-template-columns: 1.14fr 1fr !important;
-    grid-template-rows: repeat(2, minmax(0, 1fr)) !important;
-    gap: 14px !important;
+    grid-template-columns: 1fr 1.15fr 1fr !important;
+    align-items: flex-end !important;
+    gap: 16px !important;
     flex: 1 !important;
     min-height: 0 !important;
-    height: calc(100% - 95px) !important;
+    height: calc(100% - 90px) !important;
+    padding-bottom: 4px !important;
 }
 
-/* --------------------------------------------------------------------------
-   RANK 1: GRAND SHOWCASE VITRIN (LEFT FULL-HEIGHT SPOTLIGHT)
-   -------------------------------------------------------------------------- */
-.slide-aspect-box.theme-sunset .slide-fund-card.rank-card-1 {
-    grid-column: 1 / 2 !important;
-    grid-row: 1 / 3 !important;
-    height: 100% !important;
+/* Global fund card reset in sunset podium */
+.slide-aspect-box.theme-sunset .slide-fund-card {
     display: flex !important;
     flex-direction: column !important;
     justify-content: space-between !important;
-    padding: 20px 22px !important;
-    background: linear-gradient(165deg, rgba(251, 146, 60, 0.22) 0%, rgba(38, 14, 62, 0.94) 50%, rgba(18, 5, 30, 0.98) 100%) !important;
-    border: 1.5px solid rgba(251, 191, 36, 0.7) !important;
-    border-top: 4px solid #FDE047 !important;
     border-radius: 16px !important;
-    box-shadow: 0 16px 40px -5px rgba(251, 146, 60, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
+    box-sizing: border-box !important;
+    backdrop-filter: blur(12px) !important;
     position: relative !important;
     overflow: hidden !important;
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease !important;
+}
+
+/* --------------------------------------------------------------------------
+   ORTA: 1. SIRA (ZİRVE ŞAMPİYON PODYUMU) - EN YÜKSEK & EN GÖRKEMLİ
+   -------------------------------------------------------------------------- */
+.slide-aspect-box.theme-sunset .slide-fund-card.rank-card-1 {
+    grid-column: 2 / 3 !important;
+    order: 2 !important;
+    height: 100% !important;
+    align-self: flex-end !important;
+    padding: 20px 20px !important;
+    background: linear-gradient(170deg, rgba(251, 146, 60, 0.24) 0%, rgba(42, 14, 68, 0.95) 50%, rgba(18, 5, 30, 0.98) 100%) !important;
+    border: 2px solid rgba(251, 191, 36, 0.8) !important;
+    border-top: 5px solid #FDE047 !important;
+    border-bottom: 6px solid #FDE047 !important;
+    box-shadow: 0 20px 50px -10px rgba(251, 146, 60, 0.45), 0 0 35px rgba(251, 191, 36, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.3) !important;
+    z-index: 3 !important;
+}
+
+.slide-aspect-box.theme-sunset .slide-fund-card.rank-card-1:hover {
+    transform: translateY(-6px) scale(1.02) !important;
+    box-shadow: 0 25px 60px -8px rgba(251, 146, 60, 0.55), 0 0 45px rgba(253, 224, 71, 0.4) !important;
 }
 
 /* Ethereal Sun Corona Aura behind Rank 1 */
@@ -15332,10 +15347,11 @@ body.theme-neo-brutalism .sort-option.active {
     content: '' !important;
     position: absolute !important;
     top: -50px !important;
-    right: -50px !important;
-    width: 200px !important;
-    height: 200px !important;
-    background: radial-gradient(circle, rgba(251, 191, 36, 0.35) 0%, rgba(244, 63, 94, 0.15) 55%, transparent 75%) !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    width: 220px !important;
+    height: 220px !important;
+    background: radial-gradient(circle, rgba(251, 191, 36, 0.4) 0%, rgba(244, 63, 94, 0.18) 55%, transparent 75%) !important;
     border-radius: 50% !important;
     pointer-events: none !important;
     z-index: 0 !important;
@@ -15347,13 +15363,13 @@ body.theme-neo-brutalism .sort-option.active {
 }
 
 .slide-aspect-box.theme-sunset .slide-fund-card.rank-card-1 .slide-rank-badge.rank-1 {
-    height: 34px !important;
-    padding: 5px 16px !important;
-    font-size: 0.85rem !important;
+    height: 36px !important;
+    padding: 5px 18px !important;
+    font-size: 0.88rem !important;
     border-radius: 10px !important;
     background: linear-gradient(135deg, #F59E0B 0%, #FDE047 100%) !important;
     color: #3B1400 !important;
-    box-shadow: 0 0 18px rgba(251, 191, 36, 0.6) !important;
+    box-shadow: 0 0 20px rgba(251, 191, 36, 0.7) !important;
     font-weight: 900 !important;
 }
 
@@ -15367,13 +15383,13 @@ body.theme-neo-brutalism .sort-option.active {
     font-size: 1.05rem !important;
     font-weight: 800 !important;
     color: #FFFFFF !important;
-    margin-top: 5px !important;
+    margin-top: 4px !important;
     line-height: 1.25 !important;
 }
 
 .slide-aspect-box.theme-sunset .slide-fund-card.rank-card-1 .slide-fund-hero-capsule {
-    padding: 16px 20px !important;
-    margin: 12px 0 14px 0 !important;
+    padding: 14px 18px !important;
+    margin: 10px 0 !important;
     border-radius: 14px !important;
     background: linear-gradient(135deg, rgba(244, 63, 94, 0.28) 0%, rgba(251, 146, 60, 0.22) 100%) !important;
     border: 1.5px solid rgba(251, 146, 60, 0.55) !important;
@@ -15387,10 +15403,10 @@ body.theme-neo-brutalism .sort-option.active {
 }
 
 .slide-aspect-box.theme-sunset .slide-fund-card.rank-card-1 .slide-fund-hero-num {
-    font-size: 2.35rem !important;
+    font-size: 2.25rem !important;
     font-weight: 900 !important;
     line-height: 1.1 !important;
-    margin: 6px 0 !important;
+    margin: 5px 0 !important;
     color: #FDE047 !important;
     text-shadow: 0 0 24px rgba(251, 146, 60, 0.75) !important;
 }
@@ -15404,29 +15420,29 @@ body.theme-neo-brutalism .sort-option.active {
     display: grid !important;
     grid-template-columns: repeat(2, 1fr) !important;
     gap: 8px !important;
-    margin-bottom: 10px !important;
+    margin-bottom: 8px !important;
 }
 
 .slide-aspect-box.theme-sunset .slide-fund-card.rank-card-1 .slide-metric-tile {
-    padding: 10px 14px !important;
+    padding: 9px 12px !important;
     background: rgba(26, 9, 44, 0.75) !important;
     border: 1px solid rgba(244, 63, 94, 0.24) !important;
     border-radius: 9px !important;
 }
 
 .slide-aspect-box.theme-sunset .slide-fund-card.rank-card-1 .slide-tile-lbl {
-    font-size: 0.72rem !important;
+    font-size: 0.70rem !important;
     color: #FDA4AF !important;
 }
 
 .slide-aspect-box.theme-sunset .slide-fund-card.rank-card-1 .slide-tile-val {
-    font-size: 1.05rem !important;
+    font-size: 1.0rem !important;
     font-weight: 800 !important;
 }
 
 .slide-aspect-box.theme-sunset .slide-fund-card.rank-card-1 .slide-fund-velocity-bar {
     padding: 6px 12px !important;
-    margin-bottom: 10px !important;
+    margin-bottom: 8px !important;
     font-size: 0.76rem !important;
     border-radius: 8px !important;
 }
@@ -15437,7 +15453,7 @@ body.theme-neo-brutalism .sort-option.active {
     border: 1px solid #FDE047 !important;
     font-weight: 800 !important;
     font-size: 0.85rem !important;
-    padding: 10px 18px !important;
+    padding: 9px 16px !important;
     border-radius: 9px !important;
     box-shadow: 0 4px 18px rgba(244, 63, 94, 0.45) !important;
     text-align: center !important;
@@ -15445,183 +15461,223 @@ body.theme-neo-brutalism .sort-option.active {
 }
 
 /* --------------------------------------------------------------------------
-   RANK 2 & 3: PANORAMIC CONTENDER CARDS (RIGHT COLUMN STACK)
+   SOL: 3. SIRA (ÜÇÜNCÜLÜK BASAMAĞI) - EN ALÇAK BASAMAK
    -------------------------------------------------------------------------- */
-.slide-aspect-box.theme-sunset .slide-fund-card.rank-card-2,
 .slide-aspect-box.theme-sunset .slide-fund-card.rank-card-3 {
-    grid-column: 2 / 3 !important;
-    display: flex !important;
-    flex-direction: column !important;
-    justify-content: space-between !important;
-    padding: 12px 16px !important;
-    border-radius: 14px !important;
-    backdrop-filter: blur(12px) !important;
-    transition: transform 0.2s ease, box-shadow 0.2s ease !important;
-}
-
-.slide-aspect-box.theme-sunset .slide-fund-card.rank-card-2 {
-    grid-row: 1 / 2 !important;
-    background: linear-gradient(165deg, rgba(244, 63, 94, 0.18) 0%, rgba(34, 12, 56, 0.92) 50%, rgba(18, 5, 30, 0.98) 100%) !important;
-    border: 1.5px solid rgba(244, 63, 94, 0.6) !important;
-    border-top: 3.5px solid #FB7185 !important;
-    box-shadow: 0 8px 25px -5px rgba(244, 63, 94, 0.3) !important;
-}
-
-.slide-aspect-box.theme-sunset .slide-fund-card.rank-card-3 {
-    grid-row: 2 / 3 !important;
-    background: linear-gradient(165deg, rgba(168, 85, 247, 0.16) 0%, rgba(32, 10, 54, 0.92) 50%, rgba(18, 5, 30, 0.98) 100%) !important;
+    grid-column: 1 / 2 !important;
+    order: 1 !important;
+    height: calc(100% - 64px) !important;
+    align-self: flex-end !important;
+    padding: 14px 15px !important;
+    background: linear-gradient(170deg, rgba(168, 85, 247, 0.18) 0%, rgba(32, 10, 54, 0.94) 50%, rgba(18, 5, 30, 0.98) 100%) !important;
     border: 1.5px solid rgba(168, 85, 247, 0.55) !important;
     border-top: 3.5px solid #C084FC !important;
-    box-shadow: 0 8px 25px -5px rgba(168, 85, 247, 0.28) !important;
+    border-bottom: 5px solid #C084FC !important;
+    box-shadow: 0 10px 30px -5px rgba(168, 85, 247, 0.3) !important;
+    z-index: 1 !important;
 }
 
-/* Rank 2 & 3: Top section horizontal split */
-.slide-aspect-box.theme-sunset .slide-fund-card.rank-card-2 > div:first-child,
-.slide-aspect-box.theme-sunset .slide-fund-card.rank-card-3 > div:first-child {
-    display: flex !important;
-    align-items: stretch !important;
-    justify-content: space-between !important;
-    gap: 12px !important;
-}
-
-.slide-aspect-box.theme-sunset .slide-fund-card.rank-card-2 .slide-fund-card-top,
-.slide-aspect-box.theme-sunset .slide-fund-card.rank-card-3 .slide-fund-card-top {
-    flex: 1 !important;
-    min-width: 0 !important;
-    margin-bottom: 0 !important;
-}
-
-.slide-aspect-box.theme-sunset .slide-fund-card.rank-card-2 .slide-rank-badge.rank-2 {
-    height: 26px !important;
-    padding: 3px 10px !important;
-    font-size: 0.72rem !important;
-    background: linear-gradient(135deg, #E11D48 0%, #FB7185 100%) !important;
-    color: #FFFFFF !important;
-    box-shadow: 0 0 12px rgba(244, 63, 94, 0.5) !important;
+.slide-aspect-box.theme-sunset .slide-fund-card.rank-card-3:hover {
+    transform: translateY(-4px) !important;
+    box-shadow: 0 15px 40px -5px rgba(168, 85, 247, 0.45) !important;
 }
 
 .slide-aspect-box.theme-sunset .slide-fund-card.rank-card-3 .slide-rank-badge.rank-3 {
-    height: 26px !important;
-    padding: 3px 10px !important;
-    font-size: 0.72rem !important;
+    height: 28px !important;
+    padding: 4px 12px !important;
+    font-size: 0.74rem !important;
+    border-radius: 8px !important;
     background: linear-gradient(135deg, #9333EA 0%, #C084FC 100%) !important;
     color: #FFFFFF !important;
-    box-shadow: 0 0 12px rgba(168, 85, 247, 0.5) !important;
+    box-shadow: 0 0 14px rgba(168, 85, 247, 0.5) !important;
+    font-weight: 900 !important;
 }
 
-.slide-aspect-box.theme-sunset .slide-fund-card.rank-card-2 .slide-code-badge,
 .slide-aspect-box.theme-sunset .slide-fund-card.rank-card-3 .slide-code-badge {
-    font-size: 0.95rem !important;
-    padding: 2px 10px !important;
+    font-size: 1.0rem !important;
+    padding: 3px 10px !important;
 }
 
-.slide-aspect-box.theme-sunset .slide-fund-card.rank-card-2 .slide-fund-fullname,
 .slide-aspect-box.theme-sunset .slide-fund-card.rank-card-3 .slide-fund-fullname {
     font-size: 0.88rem !important;
+    font-weight: 700 !important;
+    margin-top: 3px !important;
+    color: #F3E8FF !important;
     white-space: nowrap !important;
     overflow: hidden !important;
     text-overflow: ellipsis !important;
-    margin-top: 3px !important;
-    color: #F3E8FF !important;
 }
 
-/* Rank 2 & 3 Hero Capsule (compact on right) */
-.slide-aspect-box.theme-sunset .slide-fund-card.rank-card-2 .slide-fund-hero-capsule,
 .slide-aspect-box.theme-sunset .slide-fund-card.rank-card-3 .slide-fund-hero-capsule {
-    flex: 0 0 200px !important;
-    margin: 0 !important;
-    padding: 6px 12px !important;
-    display: flex !important;
-    flex-direction: column !important;
-    justify-content: center !important;
-    text-align: right !important;
+    padding: 8px 12px !important;
+    margin: 6px 0 !important;
     border-radius: 10px !important;
+    background: linear-gradient(135deg, rgba(168, 85, 247, 0.22) 0%, rgba(244, 63, 94, 0.15) 100%) !important;
+    border: 1px solid rgba(168, 85, 247, 0.5) !important;
 }
 
-.slide-aspect-box.theme-sunset .slide-fund-card.rank-card-2 .slide-fund-hero-lbl,
 .slide-aspect-box.theme-sunset .slide-fund-card.rank-card-3 .slide-fund-hero-lbl {
-    font-size: 0.62rem !important;
+    font-size: 0.64rem !important;
 }
 
-.slide-aspect-box.theme-sunset .slide-fund-card.rank-card-2 .slide-fund-hero-num,
 .slide-aspect-box.theme-sunset .slide-fund-card.rank-card-3 .slide-fund-hero-num {
-    font-size: 1.45rem !important;
+    font-size: 1.65rem !important;
     font-weight: 900 !important;
     line-height: 1.15 !important;
-    margin: 2px 0 !important;
+    margin: 3px 0 !important;
+    color: #C084FC !important;
+    text-shadow: 0 0 18px rgba(168, 85, 247, 0.6) !important;
 }
 
-.slide-aspect-box.theme-sunset .slide-fund-card.rank-card-2 .slide-fund-hero-sub,
 .slide-aspect-box.theme-sunset .slide-fund-card.rank-card-3 .slide-fund-hero-sub {
+    font-size: 0.70rem !important;
+}
+
+.slide-aspect-box.theme-sunset .slide-fund-card.rank-card-3 .slide-fund-metrics-tiles {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 6px !important;
+    margin-bottom: 6px !important;
+}
+
+.slide-aspect-box.theme-sunset .slide-fund-card.rank-card-3 .slide-metric-tile {
+    padding: 6px 8px !important;
+    background: rgba(26, 9, 44, 0.7) !important;
+    border: 1px solid rgba(244, 63, 94, 0.2) !important;
+    border-radius: 7px !important;
+}
+
+.slide-aspect-box.theme-sunset .slide-fund-card.rank-card-3 .slide-tile-lbl {
+    font-size: 0.62rem !important;
+    color: #FDA4AF !important;
+}
+
+.slide-aspect-box.theme-sunset .slide-fund-card.rank-card-3 .slide-tile-val {
+    font-size: 0.85rem !important;
+    font-weight: 800 !important;
+}
+
+.slide-aspect-box.theme-sunset .slide-fund-card.rank-card-3 .slide-fund-velocity-bar {
+    padding: 4px 8px !important;
+    margin-bottom: 6px !important;
+    font-size: 0.68rem !important;
+    border-radius: 7px !important;
+}
+
+.slide-aspect-box.theme-sunset .slide-fund-card.rank-card-3 .slide-fund-click-hint {
+    padding: 6px 12px !important;
+    font-size: 0.72rem !important;
+    border-radius: 7px !important;
+}
+
+/* --------------------------------------------------------------------------
+   SAĞ: 2. SIRA (İKİNCİLİK BASAMAĞI) - ORTA YÜKSEKLİKTE BASAMAK
+   -------------------------------------------------------------------------- */
+.slide-aspect-box.theme-sunset .slide-fund-card.rank-card-2 {
+    grid-column: 3 / 4 !important;
+    order: 3 !important;
+    height: calc(100% - 36px) !important;
+    align-self: flex-end !important;
+    padding: 16px 16px !important;
+    background: linear-gradient(170deg, rgba(244, 63, 94, 0.2) 0%, rgba(36, 12, 58, 0.94) 50%, rgba(18, 5, 30, 0.98) 100%) !important;
+    border: 1.5px solid rgba(244, 63, 94, 0.6) !important;
+    border-top: 3.5px solid #FB7185 !important;
+    border-bottom: 5px solid #FB7185 !important;
+    box-shadow: 0 12px 35px -5px rgba(244, 63, 94, 0.35) !important;
+    z-index: 2 !important;
+}
+
+.slide-aspect-box.theme-sunset .slide-fund-card.rank-card-2:hover {
+    transform: translateY(-4px) !important;
+    box-shadow: 0 18px 45px -5px rgba(244, 63, 94, 0.5) !important;
+}
+
+.slide-aspect-box.theme-sunset .slide-fund-card.rank-card-2 .slide-rank-badge.rank-2 {
+    height: 30px !important;
+    padding: 4px 14px !important;
+    font-size: 0.78rem !important;
+    border-radius: 8px !important;
+    background: linear-gradient(135deg, #E11D48 0%, #FB7185 100%) !important;
+    color: #FFFFFF !important;
+    box-shadow: 0 0 14px rgba(244, 63, 94, 0.5) !important;
+    font-weight: 900 !important;
+}
+
+.slide-aspect-box.theme-sunset .slide-fund-card.rank-card-2 .slide-code-badge {
+    font-size: 1.05rem !important;
+    padding: 3px 12px !important;
+}
+
+.slide-aspect-box.theme-sunset .slide-fund-card.rank-card-2 .slide-fund-fullname {
+    font-size: 0.92rem !important;
+    font-weight: 700 !important;
+    margin-top: 3px !important;
+    color: #F3E8FF !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+}
+
+.slide-aspect-box.theme-sunset .slide-fund-card.rank-card-2 .slide-fund-hero-capsule {
+    padding: 10px 14px !important;
+    margin: 8px 0 !important;
+    border-radius: 12px !important;
+    background: linear-gradient(135deg, rgba(244, 63, 94, 0.24) 0%, rgba(251, 146, 60, 0.18) 100%) !important;
+    border: 1px solid rgba(251, 146, 60, 0.5) !important;
+}
+
+.slide-aspect-box.theme-sunset .slide-fund-card.rank-card-2 .slide-fund-hero-lbl {
     font-size: 0.66rem !important;
 }
 
-/* Rank 2 & 3: Bottom 2-Row Grid */
-.slide-aspect-box.theme-sunset .slide-fund-card.rank-card-2 > div:last-child,
-.slide-aspect-box.theme-sunset .slide-fund-card.rank-card-3 > div:last-child {
-    display: grid !important;
-    grid-template-columns: 1fr auto !important;
-    grid-template-rows: auto auto !important;
-    gap: 6px !important;
+.slide-aspect-box.theme-sunset .slide-fund-card.rank-card-2 .slide-fund-hero-num {
+    font-size: 1.75rem !important;
+    font-weight: 900 !important;
+    line-height: 1.15 !important;
+    margin: 4px 0 !important;
+    color: #FB7185 !important;
+    text-shadow: 0 0 18px rgba(251, 113, 133, 0.6) !important;
 }
 
-/* 4 Metrics in a single horizontal strip */
-.slide-aspect-box.theme-sunset .slide-fund-card.rank-card-2 .slide-fund-metrics-tiles,
-.slide-aspect-box.theme-sunset .slide-fund-card.rank-card-3 .slide-fund-metrics-tiles {
-    grid-column: 1 / 3 !important;
-    grid-row: 1 / 2 !important;
-    display: grid !important;
-    grid-template-columns: repeat(4, 1fr) !important;
-    gap: 6px !important;
-    margin: 0 !important;
+.slide-aspect-box.theme-sunset .slide-fund-card.rank-card-2 .slide-fund-hero-sub {
+    font-size: 0.72rem !important;
 }
 
-.slide-aspect-box.theme-sunset .slide-fund-card.rank-card-2 .slide-metric-tile,
-.slide-aspect-box.theme-sunset .slide-fund-card.rank-card-3 .slide-metric-tile {
-    padding: 5px 6px !important;
-    text-align: center !important;
-    border-radius: 7px !important;
+.slide-aspect-box.theme-sunset .slide-fund-card.rank-card-2 .slide-fund-metrics-tiles {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 6px !important;
+    margin-bottom: 8px !important;
+}
+
+.slide-aspect-box.theme-sunset .slide-fund-card.rank-card-2 .slide-metric-tile {
+    padding: 7px 10px !important;
     background: rgba(26, 9, 44, 0.7) !important;
     border: 1px solid rgba(244, 63, 94, 0.22) !important;
+    border-radius: 8px !important;
 }
 
-.slide-aspect-box.theme-sunset .slide-fund-card.rank-card-2 .slide-tile-lbl,
-.slide-aspect-box.theme-sunset .slide-fund-card.rank-card-3 .slide-tile-lbl {
-    font-size: 0.60rem !important;
-    white-space: nowrap !important;
-    overflow: hidden !important;
-    text-overflow: ellipsis !important;
+.slide-aspect-box.theme-sunset .slide-fund-card.rank-card-2 .slide-tile-lbl {
+    font-size: 0.64rem !important;
+    color: #FDA4AF !important;
 }
 
-.slide-aspect-box.theme-sunset .slide-fund-card.rank-card-2 .slide-tile-val,
-.slide-aspect-box.theme-sunset .slide-fund-card.rank-card-3 .slide-tile-val {
-    font-size: 0.80rem !important;
+.slide-aspect-box.theme-sunset .slide-fund-card.rank-card-2 .slide-tile-val {
+    font-size: 0.88rem !important;
     font-weight: 800 !important;
-    white-space: nowrap !important;
 }
 
-.slide-aspect-box.theme-sunset .slide-fund-card.rank-card-2 .slide-fund-velocity-bar,
-.slide-aspect-box.theme-sunset .slide-fund-card.rank-card-3 .slide-fund-velocity-bar {
-    grid-column: 1 / 2 !important;
-    grid-row: 2 / 3 !important;
-    margin: 0 !important;
-    padding: 4px 10px !important;
-    font-size: 0.68rem !important;
-    border-radius: 7px !important;
+.slide-aspect-box.theme-sunset .slide-fund-card.rank-card-2 .slide-fund-velocity-bar {
+    padding: 5px 10px !important;
+    margin-bottom: 6px !important;
+    font-size: 0.70rem !important;
+    border-radius: 8px !important;
 }
 
-.slide-aspect-box.theme-sunset .slide-fund-card.rank-card-2 .slide-fund-click-hint,
-.slide-aspect-box.theme-sunset .slide-fund-card.rank-card-3 .slide-fund-click-hint {
-    grid-column: 2 / 3 !important;
-    grid-row: 2 / 3 !important;
-    margin: 0 !important;
-    padding: 4px 12px !important;
-    font-size: 0.68rem !important;
-    border-radius: 7px !important;
-    white-space: nowrap !important;
-    display: flex !important;
-    align-items: center !important;
-    gap: 5px !important;
+.slide-aspect-box.theme-sunset .slide-fund-card.rank-card-2 .slide-fund-click-hint {
+    padding: 7px 12px !important;
+    font-size: 0.75rem !important;
+    border-radius: 8px !important;
 }
 
 /* ==========================================================================
@@ -15658,6 +15714,20 @@ body.theme-neo-brutalism .sort-option.active {
 /* ==========================================================================
    SLIDE 7: CELESTIAL CLASH ARENA (POWER MATRIX)
    ========================================================================== */
+.slide-power-col {
+    background: rgba(15, 23, 42, 0.75);
+    border-radius: 14px;
+    padding: 10px 14px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 7px;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.2s ease;
+    box-sizing: border-box;
+}
+
 .slide-aspect-box.theme-sunset .slide-power-col {
     background: linear-gradient(165deg, rgba(30, 10, 50, 0.88) 0%, rgba(16, 5, 28, 0.95) 100%) !important;
     border: 1.5px solid rgba(244, 63, 94, 0.3) !important;
@@ -15950,8 +16020,9 @@ body.theme-neo-brutalism .sort-option.active {
     .slide-aspect-box.theme-sunset .slide-fund-card.rank-card-2,
     .slide-aspect-box.theme-sunset .slide-fund-card.rank-card-3 {
         grid-column: auto !important;
-        grid-row: auto !important;
+        order: initial !important;
         height: auto !important;
+        align-self: stretch !important;
     }
     .slide-aspect-box.theme-sunset .slide-macro-grid-top,
     .slide-aspect-box.theme-sunset .slide-cat-leaders-grid {
