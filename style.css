@@ -15477,10 +15477,10 @@ body.theme-neo-brutalism .sort-option.active {
 }
 
 /* ==========================================================================
-   FULLSCREEN PRESENTATION ENGINE: FLUID 16:9 STAGE & RESPONSIVE TYPOGRAPHY
+   FULLSCREEN PRESENTATION: NATURAL COMPACT PROPORTIONS & ENLARGED TYPOGRAPHY
    ========================================================================== */
 
-/* Fullscreen Stage Viewport */
+/* Fullscreen Stage Viewport - Vertically & Horizontally Centered */
 #fundSlideReportModal:fullscreen .slide-stage-viewport,
 #fundSlideReportModal:-webkit-full-screen .slide-stage-viewport,
 #fundSlideReportModal.is-fullscreen .slide-stage-viewport,
@@ -15488,42 +15488,41 @@ body.theme-neo-brutalism .sort-option.active {
     flex: 1 !important;
     width: 100vw !important;
     height: calc(100vh - 104px) !important;
-    padding: 8px 16px !important;
+    padding: 16px 24px !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
     box-sizing: border-box !important;
-    overflow: hidden !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
 }
 
-/* Master 16:9 Presentation Canvas */
+/* Master Slide Canvas in Fullscreen: Natural Height, Balanced Max-Width, Centered */
 #fundSlideReportModal:fullscreen .slide-aspect-box,
 #fundSlideReportModal:-webkit-full-screen .slide-aspect-box,
 #fundSlideReportModal.is-fullscreen .slide-aspect-box,
 .slide-modal-dialog.fullscreen-mode .slide-aspect-box {
-    width: min(calc((100vh - 114px) * 16 / 9), calc(100vw - 32px)) !important;
-    height: min(calc(100vh - 114px), calc((100vw - 32px) * 9 / 16)) !important;
-    max-width: calc(100vw - 32px) !important;
-    max-height: calc(100vh - 114px) !important;
-    aspect-ratio: 16 / 9 !important;
+    width: 100% !important;
+    max-width: min(1260px, calc(100vw - 64px)) !important;
+    min-height: 570px !important;
+    height: auto !important;
+    max-height: calc(100vh - 116px) !important;
     margin: auto !important;
     display: flex !important;
     flex-direction: column !important;
-    border-radius: 20px !important;
+    border-radius: 22px !important;
     overflow: hidden !important;
     position: relative !important;
-    box-shadow: 0 25px 80px -10px rgba(0, 0, 0, 0.95), 0 0 50px rgba(0, 0, 0, 0.7) !important;
+    box-shadow: 0 30px 90px -15px rgba(0, 0, 0, 0.95), 0 0 40px rgba(0, 0, 0, 0.6) !important;
 }
 
-/* Deck Container and Slide Pages Fill 100% of 16:9 Stage */
+/* Deck Container and Slide Pages: Natural Height, Only Active Slide Visible */
 #fundSlideReportModal:fullscreen .slide-deck-container,
 #fundSlideReportModal:-webkit-full-screen .slide-deck-container,
 #fundSlideReportModal.is-fullscreen .slide-deck-container,
 .slide-modal-dialog.fullscreen-mode .slide-deck-container {
     width: 100% !important;
-    height: 100% !important;
-    flex: 1 !important;
-    min-height: 0 !important;
+    height: auto !important;
     display: flex !important;
 }
 
@@ -15536,33 +15535,28 @@ body.theme-neo-brutalism .sort-option.active {
 #fundSlideReportModal.is-fullscreen #slidePage-detail,
 .slide-modal-dialog.fullscreen-mode #slidePage-detail {
     width: 100% !important;
-    height: 100% !important;
-    flex: 1 1 100% !important;
-    min-height: 0 !important;
-    padding: clamp(14px, 2.3vh, 30px) clamp(20px, 2.5vw, 40px) !important;
+    height: auto !important;
+    padding: 26px 34px !important;
     box-sizing: border-box !important;
     display: none !important;
-    flex-direction: column !important;
-    justify-content: space-between !important;
 }
 
 #fundSlideReportModal:fullscreen .slide-page.active,
 #fundSlideReportModal:-webkit-full-screen .slide-page.active,
 #fundSlideReportModal.is-fullscreen .slide-page.active,
-.slide-modal-dialog.fullscreen-mode .slide-page.active,
-#fundSlideReportModal:fullscreen #slidePage-detail.active,
-#fundSlideReportModal:-webkit-full-screen #slidePage-detail.active,
-#fundSlideReportModal.is-fullscreen #slidePage-detail.active,
-.slide-modal-dialog.fullscreen-mode #slidePage-detail.active {
+.slide-modal-dialog.fullscreen-mode .slide-page.active {
     display: flex !important;
+    flex-direction: column !important;
+    justify-content: flex-start !important;
+    gap: 14px !important;
 }
 
-/* Fluid Header Block & Global Typography in Fullscreen */
+/* Fluid Enlarged Typography in Fullscreen ("Yazılar Büyüsün") */
 #fundSlideReportModal:fullscreen .slide-header-block,
 #fundSlideReportModal:-webkit-full-screen .slide-header-block,
 #fundSlideReportModal.is-fullscreen .slide-header-block,
 .slide-modal-dialog.fullscreen-mode .slide-header-block {
-    margin-bottom: clamp(8px, 1.6vh, 18px) !important;
+    margin-bottom: 12px !important;
     flex-shrink: 0 !important;
 }
 
@@ -15570,24 +15564,25 @@ body.theme-neo-brutalism .sort-option.active {
 #fundSlideReportModal:-webkit-full-screen .slide-header-meta-row,
 #fundSlideReportModal.is-fullscreen .slide-header-meta-row,
 .slide-modal-dialog.fullscreen-mode .slide-header-meta-row {
-    margin-bottom: clamp(4px, 0.8vh, 10px) !important;
+    margin-bottom: 6px !important;
 }
 
 #fundSlideReportModal:fullscreen .slide-main-title,
 #fundSlideReportModal:-webkit-full-screen .slide-main-title,
 #fundSlideReportModal.is-fullscreen .slide-main-title,
 .slide-modal-dialog.fullscreen-mode .slide-main-title {
-    font-size: clamp(1.45rem, 2.35vh, 2.20rem) !important;
+    font-size: 1.90rem !important;
+    font-weight: 800 !important;
     margin-bottom: 3px !important;
-    line-height: 1.2 !important;
+    line-height: 1.25 !important;
 }
 
 #fundSlideReportModal:fullscreen .slide-subtitle,
 #fundSlideReportModal:-webkit-full-screen .slide-subtitle,
 #fundSlideReportModal.is-fullscreen .slide-subtitle,
 .slide-modal-dialog.fullscreen-mode .slide-subtitle {
-    font-size: clamp(0.80rem, 1.15vh, 1.02rem) !important;
-    line-height: 1.3 !important;
+    font-size: 0.95rem !important;
+    line-height: 1.35 !important;
 }
 
 #fundSlideReportModal:fullscreen .slide-page-number-capsule,
@@ -15602,8 +15597,8 @@ body.theme-neo-brutalism .sort-option.active {
 .slide-modal-dialog.fullscreen-mode .slide-page-number-capsule,
 .slide-modal-dialog.fullscreen-mode .slide-category-tag,
 .slide-modal-dialog.fullscreen-mode .slide-date-pill {
-    font-size: clamp(0.70rem, 1.0vh, 0.86rem) !important;
-    padding: clamp(3px, 0.45vh, 6px) clamp(8px, 0.8vw, 14px) !important;
+    font-size: 0.80rem !important;
+    padding: 4px 14px !important;
 }
 
 /* ---------------- FULLSCREEN SLIDE 1: MACRO DASHBOARD ---------------- */
@@ -15611,304 +15606,328 @@ body.theme-neo-brutalism .sort-option.active {
 #fundSlideReportModal:-webkit-full-screen .slide-macro-grid-top,
 #fundSlideReportModal.is-fullscreen .slide-macro-grid-top,
 .slide-modal-dialog.fullscreen-mode .slide-macro-grid-top {
-    gap: clamp(10px, 1.5vh, 18px) !important;
-    margin-bottom: clamp(8px, 1.2vh, 14px) !important;
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 16px !important;
+    margin-bottom: 12px !important;
 }
 
 #fundSlideReportModal:fullscreen .slide-macro-hero-card,
 #fundSlideReportModal:-webkit-full-screen .slide-macro-hero-card,
 #fundSlideReportModal.is-fullscreen .slide-macro-hero-card,
 .slide-modal-dialog.fullscreen-mode .slide-macro-hero-card {
-    padding: clamp(14px, 2.0vh, 24px) clamp(16px, 1.8vw, 26px) !important;
-    border-radius: 16px !important;
+    padding: 20px 24px !important;
+    border-radius: 18px !important;
 }
 
 #fundSlideReportModal:fullscreen .slide-macro-title,
 #fundSlideReportModal:-webkit-full-screen .slide-macro-title,
 #fundSlideReportModal.is-fullscreen .slide-macro-title,
 .slide-modal-dialog.fullscreen-mode .slide-macro-title {
-    font-size: clamp(0.75rem, 1.1vh, 0.95rem) !important;
+    font-size: 0.88rem !important;
 }
 
 #fundSlideReportModal:fullscreen .slide-macro-big-num,
 #fundSlideReportModal:-webkit-full-screen .slide-macro-big-num,
 #fundSlideReportModal.is-fullscreen .slide-macro-big-num,
 .slide-modal-dialog.fullscreen-mode .slide-macro-big-num {
-    font-size: clamp(2.05rem, 3.5vh, 3.20rem) !important;
-    margin-bottom: clamp(3px, 0.6vh, 8px) !important;
+    font-size: 2.65rem !important;
+    line-height: 1.1 !important;
+    margin-bottom: 4px !important;
 }
 
 #fundSlideReportModal:fullscreen .slide-macro-desc,
 #fundSlideReportModal:-webkit-full-screen .slide-macro-desc,
 #fundSlideReportModal.is-fullscreen .slide-macro-desc,
 .slide-modal-dialog.fullscreen-mode .slide-macro-desc {
-    font-size: clamp(0.75rem, 1.05vh, 0.92rem) !important;
+    font-size: 0.86rem !important;
 }
 
 #fundSlideReportModal:fullscreen .slide-cat-leaders-grid,
 #fundSlideReportModal:-webkit-full-screen .slide-cat-leaders-grid,
 #fundSlideReportModal.is-fullscreen .slide-cat-leaders-grid,
 .slide-modal-dialog.fullscreen-mode .slide-cat-leaders-grid {
-    gap: clamp(10px, 1.5vh, 18px) !important;
-    margin-bottom: clamp(8px, 1.2vh, 14px) !important;
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 16px !important;
+    margin-bottom: 12px !important;
 }
 
 #fundSlideReportModal:fullscreen .slide-cat-leader-card,
 #fundSlideReportModal:-webkit-full-screen .slide-cat-leader-card,
 #fundSlideReportModal.is-fullscreen .slide-cat-leader-card,
 .slide-modal-dialog.fullscreen-mode .slide-cat-leader-card {
-    padding: clamp(10px, 1.4vh, 18px) clamp(14px, 1.5vw, 22px) !important;
-    border-radius: 14px !important;
+    padding: 14px 20px !important;
+    border-radius: 16px !important;
 }
 
 #fundSlideReportModal:fullscreen .slide-cat-leader-name,
 #fundSlideReportModal:-webkit-full-screen .slide-cat-leader-name,
 #fundSlideReportModal.is-fullscreen .slide-cat-leader-name,
 .slide-modal-dialog.fullscreen-mode .slide-cat-leader-name {
-    font-size: clamp(1.05rem, 1.6vh, 1.40rem) !important;
-    margin-bottom: clamp(6px, 1.0vh, 12px) !important;
+    font-size: 1.25rem !important;
+    margin-bottom: 8px !important;
 }
 
 #fundSlideReportModal:fullscreen .slide-macro-grid-bottom,
 #fundSlideReportModal:-webkit-full-screen .slide-macro-grid-bottom,
 #fundSlideReportModal.is-fullscreen .slide-macro-grid-bottom,
 .slide-modal-dialog.fullscreen-mode .slide-macro-grid-bottom {
-    gap: clamp(8px, 1.2vh, 14px) !important;
+    display: grid !important;
+    grid-template-columns: repeat(4, 1fr) !important;
+    gap: 12px !important;
 }
 
 #fundSlideReportModal:fullscreen .slide-mini-stat,
 #fundSlideReportModal:-webkit-full-screen .slide-mini-stat,
 #fundSlideReportModal.is-fullscreen .slide-mini-stat,
 .slide-modal-dialog.fullscreen-mode .slide-mini-stat {
-    padding: clamp(8px, 1.2vh, 14px) clamp(10px, 1.1vw, 18px) !important;
-    border-radius: 12px !important;
+    padding: 10px 15px !important;
+    border-radius: 14px !important;
 }
 
 #fundSlideReportModal:fullscreen .slide-mini-stat-lbl,
 #fundSlideReportModal:-webkit-full-screen .slide-mini-stat-lbl,
 #fundSlideReportModal.is-fullscreen .slide-mini-stat-lbl,
 .slide-modal-dialog.fullscreen-mode .slide-mini-stat-lbl {
-    font-size: clamp(0.66rem, 0.95vh, 0.80rem) !important;
+    font-size: 0.74rem !important;
 }
 
 #fundSlideReportModal:fullscreen .slide-mini-stat-val,
 #fundSlideReportModal:-webkit-full-screen .slide-mini-stat-val,
 #fundSlideReportModal.is-fullscreen .slide-mini-stat-val,
 .slide-modal-dialog.fullscreen-mode .slide-mini-stat-val {
-    font-size: clamp(0.95rem, 1.4vh, 1.30rem) !important;
+    font-size: 1.10rem !important;
+    font-weight: 800 !important;
 }
 
-/* ---------------- FULLSCREEN SLIDES 2-5: BENTO THEME HORIZONTAL STRIPS ---------------- */
-#fundSlideReportModal:fullscreen .slide-aspect-box.theme-bento .slide-funds-grid-3,
-#fundSlideReportModal:-webkit-full-screen .slide-aspect-box.theme-bento .slide-funds-grid-3,
-#fundSlideReportModal.is-fullscreen .slide-aspect-box.theme-bento .slide-funds-grid-3,
-.slide-modal-dialog.fullscreen-mode .slide-aspect-box.theme-bento .slide-funds-grid-3 {
-    display: flex !important;
-    flex-direction: column !important;
-    justify-content: space-between !important;
-    height: 100% !important;
-    flex: 1 !important;
-    gap: clamp(10px, 1.6vh, 18px) !important;
-    min-height: 0 !important;
-    margin-top: 0 !important;
-}
-
-#fundSlideReportModal:fullscreen .slide-aspect-box.theme-bento .slide-fund-card,
-#fundSlideReportModal:-webkit-full-screen .slide-aspect-box.theme-bento .slide-fund-card,
-#fundSlideReportModal.is-fullscreen .slide-aspect-box.theme-bento .slide-fund-card,
-.slide-modal-dialog.fullscreen-mode .slide-aspect-box.theme-bento .slide-fund-card {
-    flex: 1 !important;
-    min-height: 0 !important;
-    padding: clamp(10px, 1.6vh, 20px) clamp(14px, 1.6vw, 24px) !important;
-    border-radius: 14px !important;
-    gap: clamp(6px, 1.0vh, 12px) !important;
-    display: flex !important;
-    flex-direction: column !important;
-    justify-content: space-between !important;
-}
-
-#fundSlideReportModal:fullscreen .slide-aspect-box.theme-bento .slide-rank-badge,
-#fundSlideReportModal:-webkit-full-screen .slide-aspect-box.theme-bento .slide-rank-badge,
-#fundSlideReportModal.is-fullscreen .slide-aspect-box.theme-bento .slide-rank-badge,
-.slide-modal-dialog.fullscreen-mode .slide-aspect-box.theme-bento .slide-rank-badge {
-    height: clamp(26px, 3.4vh, 36px) !important;
-    padding: clamp(2px, 0.4vh, 6px) clamp(8px, 0.8vw, 14px) !important;
-    font-size: clamp(0.72rem, 1.05vh, 0.90rem) !important;
-}
-
-#fundSlideReportModal:fullscreen .slide-aspect-box.theme-bento .slide-code-badge,
-#fundSlideReportModal:-webkit-full-screen .slide-aspect-box.theme-bento .slide-code-badge,
-#fundSlideReportModal.is-fullscreen .slide-aspect-box.theme-bento .slide-code-badge,
-.slide-modal-dialog.fullscreen-mode .slide-aspect-box.theme-bento .slide-code-badge {
-    font-size: clamp(0.95rem, 1.35vh, 1.25rem) !important;
-    padding: clamp(3px, 0.5vh, 6px) clamp(8px, 0.8vw, 14px) !important;
-}
-
-#fundSlideReportModal:fullscreen .slide-aspect-box.theme-bento .slide-fund-cat-name,
-#fundSlideReportModal:-webkit-full-screen .slide-aspect-box.theme-bento .slide-fund-cat-name,
-#fundSlideReportModal.is-fullscreen .slide-aspect-box.theme-bento .slide-fund-cat-name,
-.slide-modal-dialog.fullscreen-mode .slide-aspect-box.theme-bento .slide-fund-cat-name {
-    font-size: clamp(0.74rem, 1.05vh, 0.92rem) !important;
-}
-
-#fundSlideReportModal:fullscreen .slide-aspect-box.theme-bento .slide-fund-fullname,
-#fundSlideReportModal:-webkit-full-screen .slide-aspect-box.theme-bento .slide-fund-fullname,
-#fundSlideReportModal.is-fullscreen .slide-aspect-box.theme-bento .slide-fund-fullname,
-.slide-modal-dialog.fullscreen-mode .slide-aspect-box.theme-bento .slide-fund-fullname {
-    font-size: clamp(0.88rem, 1.25vh, 1.15rem) !important;
-    line-height: 1.3 !important;
-}
-
-#fundSlideReportModal:fullscreen .slide-aspect-box.theme-bento .slide-fund-hero-capsule,
-#fundSlideReportModal:-webkit-full-screen .slide-aspect-box.theme-bento .slide-fund-hero-capsule,
-#fundSlideReportModal.is-fullscreen .slide-aspect-box.theme-bento .slide-fund-hero-capsule,
-.slide-modal-dialog.fullscreen-mode .slide-aspect-box.theme-bento .slide-fund-hero-capsule {
-    padding: clamp(5px, 0.9vh, 11px) clamp(12px, 1.2vw, 20px) !important;
-    column-gap: clamp(12px, 1.4vw, 22px) !important;
-    border-radius: 10px !important;
-}
-
-#fundSlideReportModal:fullscreen .slide-aspect-box.theme-bento .slide-fund-hero-lbl,
-#fundSlideReportModal:-webkit-full-screen .slide-aspect-box.theme-bento .slide-fund-hero-lbl,
-#fundSlideReportModal.is-fullscreen .slide-aspect-box.theme-bento .slide-fund-hero-lbl,
-.slide-modal-dialog.fullscreen-mode .slide-aspect-box.theme-bento .slide-fund-hero-lbl {
-    font-size: clamp(0.60rem, 0.85vh, 0.76rem) !important;
-}
-
-#fundSlideReportModal:fullscreen .slide-aspect-box.theme-bento .slide-fund-hero-sub,
-#fundSlideReportModal:-webkit-full-screen .slide-aspect-box.theme-bento .slide-fund-hero-sub,
-#fundSlideReportModal.is-fullscreen .slide-aspect-box.theme-bento .slide-fund-hero-sub,
-.slide-modal-dialog.fullscreen-mode .slide-aspect-box.theme-bento .slide-fund-hero-sub {
-    font-size: clamp(0.68rem, 0.95vh, 0.86rem) !important;
-}
-
-#fundSlideReportModal:fullscreen .slide-aspect-box.theme-bento .slide-fund-hero-num,
-#fundSlideReportModal:-webkit-full-screen .slide-aspect-box.theme-bento .slide-fund-hero-num,
-#fundSlideReportModal.is-fullscreen .slide-aspect-box.theme-bento .slide-fund-hero-num,
-.slide-modal-dialog.fullscreen-mode .slide-aspect-box.theme-bento .slide-fund-hero-num {
-    font-size: clamp(1.40rem, 2.3vh, 2.15rem) !important;
-}
-
-#fundSlideReportModal:fullscreen .slide-aspect-box.theme-bento .slide-metric-tile,
-#fundSlideReportModal:-webkit-full-screen .slide-aspect-box.theme-bento .slide-metric-tile,
-#fundSlideReportModal.is-fullscreen .slide-aspect-box.theme-bento .slide-metric-tile,
-.slide-modal-dialog.fullscreen-mode .slide-aspect-box.theme-bento .slide-metric-tile {
-    padding: clamp(4px, 0.7vh, 8px) clamp(8px, 0.9vw, 14px) !important;
-    border-radius: 8px !important;
-}
-
-#fundSlideReportModal:fullscreen .slide-aspect-box.theme-bento .slide-tile-lbl,
-#fundSlideReportModal:-webkit-full-screen .slide-aspect-box.theme-bento .slide-tile-lbl,
-#fundSlideReportModal.is-fullscreen .slide-aspect-box.theme-bento .slide-tile-lbl,
-.slide-modal-dialog.fullscreen-mode .slide-aspect-box.theme-bento .slide-tile-lbl {
-    font-size: clamp(0.58rem, 0.82vh, 0.72rem) !important;
-}
-
-#fundSlideReportModal:fullscreen .slide-aspect-box.theme-bento .slide-tile-val,
-#fundSlideReportModal:-webkit-full-screen .slide-aspect-box.theme-bento .slide-tile-val,
-#fundSlideReportModal.is-fullscreen .slide-aspect-box.theme-bento .slide-tile-val,
-.slide-modal-dialog.fullscreen-mode .slide-aspect-box.theme-bento .slide-tile-val {
-    font-size: clamp(0.85rem, 1.22vh, 1.12rem) !important;
-}
-
-#fundSlideReportModal:fullscreen .slide-aspect-box.theme-bento .slide-fund-velocity-bar,
-#fundSlideReportModal:-webkit-full-screen .slide-aspect-box.theme-bento .slide-fund-velocity-bar,
-#fundSlideReportModal.is-fullscreen .slide-aspect-box.theme-bento .slide-fund-velocity-bar,
-.slide-modal-dialog.fullscreen-mode .slide-aspect-box.theme-bento .slide-fund-velocity-bar {
-    padding: clamp(4px, 0.7vh, 8px) clamp(10px, 1.0vw, 16px) !important;
-    font-size: clamp(0.72rem, 1.05vh, 0.92rem) !important;
-    border-radius: 8px !important;
-}
-
-#fundSlideReportModal:fullscreen .slide-aspect-box.theme-bento .slide-velocity-lbl,
-#fundSlideReportModal:-webkit-full-screen .slide-aspect-box.theme-bento .slide-velocity-lbl,
-#fundSlideReportModal.is-fullscreen .slide-aspect-box.theme-bento .slide-velocity-lbl,
-.slide-modal-dialog.fullscreen-mode .slide-aspect-box.theme-bento .slide-velocity-lbl {
-    font-size: clamp(0.60rem, 0.85vh, 0.74rem) !important;
-}
-
-#fundSlideReportModal:fullscreen .slide-aspect-box.theme-bento .slide-velocity-val,
-#fundSlideReportModal:-webkit-full-screen .slide-aspect-box.theme-bento .slide-velocity-val,
-#fundSlideReportModal.is-fullscreen .slide-aspect-box.theme-bento .slide-velocity-val,
-.slide-modal-dialog.fullscreen-mode .slide-aspect-box.theme-bento .slide-velocity-val {
-    font-size: clamp(0.80rem, 1.15vh, 1.05rem) !important;
-}
-
-#fundSlideReportModal:fullscreen .slide-aspect-box.theme-bento .slide-fund-click-hint,
-#fundSlideReportModal:-webkit-full-screen .slide-aspect-box.theme-bento .slide-fund-click-hint,
-#fundSlideReportModal.is-fullscreen .slide-aspect-box.theme-bento .slide-fund-click-hint,
-.slide-modal-dialog.fullscreen-mode .slide-aspect-box.theme-bento .slide-fund-click-hint {
-    padding: clamp(5px, 0.8vh, 10px) clamp(10px, 1.0vw, 16px) !important;
-    font-size: clamp(0.70rem, 1.0vh, 0.88rem) !important;
-    border-radius: 8px !important;
-}
-
-/* ---------------- FULLSCREEN SLIDES 2-5: STANDARD / 3-COLUMN THEMES ---------------- */
+/* ---------------- FULLSCREEN SLIDES 2-5: TOP 3 CARDS (NORMAL COMPACT LAYOUT) ---------------- */
 #fundSlideReportModal:fullscreen .slide-funds-grid-3,
 #fundSlideReportModal:-webkit-full-screen .slide-funds-grid-3,
 #fundSlideReportModal.is-fullscreen .slide-funds-grid-3,
 .slide-modal-dialog.fullscreen-mode .slide-funds-grid-3 {
     display: grid !important;
     grid-template-columns: repeat(3, 1fr) !important;
-    height: 100% !important;
-    flex: 1 !important;
-    gap: clamp(12px, 1.5vw, 24px) !important;
-    min-height: 0 !important;
+    gap: 16px !important;
+    height: auto !important;
 }
 
 #fundSlideReportModal:fullscreen .slide-fund-card,
 #fundSlideReportModal:-webkit-full-screen .slide-fund-card,
 #fundSlideReportModal.is-fullscreen .slide-fund-card,
 .slide-modal-dialog.fullscreen-mode .slide-fund-card {
-    height: 100% !important;
-    flex: 1 !important;
-    padding: clamp(14px, 2.0vh, 24px) clamp(14px, 1.6vw, 22px) !important;
-    border-radius: 18px !important;
+    height: auto !important;
+    padding: 18px 20px !important;
+    border-radius: 20px !important;
     display: flex !important;
     flex-direction: column !important;
-    justify-content: space-between !important;
+    justify-content: flex-start !important;
+    gap: 0 !important;
+}
+
+#fundSlideReportModal:fullscreen .slide-fund-card-top,
+#fundSlideReportModal:-webkit-full-screen .slide-fund-card-top,
+#fundSlideReportModal.is-fullscreen .slide-fund-card-top,
+.slide-modal-dialog.fullscreen-mode .slide-fund-card-top {
+    margin-bottom: 6px !important;
+}
+
+#fundSlideReportModal:fullscreen .slide-rank-badge,
+#fundSlideReportModal:-webkit-full-screen .slide-rank-badge,
+#fundSlideReportModal.is-fullscreen .slide-rank-badge,
+.slide-modal-dialog.fullscreen-mode .slide-rank-badge {
+    font-size: 0.82rem !important;
+    padding: 3px 9px !important;
+}
+
+#fundSlideReportModal:fullscreen .slide-code-badge,
+#fundSlideReportModal:-webkit-full-screen .slide-code-badge,
+#fundSlideReportModal.is-fullscreen .slide-code-badge,
+.slide-modal-dialog.fullscreen-mode .slide-code-badge {
+    font-size: 1.05rem !important;
+    padding: 2px 10px !important;
+    font-weight: 900 !important;
+}
+
+#fundSlideReportModal:fullscreen .slide-fund-cat-name,
+#fundSlideReportModal:-webkit-full-screen .slide-fund-cat-name,
+#fundSlideReportModal.is-fullscreen .slide-fund-cat-name,
+.slide-modal-dialog.fullscreen-mode .slide-fund-cat-name {
+    font-size: 0.80rem !important;
+}
+
+#fundSlideReportModal:fullscreen .slide-fund-fullname,
+#fundSlideReportModal:-webkit-full-screen .slide-fund-fullname,
+#fundSlideReportModal.is-fullscreen .slide-fund-fullname,
+.slide-modal-dialog.fullscreen-mode .slide-fund-fullname {
+    font-size: 0.94rem !important;
+    line-height: 1.35 !important;
+    min-height: 2.4em !important;
+    margin-bottom: 8px !important;
 }
 
 #fundSlideReportModal:fullscreen .slide-fund-hero-capsule,
 #fundSlideReportModal:-webkit-full-screen .slide-fund-hero-capsule,
 #fundSlideReportModal.is-fullscreen .slide-fund-hero-capsule,
 .slide-modal-dialog.fullscreen-mode .slide-fund-hero-capsule {
-    padding: clamp(10px, 1.5vh, 18px) clamp(12px, 1.2vw, 18px) !important;
-    margin-bottom: clamp(8px, 1.2vh, 14px) !important;
+    padding: 12px 16px !important;
+    margin-bottom: 10px !important;
     border-radius: 14px !important;
+}
+
+#fundSlideReportModal:fullscreen .slide-fund-hero-lbl,
+#fundSlideReportModal:-webkit-full-screen .slide-fund-hero-lbl,
+#fundSlideReportModal.is-fullscreen .slide-fund-hero-lbl,
+.slide-modal-dialog.fullscreen-mode .slide-fund-hero-lbl {
+    font-size: 0.74rem !important;
+    margin-bottom: 3px !important;
 }
 
 #fundSlideReportModal:fullscreen .slide-fund-hero-num,
 #fundSlideReportModal:-webkit-full-screen .slide-fund-hero-num,
 #fundSlideReportModal.is-fullscreen .slide-fund-hero-num,
 .slide-modal-dialog.fullscreen-mode .slide-fund-hero-num {
-    font-size: clamp(1.75rem, 2.8vh, 2.50rem) !important;
+    font-size: 2.15rem !important;
+    line-height: 1.1 !important;
+    font-weight: 900 !important;
+}
+
+#fundSlideReportModal:fullscreen .slide-fund-hero-sub,
+#fundSlideReportModal:-webkit-full-screen .slide-fund-hero-sub,
+#fundSlideReportModal.is-fullscreen .slide-fund-hero-sub,
+.slide-modal-dialog.fullscreen-mode .slide-fund-hero-sub {
+    font-size: 0.82rem !important;
+    margin-top: 4px !important;
+}
+
+#fundSlideReportModal:fullscreen .slide-fund-metrics-tiles,
+#fundSlideReportModal:-webkit-full-screen .slide-fund-metrics-tiles,
+#fundSlideReportModal.is-fullscreen .slide-fund-metrics-tiles,
+.slide-modal-dialog.fullscreen-mode .slide-fund-metrics-tiles {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 8px !important;
+    margin-bottom: 8px !important;
 }
 
 #fundSlideReportModal:fullscreen .slide-metric-tile,
 #fundSlideReportModal:-webkit-full-screen .slide-metric-tile,
 #fundSlideReportModal.is-fullscreen .slide-metric-tile,
 .slide-modal-dialog.fullscreen-mode .slide-metric-tile {
-    padding: clamp(6px, 1.0vh, 12px) clamp(8px, 0.9vw, 14px) !important;
-    border-radius: 10px !important;
+    padding: 7px 11px !important;
+    border-radius: 11px !important;
+}
+
+#fundSlideReportModal:fullscreen .slide-tile-lbl,
+#fundSlideReportModal:-webkit-full-screen .slide-tile-lbl,
+#fundSlideReportModal.is-fullscreen .slide-tile-lbl,
+.slide-modal-dialog.fullscreen-mode .slide-tile-lbl {
+    font-size: 0.70rem !important;
+    margin-bottom: 2px !important;
 }
 
 #fundSlideReportModal:fullscreen .slide-tile-val,
 #fundSlideReportModal:-webkit-full-screen .slide-tile-val,
 #fundSlideReportModal.is-fullscreen .slide-tile-val,
 .slide-modal-dialog.fullscreen-mode .slide-tile-val {
-    font-size: clamp(0.88rem, 1.25vh, 1.15rem) !important;
+    font-size: 0.95rem !important;
+    font-weight: 800 !important;
+}
+
+#fundSlideReportModal:fullscreen .slide-fund-velocity-bar,
+#fundSlideReportModal:-webkit-full-screen .slide-fund-velocity-bar,
+#fundSlideReportModal.is-fullscreen .slide-fund-velocity-bar,
+.slide-modal-dialog.fullscreen-mode .slide-fund-velocity-bar {
+    padding: 5px 11px !important;
+    border-radius: 9px !important;
+    margin-bottom: 6px !important;
+    font-size: 0.78rem !important;
+}
+
+#fundSlideReportModal:fullscreen .slide-velocity-lbl,
+#fundSlideReportModal:-webkit-full-screen .slide-velocity-lbl,
+#fundSlideReportModal.is-fullscreen .slide-velocity-lbl,
+.slide-modal-dialog.fullscreen-mode .slide-velocity-lbl {
+    font-size: 0.72rem !important;
+}
+
+#fundSlideReportModal:fullscreen .slide-velocity-val,
+#fundSlideReportModal:-webkit-full-screen .slide-velocity-val,
+#fundSlideReportModal.is-fullscreen .slide-velocity-val,
+.slide-modal-dialog.fullscreen-mode .slide-velocity-val {
+    font-size: 0.86rem !important;
+    font-weight: 800 !important;
 }
 
 #fundSlideReportModal:fullscreen .slide-fund-click-hint,
 #fundSlideReportModal:-webkit-full-screen .slide-fund-click-hint,
 #fundSlideReportModal.is-fullscreen .slide-fund-click-hint,
 .slide-modal-dialog.fullscreen-mode .slide-fund-click-hint {
-    padding: clamp(6px, 0.9vh, 12px) clamp(12px, 1.1vw, 18px) !important;
-    font-size: clamp(0.72rem, 1.05vh, 0.90rem) !important;
+    padding: 6px 12px !important;
+    border-radius: 9px !important;
+    font-size: 0.76rem !important;
+    font-weight: 700 !important;
+    margin-top: 4px !important;
 }
 
-/* ---------------- FULLSCREEN FUND DETAIL SLIDE (#slidePage-detail) ---------------- */
+/* ---------------- BENTO THEME HORIZONTAL STRIPS (COMPACT & BALANCED) ---------------- */
+#fundSlideReportModal:fullscreen .slide-aspect-box.theme-bento .slide-funds-grid-3,
+#fundSlideReportModal:-webkit-full-screen .slide-aspect-box.theme-bento .slide-funds-grid-3,
+#fundSlideReportModal.is-fullscreen .slide-aspect-box.theme-bento .slide-funds-grid-3,
+.slide-modal-dialog.fullscreen-mode .slide-aspect-box.theme-bento .slide-funds-grid-3 {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 8px !important;
+    height: auto !important;
+}
+
+#fundSlideReportModal:fullscreen .slide-aspect-box.theme-bento .slide-fund-card,
+#fundSlideReportModal:-webkit-full-screen .slide-aspect-box.theme-bento .slide-fund-card,
+#fundSlideReportModal.is-fullscreen .slide-aspect-box.theme-bento .slide-fund-card,
+.slide-modal-dialog.fullscreen-mode .slide-aspect-box.theme-bento .slide-fund-card {
+    padding: 8px 16px !important;
+    height: auto !important;
+    gap: 6px !important;
+    border-radius: 12px !important;
+}
+
+#fundSlideReportModal:fullscreen .slide-aspect-box.theme-bento .slide-fund-hero-num,
+#fundSlideReportModal:-webkit-full-screen .slide-aspect-box.theme-bento .slide-fund-hero-num,
+#fundSlideReportModal.is-fullscreen .slide-aspect-box.theme-bento .slide-fund-hero-num,
+.slide-modal-dialog.fullscreen-mode .slide-aspect-box.theme-bento .slide-fund-hero-num {
+    font-size: 1.45rem !important;
+}
+
+#fundSlideReportModal:fullscreen .slide-aspect-box.theme-bento .slide-tile-lbl,
+#fundSlideReportModal:-webkit-full-screen .slide-aspect-box.theme-bento .slide-tile-lbl,
+#fundSlideReportModal.is-fullscreen .slide-aspect-box.theme-bento .slide-tile-lbl,
+.slide-modal-dialog.fullscreen-mode .slide-aspect-box.theme-bento .slide-tile-lbl {
+    font-size: 0.62rem !important;
+}
+
+#fundSlideReportModal:fullscreen .slide-aspect-box.theme-bento .slide-tile-val,
+#fundSlideReportModal:-webkit-full-screen .slide-aspect-box.theme-bento .slide-tile-val,
+#fundSlideReportModal.is-fullscreen .slide-aspect-box.theme-bento .slide-tile-val,
+.slide-modal-dialog.fullscreen-mode .slide-aspect-box.theme-bento .slide-tile-val {
+    font-size: 0.86rem !important;
+}
+
+#fundSlideReportModal:fullscreen .slide-aspect-box.theme-bento .slide-velocity-val,
+#fundSlideReportModal:-webkit-full-screen .slide-aspect-box.theme-bento .slide-velocity-val,
+#fundSlideReportModal.is-fullscreen .slide-aspect-box.theme-bento .slide-velocity-val,
+.slide-modal-dialog.fullscreen-mode .slide-aspect-box.theme-bento .slide-velocity-val {
+    font-size: 0.84rem !important;
+}
+
+#fundSlideReportModal:fullscreen .slide-aspect-box.theme-bento .slide-fund-click-hint,
+#fundSlideReportModal:-webkit-full-screen .slide-aspect-box.theme-bento .slide-fund-click-hint,
+#fundSlideReportModal.is-fullscreen .slide-aspect-box.theme-bento .slide-fund-click-hint,
+.slide-modal-dialog.fullscreen-mode .slide-aspect-box.theme-bento .slide-fund-click-hint {
+    font-size: 0.74rem !important;
+    padding: 5px 12px !important;
+}
+
+/* ---------------- FULLSCREEN FUND DETAIL SLIDE (#slidePage-detail) - EXACT NORMAL PROPORTIONS ---------------- */
 #fundSlideReportModal:fullscreen #slidePage-detail,
 #fundSlideReportModal:-webkit-full-screen #slidePage-detail,
 #fundSlideReportModal.is-fullscreen #slidePage-detail,
@@ -15924,184 +15943,178 @@ body.theme-neo-brutalism .sort-option.active {
     flex-direction: column !important;
     justify-content: flex-start !important;
     width: 100% !important;
-    height: 100% !important;
-    flex: 1 1 100% !important;
-    min-height: 0 !important;
-    max-height: 100% !important;
-    padding: clamp(12px, 1.8vh, 24px) clamp(18px, 2.2vw, 34px) !important;
+    height: auto !important;
+    padding: 22px 30px !important;
     box-sizing: border-box !important;
+    gap: 10px !important;
 }
 
-/* Bento Detail Container: 2-Column Responsive Layout */
-#fundSlideReportModal:fullscreen .slide-aspect-box.theme-bento .slide-detail-container,
-#fundSlideReportModal:-webkit-full-screen .slide-aspect-box.theme-bento .slide-detail-container,
-#fundSlideReportModal.is-fullscreen .slide-aspect-box.theme-bento .slide-detail-container,
-.slide-modal-dialog.fullscreen-mode .slide-aspect-box.theme-bento .slide-detail-container {
-    grid-template-columns: clamp(290px, 22vw, 380px) 1fr !important;
-    grid-template-rows: auto 1fr !important;
-    gap: clamp(8px, 1.2vh, 14px) clamp(12px, 1.4vw, 20px) !important;
-    height: 100% !important;
-    min-height: 0 !important;
-    flex: 1 !important;
+#fundSlideReportModal:fullscreen .btn-slide-back,
+#fundSlideReportModal:-webkit-full-screen .btn-slide-back,
+#fundSlideReportModal.is-fullscreen .btn-slide-back,
+.slide-modal-dialog.fullscreen-mode .btn-slide-back {
+    font-size: 0.82rem !important;
+    font-weight: 800 !important;
+    padding: 6px 14px !important;
+    border-radius: 8px !important;
 }
 
-#fundSlideReportModal:fullscreen .slide-aspect-box.theme-bento .slide-detail-code-badge,
-#fundSlideReportModal:-webkit-full-screen .slide-aspect-box.theme-bento .slide-detail-code-badge,
-#fundSlideReportModal.is-fullscreen .slide-aspect-box.theme-bento .slide-detail-code-badge,
-.slide-modal-dialog.fullscreen-mode .slide-aspect-box.theme-bento .slide-detail-code-badge {
-    font-size: clamp(1.15rem, 1.8vh, 1.60rem) !important;
-    padding: clamp(3px, 0.5vh, 6px) clamp(10px, 1.0vw, 16px) !important;
+#fundSlideReportModal:fullscreen .slide-detail-code-badge,
+#fundSlideReportModal:-webkit-full-screen .slide-detail-code-badge,
+#fundSlideReportModal.is-fullscreen .slide-detail-code-badge,
+.slide-modal-dialog.fullscreen-mode .slide-detail-code-badge {
+    font-size: 1.15rem !important;
+    padding: 3px 12px !important;
 }
 
-#fundSlideReportModal:fullscreen .slide-aspect-box.theme-bento .slide-detail-fund-name,
-#fundSlideReportModal:-webkit-full-screen .slide-aspect-box.theme-bento .slide-detail-fund-name,
-#fundSlideReportModal.is-fullscreen .slide-aspect-box.theme-bento .slide-detail-fund-name,
-.slide-modal-dialog.fullscreen-mode .slide-aspect-box.theme-bento .slide-detail-fund-name {
-    font-size: clamp(0.92rem, 1.35vh, 1.25rem) !important;
+#fundSlideReportModal:fullscreen .slide-detail-fund-name,
+#fundSlideReportModal:-webkit-full-screen .slide-detail-fund-name,
+#fundSlideReportModal.is-fullscreen .slide-detail-fund-name,
+.slide-modal-dialog.fullscreen-mode .slide-detail-fund-name {
+    font-size: 0.94rem !important;
 }
 
-#fundSlideReportModal:fullscreen .slide-aspect-box.theme-bento .btn-slide-back,
-#fundSlideReportModal:-webkit-full-screen .slide-aspect-box.theme-bento .btn-slide-back,
-#fundSlideReportModal.is-fullscreen .slide-aspect-box.theme-bento .btn-slide-back,
-.slide-modal-dialog.fullscreen-mode .slide-aspect-box.theme-bento .btn-slide-back {
-    font-size: clamp(0.78rem, 1.1vh, 0.95rem) !important;
-    padding: clamp(5px, 0.8vh, 9px) clamp(12px, 1.1vw, 20px) !important;
+/* 5 Top Key Metric Cards in Fullscreen */
+#fundSlideReportModal:fullscreen .slide-detail-metrics-grid,
+#fundSlideReportModal:-webkit-full-screen .slide-detail-metrics-grid,
+#fundSlideReportModal.is-fullscreen .slide-detail-metrics-grid,
+.slide-modal-dialog.fullscreen-mode .slide-detail-metrics-grid {
+    display: grid !important;
+    grid-template-columns: repeat(5, 1fr) !important;
+    gap: 10px !important;
+    margin-bottom: 4px !important;
+    height: auto !important;
+    flex-shrink: 0 !important;
 }
 
-/* Bento Detail Left Tower */
-#fundSlideReportModal:fullscreen .slide-aspect-box.theme-bento .slide-detail-metrics-grid,
-#fundSlideReportModal:-webkit-full-screen .slide-aspect-box.theme-bento .slide-detail-metrics-grid,
-#fundSlideReportModal.is-fullscreen .slide-aspect-box.theme-bento .slide-detail-metrics-grid,
-.slide-modal-dialog.fullscreen-mode .slide-aspect-box.theme-bento .slide-detail-metrics-grid {
-    gap: clamp(6px, 1.0vh, 11px) !important;
-    height: 100% !important;
-    min-height: 0 !important;
-}
-
-#fundSlideReportModal:fullscreen .slide-aspect-box.theme-bento .slide-detail-metric-card,
-#fundSlideReportModal:-webkit-full-screen .slide-aspect-box.theme-bento .slide-detail-metric-card,
-#fundSlideReportModal.is-fullscreen .slide-aspect-box.theme-bento .slide-detail-metric-card,
-.slide-modal-dialog.fullscreen-mode .slide-aspect-box.theme-bento .slide-detail-metric-card {
-    padding: clamp(7px, 1.1vh, 14px) clamp(10px, 1.1vw, 18px) !important;
-    border-radius: 10px !important;
-}
-
-#fundSlideReportModal:fullscreen .slide-aspect-box.theme-bento .slide-detail-m-lbl,
-#fundSlideReportModal:-webkit-full-screen .slide-aspect-box.theme-bento .slide-detail-m-lbl,
-#fundSlideReportModal.is-fullscreen .slide-aspect-box.theme-bento .slide-detail-m-lbl,
-.slide-modal-dialog.fullscreen-mode .slide-aspect-box.theme-bento .slide-detail-m-lbl {
-    font-size: clamp(0.60rem, 0.85vh, 0.74rem) !important;
-}
-
-#fundSlideReportModal:fullscreen .slide-aspect-box.theme-bento .slide-detail-m-val,
-#fundSlideReportModal:-webkit-full-screen .slide-aspect-box.theme-bento .slide-detail-m-val,
-#fundSlideReportModal.is-fullscreen .slide-aspect-box.theme-bento .slide-detail-m-val,
-.slide-modal-dialog.fullscreen-mode .slide-aspect-box.theme-bento .slide-detail-m-val {
-    font-size: clamp(1.05rem, 1.5vh, 1.35rem) !important;
-}
-
-#fundSlideReportModal:fullscreen .slide-aspect-box.theme-bento .slide-detail-metric-card.card-return .slide-detail-m-val,
-#fundSlideReportModal:-webkit-full-screen .slide-aspect-box.theme-bento .slide-detail-metric-card.card-return .slide-detail-m-val,
-#fundSlideReportModal.is-fullscreen .slide-aspect-box.theme-bento .slide-detail-metric-card.card-return .slide-detail-m-val,
-.slide-modal-dialog.fullscreen-mode .slide-aspect-box.theme-bento .slide-detail-metric-card.card-return .slide-detail-m-val {
-    font-size: clamp(1.70rem, 2.6vh, 2.40rem) !important;
-}
-
-#fundSlideReportModal:fullscreen .slide-aspect-box.theme-bento .slide-detail-metric-card.card-cash .slide-detail-m-val,
-#fundSlideReportModal:-webkit-full-screen .slide-aspect-box.theme-bento .slide-detail-metric-card.card-cash .slide-detail-m-val,
-#fundSlideReportModal.is-fullscreen .slide-aspect-box.theme-bento .slide-detail-metric-card.card-cash .slide-detail-m-val,
-.slide-modal-dialog.fullscreen-mode .slide-aspect-box.theme-bento .slide-detail-metric-card.card-cash .slide-detail-m-val {
-    font-size: clamp(1.25rem, 1.8vh, 1.65rem) !important;
-}
-
-#fundSlideReportModal:fullscreen .slide-aspect-box.theme-bento .slide-detail-m-sub,
-#fundSlideReportModal:-webkit-full-screen .slide-aspect-box.theme-bento .slide-detail-m-sub,
-#fundSlideReportModal.is-fullscreen .slide-aspect-box.theme-bento .slide-detail-m-sub,
-.slide-modal-dialog.fullscreen-mode .slide-aspect-box.theme-bento .slide-detail-m-sub {
-    font-size: clamp(0.58rem, 0.82vh, 0.72rem) !important;
-}
-
-/* Bento Detail Right Stage */
-#fundSlideReportModal:fullscreen .slide-aspect-box.theme-bento .slide-detail-body-grid,
-#fundSlideReportModal:-webkit-full-screen .slide-aspect-box.theme-bento .slide-detail-body-grid,
-#fundSlideReportModal.is-fullscreen .slide-aspect-box.theme-bento .slide-detail-body-grid,
-.slide-modal-dialog.fullscreen-mode .slide-aspect-box.theme-bento .slide-detail-body-grid {
-    gap: clamp(8px, 1.2vh, 14px) !important;
-    height: 100% !important;
-    min-height: 0 !important;
-    max-height: none !important;
-}
-
-#fundSlideReportModal:fullscreen .slide-aspect-box.theme-bento .slide-detail-panel,
-#fundSlideReportModal:-webkit-full-screen .slide-aspect-box.theme-bento .slide-detail-panel,
-#fundSlideReportModal.is-fullscreen .slide-aspect-box.theme-bento .slide-detail-panel,
-.slide-modal-dialog.fullscreen-mode .slide-aspect-box.theme-bento .slide-detail-panel {
-    padding: clamp(8px, 1.2vh, 16px) clamp(12px, 1.2vw, 18px) !important;
+#fundSlideReportModal:fullscreen .slide-detail-metric-card,
+#fundSlideReportModal:-webkit-full-screen .slide-detail-metric-card,
+#fundSlideReportModal.is-fullscreen .slide-detail-metric-card,
+.slide-modal-dialog.fullscreen-mode .slide-detail-metric-card {
+    padding: 9px 13px !important;
     border-radius: 12px !important;
-    min-height: 0 !important;
-    max-height: none !important;
+    height: auto !important;
 }
 
-#fundSlideReportModal:fullscreen .slide-aspect-box.theme-bento .slide-investor-chart-box,
-#fundSlideReportModal:-webkit-full-screen .slide-aspect-box.theme-bento .slide-investor-chart-box,
-#fundSlideReportModal.is-fullscreen .slide-aspect-box.theme-bento .slide-investor-chart-box,
-.slide-modal-dialog.fullscreen-mode .slide-aspect-box.theme-bento .slide-investor-chart-box {
-    min-height: clamp(140px, 18vh, 240px) !important;
-    flex: 1 !important;
-}
-
-#fundSlideReportModal:fullscreen .slide-aspect-box.theme-bento .slide-alloc-chips-list,
-#fundSlideReportModal:-webkit-full-screen .slide-aspect-box.theme-bento .slide-alloc-chips-list,
-#fundSlideReportModal.is-fullscreen .slide-aspect-box.theme-bento .slide-alloc-chips-list,
-.slide-modal-dialog.fullscreen-mode .slide-aspect-box.theme-bento .slide-alloc-chips-list {
-    max-height: clamp(110px, 15vh, 200px) !important;
-    gap: clamp(3px, 0.5vh, 6px) clamp(6px, 0.7vw, 12px) !important;
-}
-
-#fundSlideReportModal:fullscreen .slide-aspect-box.theme-bento .slide-alloc-chip-row,
-#fundSlideReportModal:-webkit-full-screen .slide-aspect-box.theme-bento .slide-alloc-chip-row,
-#fundSlideReportModal.is-fullscreen .slide-aspect-box.theme-bento .slide-alloc-chip-row,
-.slide-modal-dialog.fullscreen-mode .slide-aspect-box.theme-bento .slide-alloc-chip-row {
-    padding: clamp(5px, 0.7vh, 9px) clamp(8px, 0.8vw, 12px) !important;
-    font-size: clamp(0.72rem, 1.0vh, 0.88rem) !important;
-}
-
-/* Detail Slide in Standard / 2-Column Themes */
-#fundSlideReportModal:fullscreen .slide-detail-body-grid,
-#fundSlideReportModal:-webkit-full-screen .slide-detail-body-grid,
-#fundSlideReportModal.is-fullscreen .slide-detail-body-grid,
-.slide-modal-dialog.fullscreen-mode .slide-detail-body-grid {
-    height: 100% !important;
-    flex: 1 !important;
-    min-height: 0 !important;
-    max-height: none !important;
-    gap: clamp(10px, 1.4vh, 18px) !important;
-}
-
-#fundSlideReportModal:fullscreen .slide-detail-panel,
-#fundSlideReportModal:-webkit-full-screen .slide-detail-panel,
-#fundSlideReportModal.is-fullscreen .slide-detail-panel,
-.slide-modal-dialog.fullscreen-mode .slide-detail-panel {
-    height: 100% !important;
-    flex: 1 !important;
-    min-height: 0 !important;
-    max-height: none !important;
-    padding: clamp(10px, 1.4vh, 18px) clamp(12px, 1.3vw, 20px) !important;
-}
-
-#fundSlideReportModal:fullscreen .slide-investor-chart-box,
-#fundSlideReportModal:-webkit-full-screen .slide-investor-chart-box,
-#fundSlideReportModal.is-fullscreen .slide-investor-chart-box,
-.slide-modal-dialog.fullscreen-mode .slide-investor-chart-box {
-    min-height: clamp(150px, 20vh, 260px) !important;
-    flex: 1 !important;
+#fundSlideReportModal:fullscreen .slide-detail-m-lbl,
+#fundSlideReportModal:-webkit-full-screen .slide-detail-m-lbl,
+#fundSlideReportModal.is-fullscreen .slide-detail-m-lbl,
+.slide-modal-dialog.fullscreen-mode .slide-detail-m-lbl {
+    font-size: 0.72rem !important;
 }
 
 #fundSlideReportModal:fullscreen .slide-detail-m-val,
 #fundSlideReportModal:-webkit-full-screen .slide-detail-m-val,
 #fundSlideReportModal.is-fullscreen .slide-detail-m-val,
 .slide-modal-dialog.fullscreen-mode .slide-detail-m-val {
-    font-size: clamp(1.10rem, 1.6vh, 1.45rem) !important;
+    font-size: 1.28rem !important;
+    font-weight: 900 !important;
+}
+
+#fundSlideReportModal:fullscreen .slide-detail-m-sub,
+#fundSlideReportModal:-webkit-full-screen .slide-detail-m-sub,
+#fundSlideReportModal.is-fullscreen .slide-detail-m-sub,
+.slide-modal-dialog.fullscreen-mode .slide-detail-m-sub {
+    font-size: 0.70rem !important;
+}
+
+/* Body Grid: Allocation Panel & Investor Chart Panel */
+#fundSlideReportModal:fullscreen .slide-detail-body-grid,
+#fundSlideReportModal:-webkit-full-screen .slide-detail-body-grid,
+#fundSlideReportModal.is-fullscreen .slide-detail-body-grid,
+.slide-modal-dialog.fullscreen-mode .slide-detail-body-grid {
+    display: grid !important;
+    grid-template-columns: 1fr 1.35fr !important;
+    gap: 12px !important;
+    height: auto !important;
+    max-height: 385px !important;
+}
+
+#fundSlideReportModal:fullscreen .slide-detail-panel,
+#fundSlideReportModal:-webkit-full-screen .slide-detail-panel,
+#fundSlideReportModal.is-fullscreen .slide-detail-panel,
+.slide-modal-dialog.fullscreen-mode .slide-detail-panel {
+    padding: 11px 14px !important;
+    border-radius: 14px !important;
+    height: auto !important;
+    max-height: 385px !important;
+}
+
+#fundSlideReportModal:fullscreen .slide-investor-chart-box,
+#fundSlideReportModal:-webkit-full-screen .slide-investor-chart-box,
+#fundSlideReportModal.is-fullscreen .slide-investor-chart-box,
+.slide-modal-dialog.fullscreen-mode .slide-investor-chart-box {
+    height: 220px !important;
+    min-height: 220px !important;
+    max-height: 220px !important;
+    position: relative !important;
+}
+
+#fundSlideReportModal:fullscreen .slide-alloc-ribbon,
+#fundSlideReportModal:-webkit-full-screen .slide-alloc-ribbon,
+#fundSlideReportModal.is-fullscreen .slide-alloc-ribbon,
+.slide-modal-dialog.fullscreen-mode .slide-alloc-ribbon {
+    height: 14px !important;
+    margin: 4px 0 8px 0 !important;
+}
+
+#fundSlideReportModal:fullscreen .slide-alloc-chips-list,
+#fundSlideReportModal:-webkit-full-screen .slide-alloc-chips-list,
+#fundSlideReportModal.is-fullscreen .slide-alloc-chips-list,
+.slide-modal-dialog.fullscreen-mode .slide-alloc-chips-list {
+    max-height: 260px !important;
+    gap: 4px !important;
+    overflow-y: auto !important;
+}
+
+#fundSlideReportModal:fullscreen .slide-alloc-chip-row,
+#fundSlideReportModal:-webkit-full-screen .slide-alloc-chip-row,
+#fundSlideReportModal.is-fullscreen .slide-alloc-chip-row,
+.slide-modal-dialog.fullscreen-mode .slide-alloc-chip-row {
+    padding: 6px 9px !important;
+    font-size: 0.78rem !important;
+}
+
+/* Bento Theme Detail Slide Architecture */
+#fundSlideReportModal:fullscreen .slide-aspect-box.theme-bento .slide-detail-container,
+#fundSlideReportModal:-webkit-full-screen .slide-aspect-box.theme-bento .slide-detail-container,
+#fundSlideReportModal.is-fullscreen .slide-aspect-box.theme-bento .slide-detail-container,
+.slide-modal-dialog.fullscreen-mode .slide-aspect-box.theme-bento .slide-detail-container {
+    grid-template-columns: 320px 1fr !important;
+    gap: 10px 14px !important;
+    height: auto !important;
+}
+
+#fundSlideReportModal:fullscreen .slide-aspect-box.theme-bento .slide-detail-metrics-grid,
+#fundSlideReportModal:-webkit-full-screen .slide-aspect-box.theme-bento .slide-detail-metrics-grid,
+#fundSlideReportModal.is-fullscreen .slide-aspect-box.theme-bento .slide-detail-metrics-grid,
+.slide-modal-dialog.fullscreen-mode .slide-aspect-box.theme-bento .slide-detail-metrics-grid {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 8px !important;
+    height: auto !important;
+}
+
+#fundSlideReportModal:fullscreen .slide-aspect-box.theme-bento .slide-detail-metric-card,
+#fundSlideReportModal:-webkit-full-screen .slide-aspect-box.theme-bento .slide-detail-metric-card,
+#fundSlideReportModal.is-fullscreen .slide-aspect-box.theme-bento .slide-detail-metric-card,
+.slide-modal-dialog.fullscreen-mode .slide-aspect-box.theme-bento .slide-detail-metric-card {
+    padding: 8px 14px !important;
+    border-radius: 10px !important;
+}
+
+#fundSlideReportModal:fullscreen .slide-aspect-box.theme-bento .slide-detail-metric-card.card-return .slide-detail-m-val,
+#fundSlideReportModal:-webkit-full-screen .slide-aspect-box.theme-bento .slide-detail-metric-card.card-return .slide-detail-m-val,
+#fundSlideReportModal.is-fullscreen .slide-aspect-box.theme-bento .slide-detail-metric-card.card-return .slide-detail-m-val,
+.slide-modal-dialog.fullscreen-mode .slide-aspect-box.theme-bento .slide-detail-metric-card.card-return .slide-detail-m-val {
+    font-size: 1.85rem !important;
+}
+
+#fundSlideReportModal:fullscreen .slide-aspect-box.theme-bento .slide-detail-metric-card.card-cash .slide-detail-m-val,
+#fundSlideReportModal:-webkit-full-screen .slide-aspect-box.theme-bento .slide-detail-metric-card.card-cash .slide-detail-m-val,
+#fundSlideReportModal.is-fullscreen .slide-aspect-box.theme-bento .slide-detail-metric-card.card-cash .slide-detail-m-val,
+.slide-modal-dialog.fullscreen-mode .slide-aspect-box.theme-bento .slide-detail-metric-card.card-cash .slide-detail-m-val {
+    font-size: 1.35rem !important;
 }
 
 /* ---------------- FULLSCREEN SLIDE 6: CATEGORY MATRIX TABLE ---------------- */
@@ -16109,10 +16122,7 @@ body.theme-neo-brutalism .sort-option.active {
 #fundSlideReportModal:-webkit-full-screen .slide-cat-summary-table-wrap,
 #fundSlideReportModal.is-fullscreen .slide-cat-summary-table-wrap,
 .slide-modal-dialog.fullscreen-mode .slide-cat-summary-table-wrap {
-    height: 100% !important;
-    flex: 1 !important;
-    min-height: 0 !important;
-    max-height: calc(100% - 10px) !important;
+    max-height: 420px !important;
     overflow-y: auto !important;
 }
 
@@ -16120,16 +16130,16 @@ body.theme-neo-brutalism .sort-option.active {
 #fundSlideReportModal:-webkit-full-screen .slide-cat-summary-table th,
 #fundSlideReportModal.is-fullscreen .slide-cat-summary-table th,
 .slide-modal-dialog.fullscreen-mode .slide-cat-summary-table th {
-    padding: clamp(8px, 1.2vh, 14px) clamp(12px, 1.2vw, 18px) !important;
-    font-size: clamp(0.72rem, 1.05vh, 0.86rem) !important;
+    padding: 11px 16px !important;
+    font-size: 0.76rem !important;
 }
 
 #fundSlideReportModal:fullscreen .slide-cat-summary-table td,
 #fundSlideReportModal:-webkit-full-screen .slide-cat-summary-table td,
 #fundSlideReportModal.is-fullscreen .slide-cat-summary-table td,
 .slide-modal-dialog.fullscreen-mode .slide-cat-summary-table td {
-    padding: clamp(8px, 1.1vh, 13px) clamp(12px, 1.2vw, 18px) !important;
-    font-size: clamp(0.78rem, 1.1vh, 0.94rem) !important;
+    padding: 9px 16px !important;
+    font-size: 0.84rem !important;
 }
 
 /* ---------------- FULLSCREEN SLIDE 7: COMPARISON ARENA ---------------- */
@@ -16139,21 +16149,17 @@ body.theme-neo-brutalism .sort-option.active {
 .slide-modal-dialog.fullscreen-mode .slide-comparison-arena {
     display: grid !important;
     grid-template-columns: 1fr 1fr !important;
-    height: 100% !important;
-    flex: 1 !important;
-    gap: clamp(12px, 1.6vw, 24px) !important;
-    min-height: 0 !important;
+    gap: 16px !important;
+    height: auto !important;
 }
 
 #fundSlideReportModal:fullscreen .slide-power-col,
 #fundSlideReportModal:-webkit-full-screen .slide-power-col,
 #fundSlideReportModal.is-fullscreen .slide-power-col,
 .slide-modal-dialog.fullscreen-mode .slide-power-col {
-    height: 100% !important;
-    flex: 1 !important;
-    padding: clamp(12px, 1.8vh, 22px) clamp(14px, 1.5vw, 22px) !important;
-    border-radius: 16px !important;
-    gap: clamp(8px, 1.2vh, 14px) !important;
+    padding: 12px 16px !important;
+    border-radius: 14px !important;
+    height: auto !important;
 }
 
 /* Print Styles for PDF Export */
