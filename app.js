@@ -11164,7 +11164,7 @@ function renderSlideFundCardHTML(fund, rank, mode) {
     }
 
     return `
-        <div class="slide-fund-card rank-card-${rank}" data-fund-code="${fund.code}" onclick="openSlideFundDetail('${fund.code}')" title="${fund.code} detaylı analiz ve KAP dağılımını aç">
+        <div class="slide-fund-card rank-card-${rank}" data-fund-code="${fund.code}" onclick="openSlideFundDetail('${fund.code}')" title="${fund.code} Fon Detay Slaytına Git">
             <div>
                 <div class="slide-fund-card-top">
                     ${rankBadgeHTML}
@@ -11211,8 +11211,8 @@ function renderSlideFundCardHTML(fund, rank, mode) {
                     <span class="slide-velocity-val">${perPersonStr}</span>
                 </div>
 
-                <div class="slide-fund-click-hint" title="${fund.code} Canlı Detay & KAP Portföy Dağılımını Aç">
-                    <span><i class="fa-solid fa-arrow-up-right-from-square"></i> Canlı Detay & KAP Hisseleri</span>
+                <div class="slide-fund-click-hint" title="${fund.code} Fon Detay Slaytına Git">
+                    <span><i class="fa-solid fa-arrow-right"></i> Fon Detay Slaytına Git</span>
                     <i class="fa-solid fa-chevron-right" style="font-size: 0.64rem; opacity: 0.85;"></i>
                 </div>
             </div>
@@ -11668,11 +11668,24 @@ function returnFromSlideDetail() {
     goToSlide(previousSlideIndex || 1);
 }
 
-async function openSlideFundDetail(fundCode) {
+function getSlideBackLabel(slideNum) {
+    const s = Number(slideNum) || 1;
+    let suffix = "'e";
+    if (s === 2) suffix = "'ye";
+    else if (s === 6) suffix = "'ya";
+    else if (s === 9) suffix = "'a";
+    return `← Slayt ${s}${suffix} Geri Dön`;
+}
+
+async function openSlideFundDetail(fundCode, originSlideIndex = null) {
     if (!fundCode) return;
     const fCode = fundCode.toUpperCase().trim();
 
-    previousSlideIndex = currentSlideIndex;
+    if (originSlideIndex !== null && originSlideIndex !== undefined) {
+        previousSlideIndex = originSlideIndex;
+    } else {
+        previousSlideIndex = currentSlideIndex;
+    }
     isSlideDetailActive = true;
 
     const viewport = document.querySelector(".slide-stage-viewport");
@@ -11707,9 +11720,9 @@ async function openSlideFundDetail(fundCode) {
     detailSlide.innerHTML = `
         <div class="slide-detail-container">
             <div class="slide-detail-header">
-                <button type="button" class="btn-slide-back" onclick="returnFromSlideDetail()">
+                <button type="button" class="btn-slide-back" onclick="returnFromSlideDetail()" title="${getSlideBackLabel(previousSlideIndex).replace('← ', '')}">
                     <i class="fa-solid fa-arrow-left"></i>
-                    <span>← Slayt ${previousSlideIndex}'e Geri Dön</span>
+                    <span>${getSlideBackLabel(previousSlideIndex)}</span>
                 </button>
                 <div style="color: #38BDF8; font-weight: 700; font-size: 0.85rem; display: flex; align-items: center; gap: 8px;">
                     <i class="fa-solid fa-circle-notch fa-spin"></i>
@@ -11895,9 +11908,9 @@ async function openSlideFundDetail(fundCode) {
         <div class="slide-detail-container">
             <div class="slide-detail-header">
                 <div class="slide-detail-header-left">
-                    <button type="button" class="btn-slide-back" onclick="returnFromSlideDetail()" title="Slayt ${previousSlideIndex}'e Geri Dön">
+                    <button type="button" class="btn-slide-back" onclick="returnFromSlideDetail()" title="${getSlideBackLabel(previousSlideIndex).replace('← ', '')}">
                         <i class="fa-solid fa-arrow-left"></i>
-                        <span>← Slayt ${previousSlideIndex}'e Geri Dön</span>
+                        <span>${getSlideBackLabel(previousSlideIndex)}</span>
                     </button>
                     <div class="slide-detail-fund-title-box">
                         <div class="slide-detail-code-row">
@@ -12359,24 +12372,46 @@ async function exportToPDF() {
             await document.fonts.ready;
         }
 
-        const totalPages = 6;
+        // Map featured funds to dedicated detail slide numbers (starting at slide 7)
+        const featuredFunds = [];
+        const seenCodes = new Set();
+        [
+            ...(data.topCashInflow || []).map(f => ({ fund: f, originSlide: 2 })),
+            ...(data.topCashOutflow || []).map(f => ({ fund: f, originSlide: 3 })),
+            ...(data.topInvestorInflow || []).map(f => ({ fund: f, originSlide: 4 })),
+            ...(data.topInvestorOutflow || []).map(f => ({ fund: f, originSlide: 5 }))
+        ].forEach(item => {
+            if (item.fund && item.fund.code && !seenCodes.has(item.fund.code)) {
+                seenCodes.add(item.fund.code);
+                featuredFunds.push(item);
+            }
+        });
+
+        const fundSlideMap = new Map();
+        featuredFunds.forEach((item, idx) => {
+            fundSlideMap.set(item.fund.code, {
+                targetSlide: 6 + idx + 1,
+                originSlide: item.originSlide,
+                fund: item.fund
+            });
+        });
+
+        const totalPages = 6 + featuredFunds.length;
         const aspectBox = document.getElementById("slideAspectBox");
 
-        for (let pageNum = 1; pageNum <= totalPages; pageNum++) {
+        // 1. Render Main Overview Slides (1 to 6)
+        for (let pageNum = 1; pageNum <= 6; pageNum++) {
             if (btn) {
                 btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> <span>Sayfa ${pageNum}/${totalPages}...</span>`;
             }
 
-            // Switch to target slide properly
             goToSlide(pageNum);
-
-            // Yield frame to ensure paint and layout
             await new Promise(r => setTimeout(r, 120));
 
             const captureElem = aspectBox || document.getElementById(`slidePage-${pageNum}`);
             if (captureElem) {
                 const canvas = await window.html2canvas(captureElem, {
-                    scale: 3,
+                    scale: 2.2,
                     dpi: 300,
                     useCORS: true,
                     backgroundColor: '#070C18',
@@ -12390,7 +12425,6 @@ async function exportToPDF() {
                     pdf.addPage('a4', 'landscape');
                 }
 
-                // A4 landscape is 297mm x 210mm
                 const marginX = 10;
                 const pdfPageW = 297;
                 const pdfPageH = 210;
@@ -12398,14 +12432,13 @@ async function exportToPDF() {
                 const targetH = (canvas.height * targetW) / canvas.width;
                 const offsetY = Math.max(8, (pdfPageH - targetH) / 2);
 
-                // Dark fill page background
                 pdf.setFillColor(7, 12, 24);
                 pdf.rect(0, 0, pdfPageW, pdfPageH, 'F');
 
                 const finalH = Math.min(targetH, pdfPageH - 16);
                 pdf.addImage(imgData, 'JPEG', marginX, offsetY, targetW, finalH);
 
-                // Add clickable interactive hyperlinks for all fund cards on this PDF page
+                // Add internal slide jump hyperlinks for fund cards
                 const pageElem = document.getElementById(`slidePage-${pageNum}`);
                 if (pageElem) {
                     const cards = pageElem.querySelectorAll('.slide-fund-card');
@@ -12414,7 +12447,8 @@ async function exportToPDF() {
                     if (cards && cards.length > 0 && containerRect.width > 0 && containerRect.height > 0) {
                         cards.forEach(card => {
                             const fundCode = card.getAttribute('data-fund-code');
-                            if (!fundCode) return;
+                            const target = fundSlideMap.get(fundCode);
+                            if (!target) return;
 
                             const cardRect = card.getBoundingClientRect();
                             const relX = (cardRect.left - containerRect.left) / containerRect.width;
@@ -12422,19 +12456,79 @@ async function exportToPDF() {
                             const relW = cardRect.width / containerRect.width;
                             const relH = cardRect.height / containerRect.height;
 
-                            // Map to PDF page coordinates (mm)
                             const pdfCardX = marginX + (relX * targetW);
                             const pdfCardY = offsetY + (relY * finalH);
                             const pdfCardW = relW * targetW;
                             const pdfCardH = relH * finalH;
 
-                            const targetUrl = getFundShareWebUrl(fundCode);
                             try {
-                                pdf.link(pdfCardX, pdfCardY, pdfCardW, pdfCardH, { url: targetUrl });
+                                pdf.link(pdfCardX, pdfCardY, pdfCardW, pdfCardH, { pageNumber: target.targetSlide });
                             } catch (linkErr) {
-                                console.warn(`PDF link error for ${fundCode}:`, linkErr);
+                                console.warn(`PDF internal jump error for ${fundCode}:`, linkErr);
                             }
                         });
+                    }
+                }
+            }
+        }
+
+        // 2. Render Dedicated Detail Slide for Each Featured Fund (Slides 7 to totalPages)
+        for (let i = 0; i < featuredFunds.length; i++) {
+            const item = featuredFunds[i];
+            const detailPageNum = 6 + i + 1;
+            if (btn) {
+                btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> <span>Sayfa ${detailPageNum}/${totalPages} (${item.fund.code})...</span>`;
+            }
+
+            await openSlideFundDetail(item.fund.code, item.originSlide);
+            await new Promise(r => setTimeout(r, 220));
+
+            const captureElem = aspectBox || document.getElementById("slidePage-detail");
+            if (captureElem) {
+                const canvas = await window.html2canvas(captureElem, {
+                    scale: 2.2,
+                    dpi: 300,
+                    useCORS: true,
+                    backgroundColor: '#070C18',
+                    logging: false,
+                    allowTaint: true,
+                    imageTimeout: 0
+                });
+
+                const imgData = canvas.toDataURL('image/jpeg', 0.98);
+                pdf.addPage('a4', 'landscape');
+
+                const marginX = 10;
+                const pdfPageW = 297;
+                const pdfPageH = 210;
+                const targetW = pdfPageW - (marginX * 2);
+                const targetH = (canvas.height * targetW) / canvas.width;
+                const offsetY = Math.max(8, (pdfPageH - targetH) / 2);
+                const finalH = Math.min(targetH, pdfPageH - 16);
+
+                pdf.setFillColor(7, 12, 24);
+                pdf.rect(0, 0, pdfPageW, pdfPageH, 'F');
+                pdf.addImage(imgData, 'JPEG', marginX, offsetY, targetW, finalH);
+
+                // Add back button jump link on PDF page
+                const backBtn = captureElem.querySelector('.btn-slide-back');
+                const containerRect = captureElem.getBoundingClientRect();
+                if (backBtn && containerRect.width > 0 && containerRect.height > 0) {
+                    const bRect = backBtn.getBoundingClientRect();
+                    const relX = (bRect.left - containerRect.left) / containerRect.width;
+                    const relY = (bRect.top - containerRect.top) / containerRect.height;
+                    const relW = bRect.width / containerRect.width;
+                    const relH = bRect.height / containerRect.height;
+
+                    const pdfBtnX = marginX + (relX * targetW);
+                    const pdfBtnY = offsetY + (relY * finalH);
+                    const pdfBtnW = relW * targetW;
+                    const pdfBtnH = relH * finalH;
+
+                    try {
+                        pdf.link(pdfBtnX, pdfBtnY, pdfBtnW, pdfBtnH, { pageNumber: item.originSlide });
+                    } catch (bErr) {
+                        console.warn(`PDF back jump link error:`, bErr);
                     }
                 }
             }
@@ -12541,30 +12635,55 @@ async function exportToPowerPoint() {
             await document.fonts.ready;
         }
 
+        // Map featured funds to dedicated detail slide numbers (starting at slide 7)
+        const featuredFunds = [];
+        const seenCodes = new Set();
+        [
+            ...(data.topCashInflow || []).map(f => ({ fund: f, originSlide: 2 })),
+            ...(data.topCashOutflow || []).map(f => ({ fund: f, originSlide: 3 })),
+            ...(data.topInvestorInflow || []).map(f => ({ fund: f, originSlide: 4 })),
+            ...(data.topInvestorOutflow || []).map(f => ({ fund: f, originSlide: 5 }))
+        ].forEach(item => {
+            if (item.fund && item.fund.code && !seenCodes.has(item.fund.code)) {
+                seenCodes.add(item.fund.code);
+                featuredFunds.push(item);
+            }
+        });
+
+        const fundSlideMap = new Map();
+        featuredFunds.forEach((item, idx) => {
+            fundSlideMap.set(item.fund.code, {
+                targetSlide: 6 + idx + 1,
+                originSlide: item.originSlide,
+                fund: item.fund
+            });
+        });
+
         const pptx = new window.PptxGenJS();
         pptx.layout = 'LAYOUT_16x9'; // 10.0 x 5.625 inches (standard 16:9 widescreen)
         pptx.author = 'Portföyüm App';
         pptx.company = 'Portföyüm - TEFAS Fon Analiz';
         pptx.title = `TEFAS Günlük Fon & Sermaye Akış Slayt Raporu - ${data.date || ''}`;
 
-        const totalPages = 6;
+        const totalPages = 6 + featuredFunds.length;
         const aspectBox = document.getElementById("slideAspectBox");
+        const shapeType = (pptx.shapes && pptx.shapes.RECTANGLE) || 'rect';
+        const slideW = 10.0;
+        const slideH = 5.625;
 
-        for (let pageNum = 1; pageNum <= totalPages; pageNum++) {
+        // 1. Render Main Overview Slides (1 to 6)
+        for (let pageNum = 1; pageNum <= 6; pageNum++) {
             if (btn) {
                 btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> <span>Sayfa ${pageNum}/${totalPages}...</span>`;
             }
 
-            // Switch to target slide
             goToSlide(pageNum);
-
-            // Yield frame to guarantee full paint, transitions and layout
             await new Promise(r => setTimeout(r, 120));
 
             const captureElem = aspectBox || document.getElementById(`slidePage-${pageNum}`);
             if (captureElem) {
                 const canvas = await window.html2canvas(captureElem, {
-                    scale: 3,
+                    scale: 2.2,
                     dpi: 300,
                     useCORS: true,
                     backgroundColor: '#070C18',
@@ -12577,8 +12696,6 @@ async function exportToPowerPoint() {
                 const slide = pptx.addSlide();
                 slide.background = { color: '070C18' };
 
-                const slideW = 10.0;
-                const slideH = 5.625;
                 const aspectRatio = canvas.width / canvas.height;
                 let boxW = slideW;
                 let boxH = boxW / aspectRatio;
@@ -12597,7 +12714,7 @@ async function exportToPowerPoint() {
                     h: boxH
                 });
 
-                // Add clickable interactive hyperlinks for all fund cards on this PPTX slide
+                // Add internal slide jump hyperlinks for fund cards
                 const pageElem = document.getElementById(`slidePage-${pageNum}`);
                 if (pageElem) {
                     const cards = pageElem.querySelectorAll('.slide-fund-card');
@@ -12606,7 +12723,8 @@ async function exportToPowerPoint() {
                     if (cards && cards.length > 0 && containerRect.width > 0 && containerRect.height > 0) {
                         cards.forEach(card => {
                             const fundCode = card.getAttribute('data-fund-code');
-                            if (!fundCode) return;
+                            const target = fundSlideMap.get(fundCode);
+                            if (!target) return;
 
                             const cardRect = card.getBoundingClientRect();
                             const relX = (cardRect.left - containerRect.left) / containerRect.width;
@@ -12614,15 +12732,12 @@ async function exportToPowerPoint() {
                             const relW = cardRect.width / containerRect.width;
                             const relH = cardRect.height / containerRect.height;
 
-                            // Map to PPTX slide coordinates (inches)
                             const cardX = offsetX + (relX * boxW);
                             const cardY = offsetY + (relY * boxH);
                             const cardW = relW * boxW;
                             const cardH = relH * boxH;
 
-                            const targetUrl = getFundShareWebUrl(fundCode);
                             try {
-                                const shapeType = (pptx.shapes && pptx.shapes.RECTANGLE) || 'rect';
                                 slide.addShape(shapeType, {
                                     x: cardX,
                                     y: cardY,
@@ -12631,14 +12746,94 @@ async function exportToPowerPoint() {
                                     fill: { type: 'none' },
                                     line: { color: 'none' },
                                     hyperlink: {
-                                        url: targetUrl,
-                                        tooltip: `${fundCode} - Canlı Fon Analizi & KAP Portföy Dağılımını Aç`
+                                        slide: target.targetSlide,
+                                        tooltip: `${fundCode} - Detay Slaytına Git (Slayt ${target.targetSlide})`
                                     }
                                 });
                             } catch (shapeErr) {
-                                console.warn(`PowerPoint hyperlink error for ${fundCode}:`, shapeErr);
+                                console.warn(`PowerPoint jump link error for ${fundCode}:`, shapeErr);
                             }
                         });
+                    }
+                }
+            }
+        }
+
+        // 2. Render Dedicated Detail Slide for Each Featured Fund (Slides 7 to totalPages)
+        for (let i = 0; i < featuredFunds.length; i++) {
+            const item = featuredFunds[i];
+            const detailPageNum = 6 + i + 1;
+            if (btn) {
+                btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> <span>Slayt ${detailPageNum}/${totalPages} (${item.fund.code})...</span>`;
+            }
+
+            await openSlideFundDetail(item.fund.code, item.originSlide);
+            await new Promise(r => setTimeout(r, 220));
+
+            const captureElem = aspectBox || document.getElementById("slidePage-detail");
+            if (captureElem) {
+                const canvas = await window.html2canvas(captureElem, {
+                    scale: 2.2,
+                    dpi: 300,
+                    useCORS: true,
+                    backgroundColor: '#070C18',
+                    logging: false,
+                    allowTaint: true,
+                    imageTimeout: 0
+                });
+
+                const imgData = canvas.toDataURL('image/png');
+                const slide = pptx.addSlide();
+                slide.background = { color: '070C18' };
+
+                const aspectRatio = canvas.width / canvas.height;
+                let boxW = slideW;
+                let boxH = boxW / aspectRatio;
+                if (boxH > slideH) {
+                    boxH = slideH;
+                    boxW = boxH * aspectRatio;
+                }
+                const offsetX = Math.max(0, (slideW - boxW) / 2);
+                const offsetY = Math.max(0, (slideH - boxH) / 2);
+
+                slide.addImage({
+                    data: imgData,
+                    x: offsetX,
+                    y: offsetY,
+                    w: boxW,
+                    h: boxH
+                });
+
+                // Add back button jump link on PPTX slide
+                const backBtn = captureElem.querySelector('.btn-slide-back');
+                const containerRect = captureElem.getBoundingClientRect();
+                if (backBtn && containerRect.width > 0 && containerRect.height > 0) {
+                    const bRect = backBtn.getBoundingClientRect();
+                    const relX = (bRect.left - containerRect.left) / containerRect.width;
+                    const relY = (bRect.top - containerRect.top) / containerRect.height;
+                    const relW = bRect.width / containerRect.width;
+                    const relH = bRect.height / containerRect.height;
+
+                    const btnX = offsetX + (relX * boxW);
+                    const btnY = offsetY + (relY * boxH);
+                    const btnW = relW * boxW;
+                    const btnH = relH * boxH;
+
+                    try {
+                        slide.addShape(shapeType, {
+                            x: btnX,
+                            y: btnY,
+                            w: btnW,
+                            h: btnH,
+                            fill: { type: 'none' },
+                            line: { color: 'none' },
+                            hyperlink: {
+                                slide: item.originSlide,
+                                tooltip: `Slayt ${item.originSlide}'ye Geri Dön`
+                            }
+                        });
+                    } catch (bErr) {
+                        console.warn(`PowerPoint back jump error:`, bErr);
                     }
                 }
             }
