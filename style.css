@@ -15095,7 +15095,7 @@ body.theme-neo-brutalism .sort-option.active {
 }
 
 /* ==========================================================================
-   THEME 3: SUNSET AURA (GOLDEN HOUR HORIZON & LUMINOUS GLASSMORPHISM)
+   THEME 3: SUNSET AURA (ASYMMETRIC SPOTLIGHT VITRIN & LUMINOUS GLASSMORPHISM)
    ========================================================================== */
 .slide-aspect-box.theme-sunset {
     background: 
@@ -15106,6 +15106,31 @@ body.theme-neo-brutalism .sort-option.active {
     border: 1.5px solid rgba(244, 63, 94, 0.4) !important;
     box-shadow: 0 30px 80px -15px rgba(13, 4, 26, 0.95), 0 0 50px rgba(244, 63, 94, 0.18) !important;
     color: #FFFFFF !important;
+}
+
+.slide-aspect-box.theme-sunset .slide-deck-container {
+    height: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+}
+
+.slide-aspect-box.theme-sunset .slide-page {
+    padding: 20px 32px !important;
+    box-sizing: border-box !important;
+    height: 100% !important;
+    display: none !important;
+}
+
+.slide-aspect-box.theme-sunset .slide-page.active {
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+    height: 100% !important;
+}
+
+.slide-aspect-box.theme-sunset .slide-header-block {
+    margin-bottom: 12px !important;
+    flex-shrink: 0 !important;
 }
 
 /* Header & Meta Elements */
@@ -15152,31 +15177,50 @@ body.theme-neo-brutalism .sort-option.active {
 }
 
 /* ==========================================================================
-   SLIDE 1: MACRO CARDS & CATEGORY LEADERS
+   SLIDE 1: MACRO CARDS & CATEGORY LEADERS (HORIZON SPLIT)
    ========================================================================== */
+.slide-aspect-box.theme-sunset .slide-macro-grid-top {
+    display: grid !important;
+    grid-template-columns: 1.15fr 1fr !important;
+    gap: 14px !important;
+    margin-bottom: 14px !important;
+    flex: 1 !important;
+}
+
+.slide-aspect-box.theme-sunset .slide-cat-leaders-grid {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 14px !important;
+    flex: 1 !important;
+}
+
 .slide-aspect-box.theme-sunset .slide-macro-hero-card {
     border-radius: 14px !important;
     backdrop-filter: blur(12px) !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+    padding: 16px 20px !important;
 }
 
 .slide-aspect-box.theme-sunset .slide-macro-hero-card.pos {
     background: linear-gradient(150deg, rgba(244, 63, 94, 0.22) 0%, rgba(26, 9, 44, 0.92) 100%) !important;
     border: 1.5px solid rgba(244, 63, 94, 0.5) !important;
-    border-top: 3.5px solid #FB7185 !important;
+    border-left: 5px solid #FB7185 !important;
     box-shadow: 0 10px 30px -5px rgba(244, 63, 94, 0.28) !important;
 }
 
 .slide-aspect-box.theme-sunset .slide-macro-hero-card.neg {
     background: linear-gradient(150deg, rgba(168, 85, 247, 0.2) 0%, rgba(26, 9, 44, 0.92) 100%) !important;
     border: 1.5px solid rgba(168, 85, 247, 0.5) !important;
-    border-top: 3.5px solid #C084FC !important;
+    border-left: 5px solid #C084FC !important;
     box-shadow: 0 10px 30px -5px rgba(168, 85, 247, 0.25) !important;
 }
 
 .slide-aspect-box.theme-sunset .slide-macro-hero-card.inv-card {
     background: linear-gradient(150deg, rgba(251, 146, 60, 0.22) 0%, rgba(26, 9, 44, 0.92) 100%) !important;
     border: 1.5px solid rgba(251, 146, 60, 0.55) !important;
-    border-top: 3.5px solid #FDE047 !important;
+    border-left: 5px solid #FDE047 !important;
     box-shadow: 0 10px 30px -5px rgba(251, 146, 60, 0.3) !important;
 }
 
@@ -15209,18 +15253,24 @@ body.theme-neo-brutalism .sort-option.active {
     text-shadow: 0 0 20px rgba(253, 224, 71, 0.55) !important;
 }
 
+.slide-aspect-box.theme-sunset .slide-cat-leader-card {
+    border-radius: 14px !important;
+    padding: 14px 18px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+}
+
 .slide-aspect-box.theme-sunset .slide-cat-leader-card.inflow {
     background: linear-gradient(145deg, rgba(244, 63, 94, 0.16) 0%, rgba(24, 8, 40, 0.92) 100%) !important;
     border: 1.5px solid rgba(244, 63, 94, 0.45) !important;
-    border-top: 3.5px solid #FB7185 !important;
-    border-radius: 12px !important;
+    border-left: 5px solid #FB923C !important;
 }
 
 .slide-aspect-box.theme-sunset .slide-cat-leader-card.outflow {
     background: linear-gradient(145deg, rgba(168, 85, 247, 0.16) 0%, rgba(24, 8, 40, 0.92) 100%) !important;
     border: 1.5px solid rgba(168, 85, 247, 0.45) !important;
-    border-top: 3.5px solid #C084FC !important;
-    border-radius: 12px !important;
+    border-left: 5px solid #C084FC !important;
 }
 
 .slide-aspect-box.theme-sunset .slide-cat-leader-name {
@@ -15244,158 +15294,338 @@ body.theme-neo-brutalism .sort-option.active {
 }
 
 /* ==========================================================================
-   SLIDE 2 - 5: PODIUM FUND CARDS & HERO METRICS
+   SLIDE 2 - 5: ASYMMETRIC SPOTLIGHT VITRIN ARCHITECTURE
+   (Left: Grand Hero Spotlight #1 / Right: Dual Panoramic Contenders #2 & #3)
    ========================================================================== */
-.slide-aspect-box.theme-sunset .slide-fund-card {
-    background: linear-gradient(165deg, rgba(34, 12, 56, 0.88) 0%, rgba(18, 6, 30, 0.96) 100%) !important;
-    border: 1.5px solid rgba(244, 63, 94, 0.3) !important;
+.slide-aspect-box.theme-sunset .slide-funds-grid-3 {
+    display: grid !important;
+    grid-template-columns: 1.14fr 1fr !important;
+    grid-template-rows: repeat(2, minmax(0, 1fr)) !important;
+    gap: 14px !important;
+    flex: 1 !important;
+    min-height: 0 !important;
+    height: calc(100% - 95px) !important;
+}
+
+/* --------------------------------------------------------------------------
+   RANK 1: GRAND SHOWCASE VITRIN (LEFT FULL-HEIGHT SPOTLIGHT)
+   -------------------------------------------------------------------------- */
+.slide-aspect-box.theme-sunset .slide-fund-card.rank-card-1 {
+    grid-column: 1 / 2 !important;
+    grid-row: 1 / 3 !important;
+    height: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+    padding: 20px 22px !important;
+    background: linear-gradient(165deg, rgba(251, 146, 60, 0.22) 0%, rgba(38, 14, 62, 0.94) 50%, rgba(18, 5, 30, 0.98) 100%) !important;
+    border: 1.5px solid rgba(251, 191, 36, 0.7) !important;
+    border-top: 4px solid #FDE047 !important;
+    border-radius: 16px !important;
+    box-shadow: 0 16px 40px -5px rgba(251, 146, 60, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
+    position: relative !important;
+    overflow: hidden !important;
+}
+
+/* Ethereal Sun Corona Aura behind Rank 1 */
+.slide-aspect-box.theme-sunset .slide-fund-card.rank-card-1::before {
+    content: '' !important;
+    position: absolute !important;
+    top: -50px !important;
+    right: -50px !important;
+    width: 200px !important;
+    height: 200px !important;
+    background: radial-gradient(circle, rgba(251, 191, 36, 0.35) 0%, rgba(244, 63, 94, 0.15) 55%, transparent 75%) !important;
+    border-radius: 50% !important;
+    pointer-events: none !important;
+    z-index: 0 !important;
+}
+
+.slide-aspect-box.theme-sunset .slide-fund-card.rank-card-1 > * {
+    position: relative !important;
+    z-index: 1 !important;
+}
+
+.slide-aspect-box.theme-sunset .slide-fund-card.rank-card-1 .slide-rank-badge.rank-1 {
+    height: 34px !important;
+    padding: 5px 16px !important;
+    font-size: 0.85rem !important;
+    border-radius: 10px !important;
+    background: linear-gradient(135deg, #F59E0B 0%, #FDE047 100%) !important;
+    color: #3B1400 !important;
+    box-shadow: 0 0 18px rgba(251, 191, 36, 0.6) !important;
+    font-weight: 900 !important;
+}
+
+.slide-aspect-box.theme-sunset .slide-fund-card.rank-card-1 .slide-code-badge {
+    font-size: 1.25rem !important;
+    padding: 4px 14px !important;
+    font-weight: 900 !important;
+}
+
+.slide-aspect-box.theme-sunset .slide-fund-card.rank-card-1 .slide-fund-fullname {
+    font-size: 1.05rem !important;
+    font-weight: 800 !important;
+    color: #FFFFFF !important;
+    margin-top: 5px !important;
+    line-height: 1.25 !important;
+}
+
+.slide-aspect-box.theme-sunset .slide-fund-card.rank-card-1 .slide-fund-hero-capsule {
+    padding: 16px 20px !important;
+    margin: 12px 0 14px 0 !important;
+    border-radius: 14px !important;
+    background: linear-gradient(135deg, rgba(244, 63, 94, 0.28) 0%, rgba(251, 146, 60, 0.22) 100%) !important;
+    border: 1.5px solid rgba(251, 146, 60, 0.55) !important;
+    box-shadow: 0 0 20px rgba(251, 146, 60, 0.25) !important;
+}
+
+.slide-aspect-box.theme-sunset .slide-fund-card.rank-card-1 .slide-fund-hero-lbl {
+    font-size: 0.76rem !important;
+    font-weight: 800 !important;
+    letter-spacing: 0.6px !important;
+}
+
+.slide-aspect-box.theme-sunset .slide-fund-card.rank-card-1 .slide-fund-hero-num {
+    font-size: 2.35rem !important;
+    font-weight: 900 !important;
+    line-height: 1.1 !important;
+    margin: 6px 0 !important;
+    color: #FDE047 !important;
+    text-shadow: 0 0 24px rgba(251, 146, 60, 0.75) !important;
+}
+
+.slide-aspect-box.theme-sunset .slide-fund-card.rank-card-1 .slide-fund-hero-sub {
+    font-size: 0.82rem !important;
+    color: #FECDD3 !important;
+}
+
+.slide-aspect-box.theme-sunset .slide-fund-card.rank-card-1 .slide-fund-metrics-tiles {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 8px !important;
+    margin-bottom: 10px !important;
+}
+
+.slide-aspect-box.theme-sunset .slide-fund-card.rank-card-1 .slide-metric-tile {
+    padding: 10px 14px !important;
+    background: rgba(26, 9, 44, 0.75) !important;
+    border: 1px solid rgba(244, 63, 94, 0.24) !important;
+    border-radius: 9px !important;
+}
+
+.slide-aspect-box.theme-sunset .slide-fund-card.rank-card-1 .slide-tile-lbl {
+    font-size: 0.72rem !important;
+    color: #FDA4AF !important;
+}
+
+.slide-aspect-box.theme-sunset .slide-fund-card.rank-card-1 .slide-tile-val {
+    font-size: 1.05rem !important;
+    font-weight: 800 !important;
+}
+
+.slide-aspect-box.theme-sunset .slide-fund-card.rank-card-1 .slide-fund-velocity-bar {
+    padding: 6px 12px !important;
+    margin-bottom: 10px !important;
+    font-size: 0.76rem !important;
+    border-radius: 8px !important;
+}
+
+.slide-aspect-box.theme-sunset .slide-fund-card.rank-card-1 .slide-fund-click-hint {
+    background: linear-gradient(135deg, #F43F5E 0%, #FB923C 100%) !important;
+    color: #FFFFFF !important;
+    border: 1px solid #FDE047 !important;
+    font-weight: 800 !important;
+    font-size: 0.85rem !important;
+    padding: 10px 18px !important;
+    border-radius: 9px !important;
+    box-shadow: 0 4px 18px rgba(244, 63, 94, 0.45) !important;
+    text-align: center !important;
+    justify-content: center !important;
+}
+
+/* --------------------------------------------------------------------------
+   RANK 2 & 3: PANORAMIC CONTENDER CARDS (RIGHT COLUMN STACK)
+   -------------------------------------------------------------------------- */
+.slide-aspect-box.theme-sunset .slide-fund-card.rank-card-2,
+.slide-aspect-box.theme-sunset .slide-fund-card.rank-card-3 {
+    grid-column: 2 / 3 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+    padding: 12px 16px !important;
     border-radius: 14px !important;
     backdrop-filter: blur(12px) !important;
     transition: transform 0.2s ease, box-shadow 0.2s ease !important;
 }
 
-.slide-aspect-box.theme-sunset .slide-fund-card:hover {
-    transform: translateY(-3px) !important;
-    box-shadow: 0 16px 36px -8px rgba(244, 63, 94, 0.35) !important;
-}
-
-/* Rank 1: Golden Sun Champion Crown */
-.slide-aspect-box.theme-sunset .slide-fund-card.rank-card-1 {
-    background: linear-gradient(165deg, rgba(251, 146, 60, 0.2) 0%, rgba(38, 14, 62, 0.92) 50%, rgba(18, 5, 30, 0.98) 100%) !important;
-    border: 1.5px solid rgba(251, 191, 36, 0.65) !important;
-    border-top: 4px solid #FDE047 !important;
-    box-shadow: 0 12px 35px -5px rgba(251, 146, 60, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.15) !important;
-}
-
-/* Rank 2: Coral Aurora Crown */
 .slide-aspect-box.theme-sunset .slide-fund-card.rank-card-2 {
+    grid-row: 1 / 2 !important;
     background: linear-gradient(165deg, rgba(244, 63, 94, 0.18) 0%, rgba(34, 12, 56, 0.92) 50%, rgba(18, 5, 30, 0.98) 100%) !important;
     border: 1.5px solid rgba(244, 63, 94, 0.6) !important;
-    border-top: 4px solid #FB7185 !important;
-    box-shadow: 0 12px 35px -5px rgba(244, 63, 94, 0.3) !important;
+    border-top: 3.5px solid #FB7185 !important;
+    box-shadow: 0 8px 25px -5px rgba(244, 63, 94, 0.3) !important;
 }
 
-/* Rank 3: Twilight Amethyst Crown */
 .slide-aspect-box.theme-sunset .slide-fund-card.rank-card-3 {
+    grid-row: 2 / 3 !important;
     background: linear-gradient(165deg, rgba(168, 85, 247, 0.16) 0%, rgba(32, 10, 54, 0.92) 50%, rgba(18, 5, 30, 0.98) 100%) !important;
     border: 1.5px solid rgba(168, 85, 247, 0.55) !important;
-    border-top: 4px solid #C084FC !important;
-    box-shadow: 0 12px 35px -5px rgba(168, 85, 247, 0.28) !important;
+    border-top: 3.5px solid #C084FC !important;
+    box-shadow: 0 8px 25px -5px rgba(168, 85, 247, 0.28) !important;
 }
 
-/* Rank Badges */
-.slide-aspect-box.theme-sunset .slide-rank-badge.rank-1 {
-    background: linear-gradient(135deg, #F59E0B 0%, #FDE047 100%) !important;
-    color: #3B1400 !important;
-    box-shadow: 0 0 16px rgba(251, 191, 36, 0.6) !important;
-    font-weight: 900 !important;
+/* Rank 2 & 3: Top section horizontal split */
+.slide-aspect-box.theme-sunset .slide-fund-card.rank-card-2 > div:first-child,
+.slide-aspect-box.theme-sunset .slide-fund-card.rank-card-3 > div:first-child {
+    display: flex !important;
+    align-items: stretch !important;
+    justify-content: space-between !important;
+    gap: 12px !important;
 }
 
-.slide-aspect-box.theme-sunset .slide-rank-badge.rank-2 {
+.slide-aspect-box.theme-sunset .slide-fund-card.rank-card-2 .slide-fund-card-top,
+.slide-aspect-box.theme-sunset .slide-fund-card.rank-card-3 .slide-fund-card-top {
+    flex: 1 !important;
+    min-width: 0 !important;
+    margin-bottom: 0 !important;
+}
+
+.slide-aspect-box.theme-sunset .slide-fund-card.rank-card-2 .slide-rank-badge.rank-2 {
+    height: 26px !important;
+    padding: 3px 10px !important;
+    font-size: 0.72rem !important;
     background: linear-gradient(135deg, #E11D48 0%, #FB7185 100%) !important;
     color: #FFFFFF !important;
-    box-shadow: 0 0 16px rgba(244, 63, 94, 0.55) !important;
-    font-weight: 900 !important;
+    box-shadow: 0 0 12px rgba(244, 63, 94, 0.5) !important;
 }
 
-.slide-aspect-box.theme-sunset .slide-rank-badge.rank-3 {
+.slide-aspect-box.theme-sunset .slide-fund-card.rank-card-3 .slide-rank-badge.rank-3 {
+    height: 26px !important;
+    padding: 3px 10px !important;
+    font-size: 0.72rem !important;
     background: linear-gradient(135deg, #9333EA 0%, #C084FC 100%) !important;
     color: #FFFFFF !important;
-    box-shadow: 0 0 16px rgba(168, 85, 247, 0.55) !important;
-    font-weight: 900 !important;
+    box-shadow: 0 0 12px rgba(168, 85, 247, 0.5) !important;
 }
 
-.slide-aspect-box.theme-sunset .slide-fund-fullname {
+.slide-aspect-box.theme-sunset .slide-fund-card.rank-card-2 .slide-code-badge,
+.slide-aspect-box.theme-sunset .slide-fund-card.rank-card-3 .slide-code-badge {
+    font-size: 0.95rem !important;
+    padding: 2px 10px !important;
+}
+
+.slide-aspect-box.theme-sunset .slide-fund-card.rank-card-2 .slide-fund-fullname,
+.slide-aspect-box.theme-sunset .slide-fund-card.rank-card-3 .slide-fund-fullname {
+    font-size: 0.88rem !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    margin-top: 3px !important;
     color: #F3E8FF !important;
-    font-weight: 600 !important;
 }
 
-/* Sunset Hero Capsule (Yield / Money Flow) */
-.slide-aspect-box.theme-sunset .slide-fund-hero-capsule {
-    background: linear-gradient(135deg, rgba(244, 63, 94, 0.22) 0%, rgba(251, 146, 60, 0.16) 100%) !important;
-    border: 1px solid rgba(251, 146, 60, 0.45) !important;
-    box-shadow: 0 0 16px rgba(251, 146, 60, 0.18) !important;
-    border-radius: 12px !important;
+/* Rank 2 & 3 Hero Capsule (compact on right) */
+.slide-aspect-box.theme-sunset .slide-fund-card.rank-card-2 .slide-fund-hero-capsule,
+.slide-aspect-box.theme-sunset .slide-fund-card.rank-card-3 .slide-fund-hero-capsule {
+    flex: 0 0 200px !important;
+    margin: 0 !important;
+    padding: 6px 12px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    text-align: right !important;
+    border-radius: 10px !important;
 }
 
-.slide-aspect-box.theme-sunset .slide-fund-hero-capsule.pos {
-    background: linear-gradient(135deg, rgba(244, 63, 94, 0.24) 0%, rgba(251, 146, 60, 0.18) 100%) !important;
-    border-color: rgba(251, 146, 60, 0.5) !important;
+.slide-aspect-box.theme-sunset .slide-fund-card.rank-card-2 .slide-fund-hero-lbl,
+.slide-aspect-box.theme-sunset .slide-fund-card.rank-card-3 .slide-fund-hero-lbl {
+    font-size: 0.62rem !important;
 }
 
-.slide-aspect-box.theme-sunset .slide-fund-hero-capsule.neg {
-    background: linear-gradient(135deg, rgba(168, 85, 247, 0.22) 0%, rgba(244, 63, 94, 0.15) 100%) !important;
-    border-color: rgba(168, 85, 247, 0.5) !important;
-}
-
-.slide-aspect-box.theme-sunset .slide-fund-hero-num.pos {
-    color: #FDE047 !important;
-    text-shadow: 0 0 16px rgba(251, 146, 60, 0.65) !important;
+.slide-aspect-box.theme-sunset .slide-fund-card.rank-card-2 .slide-fund-hero-num,
+.slide-aspect-box.theme-sunset .slide-fund-card.rank-card-3 .slide-fund-hero-num {
+    font-size: 1.45rem !important;
     font-weight: 900 !important;
+    line-height: 1.15 !important;
+    margin: 2px 0 !important;
 }
 
-.slide-aspect-box.theme-sunset .slide-fund-hero-num.neg {
-    color: #C084FC !important;
-    text-shadow: 0 0 16px rgba(168, 85, 247, 0.65) !important;
-    font-weight: 900 !important;
+.slide-aspect-box.theme-sunset .slide-fund-card.rank-card-2 .slide-fund-hero-sub,
+.slide-aspect-box.theme-sunset .slide-fund-card.rank-card-3 .slide-fund-hero-sub {
+    font-size: 0.66rem !important;
 }
 
-.slide-aspect-box.theme-sunset .slide-fund-hero-lbl,
-.slide-aspect-box.theme-sunset .slide-fund-hero-sub {
-    color: #FECDD3 !important;
+/* Rank 2 & 3: Bottom 2-Row Grid */
+.slide-aspect-box.theme-sunset .slide-fund-card.rank-card-2 > div:last-child,
+.slide-aspect-box.theme-sunset .slide-fund-card.rank-card-3 > div:last-child {
+    display: grid !important;
+    grid-template-columns: 1fr auto !important;
+    grid-template-rows: auto auto !important;
+    gap: 6px !important;
 }
 
-/* Frosted Translucent Metric Tiles */
-.slide-aspect-box.theme-sunset .slide-metric-tile {
-    background: rgba(26, 9, 44, 0.75) !important;
-    border: 1px solid rgba(244, 63, 94, 0.24) !important;
-    border-radius: 8px !important;
+/* 4 Metrics in a single horizontal strip */
+.slide-aspect-box.theme-sunset .slide-fund-card.rank-card-2 .slide-fund-metrics-tiles,
+.slide-aspect-box.theme-sunset .slide-fund-card.rank-card-3 .slide-fund-metrics-tiles {
+    grid-column: 1 / 3 !important;
+    grid-row: 1 / 2 !important;
+    display: grid !important;
+    grid-template-columns: repeat(4, 1fr) !important;
+    gap: 6px !important;
+    margin: 0 !important;
 }
 
-.slide-aspect-box.theme-sunset .slide-tile-lbl {
-    color: #FDA4AF !important;
-    font-weight: 600 !important;
-    font-size: 0.68rem !important;
+.slide-aspect-box.theme-sunset .slide-fund-card.rank-card-2 .slide-metric-tile,
+.slide-aspect-box.theme-sunset .slide-fund-card.rank-card-3 .slide-metric-tile {
+    padding: 5px 6px !important;
+    text-align: center !important;
+    border-radius: 7px !important;
+    background: rgba(26, 9, 44, 0.7) !important;
+    border: 1px solid rgba(244, 63, 94, 0.22) !important;
 }
 
-.slide-aspect-box.theme-sunset .slide-tile-val {
-    color: #FFFFFF !important;
+.slide-aspect-box.theme-sunset .slide-fund-card.rank-card-2 .slide-tile-lbl,
+.slide-aspect-box.theme-sunset .slide-fund-card.rank-card-3 .slide-tile-lbl {
+    font-size: 0.60rem !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+}
+
+.slide-aspect-box.theme-sunset .slide-fund-card.rank-card-2 .slide-tile-val,
+.slide-aspect-box.theme-sunset .slide-fund-card.rank-card-3 .slide-tile-val {
+    font-size: 0.80rem !important;
     font-weight: 800 !important;
+    white-space: nowrap !important;
 }
 
-/* Velocity Bar & Interactive Hint */
-.slide-aspect-box.theme-sunset .slide-fund-velocity-bar {
-    background: rgba(18, 6, 30, 0.9) !important;
-    border: 1px solid rgba(244, 63, 94, 0.28) !important;
-    border-radius: 8px !important;
+.slide-aspect-box.theme-sunset .slide-fund-card.rank-card-2 .slide-fund-velocity-bar,
+.slide-aspect-box.theme-sunset .slide-fund-card.rank-card-3 .slide-fund-velocity-bar {
+    grid-column: 1 / 2 !important;
+    grid-row: 2 / 3 !important;
+    margin: 0 !important;
+    padding: 4px 10px !important;
+    font-size: 0.68rem !important;
+    border-radius: 7px !important;
 }
 
-.slide-aspect-box.theme-sunset .slide-velocity-lbl {
-    color: #FECDD3 !important;
-}
-
-.slide-aspect-box.theme-sunset .slide-fund-velocity-fill,
-.slide-aspect-box.theme-sunset .slide-velocity-bar-fill {
-    background: linear-gradient(90deg, #F43F5E 0%, #FB923C 100%) !important;
-}
-
-.slide-aspect-box.theme-sunset .slide-fund-click-hint {
-    background: rgba(244, 63, 94, 0.16) !important;
-    border: 1px solid rgba(244, 63, 94, 0.42) !important;
-    color: #FECDD3 !important;
-    border-radius: 8px !important;
-    transition: all 0.2s ease !important;
-}
-
-.slide-aspect-box.theme-sunset .slide-fund-card:hover .slide-fund-click-hint {
-    background: linear-gradient(135deg, #F43F5E 0%, #FB923C 100%) !important;
-    color: #FFFFFF !important;
-    border-color: #FDE047 !important;
-    box-shadow: 0 0 16px rgba(251, 146, 60, 0.45) !important;
+.slide-aspect-box.theme-sunset .slide-fund-card.rank-card-2 .slide-fund-click-hint,
+.slide-aspect-box.theme-sunset .slide-fund-card.rank-card-3 .slide-fund-click-hint {
+    grid-column: 2 / 3 !important;
+    grid-row: 2 / 3 !important;
+    margin: 0 !important;
+    padding: 4px 12px !important;
+    font-size: 0.68rem !important;
+    border-radius: 7px !important;
+    white-space: nowrap !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 5px !important;
 }
 
 /* ==========================================================================
-   SLIDE 6: CATEGORY SUMMARY MATRIX & TABLES
+   SLIDE 6: CATEGORY SUMMARY MATRIX & FLOATING DUSK ROWS
    ========================================================================== */
 .slide-aspect-box.theme-sunset .slide-cat-summary-table-wrap {
     background: rgba(22, 7, 38, 0.9) !important;
@@ -15426,7 +15656,7 @@ body.theme-neo-brutalism .sort-option.active {
 }
 
 /* ==========================================================================
-   SLIDE 7: POWER MATRIX (PURCHASING POWER & INFLOW/OUTFLOW)
+   SLIDE 7: CELESTIAL CLASH ARENA (POWER MATRIX)
    ========================================================================== */
 .slide-aspect-box.theme-sunset .slide-power-col {
     background: linear-gradient(165deg, rgba(30, 10, 50, 0.88) 0%, rgba(16, 5, 28, 0.95) 100%) !important;
@@ -15490,7 +15720,7 @@ body.theme-neo-brutalism .sort-option.active {
 .slide-aspect-box.theme-sunset .slide-vs-circle {
     background: linear-gradient(135deg, #F43F5E 0%, #FB923C 100%) !important;
     color: #FFFFFF !important;
-    box-shadow: 0 0 18px rgba(244, 63, 94, 0.5) !important;
+    box-shadow: 0 0 25px rgba(244, 63, 94, 0.6), 0 0 0 4px rgba(251, 146, 60, 0.3) !important;
     border: none !important;
 }
 
@@ -15707,6 +15937,26 @@ body.theme-neo-brutalism .sort-option.active {
     color: #FFFFFF !important;
     box-shadow: 0 0 20px rgba(244, 63, 94, 0.5) !important;
     transform: translateY(-50%) scale(1.08) !important;
+}
+
+/* Small screens fallback */
+@media (max-width: 900px) {
+    .slide-aspect-box.theme-sunset .slide-funds-grid-3 {
+        display: flex !important;
+        flex-direction: column !important;
+        height: auto !important;
+    }
+    .slide-aspect-box.theme-sunset .slide-fund-card.rank-card-1,
+    .slide-aspect-box.theme-sunset .slide-fund-card.rank-card-2,
+    .slide-aspect-box.theme-sunset .slide-fund-card.rank-card-3 {
+        grid-column: auto !important;
+        grid-row: auto !important;
+        height: auto !important;
+    }
+    .slide-aspect-box.theme-sunset .slide-macro-grid-top,
+    .slide-aspect-box.theme-sunset .slide-cat-leaders-grid {
+        grid-template-columns: 1fr !important;
+    }
 }
 
 /* ==========================================================================
