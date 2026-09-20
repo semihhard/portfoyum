@@ -11306,6 +11306,49 @@ function renderSlideFundCardHTML(fund, rank, mode) {
     `;
 }
 
+function getPurchasingPowerEquivalents(rawAmount) {
+    const amount = Math.abs(Number(rawAmount) || 0);
+    const toggUnit = 1850000;      // ₺1.85M - Sıfır Yerli TOGG T10X
+    const houseUnit = 8000000;     // ₺8.0M - Büyükşehir Lüks Konut / Rezidans
+    const goldUnit = 3400000;      // ₺3.4M - 1 Kilogram 24 Ayar Külçe Altın
+    const phoneUnit = 105000;      // ₺105.000 - En Üst Düzey iPhone 16 Pro Max
+
+    const toggCount = Math.floor(amount / toggUnit);
+    const houseVal = amount / houseUnit;
+    const houseCount = houseVal >= 10 ? Math.floor(houseVal).toLocaleString('tr-TR') : (houseVal > 0 ? houseVal.toFixed(1) : '0');
+    const goldVal = amount / goldUnit;
+    const goldKg = goldVal >= 10 ? Math.floor(goldVal).toLocaleString('tr-TR') : (goldVal > 0 ? goldVal.toFixed(1) : '0');
+    const phoneCount = Math.floor(amount / phoneUnit);
+
+    return {
+        amount,
+        togg: {
+            title: "Sıfır TOGG T10X",
+            desc: "1.85 Milyon ₺ / Araç",
+            countStr: `${toggCount.toLocaleString('tr-TR')} Araç`,
+            icon: "fa-car-side"
+        },
+        house: {
+            title: "Lüks Konut / Daire",
+            desc: "8.0 Milyon ₺ / Konut",
+            countStr: `${houseCount} Daire`,
+            icon: "fa-building"
+        },
+        gold: {
+            title: "24 Ayar Külçe Altın",
+            desc: "3.4 Milyon ₺ / Kg",
+            countStr: `${goldKg} Kg Altın`,
+            icon: "fa-cubes-stacked"
+        },
+        phone: {
+            title: "iPhone 16 Pro Max",
+            desc: "105.000 ₺ / Cihaz",
+            countStr: `${phoneCount.toLocaleString('tr-TR')} Cihaz`,
+            icon: "fa-mobile-screen-button"
+        }
+    };
+}
+
 function renderInteractiveSlides(data) {
     if (!data) return;
 
@@ -11327,7 +11370,7 @@ function renderInteractiveSlides(data) {
             <div class="slide-header-block">
                 <div class="slide-header-meta-row">
                     <div class="slide-meta-left">
-                        <span class="slide-page-number-capsule">SLAYT 01 / 06</span>
+                        <span class="slide-page-number-capsule">SLAYT 01 / 07</span>
                         <div class="slide-category-tag cyan"><i class="fa-solid fa-chart-pie"></i> MAKRO PİYASA LİKİDİTE RAPORU</div>
                     </div>
                     <div class="slide-date-pill">
@@ -11445,7 +11488,7 @@ function renderInteractiveSlides(data) {
             <div class="slide-header-block">
                 <div class="slide-header-meta-row">
                     <div class="slide-meta-left">
-                        <span class="slide-page-number-capsule">SLAYT 02 / 06</span>
+                        <span class="slide-page-number-capsule">SLAYT 02 / 07</span>
                         <div class="slide-category-tag emerald"><i class="fa-solid fa-arrow-trend-up"></i> SERMAYE GİRİŞİ LİDERLERİ</div>
                     </div>
                     <div class="slide-date-pill">
@@ -11469,7 +11512,7 @@ function renderInteractiveSlides(data) {
             <div class="slide-header-block">
                 <div class="slide-header-meta-row">
                     <div class="slide-meta-left">
-                        <span class="slide-page-number-capsule">SLAYT 03 / 06</span>
+                        <span class="slide-page-number-capsule">SLAYT 03 / 07</span>
                         <div class="slide-category-tag rose"><i class="fa-solid fa-arrow-trend-down"></i> SERMAYE ÇIKIŞI LİDERLERİ</div>
                     </div>
                     <div class="slide-date-pill">
@@ -11493,7 +11536,7 @@ function renderInteractiveSlides(data) {
             <div class="slide-header-block">
                 <div class="slide-header-meta-row">
                     <div class="slide-meta-left">
-                        <span class="slide-page-number-capsule">SLAYT 04 / 06</span>
+                        <span class="slide-page-number-capsule">SLAYT 04 / 07</span>
                         <div class="slide-category-tag cyan"><i class="fa-solid fa-user-plus"></i> YATIRIMCI TERCİHİ</div>
                     </div>
                     <div class="slide-date-pill">
@@ -11517,7 +11560,7 @@ function renderInteractiveSlides(data) {
             <div class="slide-header-block">
                 <div class="slide-header-meta-row">
                     <div class="slide-meta-left">
-                        <span class="slide-page-number-capsule">SLAYT 05 / 06</span>
+                        <span class="slide-page-number-capsule">SLAYT 05 / 07</span>
                         <div class="slide-category-tag purple"><i class="fa-solid fa-user-minus"></i> YATIRIMCI ÇIKIŞI</div>
                     </div>
                     <div class="slide-date-pill">
@@ -11585,7 +11628,7 @@ function renderInteractiveSlides(data) {
             <div class="slide-header-block">
                 <div class="slide-header-meta-row">
                     <div class="slide-meta-left">
-                        <span class="slide-page-number-capsule">SLAYT 06 / 06</span>
+                        <span class="slide-page-number-capsule">SLAYT 06 / 07</span>
                         <div class="slide-category-tag purple"><i class="fa-solid fa-layer-group"></i> ŞEMSİYE KATEGORİ MATRİSİ</div>
                     </div>
                     <div class="slide-date-pill">
@@ -11614,6 +11657,241 @@ function renderInteractiveSlides(data) {
                         ${catRows}
                     </tbody>
                 </table>
+            </div>
+        `;
+    }
+
+    // Slide 7: Real-World Capital Purchasing Power & Benchmark Equivalence Comparison
+    const p7 = document.getElementById("slidePage-7");
+    if (p7) {
+        const inFund = (data.topCashInflow && data.topCashInflow.length > 0) ? data.topCashInflow[0] : null;
+        const outFund = (data.topCashOutflow && data.topCashOutflow.length > 0) ? data.topCashOutflow[0] : null;
+
+        const inAmount = inFund ? Math.abs(inFund.cashFlow || 0) : 0;
+        const outAmount = outFund ? Math.abs(outFund.cashFlow || 0) : 0;
+
+        const inPower = getPurchasingPowerEquivalents(inAmount);
+        const outPower = getPurchasingPowerEquivalents(outAmount);
+
+        const inCashStr = inFund ? (typeof formatBillionOrMillion === 'function' ? `+${formatBillionOrMillion(inAmount)}` : `+₺${inAmount.toLocaleString('tr-TR')}`) : '₺0';
+        const outCashStr = outFund ? (typeof formatBillionOrMillion === 'function' ? `-${formatBillionOrMillion(outAmount)}` : `-₺${outAmount.toLocaleString('tr-TR')}`) : '₺0';
+
+        const inName = inFund ? (typeof cleanFundTitle === 'function' ? cleanFundTitle(inFund.name) : inFund.name) : 'Giriş Lideri';
+        const outName = outFund ? (typeof cleanFundTitle === 'function' ? cleanFundTitle(outFund.name) : outFund.name) : 'Çıkış Lideri';
+
+        const inCatKey = inFund?.category || (typeof detectFundCategoryKey === 'function' ? detectFundCategoryKey(inName, inFund?.code) : 'DİĞER');
+        const inReg = (typeof TEFAS_CATEGORIES_REGISTRY !== 'undefined' && TEFAS_CATEGORIES_REGISTRY[inCatKey]) || { name: 'Fon', shortName: 'Fon', color: '#34D399' };
+
+        const outCatKey = outFund?.category || (typeof detectFundCategoryKey === 'function' ? detectFundCategoryKey(outName, outFund?.code) : 'DİĞER');
+        const outReg = (typeof TEFAS_CATEGORIES_REGISTRY !== 'undefined' && TEFAS_CATEGORIES_REGISTRY[outCatKey]) || { name: 'Fon', shortName: 'Fon', color: '#FB7185' };
+
+        const deltaDiff = inAmount - outAmount;
+        const isNetDiffPos = deltaDiff >= 0;
+        const diffStr = (typeof formatBillionOrMillion === 'function' ? formatBillionOrMillion(Math.abs(deltaDiff)) : `₺${Math.abs(deltaDiff).toLocaleString('tr-TR')}`);
+        const ratioMultiplier = outAmount > 0 ? (inAmount / outAmount).toFixed(1) : '∞';
+
+        p7.innerHTML = `
+            <div class="slide-header-block">
+                <div class="slide-header-meta-row">
+                    <div class="slide-meta-left">
+                        <span class="slide-page-number-capsule">SLAYT 07 / 07</span>
+                        <div class="slide-category-tag amber"><i class="fa-solid fa-scale-balanced"></i> SERMAYE GÜCÜ & REFERANS VİTRİNİ</div>
+                    </div>
+                    <div class="slide-date-pill">
+                        <span class="slide-live-dot" style="background: #F59E0B; box-shadow: 0 0 8px #F59E0B;"></span>
+                        <span>${data.date} • REEL SATIN ALMA EŞDEĞERLERİ</span>
+                    </div>
+                </div>
+                <h2 class="slide-main-title">Günün Zirve Para Girişi vs Para Çıkışı: Gerçek Dünya Karşılıkları</h2>
+                <p class="slide-subtitle">Bugün piyasaya giren ve çıkan en büyük sermaye dalgalarının somut satın alma güçleri ve reel ekonomi referansları</p>
+            </div>
+
+            <div class="slide-comparison-arena">
+                <!-- INFLOW CHAMPION CARD -->
+                <div class="slide-power-col inflow">
+                    <div class="slide-power-badge-row">
+                        <span class="slide-power-rank-badge emerald"><i class="fa-solid fa-trophy"></i> #1 GÜNÜN PARA GİRİŞİ ŞAMPİYONU</span>
+                        <span class="slide-power-type-pill emerald"><i class="fa-solid fa-arrow-trend-up"></i> Net Giriş</span>
+                    </div>
+
+                    <div class="slide-power-fund-pill" onclick="openSlideFundDetail('${inFund ? inFund.code : ''}', 7)" title="${inFund ? inFund.code : ''} Fon Analizine Git">
+                        <div class="slide-power-fund-left">
+                            <span class="slide-power-fund-code emerald">${inFund ? inFund.code : '—'}</span>
+                            <div class="slide-power-fund-info">
+                                <div class="slide-power-fund-name" title="${inName}">${inName}</div>
+                                <div class="slide-power-fund-cat" style="color: ${inReg.color};">
+                                    <span class="slide-cat-dot" style="background: ${inReg.color};"></span>
+                                    ${inReg.name || inReg.shortName}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="slide-power-fund-arrow"><i class="fa-solid fa-arrow-up-right-from-square"></i></div>
+                    </div>
+
+                    <!-- VISUAL MONEY VAULT (O Paranın Görseli - Giriş) -->
+                    <div class="slide-power-money-box inflow">
+                        <div class="slide-power-vault-graphic inflow">
+                            <div class="vault-halo emerald"></div>
+                            <div class="vault-icon-circle emerald">
+                                <i class="fa-solid fa-vault"></i>
+                            </div>
+                            <div class="vault-floating-badges">
+                                <span class="v-badge v-badge-1"><i class="fa-solid fa-sack-dollar"></i></span>
+                                <span class="v-badge v-badge-2"><i class="fa-solid fa-arrow-trend-up"></i></span>
+                            </div>
+                        </div>
+                        <div class="slide-power-money-details">
+                            <div class="slide-power-money-lbl"><i class="fa-solid fa-money-bill-trend-up"></i> GÜNLÜK NET SERMAYE GİRİŞİ</div>
+                            <div class="slide-power-money-val emerald">${inCashStr}</div>
+                            <div class="slide-power-money-sub">
+                                <span>Getiri: <strong style="color: #34D399;">%${inFund ? Math.abs(inFund.dailyReturn || 0).toFixed(2) : '0'}</strong></span>
+                                <span>•</span>
+                                <span>Yatırımcı: <strong style="color: #34D399;">+${inFund ? (inFund.deltaInvestors || 0).toLocaleString('tr-TR') : 0} Kişi</strong></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- REAL-WORLD PURCHASING POWER ITEMS -->
+                    <div class="slide-power-items-section">
+                        <div class="slide-power-section-title emerald">
+                            <i class="fa-solid fa-cart-shopping"></i> BU GİREN SERMAYE İLE NELER ALINABİLİRDİ?
+                        </div>
+                        <div class="slide-power-items-grid">
+                            <div class="slide-power-item-card inflow">
+                                <div class="slide-power-item-icon togg"><i class="fa-solid fa-car-side"></i></div>
+                                <div class="slide-power-item-content">
+                                    <div class="slide-power-item-count emerald">${inPower.togg.countStr}</div>
+                                    <div class="slide-power-item-title">${inPower.togg.title}</div>
+                                    <div class="slide-power-item-unit">${inPower.togg.desc}</div>
+                                </div>
+                            </div>
+                            <div class="slide-power-item-card inflow">
+                                <div class="slide-power-item-icon house"><i class="fa-solid fa-building"></i></div>
+                                <div class="slide-power-item-content">
+                                    <div class="slide-power-item-count emerald">${inPower.house.countStr}</div>
+                                    <div class="slide-power-item-title">${inPower.house.title}</div>
+                                    <div class="slide-power-item-unit">${inPower.house.desc}</div>
+                                </div>
+                            </div>
+                            <div class="slide-power-item-card inflow">
+                                <div class="slide-power-item-icon gold"><i class="fa-solid fa-cubes-stacked"></i></div>
+                                <div class="slide-power-item-content">
+                                    <div class="slide-power-item-count amber">${inPower.gold.countStr}</div>
+                                    <div class="slide-power-item-title">${inPower.gold.title}</div>
+                                    <div class="slide-power-item-unit">${inPower.gold.desc}</div>
+                                </div>
+                            </div>
+                            <div class="slide-power-item-card inflow">
+                                <div class="slide-power-item-icon phone"><i class="fa-solid fa-mobile-screen-button"></i></div>
+                                <div class="slide-power-item-content">
+                                    <div class="slide-power-item-count cyan">${inPower.phone.countStr}</div>
+                                    <div class="slide-power-item-title">${inPower.phone.title}</div>
+                                    <div class="slide-power-item-unit">${inPower.phone.desc}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CENTER VS BRIDGE -->
+                <div class="slide-power-vs-divider">
+                    <div class="slide-vs-circle">
+                        <span>VS</span>
+                    </div>
+                    <div class="slide-vs-info">
+                        <span class="slide-vs-lbl">Net Fark</span>
+                        <span class="slide-vs-val ${isNetDiffPos ? 'pos' : 'neg'}">
+                            ${isNetDiffPos ? '+' : '-'}${diffStr}
+                        </span>
+                        <span class="slide-vs-ratio">${ratioMultiplier}x Giriş Gücü</span>
+                    </div>
+                </div>
+
+                <!-- OUTFLOW LEADER CARD -->
+                <div class="slide-power-col outflow">
+                    <div class="slide-power-badge-row">
+                        <span class="slide-power-rank-badge rose"><i class="fa-solid fa-arrow-down-wide-short"></i> #1 EN BÜYÜK SERMAYE ÇIKIŞI</span>
+                        <span class="slide-power-type-pill rose"><i class="fa-solid fa-arrow-trend-down"></i> Net Çıkış</span>
+                    </div>
+
+                    <div class="slide-power-fund-pill" onclick="openSlideFundDetail('${outFund ? outFund.code : ''}', 7)" title="${outFund ? outFund.code : ''} Fon Analizine Git">
+                        <div class="slide-power-fund-left">
+                            <span class="slide-power-fund-code rose">${outFund ? outFund.code : '—'}</span>
+                            <div class="slide-power-fund-info">
+                                <div class="slide-power-fund-name" title="${outName}">${outName}</div>
+                                <div class="slide-power-fund-cat" style="color: ${outReg.color};">
+                                    <span class="slide-cat-dot" style="background: ${outReg.color};"></span>
+                                    ${outReg.name || outReg.shortName}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="slide-power-fund-arrow"><i class="fa-solid fa-arrow-up-right-from-square"></i></div>
+                    </div>
+
+                    <!-- VISUAL MONEY VAULT (O Paranın Görseli - Çıkış) -->
+                    <div class="slide-power-money-box outflow">
+                        <div class="slide-power-vault-graphic outflow">
+                            <div class="vault-halo rose"></div>
+                            <div class="vault-icon-circle rose">
+                                <i class="fa-solid fa-hand-holding-dollar"></i>
+                            </div>
+                            <div class="vault-floating-badges">
+                                <span class="v-badge v-badge-1 rose"><i class="fa-solid fa-money-bill-transfer"></i></span>
+                                <span class="v-badge v-badge-2 rose"><i class="fa-solid fa-arrow-trend-down"></i></span>
+                            </div>
+                        </div>
+                        <div class="slide-power-money-details">
+                            <div class="slide-power-money-lbl"><i class="fa-solid fa-arrow-trend-down"></i> GÜNLÜK NET SERMAYE ÇIKIŞI</div>
+                            <div class="slide-power-money-val rose">${outCashStr}</div>
+                            <div class="slide-power-money-sub">
+                                <span>Getiri: <strong style="color: #FB7185;">%${outFund ? Math.abs(outFund.dailyReturn || 0).toFixed(2) : '0'}</strong></span>
+                                <span>•</span>
+                                <span>Yatırımcı: <strong style="color: #FB7185;">${outFund ? (outFund.deltaInvestors || 0).toLocaleString('tr-TR') : 0} Kişi</strong></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- REAL-WORLD PURCHASING POWER ITEMS (Çıkan Para) -->
+                    <div class="slide-power-items-section">
+                        <div class="slide-power-section-title rose">
+                            <i class="fa-solid fa-arrow-right-from-bracket"></i> ÇIKAN BU KAYNAK REELDE NEYE EŞDEĞERDİ?
+                        </div>
+                        <div class="slide-power-items-grid">
+                            <div class="slide-power-item-card outflow">
+                                <div class="slide-power-item-icon togg rose"><i class="fa-solid fa-car-side"></i></div>
+                                <div class="slide-power-item-content">
+                                    <div class="slide-power-item-count rose">${outPower.togg.countStr}</div>
+                                    <div class="slide-power-item-title">${outPower.togg.title}</div>
+                                    <div class="slide-power-item-unit">${outPower.togg.desc}</div>
+                                </div>
+                            </div>
+                            <div class="slide-power-item-card outflow">
+                                <div class="slide-power-item-icon house rose"><i class="fa-solid fa-building"></i></div>
+                                <div class="slide-power-item-content">
+                                    <div class="slide-power-item-count rose">${outPower.house.countStr}</div>
+                                    <div class="slide-power-item-title">${outPower.house.title}</div>
+                                    <div class="slide-power-item-unit">${outPower.house.desc}</div>
+                                </div>
+                            </div>
+                            <div class="slide-power-item-card outflow">
+                                <div class="slide-power-item-icon gold rose"><i class="fa-solid fa-cubes-stacked"></i></div>
+                                <div class="slide-power-item-content">
+                                    <div class="slide-power-item-count rose">${outPower.gold.countStr}</div>
+                                    <div class="slide-power-item-title">${outPower.gold.title}</div>
+                                    <div class="slide-power-item-unit">${outPower.gold.desc}</div>
+                                </div>
+                            </div>
+                            <div class="slide-power-item-card outflow">
+                                <div class="slide-power-item-icon phone rose"><i class="fa-solid fa-mobile-screen-button"></i></div>
+                                <div class="slide-power-item-content">
+                                    <div class="slide-power-item-count rose">${outPower.phone.countStr}</div>
+                                    <div class="slide-power-item-title">${outPower.phone.title}</div>
+                                    <div class="slide-power-item-unit">${outPower.phone.desc}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         `;
     }
@@ -11699,7 +11977,7 @@ function syncSlideFullscreenState() {
 }
 
 function goToSlide(n) {
-    currentSlideIndex = Math.max(1, Math.min(6, n));
+    currentSlideIndex = Math.max(1, Math.min(7, n));
     isSlideDetailActive = false;
 
     const viewport = document.querySelector(".slide-stage-viewport");
@@ -11716,7 +11994,7 @@ function goToSlide(n) {
         slideInvestorChartInstance = null;
     }
 
-    for (let i = 1; i <= 6; i++) {
+    for (let i = 1; i <= 7; i++) {
         const slide = document.getElementById(`slidePage-${i}`);
         if (slide) {
             slide.classList.toggle("active", i === currentSlideIndex);
@@ -11731,7 +12009,7 @@ function goToSlide(n) {
 
     const badge = document.getElementById("slideCurrentNumberBadge");
     if (badge) {
-        badge.innerText = `Slayt ${currentSlideIndex} / 6`;
+        badge.innerText = `Slayt ${currentSlideIndex} / 7`;
     }
 }
 
@@ -11762,6 +12040,7 @@ function getSlideBackLabel(slideNum) {
     let suffix = "'e";
     if (s === 2) suffix = "'ye";
     else if (s === 6) suffix = "'ya";
+    else if (s === 7) suffix = "'ye";
     else if (s === 9) suffix = "'a";
     return `← Slayt ${s}${suffix} Geri Dön`;
 }
@@ -11780,8 +12059,8 @@ async function openSlideFundDetail(fundCode, originSlideIndex = null) {
     const viewport = document.querySelector(".slide-stage-viewport");
     if (viewport) viewport.scrollTop = 0;
 
-    // Hide main slides 1-6
-    for (let i = 1; i <= 6; i++) {
+    // Hide main slides 1-7
+    for (let i = 1; i <= 7; i++) {
         const slide = document.getElementById(`slidePage-${i}`);
         if (slide) {
             slide.classList.remove("active");
@@ -12485,21 +12764,21 @@ async function exportToPDF() {
         const fundSlideMap = new Map();
         featuredFunds.forEach((item, idx) => {
             fundSlideMap.set(item.fund.code, {
-                targetSlide: 6 + idx + 1,
+                targetSlide: 7 + idx + 1,
                 originSlide: item.originSlide,
                 fund: item.fund
             });
         });
 
-        const totalPages = 6 + featuredFunds.length;
+        const totalPages = 7 + featuredFunds.length;
         const aspectBox = document.getElementById("slideAspectBox");
         const themeCfg = (typeof SLIDE_THEMES !== 'undefined' && SLIDE_THEMES[currentSlideTheme]) || {
             bgCanvas: '#070C18',
             pdfRgb: [7, 12, 24]
         };
 
-        // 1. Render Main Overview Slides (1 to 6)
-        for (let pageNum = 1; pageNum <= 6; pageNum++) {
+        // 1. Render Main Overview Slides (1 to 7)
+        for (let pageNum = 1; pageNum <= 7; pageNum++) {
             if (btn) {
                 btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> <span>Sayfa ${pageNum}/${totalPages}...</span>`;
             }
@@ -12752,7 +13031,7 @@ async function exportToPowerPoint() {
         const fundSlideMap = new Map();
         featuredFunds.forEach((item, idx) => {
             fundSlideMap.set(item.fund.code, {
-                targetSlide: 6 + idx + 1,
+                targetSlide: 7 + idx + 1,
                 originSlide: item.originSlide,
                 fund: item.fund
             });
@@ -12764,7 +13043,7 @@ async function exportToPowerPoint() {
         pptx.company = 'Portföyüm - TEFAS Fon Analiz';
         pptx.title = `TEFAS Günlük Fon & Sermaye Akış Slayt Raporu - ${data.date || ''}`;
 
-        const totalPages = 6 + featuredFunds.length;
+        const totalPages = 7 + featuredFunds.length;
         const aspectBox = document.getElementById("slideAspectBox");
         const themeCfg = (typeof SLIDE_THEMES !== 'undefined' && SLIDE_THEMES[currentSlideTheme]) || {
             bgCanvas: '#070C18',
@@ -12774,8 +13053,8 @@ async function exportToPowerPoint() {
         const slideW = 10.0;
         const slideH = 5.625;
 
-        // 1. Render Main Overview Slides (1 to 6)
-        for (let pageNum = 1; pageNum <= 6; pageNum++) {
+        // 1. Render Main Overview Slides (1 to 7)
+        for (let pageNum = 1; pageNum <= 7; pageNum++) {
             if (btn) {
                 btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> <span>Sayfa ${pageNum}/${totalPages}...</span>`;
             }
