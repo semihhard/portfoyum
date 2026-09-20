@@ -10979,6 +10979,9 @@ function setSlideTheme(themeKey) {
         }
         slideInvestorChartInstance.update();
     }
+    if (typeof updateSlideFullscreenScale === 'function') {
+        requestAnimationFrame(() => updateSlideFullscreenScale());
+    }
 }
 window.setSlideTheme = setSlideTheme;
 
@@ -11928,6 +11931,12 @@ function closeFundSlideReportModal() {
         detailSlide.style.display = "none";
     }
 
+    const box = document.getElementById("slideAspectBox");
+    if (box) {
+        box.style.transform = "";
+        box.style.transformOrigin = "";
+    }
+
     if (document.fullscreenElement || document.webkitFullscreenElement) {
         if (document.exitFullscreen) {
             document.exitFullscreen().catch(() => {});
@@ -11964,12 +11973,65 @@ function syncSlideFullscreenState() {
             }
         }
     }
+    updateSlideFullscreenScale();
     if (typeof slideInvestorChartInstance !== 'undefined' && slideInvestorChartInstance) {
         setTimeout(() => {
             try { slideInvestorChartInstance.resize(); } catch(e) {}
         }, 120);
     }
 }
+
+function isSlideModalFullscreen() {
+    const modal = document.getElementById("fundSlideReportModal");
+    return Boolean(
+        document.fullscreenElement ||
+        document.webkitFullscreenElement ||
+        (modal && modal.classList.contains("is-fullscreen"))
+    );
+}
+
+function updateSlideFullscreenScale() {
+    const modal = document.getElementById("fundSlideReportModal");
+    const box = document.getElementById("slideAspectBox");
+    const viewport = document.querySelector(".slide-stage-viewport");
+    if (!box || !viewport) return;
+
+    const isFull = isSlideModalFullscreen();
+    if (!isFull) {
+        box.style.transform = "";
+        box.style.transformOrigin = "";
+        return;
+    }
+
+    const vw = viewport.clientWidth;
+    const vh = viewport.clientHeight;
+    if (vw <= 0 || vh <= 0) return;
+
+    // Reference base width of presentation canvas (exact normal mode proportions)
+    const baseW = 1180;
+    
+    // Natural height of active slide (measured or default 585)
+    let naturalH = 585;
+    const activeSlide = box.querySelector(".slide-page.active");
+    if (activeSlide && activeSlide.offsetHeight > 350) {
+        naturalH = Math.max(570, Math.min(650, activeSlide.offsetHeight));
+    }
+
+    // Comfortable safe margins: 96px width (48px each side for floating stage arrows), 24px height
+    const availW = Math.max(200, vw - 96);
+    const availH = Math.max(200, vh - 24);
+
+    const scale = Math.min(availW / baseW, availH / naturalH);
+
+    if (scale > 0.05) {
+        box.style.transform = `scale(${scale.toFixed(4)})`;
+        box.style.transformOrigin = "center center";
+    } else {
+        box.style.transform = "";
+        box.style.transformOrigin = "";
+    }
+}
+window.updateSlideFullscreenScale = updateSlideFullscreenScale;
 
 function goToSlide(n) {
     currentSlideIndex = Math.max(1, Math.min(7, n));
@@ -12006,6 +12068,9 @@ function goToSlide(n) {
     if (badge) {
         badge.innerText = `Slayt ${currentSlideIndex} / 7`;
     }
+    requestAnimationFrame(() => {
+        updateSlideFullscreenScale();
+    });
 }
 
 function navigateSlide(dir) {
@@ -12028,6 +12093,9 @@ function returnFromSlideDetail() {
         slideInvestorChartInstance = null;
     }
     goToSlide(previousSlideIndex || 1);
+    requestAnimationFrame(() => {
+        updateSlideFullscreenScale();
+    });
 }
 
 function getSlideBackLabel(slideNum) {
@@ -12494,6 +12562,11 @@ async function openSlideFundDetail(fundCode, originSlideIndex = null) {
             }
         });
     }
+    requestAnimationFrame(() => {
+        if (typeof updateSlideFullscreenScale === 'function') {
+            updateSlideFullscreenScale();
+        }
+    });
 }
 
 function showSlideKapHoldingsView(fundCode, activeFilter = 'all') {
@@ -12767,6 +12840,9 @@ async function exportToPDF() {
 
         const totalPages = 7 + featuredFunds.length;
         const aspectBox = document.getElementById("slideAspectBox");
+        const prevTransform = aspectBox ? aspectBox.style.transform : '';
+        if (aspectBox) aspectBox.style.transform = 'none';
+
         const themeCfg = (typeof SLIDE_THEMES !== 'undefined' && SLIDE_THEMES[currentSlideTheme]) || {
             bgCanvas: '#070C18',
             pdfRgb: [7, 12, 24]
@@ -12931,6 +13007,12 @@ async function exportToPDF() {
         goToSlide(currentSlideIndex);
     } finally {
         CanvasRenderingContext2D.prototype.createPattern = origCreatePattern;
+        if (aspectBox) {
+            aspectBox.style.transform = prevTransform;
+        }
+        if (typeof updateSlideFullscreenScale === 'function') {
+            updateSlideFullscreenScale();
+        }
     }
 }
 
@@ -12968,6 +13050,11 @@ window.addEventListener("keydown", (e) => {
 // Sync Fullscreen icon & responsive classes on change
 document.addEventListener("fullscreenchange", syncSlideFullscreenState);
 document.addEventListener("webkitfullscreenchange", syncSlideFullscreenState);
+window.addEventListener("resize", () => {
+    if (typeof isSlideReportModalOpen !== 'undefined' && isSlideReportModalOpen) {
+        syncSlideFullscreenState();
+    }
+});
 
 // PowerPoint (.pptx) Generator - 100% High-Fidelity Direct Slide Presentation Deck
 async function exportToPowerPoint() {
