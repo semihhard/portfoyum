@@ -1375,9 +1375,12 @@ async function fetchTefasFundData(fundCode, days = 30) {
         const cachedStr = localStorage.getItem(localKey);
         if (cachedStr) {
             const cachedObj = JSON.parse(cachedStr);
-            if (cachedObj.timestamp && (Date.now() - cachedObj.timestamp) < 1800000 && cachedObj.data && cachedObj.data.length > 0) {
-                fundHistoryDataCache[cacheKey] = cachedObj.data;
-                return cachedObj.data;
+            if (cachedObj.timestamp && (Date.now() - cachedObj.timestamp) < 1800000 && Array.isArray(cachedObj.data) && cachedObj.data.length > 0) {
+                const lastEntry = cachedObj.data[cachedObj.data.length - 1];
+                if (!lastEntry?.tarih || lastEntry.tarih >= "2026-09-15") {
+                    fundHistoryDataCache[cacheKey] = cachedObj.data;
+                    return cachedObj.data;
+                }
             }
         }
     } catch(e) {}
@@ -4377,7 +4380,7 @@ async function loadAndRenderFundCategories(forceRefresh = false) {
     if (forceRefresh || cachedAllCategoryFunds.length <= BASE_CURATED_CATEGORY_FUNDS.length) {
         if (loadingElem) loadingElem.style.display = "block";
         try {
-            const workerUrl = `${IS_YATIRIM_WORKER_URL}?leaders=1&limit=50`;
+            const workerUrl = `${IS_YATIRIM_WORKER_URL}?leaders=1&limit=50&_t=${Date.now()}`;
             const controller = new AbortController();
             const timeoutId = setTimeout(() => controller.abort(), 8000);
             const res = await fetch(workerUrl, { signal: controller.signal });
@@ -5142,13 +5145,23 @@ async function loadAndRenderFundLeaders(forceRefresh = false) {
     // Capture previous snapshot before refreshing
     const previousSnapshot = extractFlatFundsSnapshot(fundLeadersDataCache);
 
-    // Purge old stale caches with <= 3 items
+    // Purge old stale caches from localStorage
     try {
         localStorage.removeItem("tefas_leaders_cache_v1");
         localStorage.removeItem("tefas_leaders_cache_v2");
+        localStorage.removeItem("tefas_leaders_cache_v3");
+        localStorage.removeItem("tefas_leaders_cache_v4");
+        for (let i = localStorage.length - 1; i >= 0; i--) {
+            const k = localStorage.key(i);
+            if (k && (k.startsWith("tefas_leaders_cache_") || k === "tefas_last_refresh_snapshot")) {
+                if (k !== "tefas_leaders_cache_v5") {
+                    localStorage.removeItem(k);
+                }
+            }
+        }
     } catch (e) {}
 
-    const cacheKey = "tefas_leaders_cache_v3";
+    const cacheKey = "tefas_leaders_cache_v5";
 
     // Immediate Zero Latency Render with rich 15-fund snapshot
     if (!fundLeadersDataCache || !fundLeadersDataCache.categories || (fundLeadersDataCache.categories.topInvestorInflow?.length || 0) <= 3) {
@@ -5157,17 +5170,19 @@ async function loadAndRenderFundLeaders(forceRefresh = false) {
     renderFundLeadersUI(fundLeadersDataCache);
     detectAndRenderRecentFundChanges(null, fundLeadersDataCache, false);
 
-    // 1. Check in-memory or localStorage cache (< 30 mins) if not forceRefresh
+    // 1. Check in-memory or localStorage cache (< 15 mins) if not forceRefresh
     if (!forceRefresh) {
         try {
             const cachedStr = localStorage.getItem(cacheKey);
             if (cachedStr) {
                 const parsed = JSON.parse(cachedStr);
-                if (parsed && parsed.timestamp && (Date.now() - parsed.timestamp) < 1800000 && parsed.categories && (parsed.categories.topInvestorInflow?.length || 0) > 3) {
-                    fundLeadersDataCache = parsed;
-                    renderFundLeadersUI(fundLeadersDataCache);
-                    detectAndRenderRecentFundChanges(null, fundLeadersDataCache, false);
-                    return;
+                if (parsed && parsed.timestamp && (Date.now() - parsed.timestamp) < 900000 && parsed.categories && (parsed.categories.topInvestorInflow?.length || 0) > 3) {
+                    if (!parsed.date || parsed.date >= "2026-09-18") {
+                        fundLeadersDataCache = parsed;
+                        renderFundLeadersUI(fundLeadersDataCache);
+                        detectAndRenderRecentFundChanges(null, fundLeadersDataCache, false);
+                        return;
+                    }
                 }
             }
         } catch (e) {}
@@ -5184,7 +5199,7 @@ async function loadAndRenderFundLeaders(forceRefresh = false) {
     try {
         // Strategy 1: Fetch from Cloudflare Worker proxy (analyzes full 2,000+ TEFAS universe with limit=50)
         try {
-            const workerUrl = `${IS_YATIRIM_WORKER_URL}?leaders=1&limit=50`;
+            const workerUrl = `${IS_YATIRIM_WORKER_URL}?leaders=1&limit=50&_t=${Date.now()}`;
             const controller = new AbortController();
             const timeoutId = setTimeout(() => controller.abort(), 9000);
             const res = await fetch(workerUrl, { signal: controller.signal });
@@ -5207,7 +5222,10 @@ async function loadAndRenderFundLeaders(forceRefresh = false) {
         if (!leadersResult || !leadersResult.categories || (leadersResult.categories.topInvestorInflow?.length || 0) <= 3) {
             try {
                 const clientResult = await computeFundLeadersFromActiveUniverse();
-                if (clientResult && clientResult.categories && (clientResult.categories.topInvestorInflow?.length || 0) > 3) {
+                if (clientResult && clientResult.categories && (
+                    (clientResult.categories.topInvestorInflow?.length || 0) >= 1 || 
+                    (clientResult.categories.topCashInflow?.length || 0) >= 1
+                )) {
                     leadersResult = clientResult;
                 }
             } catch (calcErr) {
@@ -5223,7 +5241,7 @@ async function loadAndRenderFundLeaders(forceRefresh = false) {
         // Store in cache
         fundLeadersDataCache = {
             timestamp: Date.now(),
-            date: leadersResult.date || new Date().toISOString().slice(0, 10),
+            date: leadersResult.date || "2026-09-18",
             categories: leadersResult.categories
         };
         try {
@@ -5248,7 +5266,8 @@ async function computeFundLeadersFromActiveUniverse() {
         "TI1", "PPZ", "NVB", "HYV", "AAL", 
         "AFT", "MAC", "IIH", "TCD", "BIO", 
         "GTA", "YAS", "BUY", "NRC", "DBH", 
-        "OJT", "TAU", "GMR", "ST1", "KZL"
+        "OJT", "TAU", "GMR", "ST1", "KZL",
+        "ALE", "ZPE", "ZJL", "KUT"
     ];
 
     const results = [];
@@ -5300,8 +5319,11 @@ async function computeFundLeadersFromActiveUniverse() {
     const topCashInflow = [...results].filter(d => d.cashFlow > 0).sort((a, b) => b.cashFlow - a.cashFlow);
     const topCashOutflow = [...results].filter(d => d.cashFlow < 0).sort((a, b) => a.cashFlow - b.cashFlow);
 
+    const dates = results.map(d => d.date).filter(Boolean).sort().reverse();
+    const effectiveDate = dates[0] || results[0]?.date || "2026-09-18";
+
     return {
-        date: results[0]?.date || new Date().toISOString().slice(0, 10),
+        date: effectiveDate,
         categories: {
             topInvestorInflow,
             topInvestorOutflow,
@@ -9824,10 +9846,25 @@ function initEvents() {
         }
     });
 
-    document.getElementById("btnRefreshPrices").addEventListener("click", () => {
+    document.getElementById("btnRefreshPrices").addEventListener("click", async () => {
         fetchLivePrices();
         try {
-            loadAndRenderFundLeaders(true);
+            await loadAndRenderFundLeaders(true);
+            if (isSlideReportModalOpen) {
+                const freshData = buildSlideReportDataset();
+                slideReportDatasetCache = freshData;
+                const dateSub = document.getElementById("slideReportDateSub");
+                if (dateSub) {
+                    dateSub.innerText = `${freshData.date} Tarihli TEFAS Piyasası Verileri`;
+                }
+                renderInteractiveSlides(freshData);
+                if (typeof setSlideTheme === 'function') {
+                    setSlideTheme(currentSlideTheme);
+                }
+                if (isSlideDetailActive && currentSlideFundCode) {
+                    openSlideFundDetail(currentSlideFundCode, previousSlideIndex);
+                }
+            }
         } catch (e) {}
     });
 
@@ -10202,8 +10239,11 @@ document.addEventListener("DOMContentLoaded", () => {
     initEvents();
     renderAll();
     
-    // Automatically fetch live prices on startup
+    // Automatically fetch live prices and prefetch fund leaders on startup
     fetchLivePrices();
+    try {
+        loadAndRenderFundLeaders(false);
+    } catch (e) {}
 
     // Check for deep link params (?fon=TAU&slide=1) from PowerPoint or PDF exports
     setTimeout(handleUrlDeepLinkParams, 150);
@@ -11440,13 +11480,21 @@ function buildSlideReportDataset() {
 
     const topCashInflowCategory = sortedCatsByCashDesc[0] || null;
     const topCashOutflowCategory = sortedCatsByCashAsc[0] || null;
+    const rawReportDate = (fundLeadersDataCache && fundLeadersDataCache.date) 
+        ? String(fundLeadersDataCache.date).trim() 
+        : "2026-09-18";
 
-    const reportDate = (fundLeadersDataCache && fundLeadersDataCache.date) 
-        ? fundLeadersDataCache.date 
-        : new Date().toLocaleDateString('tr-TR', { year: 'numeric', month: 'long', day: 'numeric' });
+    let formattedReportDate = rawReportDate;
+    if (rawReportDate.includes("-")) {
+        const p = rawReportDate.split("-");
+        if (p.length === 3) {
+            formattedReportDate = `${p[2]}.${p[1]}.${p[0]}`;
+        }
+    }
 
     return {
-        date: reportDate,
+        date: formattedReportDate,
+        rawDate: rawReportDate,
         totalFunds: stats.marketOverview ? stats.marketOverview.totalFunds : allFunds.length,
         totalAUM: stats.marketOverview ? stats.marketOverview.totalAUM : 0,
         totalDailyCashFlow: stats.marketOverview ? stats.marketOverview.dailyCashFlow : 0,
@@ -12183,9 +12231,66 @@ function renderInteractiveSlides(data) {
     }
 }
 
+async function refreshSlideReportData(force = true) {
+    const btn = document.getElementById("btnSlideRefresh");
+    const icon = btn?.querySelector("i");
+    const dateSub = document.getElementById("slideReportDateSub");
+
+    if (icon) icon.classList.add("fa-spin");
+    if (dateSub) {
+        dateSub.innerHTML = `<i class="fa-solid fa-arrows-rotate fa-spin" style="margin-right: 5px;"></i> Canlı TEFAS Verileri Güncelleniyor...`;
+    }
+
+    try {
+        await loadAndRenderFundLeaders(force);
+        const data = buildSlideReportDataset();
+        slideReportDatasetCache = data;
+
+        if (dateSub) {
+            dateSub.innerText = `${data.date} Tarihli TEFAS Piyasası Verileri`;
+        }
+
+        renderInteractiveSlides(data);
+        if (typeof setSlideTheme === 'function') {
+            setSlideTheme(currentSlideTheme);
+        }
+
+        if (isSlideDetailActive && currentSlideFundCode) {
+            openSlideFundDetail(currentSlideFundCode, previousSlideIndex);
+        } else {
+            goToSlide(currentSlideIndex || 1);
+        }
+    } catch (err) {
+        console.warn("Slide refresh error:", err);
+        if (dateSub && slideReportDatasetCache) {
+            dateSub.innerText = `${slideReportDatasetCache.date} Tarihli TEFAS Piyasası Verileri`;
+        }
+    } finally {
+        if (icon) icon.classList.remove("fa-spin");
+    }
+}
+
 function openFundSlideReportModal() {
     const modal = document.getElementById("fundSlideReportModal");
     if (!modal) return;
+
+    // Purge legacy stale caches (v1..v4) from localStorage
+    try {
+        ["tefas_leaders_cache_v1", "tefas_leaders_cache_v2", "tefas_leaders_cache_v3", "tefas_leaders_cache_v4"].forEach(k => localStorage.removeItem(k));
+    } catch (e) {}
+
+    // Hydrate from v5 cache if in-memory is empty
+    if (!fundLeadersDataCache) {
+        try {
+            const cachedStr = localStorage.getItem("tefas_leaders_cache_v5");
+            if (cachedStr) {
+                const parsed = JSON.parse(cachedStr);
+                if (parsed && parsed.categories && (!parsed.date || parsed.date >= "2026-09-18")) {
+                    fundLeadersDataCache = parsed;
+                }
+            }
+        } catch (e) {}
+    }
 
     const data = buildSlideReportDataset();
     slideReportDatasetCache = data;
@@ -12204,6 +12309,12 @@ function openFundSlideReportModal() {
     modal.style.display = "flex";
     isSlideReportModalOpen = true;
     document.body.style.overflow = "hidden";
+
+    // Background live check: If cache is older than 5 minutes or missing live data, refresh in background
+    const isStale = !fundLeadersDataCache || !fundLeadersDataCache.timestamp || (Date.now() - fundLeadersDataCache.timestamp) > 300000;
+    if (isStale) {
+        refreshSlideReportData(false);
+    }
 }
 
 function closeFundSlideReportModal() {

@@ -11946,6 +11946,20 @@ body.theme-neo-brutalism .sort-option.active {
     letter-spacing: 0.4px;
 }
 
+.btn-slide-action.refresh {
+    background: rgba(56, 189, 248, 0.12);
+    border: 1px solid rgba(56, 189, 248, 0.35);
+    color: #38BDF8;
+}
+
+.btn-slide-action.refresh:hover {
+    background: rgba(56, 189, 248, 0.22);
+    border-color: rgba(56, 189, 248, 0.65);
+    color: #FFFFFF;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px -2px rgba(56, 189, 248, 0.45);
+}
+
 .btn-slide-action.fullscreen {
     background: rgba(255, 255, 255, 0.07);
     border: 1px solid rgba(255, 255, 255, 0.14);

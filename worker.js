@@ -72,6 +72,7 @@ export default {
               const cur = rows[rows.length - 1];
               const prev = rows[rows.length - 2];
               const curPrice = parseFloat(cur.fiyat) || 0;
+              const prevPrice = parseFloat(prev.fiyat) || 0;
               const curShares = parseFloat(cur.tedPaySayisi) || 0;
               const prevShares = parseFloat(prev.tedPaySayisi) || 0;
               const curInv = parseInt(cur.kisiSayisi) || 0;
@@ -106,9 +107,13 @@ export default {
             const topCashInflow = [...valid].filter(d => d.cashFlow > 0).sort((a,b) => b.cashFlow - a.cashFlow).slice(0, limit);
             const topCashOutflow = [...valid].filter(d => d.cashFlow < 0).sort((a,b) => a.cashFlow - b.cashFlow).slice(0, limit);
 
+            const dates = diffs.map(d => d.date).filter(Boolean).sort().reverse();
+            const latestDate = dates[0] || `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}`;
+            const hasNoCache = url.searchParams.has("_t") || url.searchParams.has("nocache");
+
             return new Response(JSON.stringify({
               ok: true,
-              date: diffs[0]?.date || dStr(now),
+              date: latestDate,
               totalAnalyzed: diffs.length,
               categories: {
                 topInvestorInflow,
@@ -120,8 +125,13 @@ export default {
               headers: {
                 "Content-Type": "application/json; charset=utf-8",
                 "Access-Control-Allow-Origin": "*",
-                "Cache-Control": "public, max-age=600",
+                "Cache-Control": hasNoCache ? "no-cache, no-store, must-revalidate" : "public, max-age=180",
               },
+            });
+          } else {
+            return new Response(JSON.stringify({ ok: false, error: `TEFAS API HTTP ${res.status}` }), {
+              status: 502,
+              headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" }
             });
           }
         } catch(e) {
