@@ -13951,10 +13951,10 @@ body.theme-neo-brutalism .sort-option.active {
 }
 
 .slide-theme-pill-btn[data-theme="sunset"].active {
-    background: rgba(244, 63, 94, 0.2);
-    border-color: #F43F5E;
-    color: #FB7185;
-    box-shadow: 0 0 14px rgba(244, 63, 94, 0.4);
+    background: linear-gradient(135deg, rgba(244, 63, 94, 0.3) 0%, rgba(251, 146, 60, 0.25) 100%);
+    border-color: #FB923C;
+    color: #FDE047;
+    box-shadow: 0 0 16px rgba(251, 146, 60, 0.45);
 }
 
 /* ==========================================================================
@@ -15095,170 +15095,618 @@ body.theme-neo-brutalism .sort-option.active {
 }
 
 /* ==========================================================================
-   THEME 3: SUNSET AURA (MOR & GÜN BATIMI DEGRADE)
+   THEME 3: SUNSET AURA (GOLDEN HOUR HORIZON & LUMINOUS GLASSMORPHISM)
    ========================================================================== */
 .slide-aspect-box.theme-sunset {
     background: 
-        radial-gradient(circle at 15% 15%, rgba(244, 63, 94, 0.25) 0%, transparent 48%),
-        radial-gradient(circle at 85% 15%, rgba(251, 146, 60, 0.22) 0%, transparent 48%),
-        linear-gradient(155deg, #190933 0%, #0A0216 100%) !important;
-    border: 1.5px solid rgba(244, 63, 94, 0.35) !important;
-    box-shadow: 0 30px 80px -15px rgba(21, 10, 42, 0.95), 0 0 45px rgba(244, 63, 94, 0.2) !important;
+        radial-gradient(ellipse 90% 50% at 50% -10%, rgba(244, 63, 94, 0.32) 0%, transparent 60%),
+        radial-gradient(ellipse 70% 45% at 90% 90%, rgba(251, 146, 60, 0.24) 0%, transparent 55%),
+        radial-gradient(ellipse 60% 40% at 10% 85%, rgba(168, 85, 247, 0.22) 0%, transparent 55%),
+        linear-gradient(160deg, #160728 0%, #0B0214 100%) !important;
+    border: 1.5px solid rgba(244, 63, 94, 0.4) !important;
+    box-shadow: 0 30px 80px -15px rgba(13, 4, 26, 0.95), 0 0 50px rgba(244, 63, 94, 0.18) !important;
     color: #FFFFFF !important;
 }
 
+/* Header & Meta Elements */
 .slide-aspect-box.theme-sunset .slide-page-number-capsule {
     background: linear-gradient(135deg, #F43F5E 0%, #FB923C 100%) !important;
     border: none !important;
     color: #FFFFFF !important;
-    box-shadow: 0 0 14px rgba(244, 63, 94, 0.4) !important;
+    font-weight: 900 !important;
+    letter-spacing: 0.8px !important;
+    box-shadow: 0 0 16px rgba(244, 63, 94, 0.5) !important;
 }
 
 .slide-aspect-box.theme-sunset .slide-main-title {
-    background: linear-gradient(135deg, #FFFFFF 40%, #FECDD3 70%, #FDE047 100%) !important;
+    background: linear-gradient(135deg, #FFFFFF 20%, #FECDD3 55%, #FDE047 95%) !important;
     -webkit-background-clip: text !important;
     -webkit-text-fill-color: transparent !important;
+    filter: drop-shadow(0 2px 12px rgba(251, 146, 60, 0.28));
 }
 
 .slide-aspect-box.theme-sunset .slide-subtitle {
     color: #E9D5FF !important;
+    opacity: 0.92;
 }
 
 .slide-aspect-box.theme-sunset .slide-date-pill {
-    background: rgba(244, 63, 94, 0.12) !important;
-    border-color: rgba(244, 63, 94, 0.35) !important;
+    background: rgba(244, 63, 94, 0.15) !important;
+    border: 1px solid rgba(244, 63, 94, 0.45) !important;
     color: #FECDD3 !important;
+    box-shadow: 0 0 12px rgba(244, 63, 94, 0.15) !important;
 }
 
-.slide-aspect-box.theme-sunset .slide-category-tag.cyan {
-    background: rgba(168, 85, 247, 0.2) !important;
-    border-color: rgba(168, 85, 247, 0.4) !important;
-    color: #E9D5FF !important;
+.slide-aspect-box.theme-sunset .slide-date-pill .slide-live-dot {
+    background: #FB923C !important;
+    box-shadow: 0 0 8px #FB923C !important;
 }
 
-/* Macro Cards in Sunset */
+.slide-aspect-box.theme-sunset .slide-category-tag,
+.slide-aspect-box.theme-sunset .slide-category-tag.cyan,
+.slide-aspect-box.theme-sunset .slide-category-tag.purple {
+    background: rgba(168, 85, 247, 0.22) !important;
+    border: 1px solid rgba(168, 85, 247, 0.5) !important;
+    color: #F3E8FF !important;
+    box-shadow: 0 0 12px rgba(168, 85, 247, 0.2) !important;
+}
+
+/* ==========================================================================
+   SLIDE 1: MACRO CARDS & CATEGORY LEADERS
+   ========================================================================== */
+.slide-aspect-box.theme-sunset .slide-macro-hero-card {
+    border-radius: 14px !important;
+    backdrop-filter: blur(12px) !important;
+}
+
 .slide-aspect-box.theme-sunset .slide-macro-hero-card.pos {
-    background: linear-gradient(145deg, rgba(136, 19, 55, 0.45) 0%, rgba(26, 14, 48, 0.95) 100%) !important;
-    border: 1.5px solid #F43F5E !important;
+    background: linear-gradient(150deg, rgba(244, 63, 94, 0.22) 0%, rgba(26, 9, 44, 0.92) 100%) !important;
+    border: 1.5px solid rgba(244, 63, 94, 0.5) !important;
     border-top: 3.5px solid #FB7185 !important;
-    box-shadow: 0 0 25px rgba(244, 63, 94, 0.25) !important;
+    box-shadow: 0 10px 30px -5px rgba(244, 63, 94, 0.28) !important;
 }
 
 .slide-aspect-box.theme-sunset .slide-macro-hero-card.neg {
-    background: linear-gradient(145deg, rgba(88, 28, 135, 0.45) 0%, rgba(26, 14, 48, 0.95) 100%) !important;
-    border: 1.5px solid #FB7185 !important;
-    border-top: 3.5px solid #F43F5E !important;
+    background: linear-gradient(150deg, rgba(168, 85, 247, 0.2) 0%, rgba(26, 9, 44, 0.92) 100%) !important;
+    border: 1.5px solid rgba(168, 85, 247, 0.5) !important;
+    border-top: 3.5px solid #C084FC !important;
+    box-shadow: 0 10px 30px -5px rgba(168, 85, 247, 0.25) !important;
 }
 
 .slide-aspect-box.theme-sunset .slide-macro-hero-card.inv-card {
-    background: linear-gradient(145deg, rgba(124, 45, 18, 0.45) 0%, rgba(26, 14, 48, 0.95) 100%) !important;
-    border: 1.5px solid #FB923C !important;
-    border-top: 3.5px solid #F97316 !important;
-    box-shadow: 0 0 25px rgba(249, 115, 22, 0.25) !important;
+    background: linear-gradient(150deg, rgba(251, 146, 60, 0.22) 0%, rgba(26, 9, 44, 0.92) 100%) !important;
+    border: 1.5px solid rgba(251, 146, 60, 0.55) !important;
+    border-top: 3.5px solid #FDE047 !important;
+    box-shadow: 0 10px 30px -5px rgba(251, 146, 60, 0.3) !important;
 }
 
-.slide-aspect-box.theme-sunset .slide-macro-big-num.pos {
-    background: linear-gradient(to right, #F43F5E, #FB923C) !important;
-    -webkit-background-clip: text !important;
-    -webkit-text-fill-color: transparent !important;
-    text-shadow: none !important;
+.slide-aspect-box.theme-sunset .slide-macro-title {
+    color: #FFFFFF !important;
+    font-weight: 700 !important;
 }
 
-.slide-aspect-box.theme-sunset .slide-macro-hero-card.inv-card .slide-macro-big-num {
-    color: #FBBF24 !important;
-    text-shadow: 0 0 25px rgba(245, 158, 11, 0.4) !important;
-}
-
-.slide-aspect-box.theme-sunset .slide-cat-leader-card.inflow {
-    background: rgba(88, 28, 135, 0.45) !important;
-    border: 1.5px solid #F43F5E !important;
-    border-top: 3px solid #FB7185 !important;
-}
-
-.slide-aspect-box.theme-sunset .slide-cat-leader-stats {
-    border-top-color: rgba(244, 63, 94, 0.2) !important;
+.slide-aspect-box.theme-sunset .slide-macro-desc {
     color: #E9D5FF !important;
 }
 
-/* Fund Cards in Sunset */
+.slide-aspect-box.theme-sunset .slide-macro-big-num.pos {
+    background: linear-gradient(135deg, #FDE047 0%, #FB923C 50%, #F43F5E 100%) !important;
+    -webkit-background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+    filter: drop-shadow(0 2px 14px rgba(251, 146, 60, 0.35));
+}
+
+.slide-aspect-box.theme-sunset .slide-macro-big-num.neg {
+    background: linear-gradient(135deg, #F5D0FE 0%, #C084FC 60%, #A855F7 100%) !important;
+    -webkit-background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+    filter: drop-shadow(0 2px 14px rgba(168, 85, 247, 0.35));
+}
+
+.slide-aspect-box.theme-sunset .slide-macro-hero-card.inv-card .slide-macro-big-num {
+    color: #FDE047 !important;
+    -webkit-text-fill-color: #FDE047 !important;
+    text-shadow: 0 0 20px rgba(253, 224, 71, 0.55) !important;
+}
+
+.slide-aspect-box.theme-sunset .slide-cat-leader-card.inflow {
+    background: linear-gradient(145deg, rgba(244, 63, 94, 0.16) 0%, rgba(24, 8, 40, 0.92) 100%) !important;
+    border: 1.5px solid rgba(244, 63, 94, 0.45) !important;
+    border-top: 3.5px solid #FB7185 !important;
+    border-radius: 12px !important;
+}
+
+.slide-aspect-box.theme-sunset .slide-cat-leader-card.outflow {
+    background: linear-gradient(145deg, rgba(168, 85, 247, 0.16) 0%, rgba(24, 8, 40, 0.92) 100%) !important;
+    border: 1.5px solid rgba(168, 85, 247, 0.45) !important;
+    border-top: 3.5px solid #C084FC !important;
+    border-radius: 12px !important;
+}
+
+.slide-aspect-box.theme-sunset .slide-cat-leader-name {
+    color: #FFFFFF !important;
+    font-weight: 800 !important;
+}
+
+.slide-aspect-box.theme-sunset .slide-cat-leader-stats {
+    border-top: 1px solid rgba(244, 63, 94, 0.25) !important;
+    color: #E9D5FF !important;
+}
+
+.slide-aspect-box.theme-sunset .slide-cat-leader-val.pos {
+    color: #FB923C !important;
+    font-weight: 800 !important;
+}
+
+.slide-aspect-box.theme-sunset .slide-cat-leader-val.neg {
+    color: #C084FC !important;
+    font-weight: 800 !important;
+}
+
+/* ==========================================================================
+   SLIDE 2 - 5: PODIUM FUND CARDS & HERO METRICS
+   ========================================================================== */
 .slide-aspect-box.theme-sunset .slide-fund-card {
-    background: linear-gradient(165deg, rgba(38, 16, 68, 0.95) 0%, rgba(18, 7, 34, 0.98) 100%) !important;
-    border: 1.5px solid rgba(244, 63, 94, 0.28) !important;
+    background: linear-gradient(165deg, rgba(34, 12, 56, 0.88) 0%, rgba(18, 6, 30, 0.96) 100%) !important;
+    border: 1.5px solid rgba(244, 63, 94, 0.3) !important;
+    border-radius: 14px !important;
+    backdrop-filter: blur(12px) !important;
+    transition: transform 0.2s ease, box-shadow 0.2s ease !important;
 }
 
+.slide-aspect-box.theme-sunset .slide-fund-card:hover {
+    transform: translateY(-3px) !important;
+    box-shadow: 0 16px 36px -8px rgba(244, 63, 94, 0.35) !important;
+}
+
+/* Rank 1: Golden Sun Champion Crown */
 .slide-aspect-box.theme-sunset .slide-fund-card.rank-card-1 {
-    border-color: #FB923C !important;
-    border-top: 3px solid #FDE047 !important;
-    box-shadow: 0 0 25px rgba(251, 146, 60, 0.3) !important;
+    background: linear-gradient(165deg, rgba(251, 146, 60, 0.2) 0%, rgba(38, 14, 62, 0.92) 50%, rgba(18, 5, 30, 0.98) 100%) !important;
+    border: 1.5px solid rgba(251, 191, 36, 0.65) !important;
+    border-top: 4px solid #FDE047 !important;
+    box-shadow: 0 12px 35px -5px rgba(251, 146, 60, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.15) !important;
 }
 
+/* Rank 2: Coral Aurora Crown */
 .slide-aspect-box.theme-sunset .slide-fund-card.rank-card-2 {
-    border-color: #F43F5E !important;
-    border-top: 3px solid #FB7185 !important;
-    box-shadow: 0 0 25px rgba(244, 63, 94, 0.3) !important;
+    background: linear-gradient(165deg, rgba(244, 63, 94, 0.18) 0%, rgba(34, 12, 56, 0.92) 50%, rgba(18, 5, 30, 0.98) 100%) !important;
+    border: 1.5px solid rgba(244, 63, 94, 0.6) !important;
+    border-top: 4px solid #FB7185 !important;
+    box-shadow: 0 12px 35px -5px rgba(244, 63, 94, 0.3) !important;
 }
 
+/* Rank 3: Twilight Amethyst Crown */
 .slide-aspect-box.theme-sunset .slide-fund-card.rank-card-3 {
-    border-color: #C084FC !important;
-    border-top: 3px solid #E879F9 !important;
+    background: linear-gradient(165deg, rgba(168, 85, 247, 0.16) 0%, rgba(32, 10, 54, 0.92) 50%, rgba(18, 5, 30, 0.98) 100%) !important;
+    border: 1.5px solid rgba(168, 85, 247, 0.55) !important;
+    border-top: 4px solid #C084FC !important;
+    box-shadow: 0 12px 35px -5px rgba(168, 85, 247, 0.28) !important;
+}
+
+/* Rank Badges */
+.slide-aspect-box.theme-sunset .slide-rank-badge.rank-1 {
+    background: linear-gradient(135deg, #F59E0B 0%, #FDE047 100%) !important;
+    color: #3B1400 !important;
+    box-shadow: 0 0 16px rgba(251, 191, 36, 0.6) !important;
+    font-weight: 900 !important;
+}
+
+.slide-aspect-box.theme-sunset .slide-rank-badge.rank-2 {
+    background: linear-gradient(135deg, #E11D48 0%, #FB7185 100%) !important;
+    color: #FFFFFF !important;
+    box-shadow: 0 0 16px rgba(244, 63, 94, 0.55) !important;
+    font-weight: 900 !important;
+}
+
+.slide-aspect-box.theme-sunset .slide-rank-badge.rank-3 {
+    background: linear-gradient(135deg, #9333EA 0%, #C084FC 100%) !important;
+    color: #FFFFFF !important;
+    box-shadow: 0 0 16px rgba(168, 85, 247, 0.55) !important;
+    font-weight: 900 !important;
+}
+
+.slide-aspect-box.theme-sunset .slide-fund-fullname {
+    color: #F3E8FF !important;
+    font-weight: 600 !important;
+}
+
+/* Sunset Hero Capsule (Yield / Money Flow) */
+.slide-aspect-box.theme-sunset .slide-fund-hero-capsule {
+    background: linear-gradient(135deg, rgba(244, 63, 94, 0.22) 0%, rgba(251, 146, 60, 0.16) 100%) !important;
+    border: 1px solid rgba(251, 146, 60, 0.45) !important;
+    box-shadow: 0 0 16px rgba(251, 146, 60, 0.18) !important;
+    border-radius: 12px !important;
 }
 
 .slide-aspect-box.theme-sunset .slide-fund-hero-capsule.pos {
-    background: rgba(88, 28, 135, 0.5) !important;
-    border-color: rgba(244, 63, 94, 0.4) !important;
+    background: linear-gradient(135deg, rgba(244, 63, 94, 0.24) 0%, rgba(251, 146, 60, 0.18) 100%) !important;
+    border-color: rgba(251, 146, 60, 0.5) !important;
+}
+
+.slide-aspect-box.theme-sunset .slide-fund-hero-capsule.neg {
+    background: linear-gradient(135deg, rgba(168, 85, 247, 0.22) 0%, rgba(244, 63, 94, 0.15) 100%) !important;
+    border-color: rgba(168, 85, 247, 0.5) !important;
 }
 
 .slide-aspect-box.theme-sunset .slide-fund-hero-num.pos {
-    color: #FB7185 !important;
-    text-shadow: 0 0 16px rgba(251, 113, 133, 0.4) !important;
+    color: #FDE047 !important;
+    text-shadow: 0 0 16px rgba(251, 146, 60, 0.65) !important;
+    font-weight: 900 !important;
 }
 
+.slide-aspect-box.theme-sunset .slide-fund-hero-num.neg {
+    color: #C084FC !important;
+    text-shadow: 0 0 16px rgba(168, 85, 247, 0.65) !important;
+    font-weight: 900 !important;
+}
+
+.slide-aspect-box.theme-sunset .slide-fund-hero-lbl,
+.slide-aspect-box.theme-sunset .slide-fund-hero-sub {
+    color: #FECDD3 !important;
+}
+
+/* Frosted Translucent Metric Tiles */
 .slide-aspect-box.theme-sunset .slide-metric-tile {
-    background: rgba(18, 7, 34, 0.85) !important;
-    border-color: rgba(244, 63, 94, 0.2) !important;
+    background: rgba(26, 9, 44, 0.75) !important;
+    border: 1px solid rgba(244, 63, 94, 0.24) !important;
+    border-radius: 8px !important;
 }
 
 .slide-aspect-box.theme-sunset .slide-tile-lbl {
+    color: #FDA4AF !important;
+    font-weight: 600 !important;
+    font-size: 0.68rem !important;
+}
+
+.slide-aspect-box.theme-sunset .slide-tile-val {
+    color: #FFFFFF !important;
+    font-weight: 800 !important;
+}
+
+/* Velocity Bar & Interactive Hint */
+.slide-aspect-box.theme-sunset .slide-fund-velocity-bar {
+    background: rgba(18, 6, 30, 0.9) !important;
+    border: 1px solid rgba(244, 63, 94, 0.28) !important;
+    border-radius: 8px !important;
+}
+
+.slide-aspect-box.theme-sunset .slide-velocity-lbl {
     color: #FECDD3 !important;
 }
 
-.slide-aspect-box.theme-sunset .slide-fund-velocity-bar {
-    background: rgba(18, 7, 34, 0.9) !important;
-    border-color: rgba(244, 63, 94, 0.25) !important;
+.slide-aspect-box.theme-sunset .slide-fund-velocity-fill,
+.slide-aspect-box.theme-sunset .slide-velocity-bar-fill {
+    background: linear-gradient(90deg, #F43F5E 0%, #FB923C 100%) !important;
 }
 
 .slide-aspect-box.theme-sunset .slide-fund-click-hint {
-    background: rgba(244, 63, 94, 0.15) !important;
-    border-color: #F43F5E !important;
+    background: rgba(244, 63, 94, 0.16) !important;
+    border: 1px solid rgba(244, 63, 94, 0.42) !important;
     color: #FECDD3 !important;
+    border-radius: 8px !important;
+    transition: all 0.2s ease !important;
 }
 
-.slide-aspect-box.theme-sunset .btn-slide-back {
-    background: rgba(244, 63, 94, 0.18) !important;
-    border-color: #F43F5E !important;
-    color: #FECDD3 !important;
+.slide-aspect-box.theme-sunset .slide-fund-card:hover .slide-fund-click-hint {
+    background: linear-gradient(135deg, #F43F5E 0%, #FB923C 100%) !important;
+    color: #FFFFFF !important;
+    border-color: #FDE047 !important;
+    box-shadow: 0 0 16px rgba(251, 146, 60, 0.45) !important;
 }
 
-.slide-aspect-box.theme-sunset .slide-detail-metric-card {
-    background: rgba(18, 7, 34, 0.85) !important;
-    border-color: rgba(244, 63, 94, 0.2) !important;
-}
-
+/* ==========================================================================
+   SLIDE 6: CATEGORY SUMMARY MATRIX & TABLES
+   ========================================================================== */
 .slide-aspect-box.theme-sunset .slide-cat-summary-table-wrap {
-    background: rgba(18, 7, 34, 0.85) !important;
-    border-color: rgba(244, 63, 94, 0.25) !important;
+    background: rgba(22, 7, 38, 0.9) !important;
+    border: 1.5px solid rgba(244, 63, 94, 0.3) !important;
+    border-radius: 12px !important;
 }
 
 .slide-aspect-box.theme-sunset .slide-cat-summary-table th {
-    background: rgba(88, 28, 135, 0.7) !important;
+    background: linear-gradient(135deg, rgba(136, 19, 55, 0.7) 0%, rgba(88, 28, 135, 0.7) 100%) !important;
     color: #FECDD3 !important;
-    border-bottom-color: rgba(244, 63, 94, 0.25) !important;
+    border-bottom: 1.5px solid rgba(244, 63, 94, 0.4) !important;
+    font-weight: 700 !important;
 }
 
-.slide-aspect-box.theme-sunset .slide-arrow-btn {
-    background: rgba(26, 14, 48, 0.9) !important;
-    border-color: rgba(244, 63, 94, 0.4) !important;
+.slide-aspect-box.theme-sunset .slide-cat-summary-table td {
+    color: #F3E8FF !important;
+    border-bottom: 1px solid rgba(244, 63, 94, 0.16) !important;
+}
+
+.slide-aspect-box.theme-sunset .slide-cat-summary-table tr:hover td {
+    background: rgba(244, 63, 94, 0.14) !important;
+}
+
+.slide-aspect-box.theme-sunset .slide-share-bar {
+    background: rgba(244, 63, 94, 0.14) !important;
+    border: 1px solid rgba(244, 63, 94, 0.35) !important;
     color: #FECDD3 !important;
+}
+
+/* ==========================================================================
+   SLIDE 7: POWER MATRIX (PURCHASING POWER & INFLOW/OUTFLOW)
+   ========================================================================== */
+.slide-aspect-box.theme-sunset .slide-power-col {
+    background: linear-gradient(165deg, rgba(30, 10, 50, 0.88) 0%, rgba(16, 5, 28, 0.95) 100%) !important;
+    border: 1.5px solid rgba(244, 63, 94, 0.3) !important;
+    border-radius: 14px !important;
+}
+
+.slide-aspect-box.theme-sunset .slide-power-col.inflow {
+    border-top: 4px solid #FB923C !important;
+    box-shadow: 0 10px 30px -5px rgba(251, 146, 60, 0.25) !important;
+}
+
+.slide-aspect-box.theme-sunset .slide-power-col.outflow {
+    border-top: 4px solid #C084FC !important;
+    box-shadow: 0 10px 30px -5px rgba(168, 85, 247, 0.25) !important;
+}
+
+.slide-aspect-box.theme-sunset .slide-power-fund-pill {
+    background: rgba(26, 9, 44, 0.85) !important;
+    border: 1px solid rgba(244, 63, 94, 0.3) !important;
+    border-radius: 10px !important;
+}
+
+.slide-aspect-box.theme-sunset .slide-power-fund-name {
+    color: #FFFFFF !important;
+    font-weight: 700 !important;
+}
+
+.slide-aspect-box.theme-sunset .slide-power-money-box.inflow {
+    background: linear-gradient(135deg, rgba(251, 146, 60, 0.2) 0%, rgba(32, 10, 54, 0.9) 100%) !important;
+    border: 1px solid rgba(251, 146, 60, 0.45) !important;
+    border-radius: 10px !important;
+}
+
+.slide-aspect-box.theme-sunset .slide-power-money-box.outflow {
+    background: linear-gradient(135deg, rgba(168, 85, 247, 0.2) 0%, rgba(32, 10, 54, 0.9) 100%) !important;
+    border: 1px solid rgba(168, 85, 247, 0.45) !important;
+    border-radius: 10px !important;
+}
+
+.slide-aspect-box.theme-sunset .slide-power-money-val.emerald {
+    color: #FDE047 !important;
+    text-shadow: 0 0 14px rgba(253, 224, 71, 0.45) !important;
+}
+
+.slide-aspect-box.theme-sunset .slide-power-money-val.rose {
+    color: #FB7185 !important;
+    text-shadow: 0 0 14px rgba(251, 113, 133, 0.45) !important;
+}
+
+.slide-aspect-box.theme-sunset .slide-power-item-card {
+    background: rgba(24, 8, 40, 0.8) !important;
+    border: 1px solid rgba(244, 63, 94, 0.22) !important;
+    border-radius: 8px !important;
+}
+
+.slide-aspect-box.theme-sunset .slide-power-item-title {
+    color: #FECDD3 !important;
+}
+
+.slide-aspect-box.theme-sunset .slide-vs-circle {
+    background: linear-gradient(135deg, #F43F5E 0%, #FB923C 100%) !important;
+    color: #FFFFFF !important;
+    box-shadow: 0 0 18px rgba(244, 63, 94, 0.5) !important;
+    border: none !important;
+}
+
+.slide-aspect-box.theme-sunset .slide-vs-info {
+    background: rgba(24, 8, 40, 0.88) !important;
+    border: 1px solid rgba(244, 63, 94, 0.32) !important;
+    border-radius: 10px !important;
+}
+
+/* ==========================================================================
+   FUND DETAIL SLIDE: FULL SUNSET PANELS & KAP INTEGRATION
+   ========================================================================== */
+.slide-aspect-box.theme-sunset .btn-slide-back {
+    background: linear-gradient(135deg, rgba(244, 63, 94, 0.25) 0%, rgba(251, 146, 60, 0.2) 100%) !important;
+    border: 1.5px solid #FB923C !important;
+    color: #FFFFFF !important;
+    box-shadow: 0 0 14px rgba(251, 146, 60, 0.25) !important;
+    border-radius: 9px !important;
+    font-weight: 700 !important;
+    transition: all 0.2s ease !important;
+}
+
+.slide-aspect-box.theme-sunset .btn-slide-back:hover {
+    background: linear-gradient(135deg, #F43F5E 0%, #FB923C 100%) !important;
+    color: #FFFFFF !important;
+    border-color: #FDE047 !important;
+    box-shadow: 0 0 20px rgba(244, 63, 94, 0.5) !important;
+    transform: translateY(-1px) !important;
+}
+
+.slide-aspect-box.theme-sunset .slide-detail-code-badge {
+    background: linear-gradient(135deg, #F43F5E 0%, #FB923C 100%) !important;
+    color: #FFFFFF !important;
+    font-weight: 900 !important;
+    box-shadow: 0 0 12px rgba(244, 63, 94, 0.4) !important;
+}
+
+.slide-aspect-box.theme-sunset .slide-detail-fund-name {
+    color: #FFFFFF !important;
+    font-weight: 800 !important;
+}
+
+.slide-aspect-box.theme-sunset .slide-detail-metric-card {
+    background: linear-gradient(160deg, rgba(32, 10, 52, 0.88) 0%, rgba(18, 5, 30, 0.96) 100%) !important;
+    border: 1px solid rgba(244, 63, 94, 0.28) !important;
+    border-top: 3px solid #FB923C !important;
+    border-radius: 10px !important;
+    box-shadow: 0 6px 20px rgba(10, 2, 18, 0.5) !important;
+}
+
+.slide-aspect-box.theme-sunset .slide-detail-metric-card.card-return.pos,
+.slide-aspect-box.theme-sunset .slide-detail-metric-card.card-cash.pos,
+.slide-aspect-box.theme-sunset .slide-detail-metric-card.card-inv.pos {
+    border-top-color: #FDE047 !important;
+}
+
+.slide-aspect-box.theme-sunset .slide-detail-metric-card.card-return.neg,
+.slide-aspect-box.theme-sunset .slide-detail-metric-card.card-cash.neg,
+.slide-aspect-box.theme-sunset .slide-detail-metric-card.card-inv.neg {
+    border-top-color: #C084FC !important;
+}
+
+.slide-aspect-box.theme-sunset .slide-detail-m-lbl {
+    color: #FDA4AF !important;
+    font-size: 0.68rem !important;
+    font-weight: 600 !important;
+}
+
+.slide-aspect-box.theme-sunset .slide-detail-m-val {
+    color: #FFFFFF !important;
+    font-weight: 800 !important;
+}
+
+.slide-aspect-box.theme-sunset .slide-detail-m-val.pos {
+    color: #FDE047 !important;
+    text-shadow: 0 0 12px rgba(251, 146, 60, 0.4) !important;
+}
+
+.slide-aspect-box.theme-sunset .slide-detail-m-val.neg {
+    color: #FB7185 !important;
+    text-shadow: 0 0 12px rgba(244, 63, 94, 0.4) !important;
+}
+
+.slide-aspect-box.theme-sunset .slide-detail-m-sub {
+    color: #FECDD3 !important;
+    opacity: 0.85;
+}
+
+.slide-aspect-box.theme-sunset .slide-detail-panel {
+    background: linear-gradient(165deg, rgba(28, 10, 46, 0.88) 0%, rgba(14, 4, 24, 0.95) 100%) !important;
+    border: 1.5px solid rgba(244, 63, 94, 0.28) !important;
+    border-radius: 12px !important;
+    box-shadow: 0 10px 30px rgba(10, 2, 18, 0.6) !important;
+}
+
+.slide-aspect-box.theme-sunset .slide-detail-panel-hdr {
+    border-bottom: 1px solid rgba(244, 63, 94, 0.2) !important;
+}
+
+.slide-aspect-box.theme-sunset .slide-detail-panel-main {
+    color: #FFFFFF !important;
+    font-weight: 800 !important;
+}
+
+.slide-aspect-box.theme-sunset .slide-detail-panel-desc {
+    color: #E9D5FF !important;
+}
+
+.slide-aspect-box.theme-sunset .slide-detail-panel-icon.cyan {
+    background: rgba(251, 146, 60, 0.18) !important;
+    color: #FB923C !important;
+    border: 1px solid rgba(251, 146, 60, 0.4) !important;
+}
+
+.slide-aspect-box.theme-sunset .slide-detail-panel-icon.purple {
+    background: rgba(244, 63, 94, 0.18) !important;
+    color: #F43F5E !important;
+    border: 1px solid rgba(244, 63, 94, 0.4) !important;
+}
+
+.slide-aspect-box.theme-sunset .slide-detail-alloc-badge {
+    background: rgba(244, 63, 94, 0.15) !important;
+    border: 1px solid rgba(244, 63, 94, 0.35) !important;
+    color: #FECDD3 !important;
+}
+
+.slide-aspect-box.theme-sunset .slide-alloc-chip-row {
+    background: rgba(36, 12, 58, 0.65) !important;
+    border: 1px solid rgba(244, 63, 94, 0.2) !important;
+    border-radius: 8px !important;
+    transition: all 0.2s ease !important;
+}
+
+.slide-aspect-box.theme-sunset .slide-alloc-chip-row:hover {
+    background: rgba(244, 63, 94, 0.25) !important;
+    border-color: #FB923C !important;
+    box-shadow: 0 0 12px rgba(251, 146, 60, 0.25) !important;
+}
+
+.slide-aspect-box.theme-sunset .slide-alloc-kap-badge {
+    background: rgba(251, 146, 60, 0.2) !important;
+    border: 1px solid #FB923C !important;
+    color: #FDE047 !important;
+    font-weight: 800 !important;
+}
+
+.slide-aspect-box.theme-sunset .slide-alloc-pct {
+    color: #FDE047 !important;
+    font-family: 'JetBrains Mono', monospace !important;
+    font-weight: 800 !important;
+}
+
+.slide-aspect-box.theme-sunset .slide-alloc-bar-mini {
+    background: rgba(14, 4, 24, 0.6) !important;
+}
+
+.slide-aspect-box.theme-sunset .slide-alloc-bar-mini-fill {
+    background: linear-gradient(90deg, #F43F5E 0%, #FB923C 100%) !important;
+}
+
+.slide-aspect-box.theme-sunset .slide-kap-stock-card {
+    background: rgba(36, 12, 58, 0.65) !important;
+    border: 1px solid rgba(244, 63, 94, 0.2) !important;
+    border-radius: 8px !important;
+    transition: all 0.2s ease !important;
+}
+
+.slide-aspect-box.theme-sunset .slide-kap-stock-card:hover {
+    background: rgba(244, 63, 94, 0.2) !important;
+    border-color: #FB923C !important;
+    transform: translateX(3px) !important;
+}
+
+.slide-aspect-box.theme-sunset .slide-kap-ticker {
+    color: #FDE047 !important;
+    font-family: 'JetBrains Mono', monospace !important;
+    font-weight: 900 !important;
+}
+
+.slide-aspect-box.theme-sunset .slide-kap-filter-btn {
+    background: rgba(36, 12, 58, 0.8) !important;
+    border: 1px solid rgba(244, 63, 94, 0.3) !important;
+    color: #FECDD3 !important;
+}
+
+.slide-aspect-box.theme-sunset .slide-kap-filter-btn.active {
+    background: linear-gradient(135deg, #F43F5E 0%, #FB923C 100%) !important;
+    border-color: #FDE047 !important;
+    color: #FFFFFF !important;
+    font-weight: 800 !important;
+    box-shadow: 0 0 12px rgba(244, 63, 94, 0.45) !important;
+}
+
+.slide-aspect-box.theme-sunset .btn-slide-back-macro {
+    background: rgba(244, 63, 94, 0.18) !important;
+    border-color: #FB923C !important;
+    color: #FDE047 !important;
+}
+
+/* ==========================================================================
+   NAVIGATION ARROWS
+   ========================================================================== */
+.slide-aspect-box.theme-sunset .slide-arrow-btn {
+    background: rgba(28, 10, 48, 0.92) !important;
+    border: 1.5px solid rgba(251, 146, 60, 0.45) !important;
+    color: #FDE047 !important;
+    box-shadow: 0 0 15px rgba(251, 146, 60, 0.2) !important;
+    transition: all 0.2s ease !important;
+}
+
+.slide-aspect-box.theme-sunset .slide-arrow-btn:hover {
+    background: linear-gradient(135deg, #F43F5E 0%, #FB923C 100%) !important;
+    border-color: #FDE047 !important;
+    color: #FFFFFF !important;
+    box-shadow: 0 0 20px rgba(244, 63, 94, 0.5) !important;
+    transform: translateY(-50%) scale(1.08) !important;
 }
 
 /* ==========================================================================
@@ -16112,19 +16560,7 @@ body.theme-neo-brutalism .sort-option.active {
     border-color: #D6CEBC !important;
 }
 
-/* 3. Sunset Theme */
-.slide-aspect-box.theme-sunset .slide-power-col {
-    background: rgba(22, 10, 38, 0.88) !important;
-    border-color: rgba(244, 63, 94, 0.25) !important;
-}
-
-.slide-aspect-box.theme-sunset .slide-power-money-box.inflow {
-    background: linear-gradient(135deg, rgba(30, 16, 48, 0.9) 0%, rgba(12, 28, 22, 0.9) 100%) !important;
-}
-
-.slide-aspect-box.theme-sunset .slide-power-money-box.outflow {
-    background: linear-gradient(135deg, rgba(48, 14, 38, 0.9) 0%, rgba(24, 8, 20, 0.9) 100%) !important;
-}
+/* 3. Sunset Theme (defined in Theme 3 section) */
 
 /* Media Queries for Smaller Screens */
 @media (max-width: 900px) {

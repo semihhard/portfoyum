@@ -10930,12 +10930,12 @@ const SLIDE_THEMES = {
     sunset: {
         id: 'sunset',
         name: 'Sunset Aura',
-        bgCanvas: '#190933',
-        bgHexPptx: '190933',
-        pdfRgb: [25, 9, 51],
-        chartLineColor: '#F43F5E',
-        chartFillStart: 'rgba(244, 63, 94, 0.35)',
-        chartFillEnd: 'rgba(244, 63, 94, 0.0)'
+        bgCanvas: '#100524',
+        bgHexPptx: '100524',
+        pdfRgb: [16, 5, 36],
+        chartLineColor: '#FB923C',
+        chartFillStart: 'rgba(251, 146, 60, 0.40)',
+        chartFillEnd: 'rgba(244, 63, 94, 0.02)'
     }
 };
 
