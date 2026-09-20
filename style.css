@@ -13918,9 +13918,9 @@ body.theme-neo-brutalism .sort-option.active {
     box-shadow: 0 0 6px #854D0E;
 }
 
-.theme-pill-dot.dot-emerald {
-    background: #10B981;
-    box-shadow: 0 0 6px #10B981;
+.theme-pill-dot.dot-bento {
+    background: #D4F63C;
+    box-shadow: 0 0 6px #D4F63C;
 }
 
 .theme-pill-dot.dot-sunset {
@@ -13935,11 +13935,11 @@ body.theme-neo-brutalism .sort-option.active {
     box-shadow: 0 0 14px rgba(217, 119, 6, 0.35);
 }
 
-.slide-theme-pill-btn[data-theme="emerald"].active {
-    background: rgba(16, 185, 129, 0.2);
-    border-color: #10B981;
-    color: #34D399;
-    box-shadow: 0 0 14px rgba(16, 185, 129, 0.4);
+.slide-theme-pill-btn[data-theme="bento"].active {
+    background: rgba(212, 246, 60, 0.16);
+    border-color: #D4F63C;
+    color: #D4F63C;
+    box-shadow: 0 0 14px rgba(212, 246, 60, 0.4);
 }
 
 .slide-theme-pill-btn[data-theme="sunset"].active {
@@ -14258,182 +14258,320 @@ body.theme-neo-brutalism .sort-option.active {
 }
 
 /* ==========================================================================
-   THEME 2: ZÜMRÜT KASA (DEEP EMERALD VAULT / PARA YEŞİLİ)
+   THEME 2: BENTO ŞERİT (YATAY YÖNETİCİ ŞERİTLERİ & ELECTRIC LIME BENTO)
    ========================================================================== */
-.slide-aspect-box.theme-emerald {
+.slide-aspect-box.theme-bento {
     background: 
-        radial-gradient(circle at 14% 16%, rgba(16, 185, 129, 0.22) 0%, transparent 45%),
-        radial-gradient(circle at 86% 16%, rgba(5, 150, 105, 0.2) 0%, transparent 45%),
-        linear-gradient(155deg, #021B13 0%, #01140E 100%) !important;
-    border: 1.5px solid rgba(16, 185, 129, 0.4) !important;
-    box-shadow: 0 30px 80px -15px rgba(2, 43, 30, 0.95), 0 0 35px rgba(16, 185, 129, 0.15) !important;
+        radial-gradient(circle at 12% 14%, rgba(212, 246, 60, 0.12) 0%, transparent 40%),
+        radial-gradient(circle at 88% 14%, rgba(56, 189, 248, 0.10) 0%, transparent 40%),
+        linear-gradient(155deg, #080B11 0%, #10141E 100%) !important;
+    border: 1.5px solid rgba(226, 232, 240, 0.15) !important;
+    box-shadow: 0 30px 80px -15px rgba(0, 0, 0, 0.95), 0 0 40px rgba(212, 246, 60, 0.08) !important;
     color: #FFFFFF !important;
 }
 
-.slide-aspect-box.theme-emerald .slide-page-number-capsule {
-    background: rgba(16, 185, 129, 0.18) !important;
-    border-color: rgba(52, 211, 153, 0.5) !important;
-    color: #6EE7B7 !important;
-    box-shadow: 0 0 12px rgba(16, 185, 129, 0.3) !important;
+.slide-aspect-box.theme-bento .slide-page-number-capsule {
+    background: #D4F63C !important;
+    border: none !important;
+    color: #080B11 !important;
+    font-weight: 900 !important;
+    box-shadow: 0 0 14px rgba(212, 246, 60, 0.4) !important;
 }
 
-.slide-aspect-box.theme-emerald .slide-main-title {
+.slide-aspect-box.theme-bento .slide-main-title {
     color: #FFFFFF !important;
-    text-shadow: 0 0 20px rgba(52, 211, 153, 0.25) !important;
+    letter-spacing: -0.02em !important;
 }
 
-.slide-aspect-box.theme-emerald .slide-subtitle {
-    color: #A7F3D0 !important;
+.slide-aspect-box.theme-bento .slide-subtitle {
+    color: #94A3B8 !important;
 }
 
-.slide-aspect-box.theme-emerald .slide-date-pill {
-    background: rgba(16, 185, 129, 0.1) !important;
-    border-color: rgba(16, 185, 129, 0.3) !important;
-    color: #6EE7B7 !important;
+.slide-aspect-box.theme-bento .slide-date-pill {
+    background: rgba(255, 255, 255, 0.05) !important;
+    border-color: rgba(255, 255, 255, 0.12) !important;
+    color: #E2E8F0 !important;
 }
 
-.slide-aspect-box.theme-emerald .slide-category-tag.cyan {
-    background: rgba(16, 185, 129, 0.16) !important;
-    border-color: rgba(16, 185, 129, 0.4) !important;
-    color: #6EE7B7 !important;
-    box-shadow: 0 0 12px rgba(16, 185, 129, 0.25) !important;
+.slide-aspect-box.theme-bento .slide-category-tag.cyan {
+    background: rgba(212, 246, 60, 0.15) !important;
+    border-color: rgba(212, 246, 60, 0.4) !important;
+    color: #D4F63C !important;
+    box-shadow: 0 0 12px rgba(212, 246, 60, 0.25) !important;
 }
 
-/* Macro Cards in Emerald */
-.slide-aspect-box.theme-emerald .slide-macro-hero-card.pos {
-    background: linear-gradient(145deg, rgba(6, 78, 59, 0.45) 0%, rgba(2, 43, 30, 0.95) 100%) !important;
-    border: 1.5px solid #34D399 !important;
-    border-top: 3.5px solid #10B981 !important;
-    box-shadow: 0 0 25px rgba(16, 185, 129, 0.25) !important;
+/* Slide 1 Bento Macro Asymmetric Grid */
+.slide-aspect-box.theme-bento .slide-macro-grid-top {
+    grid-template-columns: 1.25fr 1fr !important;
+    gap: 14px !important;
 }
 
-.slide-aspect-box.theme-emerald .slide-macro-hero-card.neg {
-    background: linear-gradient(145deg, rgba(136, 19, 55, 0.35) 0%, rgba(2, 43, 30, 0.95) 100%) !important;
-    border: 1.5px solid #FB7185 !important;
+.slide-aspect-box.theme-bento .slide-macro-hero-card {
+    background: rgba(16, 22, 34, 0.9) !important;
+    border-radius: 18px !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    backdrop-filter: blur(16px) !important;
+}
+
+.slide-aspect-box.theme-bento .slide-macro-hero-card.pos {
+    border: 1.5px solid rgba(212, 246, 60, 0.45) !important;
+    border-top: 3.5px solid #D4F63C !important;
+    box-shadow: 0 0 25px rgba(212, 246, 60, 0.15) !important;
+}
+
+.slide-aspect-box.theme-bento .slide-macro-hero-card.neg {
+    border: 1.5px solid rgba(244, 63, 94, 0.45) !important;
     border-top: 3.5px solid #F43F5E !important;
 }
 
-.slide-aspect-box.theme-emerald .slide-macro-hero-card.inv-card {
-    background: linear-gradient(145deg, rgba(13, 148, 136, 0.4) 0%, rgba(2, 43, 30, 0.95) 100%) !important;
-    border: 1.5px solid #2DD4BF !important;
-    border-top: 3.5px solid #14B8A6 !important;
-    box-shadow: 0 0 25px rgba(45, 212, 191, 0.25) !important;
+.slide-aspect-box.theme-bento .slide-macro-hero-card.inv-card {
+    border: 1.5px solid rgba(56, 189, 248, 0.45) !important;
+    border-top: 3.5px solid #38BDF8 !important;
+    box-shadow: 0 0 25px rgba(56, 189, 248, 0.15) !important;
 }
 
-.slide-aspect-box.theme-emerald .slide-macro-big-num.pos {
-    color: #34D399 !important;
-    text-shadow: 0 0 25px rgba(52, 211, 153, 0.5) !important;
+.slide-aspect-box.theme-bento .slide-macro-big-num.pos {
+    color: #D4F63C !important;
+    text-shadow: 0 0 22px rgba(212, 246, 60, 0.45) !important;
 }
 
-.slide-aspect-box.theme-emerald .slide-macro-big-num.neg {
+.slide-aspect-box.theme-bento .slide-macro-big-num.neg {
     color: #FB7185 !important;
 }
 
-.slide-aspect-box.theme-emerald .slide-macro-hero-card.inv-card .slide-macro-big-num {
-    color: #2DD4BF !important;
-    text-shadow: 0 0 25px rgba(45, 212, 191, 0.5) !important;
+.slide-aspect-box.theme-bento .slide-macro-hero-card.inv-card .slide-macro-big-num {
+    color: #38BDF8 !important;
+    text-shadow: 0 0 22px rgba(56, 189, 248, 0.45) !important;
 }
 
-.slide-aspect-box.theme-emerald .slide-cat-leader-card.inflow {
-    background: rgba(6, 78, 59, 0.4) !important;
-    border: 1.5px solid #34D399 !important;
-    border-top: 3px solid #10B981 !important;
+.slide-aspect-box.theme-bento .slide-cat-leader-card {
+    background: rgba(16, 22, 34, 0.85) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 14px !important;
 }
 
-.slide-aspect-box.theme-emerald .slide-cat-leader-card.outflow {
-    background: rgba(136, 19, 55, 0.35) !important;
-    border: 1.5px solid #FB7185 !important;
-    border-top: 3px solid #F43F5E !important;
+.slide-aspect-box.theme-bento .slide-cat-leader-card.inflow {
+    border-top: 3px solid #D4F63C !important;
 }
 
-.slide-aspect-box.theme-emerald .slide-cat-leader-stats {
-    border-top-color: rgba(16, 185, 129, 0.2) !important;
-    color: #A7F3D0 !important;
+.slide-aspect-box.theme-bento .slide-cat-badge.inflow {
+    color: #D4F63C !important;
 }
 
-/* Fund Cards in Emerald */
-.slide-aspect-box.theme-emerald .slide-fund-card {
-    background: linear-gradient(165deg, rgba(6, 40, 30, 0.95) 0%, rgba(2, 27, 19, 0.98) 100%) !important;
-    border: 1.5px solid rgba(16, 185, 129, 0.3) !important;
+.slide-aspect-box.theme-bento .slide-cat-leader-val.pos {
+    color: #D4F63C !important;
 }
 
-.slide-aspect-box.theme-emerald .slide-fund-card.rank-card-1 {
-    border-color: #F59E0B !important;
-    border-top: 3px solid #FBBF24 !important;
-    box-shadow: 0 0 25px rgba(245, 158, 11, 0.25) !important;
+.slide-aspect-box.theme-bento .slide-mini-stat {
+    background: rgba(16, 22, 34, 0.85) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border-radius: 12px !important;
 }
 
-.slide-aspect-box.theme-emerald .slide-fund-card.rank-card-2 {
-    border-color: #34D399 !important;
-    border-top: 3px solid #6EE7B7 !important;
-    box-shadow: 0 0 25px rgba(52, 211, 153, 0.25) !important;
+/* ==========================================================================
+   SLIDES 2-5 RADICAL LAYOUT REDESIGN: HORIZONTAL EXECUTIVE STREAM ROWS
+   (Standart 3 dikey kolon yerine, tam genişlikte 3 şık yatay yönetici şeridi)
+   ========================================================================== */
+.slide-aspect-box.theme-bento .slide-funds-grid-3 {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 10px !important;
+    justify-content: space-between !important;
+    flex: 1 !important;
 }
 
-.slide-aspect-box.theme-emerald .slide-fund-card.rank-card-3 {
-    border-color: #2DD4BF !important;
-    border-top: 3px solid #5EEAD4 !important;
+.slide-aspect-box.theme-bento .slide-fund-card {
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    padding: 10px 18px !important;
+    border-radius: 14px !important;
+    background: rgba(16, 22, 34, 0.88) !important;
+    border: 1px solid rgba(226, 232, 240, 0.12) !important;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4) !important;
+    gap: 16px !important;
+    transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1) !important;
 }
 
-.slide-aspect-box.theme-emerald .slide-fund-fullname {
-    color: #ECFDF5 !important;
+.slide-aspect-box.theme-bento .slide-fund-card:hover {
+    transform: translateX(4px) scale(1.005) !important;
 }
 
-.slide-aspect-box.theme-emerald .slide-fund-hero-capsule.pos {
-    background: rgba(6, 78, 59, 0.45) !important;
-    border-color: rgba(52, 211, 153, 0.4) !important;
+/* Rank 1: Electric Lime Zirve */
+.slide-aspect-box.theme-bento .slide-fund-card.rank-card-1 {
+    background: linear-gradient(135deg, rgba(28, 38, 20, 0.95) 0%, rgba(14, 18, 28, 0.98) 100%) !important;
+    border: 1.5px solid #D4F63C !important;
+    border-left: 5px solid #D4F63C !important;
+    box-shadow: 0 0 30px rgba(212, 246, 60, 0.2) !important;
 }
 
-.slide-aspect-box.theme-emerald .slide-fund-hero-num.pos {
-    color: #34D399 !important;
-    text-shadow: 0 0 16px rgba(52, 211, 153, 0.4) !important;
+/* Rank 2: Electric Cyan İkinci */
+.slide-aspect-box.theme-bento .slide-fund-card.rank-card-2 {
+    background: linear-gradient(135deg, rgba(16, 32, 48, 0.95) 0%, rgba(12, 16, 26, 0.98) 100%) !important;
+    border: 1.5px solid #38BDF8 !important;
+    border-left: 5px solid #38BDF8 !important;
+    box-shadow: 0 0 25px rgba(56, 189, 248, 0.18) !important;
 }
 
-.slide-aspect-box.theme-emerald .slide-metric-tile {
-    background: rgba(2, 27, 19, 0.8) !important;
-    border-color: rgba(16, 185, 129, 0.2) !important;
+/* Rank 3: Royal Purple Üçüncü */
+.slide-aspect-box.theme-bento .slide-fund-card.rank-card-3 {
+    background: linear-gradient(135deg, rgba(32, 18, 48, 0.95) 0%, rgba(12, 16, 26, 0.98) 100%) !important;
+    border: 1.5px solid #A855F7 !important;
+    border-left: 5px solid #A855F7 !important;
+    box-shadow: 0 0 25px rgba(168, 85, 247, 0.18) !important;
 }
 
-.slide-aspect-box.theme-emerald .slide-tile-lbl {
-    color: #6EE7B7 !important;
+/* Left Half of Horizontal Row */
+.slide-aspect-box.theme-bento .slide-fund-card > div:first-child {
+    display: flex !important;
+    align-items: center !important;
+    gap: 18px !important;
+    flex: 1.2 !important;
+    min-width: 0 !important;
 }
 
-.slide-aspect-box.theme-emerald .slide-fund-velocity-bar {
-    background: rgba(2, 27, 19, 0.9) !important;
-    border-color: rgba(16, 185, 129, 0.25) !important;
+.slide-aspect-box.theme-bento .slide-fund-card-top {
+    margin-bottom: 0 !important;
+    align-items: center !important;
+    gap: 14px !important;
+    flex: 1 !important;
+    min-width: 0 !important;
 }
 
-.slide-aspect-box.theme-emerald .slide-fund-click-hint {
-    background: rgba(16, 185, 129, 0.15) !important;
-    border-color: #34D399 !important;
-    color: #6EE7B7 !important;
+.slide-aspect-box.theme-bento .slide-fund-identity {
+    min-width: 0 !important;
+    flex: 1 !important;
 }
 
-.slide-aspect-box.theme-emerald .btn-slide-back {
-    background: rgba(16, 185, 129, 0.18) !important;
-    border-color: #34D399 !important;
-    color: #6EE7B7 !important;
+.slide-aspect-box.theme-bento .slide-fund-fullname {
+    font-size: 0.82rem !important;
+    min-height: auto !important;
+    -webkit-line-clamp: 1 !important;
+    white-space: nowrap !important;
+    color: #F8FAFC !important;
+    line-height: 1.2 !important;
 }
 
-.slide-aspect-box.theme-emerald .slide-detail-metric-card {
-    background: rgba(2, 27, 19, 0.8) !important;
-    border-color: rgba(16, 185, 129, 0.2) !important;
+.slide-aspect-box.theme-bento .slide-fund-hero-capsule {
+    margin-bottom: 0 !important;
+    padding: 6px 14px !important;
+    border-radius: 10px !important;
+    flex-shrink: 0 !important;
+    min-width: 175px !important;
+    text-align: right !important;
+    background: rgba(0, 0, 0, 0.35) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
 }
 
-.slide-aspect-box.theme-emerald .slide-cat-summary-table-wrap {
-    background: rgba(2, 27, 19, 0.85) !important;
-    border-color: rgba(16, 185, 129, 0.25) !important;
+.slide-aspect-box.theme-bento .slide-fund-hero-lbl {
+    font-size: 0.60rem !important;
+    justify-content: flex-end !important;
+    margin-bottom: 1px !important;
 }
 
-.slide-aspect-box.theme-emerald .slide-cat-summary-table th {
-    background: rgba(6, 78, 59, 0.7) !important;
-    color: #A7F3D0 !important;
-    border-bottom-color: rgba(16, 185, 129, 0.25) !important;
+.slide-aspect-box.theme-bento .slide-fund-hero-num {
+    font-size: 1.35rem !important;
+    line-height: 1.1 !important;
+    margin: 1px 0 !important;
 }
 
-.slide-aspect-box.theme-emerald .slide-arrow-btn {
-    background: rgba(2, 43, 30, 0.9) !important;
-    border-color: rgba(16, 185, 129, 0.4) !important;
-    color: #A7F3D0 !important;
+.slide-aspect-box.theme-bento .slide-fund-card.rank-card-1 .slide-fund-hero-num.pos {
+    color: #D4F63C !important;
+    text-shadow: 0 0 16px rgba(212, 246, 60, 0.4) !important;
+}
+
+.slide-aspect-box.theme-bento .slide-fund-hero-sub {
+    font-size: 0.66rem !important;
+    justify-content: flex-end !important;
+    margin-top: 2px !important;
+}
+
+/* Right Half of Horizontal Row */
+.slide-aspect-box.theme-bento .slide-fund-card > div:last-child {
+    display: flex !important;
+    align-items: center !important;
+    gap: 12px !important;
+    flex-shrink: 0 !important;
+}
+
+.slide-aspect-box.theme-bento .slide-fund-metrics-tiles {
+    display: flex !important;
+    gap: 8px !important;
+    margin-bottom: 0 !important;
+}
+
+.slide-aspect-box.theme-bento .slide-metric-tile {
+    padding: 5px 10px !important;
+    min-width: 78px !important;
+    border-radius: 8px !important;
+    background: rgba(0, 0, 0, 0.4) !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+.slide-aspect-box.theme-bento .slide-tile-lbl {
+    font-size: 0.58rem !important;
+    margin-bottom: 1px !important;
+}
+
+.slide-aspect-box.theme-bento .slide-tile-val {
+    font-size: 0.80rem !important;
+}
+
+.slide-aspect-box.theme-bento .slide-fund-velocity-bar {
+    padding: 6px 12px !important;
+    font-size: 0.70rem !important;
+    border-radius: 8px !important;
+    min-width: 125px !important;
+    background: rgba(0, 0, 0, 0.45) !important;
+}
+
+.slide-aspect-box.theme-bento .slide-fund-card.rank-card-1 .slide-velocity-val {
+    color: #D4F63C !important;
+}
+
+.slide-aspect-box.theme-bento .slide-fund-click-hint {
+    margin-top: 0 !important;
+    padding: 7px 12px !important;
+    border-radius: 8px !important;
+    font-size: 0.68rem !important;
+    background: rgba(212, 246, 60, 0.12) !important;
+    border-color: rgba(212, 246, 60, 0.4) !important;
+    color: #D4F63C !important;
+}
+
+.slide-aspect-box.theme-bento .slide-fund-click-hint:hover {
+    background: #D4F63C !important;
+    color: #080B11 !important;
+}
+
+/* Slide 6 Matrix Table */
+.slide-aspect-box.theme-bento .slide-cat-summary-table-wrap {
+    background: rgba(16, 22, 34, 0.9) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 14px !important;
+}
+
+.slide-aspect-box.theme-bento .slide-cat-summary-table th {
+    background: rgba(10, 14, 24, 0.95) !important;
+    color: #D4F63C !important;
+    border-bottom-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.slide-aspect-box.theme-bento .btn-slide-back {
+    background: rgba(212, 246, 60, 0.15) !important;
+    border-color: #D4F63C !important;
+    color: #D4F63C !important;
+}
+
+.slide-aspect-box.theme-bento .slide-detail-metric-card {
+    background: rgba(16, 22, 34, 0.88) !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.slide-aspect-box.theme-bento .slide-arrow-btn {
+    background: rgba(16, 22, 34, 0.9) !important;
+    border-color: rgba(212, 246, 60, 0.4) !important;
+    color: #D4F63C !important;
 }
 
 /* ==========================================================================

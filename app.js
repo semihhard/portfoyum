@@ -10917,15 +10917,15 @@ const SLIDE_THEMES = {
         chartFillStart: 'rgba(133, 77, 14, 0.25)',
         chartFillEnd: 'rgba(133, 77, 14, 0.0)'
     },
-    emerald: {
-        id: 'emerald',
-        name: 'Zümrüt Kasa',
-        bgCanvas: '#021B13',
-        bgHexPptx: '021B13',
-        pdfRgb: [2, 27, 19],
-        chartLineColor: '#10B981',
-        chartFillStart: 'rgba(16, 185, 129, 0.35)',
-        chartFillEnd: 'rgba(16, 185, 129, 0.0)'
+    bento: {
+        id: 'bento',
+        name: 'Bento Şerit',
+        bgCanvas: '#080B11',
+        bgHexPptx: '080B11',
+        pdfRgb: [8, 11, 17],
+        chartLineColor: '#D4F63C',
+        chartFillStart: 'rgba(212, 246, 60, 0.35)',
+        chartFillEnd: 'rgba(212, 246, 60, 0.0)'
     },
     sunset: {
         id: 'sunset',
@@ -10956,7 +10956,7 @@ function setSlideTheme(themeKey) {
 
     const aspectBox = document.getElementById("slideAspectBox");
     if (aspectBox) {
-        aspectBox.classList.remove("theme-cyber", "theme-vintage", "theme-emerald", "theme-sunset", "theme-corporate", "theme-royal", "theme-nordic");
+        aspectBox.classList.remove("theme-cyber", "theme-vintage", "theme-bento", "theme-emerald", "theme-sunset", "theme-corporate", "theme-royal", "theme-nordic");
         aspectBox.classList.add(`theme-${themeKey}`);
     }
 
