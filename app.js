@@ -11751,52 +11751,45 @@ function renderInteractiveSlides(data) {
                         </div>
                     </div>
 
-                    <!-- REAL-WORLD PURCHASING POWER ITEMS (Click to view full asset visuals) -->
+                    <!-- REAL-WORLD PURCHASING POWER ITEMS (Sermaye Eşdeğer Sayıları) -->
                     <div class="slide-power-items-section">
                         <div class="slide-power-section-hdr">
                             <div class="slide-power-section-title emerald">
                                 <i class="fa-solid fa-cart-shopping"></i> BU GİREN SERMAYE İLE NELER ALINABİLİRDİ?
                             </div>
-                            <button type="button" class="btn-power-gallery-open emerald" onclick="openSlideAssetGalleryModal('inflow')" title="Varlıkların Toplu Görsellerini İncele">
-                                <i class="fa-solid fa-images"></i> Toplu Görselleri Aç
-                            </button>
                         </div>
                         <div class="slide-power-items-grid">
-                            <div class="slide-power-item-card inflow" onclick="openSlideAssetGalleryModal('inflow', 'togg')" title="TOGG T10X Toplu Görselini Gör">
+                            <div class="slide-power-item-card inflow">
                                 <div class="slide-power-item-icon togg"><i class="fa-solid fa-car-side"></i></div>
                                 <div class="slide-power-item-content">
                                     <div class="slide-power-item-count emerald">${inPower.togg.countStr}</div>
                                     <div class="slide-power-item-title">${inPower.togg.title}</div>
                                     <div class="slide-power-item-unit">${inPower.togg.desc}</div>
                                 </div>
-                                <span class="slide-power-item-hint"><i class="fa-solid fa-image"></i> Görsel</span>
                             </div>
-                            <div class="slide-power-item-card inflow" onclick="openSlideAssetGalleryModal('inflow', 'house')" title="Lüks Konut / Daire Toplu Görselini Gör">
+                            <div class="slide-power-item-card inflow">
                                 <div class="slide-power-item-icon house"><i class="fa-solid fa-building"></i></div>
                                 <div class="slide-power-item-content">
                                     <div class="slide-power-item-count emerald">${inPower.house.countStr}</div>
                                     <div class="slide-power-item-title">${inPower.house.title}</div>
                                     <div class="slide-power-item-unit">${inPower.house.desc}</div>
                                 </div>
-                                <span class="slide-power-item-hint"><i class="fa-solid fa-image"></i> Görsel</span>
                             </div>
-                            <div class="slide-power-item-card inflow" onclick="openSlideAssetGalleryModal('inflow', 'gold')" title="24 Ayar Külçe Altın Toplu Görselini Gör">
+                            <div class="slide-power-item-card inflow">
                                 <div class="slide-power-item-icon gold"><i class="fa-solid fa-cubes-stacked"></i></div>
                                 <div class="slide-power-item-content">
                                     <div class="slide-power-item-count amber">${inPower.gold.countStr}</div>
                                     <div class="slide-power-item-title">${inPower.gold.title}</div>
                                     <div class="slide-power-item-unit">${inPower.gold.desc}</div>
                                 </div>
-                                <span class="slide-power-item-hint"><i class="fa-solid fa-image"></i> Görsel</span>
                             </div>
-                            <div class="slide-power-item-card inflow" onclick="openSlideAssetGalleryModal('inflow', 'phone')" title="iPhone 16 Pro Max Toplu Görselini Gör">
+                            <div class="slide-power-item-card inflow">
                                 <div class="slide-power-item-icon phone"><i class="fa-solid fa-mobile-screen-button"></i></div>
                                 <div class="slide-power-item-content">
                                     <div class="slide-power-item-count cyan">${inPower.phone.countStr}</div>
                                     <div class="slide-power-item-title">${inPower.phone.title}</div>
                                     <div class="slide-power-item-unit">${inPower.phone.desc}</div>
                                 </div>
-                                <span class="slide-power-item-hint"><i class="fa-solid fa-image"></i> Görsel</span>
                             </div>
                         </div>
                     </div>
@@ -11852,46 +11845,39 @@ function renderInteractiveSlides(data) {
                             <div class="slide-power-section-title rose">
                                 <i class="fa-solid fa-arrow-right-from-bracket"></i> ÇIKAN BU KAYNAK REELDE NEYE EŞDEĞERDİ?
                             </div>
-                            <button type="button" class="btn-power-gallery-open rose" onclick="openSlideAssetGalleryModal('outflow')" title="Varlıkların Toplu Görsellerini İncele">
-                                <i class="fa-solid fa-images"></i> Toplu Görselleri Aç
-                            </button>
                         </div>
                         <div class="slide-power-items-grid">
-                            <div class="slide-power-item-card outflow" onclick="openSlideAssetGalleryModal('outflow', 'togg')" title="TOGG T10X Toplu Görselini Gör">
+                            <div class="slide-power-item-card outflow">
                                 <div class="slide-power-item-icon togg rose"><i class="fa-solid fa-car-side"></i></div>
                                 <div class="slide-power-item-content">
                                     <div class="slide-power-item-count rose">${outPower.togg.countStr}</div>
                                     <div class="slide-power-item-title">${outPower.togg.title}</div>
                                     <div class="slide-power-item-unit">${outPower.togg.desc}</div>
                                 </div>
-                                <span class="slide-power-item-hint"><i class="fa-solid fa-image"></i> Görsel</span>
                             </div>
-                            <div class="slide-power-item-card outflow" onclick="openSlideAssetGalleryModal('outflow', 'house')" title="Lüks Konut / Daire Toplu Görselini Gör">
+                            <div class="slide-power-item-card outflow">
                                 <div class="slide-power-item-icon house rose"><i class="fa-solid fa-building"></i></div>
                                 <div class="slide-power-item-content">
                                     <div class="slide-power-item-count rose">${outPower.house.countStr}</div>
                                     <div class="slide-power-item-title">${outPower.house.title}</div>
                                     <div class="slide-power-item-unit">${outPower.house.desc}</div>
                                 </div>
-                                <span class="slide-power-item-hint"><i class="fa-solid fa-image"></i> Görsel</span>
                             </div>
-                            <div class="slide-power-item-card outflow" onclick="openSlideAssetGalleryModal('outflow', 'gold')" title="24 Ayar Külçe Altın Toplu Görselini Gör">
+                            <div class="slide-power-item-card outflow">
                                 <div class="slide-power-item-icon gold rose"><i class="fa-solid fa-cubes-stacked"></i></div>
                                 <div class="slide-power-item-content">
                                     <div class="slide-power-item-count rose">${outPower.gold.countStr}</div>
                                     <div class="slide-power-item-title">${outPower.gold.title}</div>
                                     <div class="slide-power-item-unit">${outPower.gold.desc}</div>
                                 </div>
-                                <span class="slide-power-item-hint"><i class="fa-solid fa-image"></i> Görsel</span>
                             </div>
-                            <div class="slide-power-item-card outflow" onclick="openSlideAssetGalleryModal('outflow', 'phone')" title="iPhone 16 Pro Max Toplu Görselini Gör">
+                            <div class="slide-power-item-card outflow">
                                 <div class="slide-power-item-icon phone rose"><i class="fa-solid fa-mobile-screen-button"></i></div>
                                 <div class="slide-power-item-content">
                                     <div class="slide-power-item-count rose">${outPower.phone.countStr}</div>
                                     <div class="slide-power-item-title">${outPower.phone.title}</div>
                                     <div class="slide-power-item-unit">${outPower.phone.desc}</div>
                                 </div>
-                                <span class="slide-power-item-hint"><i class="fa-solid fa-image"></i> Görsel</span>
                             </div>
                         </div>
                     </div>
@@ -11899,170 +11885,6 @@ function renderInteractiveSlides(data) {
             </div>
         `;
     }
-}
-
-// --------------------------------------------------------------------------
-// SLIDE 7: COLLECTIVE VISUAL ASSET SHOWCASE GALLERY (Toplu Varlık Görsel Vitrini)
-// --------------------------------------------------------------------------
-const SLIDE_ASSET_IMAGES = {
-    togg: "https://images.unsplash.com/photo-1617788138017-80ad40651399?auto=format&fit=crop&w=700&q=80",
-    house: "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=700&q=80",
-    gold: "https://images.unsplash.com/photo-1610375461246-83df859d849d?auto=format&fit=crop&w=700&q=80",
-    phone: "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=700&q=80"
-};
-
-let currentSlideGalleryMode = 'inflow';
-
-function openSlideAssetGalleryModal(mode = 'inflow', focusedItemKey = null) {
-    const overlay = document.getElementById("slideAssetGalleryOverlay");
-    if (!overlay) return;
-
-    currentSlideGalleryMode = mode;
-    const btnIn = document.getElementById("btnAssetTabInflow");
-    const btnOut = document.getElementById("btnAssetTabOutflow");
-    if (btnIn) btnIn.classList.toggle("active", mode === 'inflow');
-    if (btnOut) btnOut.classList.toggle("active", mode === 'outflow');
-
-    renderSlideAssetGalleryContent(mode, focusedItemKey);
-
-    overlay.style.display = "flex";
-}
-
-function closeSlideAssetGallery(event = null) {
-    if (event && event.target && event.target.id !== 'slideAssetGalleryOverlay' && !event.target.classList.contains('btn-asset-gallery-close') && !event.target.classList.contains('btn-asset-gallery-back')) {
-        return;
-    }
-    const overlay = document.getElementById("slideAssetGalleryOverlay");
-    if (overlay) {
-        overlay.style.display = "none";
-    }
-}
-
-function switchSlideAssetGalleryTab(mode) {
-    currentSlideGalleryMode = mode;
-    const btnIn = document.getElementById("btnAssetTabInflow");
-    const btnOut = document.getElementById("btnAssetTabOutflow");
-    if (btnIn) btnIn.classList.toggle("active", mode === 'inflow');
-    if (btnOut) btnOut.classList.toggle("active", mode === 'outflow');
-    renderSlideAssetGalleryContent(mode);
-}
-
-function renderSlideAssetGalleryContent(mode = 'inflow', focusedKey = null) {
-    const body = document.getElementById("slideAssetGalleryBody");
-    const title = document.getElementById("slideAssetGalleryFundTitle");
-    const badge = document.getElementById("slideAssetGalleryBadge");
-    if (!body) return;
-
-    const data = slideReportDatasetCache || buildSlideReportDataset();
-    const inFund = (data.topCashInflow && data.topCashInflow.length > 0) ? data.topCashInflow[0] : null;
-    const outFund = (data.topCashOutflow && data.topCashOutflow.length > 0) ? data.topCashOutflow[0] : null;
-
-    const activeFund = mode === 'inflow' ? inFund : outFund;
-    const rawAmount = activeFund ? Math.abs(activeFund.cashFlow || 0) : 0;
-    const power = getPurchasingPowerEquivalents(rawAmount);
-
-    const amountStr = typeof formatBillionOrMillion === 'function' ? formatBillionOrMillion(rawAmount) : `₺${rawAmount.toLocaleString('tr-TR')}`;
-    const fundName = activeFund ? (typeof cleanFundTitle === 'function' ? cleanFundTitle(activeFund.name) : activeFund.name) : 'Fon';
-    const fundCode = activeFund ? activeFund.code : '—';
-
-    if (title) {
-        const sign = mode === 'inflow' ? '+' : '-';
-        const clr = mode === 'inflow' ? '#34D399' : '#FB7185';
-        title.innerHTML = `
-            <span style="display: inline-flex; align-items: center; gap: 8px; flex-wrap: wrap;">
-                <span class="slide-code-badge ${mode === 'inflow' ? 'emerald' : 'rose'}" style="font-size: 0.82rem; padding: 2px 8px;">${fundCode}</span>
-                <span style="font-weight: 800; color: #FFFFFF;">${fundName}</span>
-                <span style="color: ${clr}; font-weight: 900; font-family: 'Outfit', sans-serif;">(${sign}${amountStr} Net Sermaye ${mode === 'inflow' ? 'Girişi' : 'Çıkışı'})</span>
-            </span>
-        `;
-    }
-
-    if (badge) {
-        badge.className = `slide-asset-gallery-badge ${mode === 'inflow' ? 'emerald' : 'rose'}`;
-        badge.innerHTML = mode === 'inflow'
-            ? `<i class="fa-solid fa-trophy"></i> #1 GÜNÜN ŞAMPİYON PARA GİRİŞİ — ALINABİLECEK VARLIKLARIN TOPLU GÖRSEL VİTRİNİ`
-            : `<i class="fa-solid fa-arrow-trend-down"></i> #1 GÜNÜN EN BÜYÜK SERMAYE ÇIKIŞI — REEL VARLIK EŞDEĞERLERİ VİTRİNİ`;
-    }
-
-    const items = [
-        {
-            key: 'togg',
-            title: 'Sıfır TOGG T10X',
-            category: 'Yerli Elektrikli Akıllı Otomobil',
-            count: power.togg.countStr,
-            unit: '1.850.000 ₺ / Araç',
-            img: SLIDE_ASSET_IMAGES.togg,
-            icon: 'fa-car-side',
-            story: mode === 'inflow'
-                ? `Bu fona bugün giren sermaye ile tam <strong>${power.togg.countStr}</strong> sıfır yerli TOGG T10X dev otomobil filosu kurulabilirdi.`
-                : `Bu fondan bugün çıkan kaynak, <strong>${power.togg.countStr}</strong> sıfır yerli TOGG T10X'in toplam piyasa bedeline denktir.`
-        },
-        {
-            key: 'house',
-            title: 'Lüks Rezidans / Konut',
-            category: 'Büyükşehir Lüks Daire & Yaşam Sitesi',
-            count: power.house.countStr,
-            unit: '8.000.000 ₺ / Konut',
-            img: SLIDE_ASSET_IMAGES.house,
-            icon: 'fa-building',
-            story: mode === 'inflow'
-                ? `Büyükşehirlerde <strong>${power.house.countStr}</strong> lüks dairelik devasa bir yaşam sitesi projesi sıfırdan inşa edilebilirdi.`
-                : `Fondan ayrılan likidite, tam <strong>${power.house.countStr}</strong> lüks konutun kümülatif gayrimenkul servetine denktir.`
-        },
-        {
-            key: 'gold',
-            title: '24 Ayar Saf Külçe Altın',
-            category: '995.0 Saflıkta Darphane Külçe Rezervi',
-            count: power.gold.countStr,
-            unit: '3.400.000 ₺ / Kilogram',
-            img: SLIDE_ASSET_IMAGES.gold,
-            icon: 'fa-cubes-stacked',
-            story: mode === 'inflow'
-                ? `Merkez bankası rezervi büyüklüğünde tam <strong>${power.gold.countStr}</strong> saf altın rezervi büyüklüğünde bir sermaye gücü.`
-                : `Fondan çıkan nakit ile tam <strong>${power.gold.countStr}</strong> saf külçe altın fiziksel olarak satın alınabilirdi.`
-        },
-        {
-            key: 'phone',
-            title: 'iPhone 16 Pro Max',
-            category: 'Amiral Gemisi Titanyum Akıllı Cihaz',
-            count: power.phone.countStr,
-            unit: '105.000 ₺ / Cihaz',
-            img: SLIDE_ASSET_IMAGES.phone,
-            icon: 'fa-mobile-screen-button',
-            story: mode === 'inflow'
-                ? `Büyük bir şehrin tüm yetişkin nüfusunu donatabilecek <strong>${power.phone.countStr}</strong> amiral gemisi akıllı cihaz.`
-                : `Bu fon kaybı, tam <strong>${power.phone.countStr}</strong> amiral gemisi akıllı telefonun toplam harcama bedeline denktir.`
-        }
-    ];
-
-    body.innerHTML = `
-        <div class="slide-gallery-cards-grid">
-            ${items.map(item => {
-                const isFocused = focusedKey === item.key;
-                return `
-                <div class="slide-gallery-card ${mode} ${isFocused ? 'focused' : ''}">
-                    <div class="slide-gallery-img-box">
-                        <img src="${item.img}" alt="${item.title}" class="slide-gallery-photo" onerror="this.parentElement.classList.add('fallback');" />
-                        <div class="slide-gallery-photo-gradient"></div>
-                        <div class="slide-gallery-photo-chip">
-                            <i class="fa-solid ${item.icon}"></i>
-                            <span>${item.category}</span>
-                        </div>
-                    </div>
-                    <div class="slide-gallery-card-inner">
-                        <div class="slide-gallery-count-badge ${mode}">
-                            <i class="fa-solid ${item.icon}"></i>
-                            <span>${item.count}</span>
-                        </div>
-                        <div class="slide-gallery-item-title">${item.title}</div>
-                        <div class="slide-gallery-item-unit"><i class="fa-solid fa-tag"></i> ${item.unit}</div>
-                        <div class="slide-gallery-item-story">${item.story}</div>
-                    </div>
-                </div>
-                `;
-            }).join('')}
-        </div>
-    `;
 }
 
 function openFundSlideReportModal() {
@@ -12094,8 +11916,6 @@ function closeFundSlideReportModal() {
     modal.style.display = "none";
     isSlideReportModalOpen = false;
     document.body.style.overflow = "";
-
-    closeSlideAssetGallery();
 
     isSlideDetailActive = false;
     if (slideInvestorChartInstance) {
@@ -13132,12 +12952,6 @@ window.addEventListener("keydown", (e) => {
         e.preventDefault();
         navigateSlide(1);
     } else if (e.key === "Escape") {
-        const galOverlay = document.getElementById("slideAssetGalleryOverlay");
-        if (galOverlay && galOverlay.style.display !== "none") {
-            e.preventDefault();
-            closeSlideAssetGallery();
-            return;
-        }
         if (document.fullscreenElement || document.webkitFullscreenElement) {
             return;
         }
@@ -13441,9 +13255,6 @@ window.filterSlideKapStocks = filterSlideKapStocks;
 window.showSlideMacroAllocView = showSlideMacroAllocView;
 window.getFundShareWebUrl = getFundShareWebUrl;
 window.handleUrlDeepLinkParams = handleUrlDeepLinkParams;
-window.openSlideAssetGalleryModal = openSlideAssetGalleryModal;
-window.closeSlideAssetGallery = closeSlideAssetGallery;
-window.switchSlideAssetGalleryTab = switchSlideAssetGalleryTab;
 
 
 
