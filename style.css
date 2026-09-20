@@ -14375,168 +14375,277 @@ body.theme-neo-brutalism .sort-option.active {
 .slide-aspect-box.theme-bento .slide-funds-grid-3 {
     display: flex !important;
     flex-direction: column !important;
-    gap: 10px !important;
     justify-content: space-between !important;
+    gap: 10px !important;
     flex: 1 !important;
+    margin-top: 4px !important;
 }
 
 .slide-aspect-box.theme-bento .slide-fund-card {
-    flex-direction: row !important;
-    align-items: center !important;
+    display: flex !important;
+    flex-direction: column !important;
     justify-content: space-between !important;
-    padding: 10px 18px !important;
+    padding: 11px 18px !important;
     border-radius: 14px !important;
-    background: rgba(16, 22, 34, 0.88) !important;
+    background: rgba(14, 18, 28, 0.92) !important;
     border: 1px solid rgba(226, 232, 240, 0.12) !important;
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4) !important;
-    gap: 16px !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4) !important;
+    gap: 8px !important;
+    flex: 1 !important;
+    min-height: 0 !important;
     transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1) !important;
 }
 
 .slide-aspect-box.theme-bento .slide-fund-card:hover {
-    transform: translateX(4px) scale(1.005) !important;
+    transform: translateX(4px) scale(1.004) !important;
 }
 
 /* Rank 1: Electric Lime Zirve */
 .slide-aspect-box.theme-bento .slide-fund-card.rank-card-1 {
-    background: linear-gradient(135deg, rgba(28, 38, 20, 0.95) 0%, rgba(14, 18, 28, 0.98) 100%) !important;
+    background: linear-gradient(135deg, rgba(24, 32, 18, 0.95) 0%, rgba(12, 16, 26, 0.98) 100%) !important;
     border: 1.5px solid #D4F63C !important;
-    border-left: 5px solid #D4F63C !important;
-    box-shadow: 0 0 30px rgba(212, 246, 60, 0.2) !important;
+    border-left: 6px solid #D4F63C !important;
+    box-shadow: 0 0 25px rgba(212, 246, 60, 0.18) !important;
 }
 
 /* Rank 2: Electric Cyan İkinci */
 .slide-aspect-box.theme-bento .slide-fund-card.rank-card-2 {
-    background: linear-gradient(135deg, rgba(16, 32, 48, 0.95) 0%, rgba(12, 16, 26, 0.98) 100%) !important;
+    background: linear-gradient(135deg, rgba(14, 26, 42, 0.95) 0%, rgba(10, 14, 24, 0.98) 100%) !important;
     border: 1.5px solid #38BDF8 !important;
-    border-left: 5px solid #38BDF8 !important;
-    box-shadow: 0 0 25px rgba(56, 189, 248, 0.18) !important;
+    border-left: 6px solid #38BDF8 !important;
+    box-shadow: 0 0 20px rgba(56, 189, 248, 0.15) !important;
 }
 
 /* Rank 3: Royal Purple Üçüncü */
 .slide-aspect-box.theme-bento .slide-fund-card.rank-card-3 {
-    background: linear-gradient(135deg, rgba(32, 18, 48, 0.95) 0%, rgba(12, 16, 26, 0.98) 100%) !important;
+    background: linear-gradient(135deg, rgba(28, 16, 44, 0.95) 0%, rgba(10, 14, 24, 0.98) 100%) !important;
     border: 1.5px solid #A855F7 !important;
-    border-left: 5px solid #A855F7 !important;
-    box-shadow: 0 0 25px rgba(168, 85, 247, 0.18) !important;
+    border-left: 6px solid #A855F7 !important;
+    box-shadow: 0 0 20px rgba(168, 85, 247, 0.15) !important;
 }
 
-/* Left Half of Horizontal Row */
+/* ---------------- TIER 1 (TOP ROW: IDENTITY & HERO STAT) ---------------- */
 .slide-aspect-box.theme-bento .slide-fund-card > div:first-child {
     display: flex !important;
     align-items: center !important;
-    gap: 18px !important;
-    flex: 1.2 !important;
+    justify-content: space-between !important;
+    gap: 14px !important;
+    width: 100% !important;
+    flex: unset !important;
     min-width: 0 !important;
 }
 
 .slide-aspect-box.theme-bento .slide-fund-card-top {
-    margin-bottom: 0 !important;
+    display: flex !important;
     align-items: center !important;
-    gap: 14px !important;
+    gap: 12px !important;
+    margin-bottom: 0 !important;
     flex: 1 !important;
     min-width: 0 !important;
+}
+
+.slide-aspect-box.theme-bento .slide-rank-badge {
+    height: 28px !important;
+    padding: 3px 10px !important;
+    border-radius: 8px !important;
+    font-size: 0.72rem !important;
+    flex-shrink: 0 !important;
+}
+
+.slide-aspect-box.theme-bento .slide-fund-card.rank-card-1 .slide-rank-badge {
+    background: #D4F63C !important;
+    color: #080B11 !important;
+    box-shadow: 0 0 12px rgba(212, 246, 60, 0.4) !important;
+    font-weight: 900 !important;
 }
 
 .slide-aspect-box.theme-bento .slide-fund-identity {
-    min-width: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
     flex: 1 !important;
+    min-width: 0 !important;
+}
+
+.slide-aspect-box.theme-bento .slide-fund-code-row {
+    display: flex !important;
+    align-items: center !important;
+    gap: 7px !important;
+    margin-bottom: 0 !important;
+    flex-shrink: 0 !important;
+}
+
+.slide-aspect-box.theme-bento .slide-code-badge {
+    font-size: 0.88rem !important;
+    padding: 2px 8px !important;
+    border-radius: 6px !important;
+}
+
+.slide-aspect-box.theme-bento .slide-fund-card.rank-card-1 .slide-code-badge {
+    color: #D4F63C !important;
+    background: rgba(212, 246, 60, 0.15) !important;
+    border-color: rgba(212, 246, 60, 0.5) !important;
+}
+
+.slide-aspect-box.theme-bento .slide-fund-cat-name {
+    font-size: 0.72rem !important;
+    flex-shrink: 0 !important;
 }
 
 .slide-aspect-box.theme-bento .slide-fund-fullname {
-    font-size: 0.82rem !important;
-    min-height: auto !important;
-    -webkit-line-clamp: 1 !important;
+    font-size: 0.84rem !important;
+    font-weight: 700 !important;
+    color: #FFFFFF !important;
     white-space: nowrap !important;
-    color: #F8FAFC !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    min-height: auto !important;
     line-height: 1.2 !important;
+    flex: 1 !important;
+    min-width: 0 !important;
 }
 
+/* Hero Capsule on Right Side of Tier 1 */
 .slide-aspect-box.theme-bento .slide-fund-hero-capsule {
+    display: grid !important;
+    grid-template-columns: auto auto !important;
+    grid-template-rows: auto auto !important;
+    align-items: center !important;
+    column-gap: 14px !important;
+    row-gap: 2px !important;
     margin-bottom: 0 !important;
-    padding: 6px 14px !important;
-    border-radius: 10px !important;
+    padding: 4px 14px !important;
+    border-radius: 9px !important;
+    background: rgba(0, 0, 0, 0.45) !important;
+    border: 1px solid rgba(255, 255, 255, 0.10) !important;
     flex-shrink: 0 !important;
-    min-width: 175px !important;
-    text-align: right !important;
-    background: rgba(0, 0, 0, 0.35) !important;
-    border: 1px solid rgba(255, 255, 255, 0.08) !important;
 }
 
 .slide-aspect-box.theme-bento .slide-fund-hero-lbl {
-    font-size: 0.60rem !important;
-    justify-content: flex-end !important;
-    margin-bottom: 1px !important;
+    grid-column: 1 / 2 !important;
+    grid-row: 1 / 2 !important;
+    font-size: 0.58rem !important;
+    margin-bottom: 0 !important;
+    color: #94A3B8 !important;
+    text-transform: uppercase !important;
+}
+
+.slide-aspect-box.theme-bento .slide-fund-hero-sub {
+    grid-column: 1 / 2 !important;
+    grid-row: 2 / 3 !important;
+    font-size: 0.64rem !important;
+    margin-top: 0 !important;
+    color: #CBD5E1 !important;
 }
 
 .slide-aspect-box.theme-bento .slide-fund-hero-num {
-    font-size: 1.35rem !important;
-    line-height: 1.1 !important;
-    margin: 1px 0 !important;
+    grid-column: 2 / 3 !important;
+    grid-row: 1 / 3 !important;
+    font-size: 1.28rem !important;
+    font-weight: 900 !important;
+    margin: 0 !important;
+    line-height: 1 !important;
+    letter-spacing: -0.02em !important;
+    text-align: right !important;
 }
 
 .slide-aspect-box.theme-bento .slide-fund-card.rank-card-1 .slide-fund-hero-num.pos {
     color: #D4F63C !important;
-    text-shadow: 0 0 16px rgba(212, 246, 60, 0.4) !important;
+    text-shadow: 0 0 14px rgba(212, 246, 60, 0.4) !important;
 }
 
-.slide-aspect-box.theme-bento .slide-fund-hero-sub {
-    font-size: 0.66rem !important;
-    justify-content: flex-end !important;
-    margin-top: 2px !important;
+.slide-aspect-box.theme-bento .slide-fund-hero-num.pos {
+    color: #34D399 !important;
+    text-shadow: 0 0 14px rgba(52, 211, 153, 0.4) !important;
 }
 
-/* Right Half of Horizontal Row */
+.slide-aspect-box.theme-bento .slide-fund-hero-num.neg {
+    color: #FB7185 !important;
+    text-shadow: 0 0 14px rgba(251, 113, 133, 0.35) !important;
+}
+
+/* ---------------- TIER 2 (BOTTOM ROW: METRICS & ACTION) ---------------- */
 .slide-aspect-box.theme-bento .slide-fund-card > div:last-child {
     display: flex !important;
     align-items: center !important;
-    gap: 12px !important;
+    justify-content: space-between !important;
+    gap: 10px !important;
+    width: 100% !important;
     flex-shrink: 0 !important;
+    padding-top: 6px !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.07) !important;
 }
 
 .slide-aspect-box.theme-bento .slide-fund-metrics-tiles {
     display: flex !important;
     gap: 8px !important;
     margin-bottom: 0 !important;
+    flex: 1 !important;
 }
 
 .slide-aspect-box.theme-bento .slide-metric-tile {
-    padding: 5px 10px !important;
-    min-width: 78px !important;
-    border-radius: 8px !important;
-    background: rgba(0, 0, 0, 0.4) !important;
-    border-color: rgba(255, 255, 255, 0.08) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 6px !important;
+    padding: 4px 10px !important;
+    border-radius: 7px !important;
+    background: rgba(0, 0, 0, 0.35) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    flex: 1 !important;
+    min-width: 0 !important;
 }
 
 .slide-aspect-box.theme-bento .slide-tile-lbl {
     font-size: 0.58rem !important;
-    margin-bottom: 1px !important;
+    color: #94A3B8 !important;
+    margin-bottom: 0 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
 }
 
 .slide-aspect-box.theme-bento .slide-tile-val {
-    font-size: 0.80rem !important;
+    font-size: 0.78rem !important;
+    font-weight: 800 !important;
+    white-space: nowrap !important;
+    margin-left: auto !important;
 }
 
 .slide-aspect-box.theme-bento .slide-fund-velocity-bar {
-    padding: 6px 12px !important;
-    font-size: 0.70rem !important;
-    border-radius: 8px !important;
-    min-width: 125px !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    padding: 5px 12px !important;
+    font-size: 0.68rem !important;
+    border-radius: 7px !important;
     background: rgba(0, 0, 0, 0.45) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    white-space: nowrap !important;
+    flex-shrink: 0 !important;
 }
 
 .slide-aspect-box.theme-bento .slide-fund-card.rank-card-1 .slide-velocity-val {
     color: #D4F63C !important;
+    font-weight: 800 !important;
 }
 
 .slide-aspect-box.theme-bento .slide-fund-click-hint {
+    display: flex !important;
+    align-items: center !important;
+    gap: 6px !important;
     margin-top: 0 !important;
-    padding: 7px 12px !important;
-    border-radius: 8px !important;
+    padding: 5px 12px !important;
+    border-radius: 7px !important;
     font-size: 0.68rem !important;
+    font-weight: 700 !important;
     background: rgba(212, 246, 60, 0.12) !important;
-    border-color: rgba(212, 246, 60, 0.4) !important;
+    border: 1px solid rgba(212, 246, 60, 0.4) !important;
     color: #D4F63C !important;
+    white-space: nowrap !important;
+    flex-shrink: 0 !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
 }
 
 .slide-aspect-box.theme-bento .slide-fund-click-hint:hover {
