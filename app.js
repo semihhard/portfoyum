@@ -10896,6 +10896,92 @@ function closeKapModal() {
    TEFAS DAILY FLOW SLIDE PRESENTATION & POWERPOINT (.PPTX) EXPORT ENGINE
    ========================================================================== */
 
+const SLIDE_THEMES = {
+    cyber: {
+        id: 'cyber',
+        name: 'Cyber Dark',
+        bgCanvas: '#070C18',
+        bgHexPptx: '070C18',
+        pdfRgb: [7, 12, 24],
+        chartLineColor: '#38BDF8',
+        chartFillStart: 'rgba(56, 189, 248, 0.35)',
+        chartFillEnd: 'rgba(56, 189, 248, 0.0)'
+    },
+    vintage: {
+        id: 'vintage',
+        name: 'Wall Street Gazetesi',
+        bgCanvas: '#FBF7EE',
+        bgHexPptx: 'FBF7EE',
+        pdfRgb: [251, 247, 238],
+        chartLineColor: '#854D0E',
+        chartFillStart: 'rgba(133, 77, 14, 0.25)',
+        chartFillEnd: 'rgba(133, 77, 14, 0.0)'
+    },
+    emerald: {
+        id: 'emerald',
+        name: 'Zümrüt Kasa',
+        bgCanvas: '#021B13',
+        bgHexPptx: '021B13',
+        pdfRgb: [2, 27, 19],
+        chartLineColor: '#10B981',
+        chartFillStart: 'rgba(16, 185, 129, 0.35)',
+        chartFillEnd: 'rgba(16, 185, 129, 0.0)'
+    },
+    sunset: {
+        id: 'sunset',
+        name: 'Sunset Aura',
+        bgCanvas: '#190933',
+        bgHexPptx: '190933',
+        pdfRgb: [25, 9, 51],
+        chartLineColor: '#F43F5E',
+        chartFillStart: 'rgba(244, 63, 94, 0.35)',
+        chartFillEnd: 'rgba(244, 63, 94, 0.0)'
+    }
+};
+
+let currentSlideTheme = (function() {
+    try {
+        const saved = localStorage.getItem("preferredSlideTheme");
+        if (saved && SLIDE_THEMES[saved]) return saved;
+    } catch(e) {}
+    return "cyber";
+})();
+
+function setSlideTheme(themeKey) {
+    if (!SLIDE_THEMES[themeKey]) themeKey = "cyber";
+    currentSlideTheme = themeKey;
+    try {
+        localStorage.setItem("preferredSlideTheme", themeKey);
+    } catch(e) {}
+
+    const aspectBox = document.getElementById("slideAspectBox");
+    if (aspectBox) {
+        aspectBox.classList.remove("theme-cyber", "theme-vintage", "theme-emerald", "theme-sunset", "theme-corporate", "theme-royal", "theme-nordic");
+        aspectBox.classList.add(`theme-${themeKey}`);
+    }
+
+    document.querySelectorAll(".slide-theme-pill-btn").forEach(btn => {
+        const isMatch = btn.getAttribute("data-theme") === themeKey;
+        btn.classList.toggle("active", isMatch);
+    });
+
+    if (slideInvestorChartInstance && slideInvestorChartInstance.data && slideInvestorChartInstance.data.datasets && slideInvestorChartInstance.data.datasets[0]) {
+        const t = SLIDE_THEMES[themeKey];
+        const ds = slideInvestorChartInstance.data.datasets[0];
+        ds.borderColor = t.chartLineColor;
+        ds.pointHoverBackgroundColor = t.chartLineColor;
+        const ctx = slideInvestorChartInstance.ctx;
+        if (ctx) {
+            const grad = ctx.createLinearGradient(0, 0, 0, 200);
+            grad.addColorStop(0, t.chartFillStart);
+            grad.addColorStop(1, t.chartFillEnd);
+            ds.backgroundColor = grad;
+        }
+        slideInvestorChartInstance.update();
+    }
+}
+window.setSlideTheme = setSlideTheme;
+
 let currentSlideIndex = 1;
 let previousSlideIndex = 1;
 let isSlideDetailActive = false;
@@ -11546,6 +11632,9 @@ function openFundSlideReportModal() {
     }
 
     renderInteractiveSlides(data);
+    if (typeof setSlideTheme === 'function') {
+        setSlideTheme(currentSlideTheme);
+    }
     goToSlide(1);
 
     modal.style.display = "flex";
@@ -12050,9 +12139,15 @@ async function openSlideFundDetail(fundCode, originSlideIndex = null) {
         });
         const investorPoints = historyData.map(d => parseInt(d.kisiSayisi) || 0);
 
+        const activeThemeCfg = (typeof SLIDE_THEMES !== 'undefined' && SLIDE_THEMES[currentSlideTheme]) || {
+            chartLineColor: '#38BDF8',
+            chartFillStart: 'rgba(56, 189, 248, 0.35)',
+            chartFillEnd: 'rgba(56, 189, 248, 0.0)'
+        };
+
         const gradient = ctx.createLinearGradient(0, 0, 0, 200);
-        gradient.addColorStop(0, "rgba(56, 189, 248, 0.35)");
-        gradient.addColorStop(1, "rgba(56, 189, 248, 0.0)");
+        gradient.addColorStop(0, activeThemeCfg.chartFillStart);
+        gradient.addColorStop(1, activeThemeCfg.chartFillEnd);
 
         slideInvestorChartInstance = new Chart(ctx, {
             type: 'line',
@@ -12061,14 +12156,14 @@ async function openSlideFundDetail(fundCode, originSlideIndex = null) {
                 datasets: [{
                     label: 'Yatırımcı Sayısı',
                     data: investorPoints,
-                    borderColor: '#38BDF8',
+                    borderColor: activeThemeCfg.chartLineColor,
                     backgroundColor: gradient,
                     borderWidth: 2.5,
                     fill: true,
                     tension: 0.35,
                     pointRadius: 0,
                     pointHoverRadius: 6,
-                    pointHoverBackgroundColor: '#38BDF8',
+                    pointHoverBackgroundColor: activeThemeCfg.chartLineColor,
                     pointHoverBorderColor: '#FFFFFF',
                     pointHoverBorderWidth: 2
                 }]
@@ -12398,6 +12493,10 @@ async function exportToPDF() {
 
         const totalPages = 6 + featuredFunds.length;
         const aspectBox = document.getElementById("slideAspectBox");
+        const themeCfg = (typeof SLIDE_THEMES !== 'undefined' && SLIDE_THEMES[currentSlideTheme]) || {
+            bgCanvas: '#070C18',
+            pdfRgb: [7, 12, 24]
+        };
 
         // 1. Render Main Overview Slides (1 to 6)
         for (let pageNum = 1; pageNum <= 6; pageNum++) {
@@ -12414,7 +12513,7 @@ async function exportToPDF() {
                     scale: 2.2,
                     dpi: 300,
                     useCORS: true,
-                    backgroundColor: '#070C18',
+                    backgroundColor: themeCfg.bgCanvas,
                     logging: false,
                     allowTaint: true,
                     imageTimeout: 0
@@ -12432,7 +12531,7 @@ async function exportToPDF() {
                 const targetH = (canvas.height * targetW) / canvas.width;
                 const offsetY = Math.max(8, (pdfPageH - targetH) / 2);
 
-                pdf.setFillColor(7, 12, 24);
+                pdf.setFillColor(themeCfg.pdfRgb[0], themeCfg.pdfRgb[1], themeCfg.pdfRgb[2]);
                 pdf.rect(0, 0, pdfPageW, pdfPageH, 'F');
 
                 const finalH = Math.min(targetH, pdfPageH - 16);
@@ -12489,7 +12588,7 @@ async function exportToPDF() {
                     scale: 2.2,
                     dpi: 300,
                     useCORS: true,
-                    backgroundColor: '#070C18',
+                    backgroundColor: themeCfg.bgCanvas,
                     logging: false,
                     allowTaint: true,
                     imageTimeout: 0
@@ -12506,7 +12605,7 @@ async function exportToPDF() {
                 const offsetY = Math.max(8, (pdfPageH - targetH) / 2);
                 const finalH = Math.min(targetH, pdfPageH - 16);
 
-                pdf.setFillColor(7, 12, 24);
+                pdf.setFillColor(themeCfg.pdfRgb[0], themeCfg.pdfRgb[1], themeCfg.pdfRgb[2]);
                 pdf.rect(0, 0, pdfPageW, pdfPageH, 'F');
                 pdf.addImage(imgData, 'JPEG', marginX, offsetY, targetW, finalH);
 
@@ -12667,6 +12766,10 @@ async function exportToPowerPoint() {
 
         const totalPages = 6 + featuredFunds.length;
         const aspectBox = document.getElementById("slideAspectBox");
+        const themeCfg = (typeof SLIDE_THEMES !== 'undefined' && SLIDE_THEMES[currentSlideTheme]) || {
+            bgCanvas: '#070C18',
+            bgHexPptx: '070C18'
+        };
         const shapeType = (pptx.shapes && pptx.shapes.RECTANGLE) || 'rect';
         const slideW = 10.0;
         const slideH = 5.625;
@@ -12686,7 +12789,7 @@ async function exportToPowerPoint() {
                     scale: 2.2,
                     dpi: 300,
                     useCORS: true,
-                    backgroundColor: '#070C18',
+                    backgroundColor: themeCfg.bgCanvas,
                     logging: false,
                     allowTaint: true,
                     imageTimeout: 0
@@ -12694,7 +12797,7 @@ async function exportToPowerPoint() {
 
                 const imgData = canvas.toDataURL('image/png');
                 const slide = pptx.addSlide();
-                slide.background = { color: '070C18' };
+                slide.background = { color: themeCfg.bgHexPptx };
 
                 const aspectRatio = canvas.width / canvas.height;
                 let boxW = slideW;
@@ -12776,7 +12879,7 @@ async function exportToPowerPoint() {
                     scale: 2.2,
                     dpi: 300,
                     useCORS: true,
-                    backgroundColor: '#070C18',
+                    backgroundColor: themeCfg.bgCanvas,
                     logging: false,
                     allowTaint: true,
                     imageTimeout: 0
@@ -12784,7 +12887,7 @@ async function exportToPowerPoint() {
 
                 const imgData = canvas.toDataURL('image/png');
                 const slide = pptx.addSlide();
-                slide.background = { color: '070C18' };
+                slide.background = { color: themeCfg.bgHexPptx };
 
                 const aspectRatio = canvas.width / canvas.height;
                 let boxW = slideW;

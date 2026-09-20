@@ -13836,6 +13836,774 @@ body.theme-neo-brutalism .sort-option.active {
 }
 
 /* ==========================================================================
+   SLIDE THEME SELECTOR TOOLBAR
+   ========================================================================== */
+.slide-theme-selector-bar {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 5px 14px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 999px;
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.25);
+}
+
+.slide-theme-selector-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.78rem;
+    font-weight: 800;
+    color: #94A3B8;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.slide-theme-selector-label i {
+    color: #38BDF8;
+}
+
+.slide-theme-pills {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    overflow-x: auto;
+}
+
+.slide-theme-pill-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: #94A3B8;
+    font-size: 0.78rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+    white-space: nowrap;
+}
+
+.slide-theme-pill-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #FFFFFF;
+    border-color: rgba(255, 255, 255, 0.25);
+    transform: translateY(-1px);
+}
+
+.slide-theme-pill-btn.active {
+    background: rgba(56, 189, 248, 0.16);
+    border-color: #38BDF8;
+    color: #38BDF8;
+    box-shadow: 0 0 14px rgba(56, 189, 248, 0.35);
+}
+
+.theme-pill-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.theme-pill-dot.dot-cyber {
+    background: #38BDF8;
+    box-shadow: 0 0 6px #38BDF8;
+}
+
+.theme-pill-dot.dot-vintage {
+    background: #854D0E;
+    box-shadow: 0 0 6px #854D0E;
+}
+
+.theme-pill-dot.dot-emerald {
+    background: #10B981;
+    box-shadow: 0 0 6px #10B981;
+}
+
+.theme-pill-dot.dot-sunset {
+    background: #F43F5E;
+    box-shadow: 0 0 6px #F43F5E;
+}
+
+.slide-theme-pill-btn[data-theme="vintage"].active {
+    background: rgba(133, 77, 14, 0.22);
+    border-color: #D97706;
+    color: #FBBF24;
+    box-shadow: 0 0 14px rgba(217, 119, 6, 0.35);
+}
+
+.slide-theme-pill-btn[data-theme="emerald"].active {
+    background: rgba(16, 185, 129, 0.2);
+    border-color: #10B981;
+    color: #34D399;
+    box-shadow: 0 0 14px rgba(16, 185, 129, 0.4);
+}
+
+.slide-theme-pill-btn[data-theme="sunset"].active {
+    background: rgba(244, 63, 94, 0.2);
+    border-color: #F43F5E;
+    color: #FB7185;
+    box-shadow: 0 0 14px rgba(244, 63, 94, 0.4);
+}
+
+/* ==========================================================================
+   THEME 1: WALL STREET GAZETESİ (VINTAGE CREAM & INK)
+   ========================================================================== */
+.slide-aspect-box.theme-vintage {
+    background: #FBF7EE !important;
+    border: 2px solid #D6CEBC !important;
+    box-shadow: 0 25px 60px -15px rgba(60, 40, 20, 0.25), inset 0 0 100px rgba(180, 150, 110, 0.08) !important;
+    color: #1C1917 !important;
+}
+
+.slide-aspect-box.theme-vintage .slide-main-title {
+    color: #1C1917 !important;
+    font-family: 'Playfair Display', Georgia, serif !important;
+    letter-spacing: -0.01em;
+}
+
+.slide-aspect-box.theme-vintage .slide-subtitle {
+    color: #57534E !important;
+}
+
+.slide-aspect-box.theme-vintage .slide-page-number-capsule {
+    background: #1C1917 !important;
+    border-color: #1C1917 !important;
+    color: #FBF7EE !important;
+    box-shadow: none !important;
+}
+
+.slide-aspect-box.theme-vintage .slide-date-pill {
+    background: #E7E0CE !important;
+    border-color: #D6CEBC !important;
+    color: #78350F !important;
+}
+
+.slide-aspect-box.theme-vintage .slide-category-tag.cyan {
+    background: #E7E0CE !important;
+    border-color: #D6CEBC !important;
+    color: #78350F !important;
+    box-shadow: none !important;
+}
+
+/* Hero Cards in Vintage */
+.slide-aspect-box.theme-vintage .slide-macro-hero-card.pos {
+    background: #F4EFE2 !important;
+    border: 2px solid #86EFAC !important;
+    border-top: 3.5px solid #15803D !important;
+    box-shadow: 0 4px 16px rgba(21, 128, 61, 0.08) !important;
+}
+
+.slide-aspect-box.theme-vintage .slide-macro-hero-card.neg {
+    background: #F4EFE2 !important;
+    border: 2px solid #FECACA !important;
+    border-top: 3.5px solid #C2410C !important;
+    box-shadow: 0 4px 16px rgba(194, 65, 12, 0.08) !important;
+}
+
+.slide-aspect-box.theme-vintage .slide-macro-hero-card.inv-card {
+    background: #F4EFE2 !important;
+    border: 2px solid #FDE68A !important;
+    border-top: 3.5px solid #854D0E !important;
+    box-shadow: 0 4px 16px rgba(133, 77, 14, 0.08) !important;
+}
+
+.slide-aspect-box.theme-vintage .slide-macro-title {
+    color: #44403C !important;
+}
+
+.slide-aspect-box.theme-vintage .slide-macro-desc {
+    color: #78716C !important;
+}
+
+.slide-aspect-box.theme-vintage .slide-macro-big-num.pos {
+    color: #15803D !important;
+    text-shadow: none !important;
+}
+
+.slide-aspect-box.theme-vintage .slide-macro-big-num.neg {
+    color: #C2410C !important;
+    text-shadow: none !important;
+}
+
+.slide-aspect-box.theme-vintage .slide-macro-hero-card.inv-card .slide-macro-big-num {
+    color: #854D0E !important;
+    text-shadow: none !important;
+}
+
+/* Category Leaders in Vintage */
+.slide-aspect-box.theme-vintage .slide-cat-leader-card.inflow {
+    background: #FAF5E8 !important;
+    border: 1.5px solid #86EFAC !important;
+    border-top: 3px solid #15803D !important;
+}
+
+.slide-aspect-box.theme-vintage .slide-cat-leader-card.outflow {
+    background: #FAF5E8 !important;
+    border: 1.5px solid #FECACA !important;
+    border-top: 3px solid #C2410C !important;
+}
+
+.slide-aspect-box.theme-vintage .slide-cat-leader-name {
+    color: #1C1917 !important;
+}
+
+.slide-aspect-box.theme-vintage .slide-cat-leader-stats {
+    border-top-color: #D6CEBC !important;
+    color: #57534E !important;
+}
+
+.slide-aspect-box.theme-vintage .slide-cat-leader-val.pos {
+    color: #15803D !important;
+}
+
+.slide-aspect-box.theme-vintage .slide-cat-leader-val.neg {
+    color: #C2410C !important;
+}
+
+/* Macro Mini Stats Bottom */
+.slide-aspect-box.theme-vintage .slide-mini-stat {
+    background: #FAF5E8 !important;
+    border-color: #D6CEBC !important;
+}
+
+.slide-aspect-box.theme-vintage .slide-mini-stat-lbl {
+    color: #78716C !important;
+}
+
+.slide-aspect-box.theme-vintage .slide-mini-stat-val {
+    color: #1C1917 !important;
+}
+
+/* Fund Cards (Slides 2 to 5) */
+.slide-aspect-box.theme-vintage .slide-fund-card {
+    background: #F4EFE2 !important;
+    border: 2px solid #D6CEBC !important;
+    box-shadow: 0 4px 14px rgba(60, 40, 20, 0.08) !important;
+}
+
+.slide-aspect-box.theme-vintage .slide-fund-card.rank-card-1 {
+    background: #FFFDF5 !important;
+    border-color: #F59E0B !important;
+    border-top: 3.5px solid #D97706 !important;
+}
+
+.slide-aspect-box.theme-vintage .slide-fund-card.rank-card-2 {
+    background: #F4EFE2 !important;
+    border-color: #78716C !important;
+    border-top: 3.5px solid #44403C !important;
+}
+
+.slide-aspect-box.theme-vintage .slide-fund-card.rank-card-3 {
+    background: #F4EFE2 !important;
+    border-color: #A8A29E !important;
+    border-top: 3.5px solid #78716C !important;
+}
+
+.slide-aspect-box.theme-vintage .slide-fund-fullname {
+    color: #1C1917 !important;
+}
+
+.slide-aspect-box.theme-vintage .slide-fund-hero-capsule {
+    background: #FAF5E8 !important;
+    border-color: #D6CEBC !important;
+}
+
+.slide-aspect-box.theme-vintage .slide-fund-hero-capsule.pos {
+    border-left: 4px solid #15803D !important;
+}
+
+.slide-aspect-box.theme-vintage .slide-fund-hero-capsule.neg {
+    border-left: 4px solid #C2410C !important;
+}
+
+.slide-aspect-box.theme-vintage .slide-fund-hero-num.pos {
+    color: #15803D !important;
+    text-shadow: none !important;
+}
+
+.slide-aspect-box.theme-vintage .slide-fund-hero-num.neg {
+    color: #C2410C !important;
+    text-shadow: none !important;
+}
+
+.slide-aspect-box.theme-vintage .slide-fund-hero-lbl {
+    color: #57534E !important;
+}
+
+.slide-aspect-box.theme-vintage .slide-fund-hero-sub {
+    color: #44403C !important;
+}
+
+.slide-aspect-box.theme-vintage .slide-metric-tile {
+    background: #FAF5E8 !important;
+    border-color: #D6CEBC !important;
+}
+
+.slide-aspect-box.theme-vintage .slide-tile-lbl {
+    color: #78716C !important;
+}
+
+.slide-aspect-box.theme-vintage .slide-tile-val {
+    color: #1C1917 !important;
+}
+
+.slide-aspect-box.theme-vintage .slide-fund-velocity-bar {
+    background: #FAF5E8 !important;
+    border-color: #D6CEBC !important;
+    color: #1C1917 !important;
+}
+
+.slide-aspect-box.theme-vintage .slide-velocity-lbl {
+    color: #57534E !important;
+}
+
+.slide-aspect-box.theme-vintage .slide-fund-click-hint {
+    background: #E7E0CE !important;
+    border-color: #854D0E !important;
+    color: #78350F !important;
+}
+
+.slide-aspect-box.theme-vintage .slide-cat-summary-table-wrap {
+    background: #FAF5E8 !important;
+    border: 2px solid #D6CEBC !important;
+    box-shadow: 0 4px 16px rgba(60, 40, 20, 0.08) !important;
+}
+
+.slide-aspect-box.theme-vintage .slide-cat-summary-table th {
+    background: #E7E0CE !important;
+    color: #1C1917 !important;
+    border-bottom: 2px solid #D6CEBC !important;
+}
+
+.slide-aspect-box.theme-vintage .slide-cat-summary-table td {
+    color: #1C1917 !important;
+    border-bottom-color: #E7E0CE !important;
+}
+
+.slide-aspect-box.theme-vintage .slide-cat-summary-table tr:hover td {
+    background: #F4EFE2 !important;
+}
+
+.slide-aspect-box.theme-vintage .slide-share-bar {
+    background: #D6CEBC !important;
+}
+
+.slide-aspect-box.theme-vintage .btn-slide-back {
+    background: #E7E0CE !important;
+    border-color: #854D0E !important;
+    color: #78350F !important;
+}
+
+.slide-aspect-box.theme-vintage .slide-detail-metric-card {
+    background: #FAF5E8 !important;
+    border-color: #D6CEBC !important;
+}
+
+.slide-aspect-box.theme-vintage .slide-detail-m-lbl {
+    color: #78716C !important;
+}
+
+.slide-aspect-box.theme-vintage .slide-detail-m-val {
+    color: #1C1917 !important;
+}
+
+.slide-aspect-box.theme-vintage .slide-detail-m-sub {
+    color: #78716C !important;
+}
+
+.slide-aspect-box.theme-vintage .slide-detail-pane-card {
+    background: #FAF5E8 !important;
+    border-color: #D6CEBC !important;
+}
+
+.slide-aspect-box.theme-vintage .slide-detail-pane-title {
+    color: #1C1917 !important;
+}
+
+.slide-aspect-box.theme-vintage .slide-detail-fund-name {
+    color: #44403C !important;
+}
+
+.slide-aspect-box.theme-vintage .slide-alloc-chip-row {
+    background: #F4EFE2 !important;
+    border-color: #D6CEBC !important;
+}
+
+.slide-aspect-box.theme-vintage .slide-alloc-name {
+    color: #1C1917 !important;
+}
+
+.slide-aspect-box.theme-vintage .slide-alloc-bar-mini {
+    background: #D6CEBC !important;
+}
+
+.slide-aspect-box.theme-vintage .slide-trend-hero-card {
+    background: #F4EFE2 !important;
+    border-color: #D6CEBC !important;
+}
+
+.slide-aspect-box.theme-vintage .slide-trend-hero-lbl {
+    color: #78716C !important;
+}
+
+.slide-aspect-box.theme-vintage .slide-arrow-btn {
+    background: #F4EFE2 !important;
+    border-color: #D6CEBC !important;
+    color: #1C1917 !important;
+    box-shadow: 0 4px 12px rgba(60, 40, 20, 0.15) !important;
+}
+
+/* ==========================================================================
+   THEME 2: ZÜMRÜT KASA (DEEP EMERALD VAULT / PARA YEŞİLİ)
+   ========================================================================== */
+.slide-aspect-box.theme-emerald {
+    background: 
+        radial-gradient(circle at 14% 16%, rgba(16, 185, 129, 0.22) 0%, transparent 45%),
+        radial-gradient(circle at 86% 16%, rgba(5, 150, 105, 0.2) 0%, transparent 45%),
+        linear-gradient(155deg, #021B13 0%, #01140E 100%) !important;
+    border: 1.5px solid rgba(16, 185, 129, 0.4) !important;
+    box-shadow: 0 30px 80px -15px rgba(2, 43, 30, 0.95), 0 0 35px rgba(16, 185, 129, 0.15) !important;
+    color: #FFFFFF !important;
+}
+
+.slide-aspect-box.theme-emerald .slide-page-number-capsule {
+    background: rgba(16, 185, 129, 0.18) !important;
+    border-color: rgba(52, 211, 153, 0.5) !important;
+    color: #6EE7B7 !important;
+    box-shadow: 0 0 12px rgba(16, 185, 129, 0.3) !important;
+}
+
+.slide-aspect-box.theme-emerald .slide-main-title {
+    color: #FFFFFF !important;
+    text-shadow: 0 0 20px rgba(52, 211, 153, 0.25) !important;
+}
+
+.slide-aspect-box.theme-emerald .slide-subtitle {
+    color: #A7F3D0 !important;
+}
+
+.slide-aspect-box.theme-emerald .slide-date-pill {
+    background: rgba(16, 185, 129, 0.1) !important;
+    border-color: rgba(16, 185, 129, 0.3) !important;
+    color: #6EE7B7 !important;
+}
+
+.slide-aspect-box.theme-emerald .slide-category-tag.cyan {
+    background: rgba(16, 185, 129, 0.16) !important;
+    border-color: rgba(16, 185, 129, 0.4) !important;
+    color: #6EE7B7 !important;
+    box-shadow: 0 0 12px rgba(16, 185, 129, 0.25) !important;
+}
+
+/* Macro Cards in Emerald */
+.slide-aspect-box.theme-emerald .slide-macro-hero-card.pos {
+    background: linear-gradient(145deg, rgba(6, 78, 59, 0.45) 0%, rgba(2, 43, 30, 0.95) 100%) !important;
+    border: 1.5px solid #34D399 !important;
+    border-top: 3.5px solid #10B981 !important;
+    box-shadow: 0 0 25px rgba(16, 185, 129, 0.25) !important;
+}
+
+.slide-aspect-box.theme-emerald .slide-macro-hero-card.neg {
+    background: linear-gradient(145deg, rgba(136, 19, 55, 0.35) 0%, rgba(2, 43, 30, 0.95) 100%) !important;
+    border: 1.5px solid #FB7185 !important;
+    border-top: 3.5px solid #F43F5E !important;
+}
+
+.slide-aspect-box.theme-emerald .slide-macro-hero-card.inv-card {
+    background: linear-gradient(145deg, rgba(13, 148, 136, 0.4) 0%, rgba(2, 43, 30, 0.95) 100%) !important;
+    border: 1.5px solid #2DD4BF !important;
+    border-top: 3.5px solid #14B8A6 !important;
+    box-shadow: 0 0 25px rgba(45, 212, 191, 0.25) !important;
+}
+
+.slide-aspect-box.theme-emerald .slide-macro-big-num.pos {
+    color: #34D399 !important;
+    text-shadow: 0 0 25px rgba(52, 211, 153, 0.5) !important;
+}
+
+.slide-aspect-box.theme-emerald .slide-macro-big-num.neg {
+    color: #FB7185 !important;
+}
+
+.slide-aspect-box.theme-emerald .slide-macro-hero-card.inv-card .slide-macro-big-num {
+    color: #2DD4BF !important;
+    text-shadow: 0 0 25px rgba(45, 212, 191, 0.5) !important;
+}
+
+.slide-aspect-box.theme-emerald .slide-cat-leader-card.inflow {
+    background: rgba(6, 78, 59, 0.4) !important;
+    border: 1.5px solid #34D399 !important;
+    border-top: 3px solid #10B981 !important;
+}
+
+.slide-aspect-box.theme-emerald .slide-cat-leader-card.outflow {
+    background: rgba(136, 19, 55, 0.35) !important;
+    border: 1.5px solid #FB7185 !important;
+    border-top: 3px solid #F43F5E !important;
+}
+
+.slide-aspect-box.theme-emerald .slide-cat-leader-stats {
+    border-top-color: rgba(16, 185, 129, 0.2) !important;
+    color: #A7F3D0 !important;
+}
+
+/* Fund Cards in Emerald */
+.slide-aspect-box.theme-emerald .slide-fund-card {
+    background: linear-gradient(165deg, rgba(6, 40, 30, 0.95) 0%, rgba(2, 27, 19, 0.98) 100%) !important;
+    border: 1.5px solid rgba(16, 185, 129, 0.3) !important;
+}
+
+.slide-aspect-box.theme-emerald .slide-fund-card.rank-card-1 {
+    border-color: #F59E0B !important;
+    border-top: 3px solid #FBBF24 !important;
+    box-shadow: 0 0 25px rgba(245, 158, 11, 0.25) !important;
+}
+
+.slide-aspect-box.theme-emerald .slide-fund-card.rank-card-2 {
+    border-color: #34D399 !important;
+    border-top: 3px solid #6EE7B7 !important;
+    box-shadow: 0 0 25px rgba(52, 211, 153, 0.25) !important;
+}
+
+.slide-aspect-box.theme-emerald .slide-fund-card.rank-card-3 {
+    border-color: #2DD4BF !important;
+    border-top: 3px solid #5EEAD4 !important;
+}
+
+.slide-aspect-box.theme-emerald .slide-fund-fullname {
+    color: #ECFDF5 !important;
+}
+
+.slide-aspect-box.theme-emerald .slide-fund-hero-capsule.pos {
+    background: rgba(6, 78, 59, 0.45) !important;
+    border-color: rgba(52, 211, 153, 0.4) !important;
+}
+
+.slide-aspect-box.theme-emerald .slide-fund-hero-num.pos {
+    color: #34D399 !important;
+    text-shadow: 0 0 16px rgba(52, 211, 153, 0.4) !important;
+}
+
+.slide-aspect-box.theme-emerald .slide-metric-tile {
+    background: rgba(2, 27, 19, 0.8) !important;
+    border-color: rgba(16, 185, 129, 0.2) !important;
+}
+
+.slide-aspect-box.theme-emerald .slide-tile-lbl {
+    color: #6EE7B7 !important;
+}
+
+.slide-aspect-box.theme-emerald .slide-fund-velocity-bar {
+    background: rgba(2, 27, 19, 0.9) !important;
+    border-color: rgba(16, 185, 129, 0.25) !important;
+}
+
+.slide-aspect-box.theme-emerald .slide-fund-click-hint {
+    background: rgba(16, 185, 129, 0.15) !important;
+    border-color: #34D399 !important;
+    color: #6EE7B7 !important;
+}
+
+.slide-aspect-box.theme-emerald .btn-slide-back {
+    background: rgba(16, 185, 129, 0.18) !important;
+    border-color: #34D399 !important;
+    color: #6EE7B7 !important;
+}
+
+.slide-aspect-box.theme-emerald .slide-detail-metric-card {
+    background: rgba(2, 27, 19, 0.8) !important;
+    border-color: rgba(16, 185, 129, 0.2) !important;
+}
+
+.slide-aspect-box.theme-emerald .slide-cat-summary-table-wrap {
+    background: rgba(2, 27, 19, 0.85) !important;
+    border-color: rgba(16, 185, 129, 0.25) !important;
+}
+
+.slide-aspect-box.theme-emerald .slide-cat-summary-table th {
+    background: rgba(6, 78, 59, 0.7) !important;
+    color: #A7F3D0 !important;
+    border-bottom-color: rgba(16, 185, 129, 0.25) !important;
+}
+
+.slide-aspect-box.theme-emerald .slide-arrow-btn {
+    background: rgba(2, 43, 30, 0.9) !important;
+    border-color: rgba(16, 185, 129, 0.4) !important;
+    color: #A7F3D0 !important;
+}
+
+/* ==========================================================================
+   THEME 3: SUNSET AURA (MOR & GÜN BATIMI DEGRADE)
+   ========================================================================== */
+.slide-aspect-box.theme-sunset {
+    background: 
+        radial-gradient(circle at 15% 15%, rgba(244, 63, 94, 0.25) 0%, transparent 48%),
+        radial-gradient(circle at 85% 15%, rgba(251, 146, 60, 0.22) 0%, transparent 48%),
+        linear-gradient(155deg, #190933 0%, #0A0216 100%) !important;
+    border: 1.5px solid rgba(244, 63, 94, 0.35) !important;
+    box-shadow: 0 30px 80px -15px rgba(21, 10, 42, 0.95), 0 0 45px rgba(244, 63, 94, 0.2) !important;
+    color: #FFFFFF !important;
+}
+
+.slide-aspect-box.theme-sunset .slide-page-number-capsule {
+    background: linear-gradient(135deg, #F43F5E 0%, #FB923C 100%) !important;
+    border: none !important;
+    color: #FFFFFF !important;
+    box-shadow: 0 0 14px rgba(244, 63, 94, 0.4) !important;
+}
+
+.slide-aspect-box.theme-sunset .slide-main-title {
+    background: linear-gradient(135deg, #FFFFFF 40%, #FECDD3 70%, #FDE047 100%) !important;
+    -webkit-background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+}
+
+.slide-aspect-box.theme-sunset .slide-subtitle {
+    color: #E9D5FF !important;
+}
+
+.slide-aspect-box.theme-sunset .slide-date-pill {
+    background: rgba(244, 63, 94, 0.12) !important;
+    border-color: rgba(244, 63, 94, 0.35) !important;
+    color: #FECDD3 !important;
+}
+
+.slide-aspect-box.theme-sunset .slide-category-tag.cyan {
+    background: rgba(168, 85, 247, 0.2) !important;
+    border-color: rgba(168, 85, 247, 0.4) !important;
+    color: #E9D5FF !important;
+}
+
+/* Macro Cards in Sunset */
+.slide-aspect-box.theme-sunset .slide-macro-hero-card.pos {
+    background: linear-gradient(145deg, rgba(136, 19, 55, 0.45) 0%, rgba(26, 14, 48, 0.95) 100%) !important;
+    border: 1.5px solid #F43F5E !important;
+    border-top: 3.5px solid #FB7185 !important;
+    box-shadow: 0 0 25px rgba(244, 63, 94, 0.25) !important;
+}
+
+.slide-aspect-box.theme-sunset .slide-macro-hero-card.neg {
+    background: linear-gradient(145deg, rgba(88, 28, 135, 0.45) 0%, rgba(26, 14, 48, 0.95) 100%) !important;
+    border: 1.5px solid #FB7185 !important;
+    border-top: 3.5px solid #F43F5E !important;
+}
+
+.slide-aspect-box.theme-sunset .slide-macro-hero-card.inv-card {
+    background: linear-gradient(145deg, rgba(124, 45, 18, 0.45) 0%, rgba(26, 14, 48, 0.95) 100%) !important;
+    border: 1.5px solid #FB923C !important;
+    border-top: 3.5px solid #F97316 !important;
+    box-shadow: 0 0 25px rgba(249, 115, 22, 0.25) !important;
+}
+
+.slide-aspect-box.theme-sunset .slide-macro-big-num.pos {
+    background: linear-gradient(to right, #F43F5E, #FB923C) !important;
+    -webkit-background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+    text-shadow: none !important;
+}
+
+.slide-aspect-box.theme-sunset .slide-macro-hero-card.inv-card .slide-macro-big-num {
+    color: #FBBF24 !important;
+    text-shadow: 0 0 25px rgba(245, 158, 11, 0.4) !important;
+}
+
+.slide-aspect-box.theme-sunset .slide-cat-leader-card.inflow {
+    background: rgba(88, 28, 135, 0.45) !important;
+    border: 1.5px solid #F43F5E !important;
+    border-top: 3px solid #FB7185 !important;
+}
+
+.slide-aspect-box.theme-sunset .slide-cat-leader-stats {
+    border-top-color: rgba(244, 63, 94, 0.2) !important;
+    color: #E9D5FF !important;
+}
+
+/* Fund Cards in Sunset */
+.slide-aspect-box.theme-sunset .slide-fund-card {
+    background: linear-gradient(165deg, rgba(38, 16, 68, 0.95) 0%, rgba(18, 7, 34, 0.98) 100%) !important;
+    border: 1.5px solid rgba(244, 63, 94, 0.28) !important;
+}
+
+.slide-aspect-box.theme-sunset .slide-fund-card.rank-card-1 {
+    border-color: #FB923C !important;
+    border-top: 3px solid #FDE047 !important;
+    box-shadow: 0 0 25px rgba(251, 146, 60, 0.3) !important;
+}
+
+.slide-aspect-box.theme-sunset .slide-fund-card.rank-card-2 {
+    border-color: #F43F5E !important;
+    border-top: 3px solid #FB7185 !important;
+    box-shadow: 0 0 25px rgba(244, 63, 94, 0.3) !important;
+}
+
+.slide-aspect-box.theme-sunset .slide-fund-card.rank-card-3 {
+    border-color: #C084FC !important;
+    border-top: 3px solid #E879F9 !important;
+}
+
+.slide-aspect-box.theme-sunset .slide-fund-hero-capsule.pos {
+    background: rgba(88, 28, 135, 0.5) !important;
+    border-color: rgba(244, 63, 94, 0.4) !important;
+}
+
+.slide-aspect-box.theme-sunset .slide-fund-hero-num.pos {
+    color: #FB7185 !important;
+    text-shadow: 0 0 16px rgba(251, 113, 133, 0.4) !important;
+}
+
+.slide-aspect-box.theme-sunset .slide-metric-tile {
+    background: rgba(18, 7, 34, 0.85) !important;
+    border-color: rgba(244, 63, 94, 0.2) !important;
+}
+
+.slide-aspect-box.theme-sunset .slide-tile-lbl {
+    color: #FECDD3 !important;
+}
+
+.slide-aspect-box.theme-sunset .slide-fund-velocity-bar {
+    background: rgba(18, 7, 34, 0.9) !important;
+    border-color: rgba(244, 63, 94, 0.25) !important;
+}
+
+.slide-aspect-box.theme-sunset .slide-fund-click-hint {
+    background: rgba(244, 63, 94, 0.15) !important;
+    border-color: #F43F5E !important;
+    color: #FECDD3 !important;
+}
+
+.slide-aspect-box.theme-sunset .btn-slide-back {
+    background: rgba(244, 63, 94, 0.18) !important;
+    border-color: #F43F5E !important;
+    color: #FECDD3 !important;
+}
+
+.slide-aspect-box.theme-sunset .slide-detail-metric-card {
+    background: rgba(18, 7, 34, 0.85) !important;
+    border-color: rgba(244, 63, 94, 0.2) !important;
+}
+
+.slide-aspect-box.theme-sunset .slide-cat-summary-table-wrap {
+    background: rgba(18, 7, 34, 0.85) !important;
+    border-color: rgba(244, 63, 94, 0.25) !important;
+}
+
+.slide-aspect-box.theme-sunset .slide-cat-summary-table th {
+    background: rgba(88, 28, 135, 0.7) !important;
+    color: #FECDD3 !important;
+    border-bottom-color: rgba(244, 63, 94, 0.25) !important;
+}
+
+.slide-aspect-box.theme-sunset .slide-arrow-btn {
+    background: rgba(26, 14, 48, 0.9) !important;
+    border-color: rgba(244, 63, 94, 0.4) !important;
+    color: #FECDD3 !important;
+}
+
+/* ==========================================================================
    TEFAS SLIDE PRESENTATION - CINEMATIC FULLSCREEN MODE
    ========================================================================== */
 #fundSlideReportModal:fullscreen,
