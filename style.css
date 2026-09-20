@@ -14709,15 +14709,310 @@ body.theme-neo-brutalism .sort-option.active {
     border-bottom-color: rgba(255, 255, 255, 0.1) !important;
 }
 
+/* ==========================================================================
+   BENTO THEME: ADVANCED FUND DETAIL SLIDE ARCHITECTURE (ASİMETRİK BENTO DETAY)
+   ========================================================================== */
+
+/* Detail Container & Stage Optimization */
+.slide-aspect-box.theme-bento .slide-detail-container {
+    gap: 8px !important;
+    height: 100% !important;
+}
+
+/* 1. Header Bar: Electric Command Center */
 .slide-aspect-box.theme-bento .btn-slide-back {
+    background: rgba(212, 246, 60, 0.12) !important;
+    border: 1.5px solid #D4F63C !important;
+    color: #D4F63C !important;
+    font-weight: 800 !important;
+    border-radius: 8px !important;
+    padding: 6px 14px !important;
+    box-shadow: 0 0 14px rgba(212, 246, 60, 0.2) !important;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.slide-aspect-box.theme-bento .btn-slide-back:hover {
+    background: #D4F63C !important;
+    color: #080B11 !important;
+    transform: translateX(-3px) !important;
+    box-shadow: 0 0 20px rgba(212, 246, 60, 0.5) !important;
+}
+
+.slide-aspect-box.theme-bento .slide-detail-code-badge {
+    background: #080B11 !important;
+    border: 2px solid #D4F63C !important;
+    color: #D4F63C !important;
+    font-family: 'JetBrains Mono', monospace !important;
+    font-weight: 900 !important;
+    font-size: 1.15rem !important;
+    border-radius: 8px !important;
+    padding: 2px 10px !important;
+    box-shadow: 0 0 16px rgba(212, 246, 60, 0.3) !important;
+}
+
+.slide-aspect-box.theme-bento .slide-detail-cat-pill {
+    border-radius: 6px !important;
+    font-size: 0.70rem !important;
+    font-weight: 800 !important;
+    letter-spacing: 0.4px !important;
+}
+
+.slide-aspect-box.theme-bento .slide-detail-fund-name {
+    color: #FFFFFF !important;
+    font-weight: 700 !important;
+    font-size: 0.88rem !important;
+}
+
+/* 2. Top 5 Key Metric Cards: Bento HUD Tiles */
+.slide-aspect-box.theme-bento .slide-detail-metrics-grid {
+    gap: 8px !important;
+}
+
+.slide-aspect-box.theme-bento .slide-detail-metric-card {
+    background: rgba(14, 18, 28, 0.92) !important;
+    border: 1px solid rgba(226, 232, 240, 0.12) !important;
+    border-radius: 10px !important;
+    padding: 7px 12px !important;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4) !important;
+    position: relative !important;
+    overflow: hidden !important;
+    transition: all 0.2s ease !important;
+}
+
+.slide-aspect-box.theme-bento .slide-detail-metric-card:hover {
+    transform: translateY(-2px) !important;
+    border-color: #D4F63C !important;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5), 0 0 16px rgba(212, 246, 60, 0.2) !important;
+}
+
+/* Distinct Top Color Visor on each metric card */
+.slide-aspect-box.theme-bento .slide-detail-metric-card:nth-child(1) {
+    border-top: 3px solid #38BDF8 !important; /* Pay Fiyatı - Cyan */
+}
+
+.slide-aspect-box.theme-bento .slide-detail-metric-card:nth-child(2) {
+    border: 1.5px solid rgba(212, 246, 60, 0.45) !important; /* Günlük Getiri - Featured Bento Hero */
+    border-top: 3.5px solid #D4F63C !important;
+    background: linear-gradient(145deg, rgba(26, 36, 18, 0.95) 0%, rgba(12, 16, 26, 0.98) 100%) !important;
+    box-shadow: 0 0 18px rgba(212, 246, 60, 0.15) !important;
+}
+
+.slide-aspect-box.theme-bento .slide-detail-metric-card:nth-child(3) {
+    border-top: 3px solid #F59E0B !important; /* Fon Büyüklüğü - Amber */
+}
+
+.slide-aspect-box.theme-bento .slide-detail-metric-card:nth-child(4) {
+    border-top: 3px solid #10B981 !important; /* Para Akışı - Emerald */
+}
+
+.slide-aspect-box.theme-bento .slide-detail-metric-card:nth-child(5) {
+    border-top: 3px solid #A855F7 !important; /* Yatırımcı - Violet */
+}
+
+.slide-aspect-box.theme-bento .slide-detail-m-lbl {
+    font-size: 0.62rem !important;
+    color: #94A3B8 !important;
+    font-weight: 800 !important;
+    letter-spacing: 0.4px !important;
+    text-transform: uppercase !important;
+}
+
+.slide-aspect-box.theme-bento .slide-detail-m-val {
+    font-size: 1.15rem !important;
+    font-weight: 900 !important;
+    color: #FFFFFF !important;
+    font-family: 'JetBrains Mono', 'Plus Jakarta Sans', sans-serif !important;
+    letter-spacing: -0.02em !important;
+    margin: 2px 0 1px 0 !important;
+}
+
+.slide-aspect-box.theme-bento .slide-detail-m-sub {
+    font-size: 0.60rem !important;
+    color: #64748B !important;
+    font-weight: 600 !important;
+}
+
+/* 3. Main Body Grid: Dual Obsidian Bento Panels */
+.slide-aspect-box.theme-bento .slide-detail-body-grid {
+    gap: 10px !important;
+}
+
+.slide-aspect-box.theme-bento .slide-detail-panel {
+    background: linear-gradient(165deg, rgba(14, 20, 32, 0.94) 0%, rgba(8, 12, 20, 0.98) 100%) !important;
+    border: 1px solid rgba(226, 232, 240, 0.12) !important;
+    border-radius: 14px !important;
+    padding: 10px 14px !important;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45) !important;
+}
+
+.slide-aspect-box.theme-bento .slide-detail-panel-hdr {
+    margin-bottom: 6px !important;
+}
+
+.slide-aspect-box.theme-bento .slide-detail-panel-icon.cyan {
+    background: rgba(212, 246, 60, 0.15) !important;
+    border: 1px solid rgba(212, 246, 60, 0.45) !important;
+    color: #D4F63C !important;
+    border-radius: 8px !important;
+}
+
+.slide-aspect-box.theme-bento .slide-detail-panel-icon.purple {
+    background: rgba(56, 189, 248, 0.15) !important;
+    border: 1px solid rgba(56, 189, 248, 0.45) !important;
+    color: #38BDF8 !important;
+    border-radius: 8px !important;
+}
+
+.slide-aspect-box.theme-bento .slide-detail-panel-main {
+    font-size: 0.86rem !important;
+    font-weight: 800 !important;
+    color: #FFFFFF !important;
+    letter-spacing: -0.01em !important;
+}
+
+.slide-aspect-box.theme-bento .slide-detail-panel-desc {
+    font-size: 0.64rem !important;
+    color: #94A3B8 !important;
+}
+
+/* 4. Left Panel: Portföy Varlık Dağılımı & KAP Styling */
+.slide-aspect-box.theme-bento .btn-slide-kap-toggle {
+    background: rgba(212, 246, 60, 0.14) !important;
+    border: 1px solid #D4F63C !important;
+    color: #D4F63C !important;
+    font-weight: 800 !important;
+    border-radius: 6px !important;
+    padding: 3px 9px !important;
+    font-size: 0.68rem !important;
+    box-shadow: 0 0 10px rgba(212, 246, 60, 0.2) !important;
+    transition: all 0.2s ease !important;
+}
+
+.slide-aspect-box.theme-bento .btn-slide-kap-toggle:hover {
+    background: #D4F63C !important;
+    color: #080B11 !important;
+    box-shadow: 0 0 16px rgba(212, 246, 60, 0.5) !important;
+}
+
+.slide-aspect-box.theme-bento .slide-detail-alloc-badge {
+    background: rgba(255, 255, 255, 0.05) !important;
+    border: 1px solid rgba(255, 255, 255, 0.10) !important;
+    color: #94A3B8 !important;
+    border-radius: 6px !important;
+    font-size: 0.66rem !important;
+}
+
+.slide-aspect-box.theme-bento .slide-alloc-ribbon {
+    height: 12px !important;
+    border-radius: 6px !important;
+    background: rgba(0, 0, 0, 0.5) !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.6) !important;
+    margin: 3px 0 8px 0 !important;
+}
+
+.slide-aspect-box.theme-bento .slide-alloc-chip-row {
+    background: rgba(18, 24, 38, 0.75) !important;
+    border: 1px solid rgba(255, 255, 255, 0.06) !important;
+    border-radius: 7px !important;
+    padding: 4px 8px !important;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.slide-aspect-box.theme-bento .slide-alloc-chip-row:hover {
+    background: rgba(28, 36, 56, 0.9) !important;
+    border-color: rgba(212, 246, 60, 0.4) !important;
+    transform: translateX(3px) !important;
+}
+
+.slide-aspect-box.theme-bento .slide-alloc-chip-row.clickable {
+    border-color: rgba(212, 246, 60, 0.25) !important;
+}
+
+.slide-aspect-box.theme-bento .slide-alloc-chip-row.clickable:hover {
+    background: rgba(212, 246, 60, 0.12) !important;
+    border-color: #D4F63C !important;
+    box-shadow: 0 0 12px rgba(212, 246, 60, 0.25) !important;
+}
+
+.slide-aspect-box.theme-bento .slide-alloc-kap-badge {
+    background: rgba(212, 246, 60, 0.15) !important;
+    border: 1px solid rgba(212, 246, 60, 0.4) !important;
+    color: #D4F63C !important;
+    border-radius: 5px !important;
+}
+
+.slide-aspect-box.theme-bento .slide-alloc-pct {
+    font-family: 'JetBrains Mono', monospace !important;
+    font-weight: 800 !important;
+    font-size: 0.78rem !important;
+}
+
+.slide-aspect-box.theme-bento .slide-alloc-bar-mini {
+    height: 6px !important;
+    border-radius: 3px !important;
+    background: rgba(0, 0, 0, 0.5) !important;
+}
+
+/* KAP Stock Cards in Bento */
+.slide-aspect-box.theme-bento .slide-kap-stock-card {
+    background: rgba(18, 24, 38, 0.75) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border-radius: 8px !important;
+    padding: 6px 10px !important;
+    transition: all 0.2s ease !important;
+}
+
+.slide-aspect-box.theme-bento .slide-kap-stock-card:hover {
+    background: rgba(28, 36, 56, 0.95) !important;
+    border-color: #D4F63C !important;
+    transform: translateX(3px) !important;
+}
+
+.slide-aspect-box.theme-bento .slide-kap-ticker {
+    font-family: 'JetBrains Mono', monospace !important;
+    font-weight: 900 !important;
+}
+
+.slide-aspect-box.theme-bento .slide-kap-filter-btn.active {
+    background: #D4F63C !important;
+    color: #080B11 !important;
+    border-color: #D4F63C !important;
+    font-weight: 800 !important;
+}
+
+.slide-aspect-box.theme-bento .btn-slide-back-macro {
     background: rgba(212, 246, 60, 0.15) !important;
     border-color: #D4F63C !important;
     color: #D4F63C !important;
 }
 
-.slide-aspect-box.theme-bento .slide-detail-metric-card {
-    background: rgba(16, 22, 34, 0.88) !important;
-    border-color: rgba(255, 255, 255, 0.1) !important;
+/* 5. Right Panel: 30 Günlük Yatırımcı Grafiği & Executive Dock */
+.slide-aspect-box.theme-bento .slide-investor-stats-pill.pos {
+    background: rgba(212, 246, 60, 0.15) !important;
+    border: 1px solid #D4F63C !important;
+    color: #D4F63C !important;
+    box-shadow: 0 0 12px rgba(212, 246, 60, 0.25) !important;
+    font-weight: 800 !important;
+}
+
+.slide-aspect-box.theme-bento .slide-investor-footer-bar {
+    background: rgba(8, 12, 20, 0.95) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border-radius: 8px !important;
+    padding: 5px 12px !important;
+    margin-top: 5px !important;
+}
+
+.slide-aspect-box.theme-bento .slide-investor-mini-stat .lbl {
+    font-size: 0.65rem !important;
+    color: #94A3B8 !important;
+}
+
+.slide-aspect-box.theme-bento .slide-investor-mini-stat .val {
+    font-size: 0.76rem !important;
+    font-weight: 800 !important;
+    font-family: 'JetBrains Mono', sans-serif !important;
 }
 
 .slide-aspect-box.theme-bento .slide-arrow-btn {
