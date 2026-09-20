@@ -80,26 +80,31 @@ export default {
               const dShares = curShares - prevShares;
               const flow = dShares * curPrice;
               const aum = cur.portfoyBuyukluk || (curPrice * curShares);
+              const change = prevPrice > 0 ? Number((((curPrice - prevPrice) / prevPrice) * 100).toFixed(4)) : 0;
               diffs.push({
                 code,
                 name: cur.fonUnvan || `${code} YATIRIM FONU`,
                 date: cur.tarih,
                 price: curPrice,
+                prevPrice,
+                change,
                 aum,
                 investors: curInv,
+                prevInvestors: prevInv,
                 deltaInvestors: dInv,
                 deltaShares: dShares,
                 cashFlow: flow,
-                perPerson: Math.abs(dInv) > 0 ? Math.abs(flow) / Math.abs(dInv) : 0
+                perPerson: Math.abs(dInv) > 0 ? Math.round(Math.abs(flow) / Math.abs(dInv)) : 0
               });
             }
 
             const limit = Math.min(100, Math.max(3, parseInt(url.searchParams.get("limit") || "50", 10)));
+            const valid = diffs.filter(d => d.price > 0 && d.aum > 0);
 
-            const topInvestorInflow = [...diffs].filter(d => d.deltaInvestors > 0).sort((a,b) => b.deltaInvestors - a.deltaInvestors).slice(0, limit);
-            const topInvestorOutflow = [...diffs].filter(d => d.deltaInvestors < 0).sort((a,b) => a.deltaInvestors - b.deltaInvestors).slice(0, limit);
-            const topCashInflow = [...diffs].filter(d => d.cashFlow > 0).sort((a,b) => b.cashFlow - a.cashFlow).slice(0, limit);
-            const topCashOutflow = [...diffs].filter(d => d.cashFlow < 0).sort((a,b) => a.cashFlow - b.cashFlow).slice(0, limit);
+            const topInvestorInflow = [...valid].filter(d => d.deltaInvestors > 0).sort((a,b) => b.deltaInvestors - a.deltaInvestors).slice(0, limit);
+            const topInvestorOutflow = [...valid].filter(d => d.deltaInvestors < 0).sort((a,b) => a.deltaInvestors - b.deltaInvestors).slice(0, limit);
+            const topCashInflow = [...valid].filter(d => d.cashFlow > 0).sort((a,b) => b.cashFlow - a.cashFlow).slice(0, limit);
+            const topCashOutflow = [...valid].filter(d => d.cashFlow < 0).sort((a,b) => a.cashFlow - b.cashFlow).slice(0, limit);
 
             return new Response(JSON.stringify({
               ok: true,
@@ -115,12 +120,19 @@ export default {
               headers: {
                 "Content-Type": "application/json; charset=utf-8",
                 "Access-Control-Allow-Origin": "*",
-                "Cache-Control": "public, max-age=1800",
+                "Cache-Control": "public, max-age=600",
               },
             });
           }
         } catch(e) {
           console.warn("Worker leaders calculation error:", e);
+          return new Response(JSON.stringify({ ok: false, error: "TEFAS leaders calculation failed", details: String(e) }), {
+            status: 502,
+            headers: {
+              "Content-Type": "application/json; charset=utf-8",
+              "Access-Control-Allow-Origin": "*"
+            }
+          });
         }
       }
 
