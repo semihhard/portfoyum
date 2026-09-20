@@ -11964,6 +11964,11 @@ function syncSlideFullscreenState() {
             }
         }
     }
+    if (typeof slideInvestorChartInstance !== 'undefined' && slideInvestorChartInstance) {
+        setTimeout(() => {
+            try { slideInvestorChartInstance.resize(); } catch(e) {}
+        }, 120);
+    }
 }
 
 function goToSlide(n) {
