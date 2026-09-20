@@ -12019,33 +12019,33 @@ async function openSlideFundDetail(fundCode, originSlideIndex = null) {
             </div>
 
             <div class="slide-detail-metrics-grid">
-                <div class="slide-detail-metric-card">
+                <div class="slide-detail-metric-card card-price">
                     <div class="slide-detail-m-lbl"><i class="fa-solid fa-tag" style="color: #38BDF8;"></i> Son Pay Fiyatı</div>
                     <div class="slide-detail-m-val">${priceStr}</div>
                     <div class="slide-detail-m-sub">TEFAS Kapanış Değeri</div>
                 </div>
-                <div class="slide-detail-metric-card">
-                    <div class="slide-detail-m-lbl"><i class="fa-solid fa-chart-line" style="color: ${retColor};"></i> Günlük Getiri</div>
-                    <div class="slide-detail-m-val" style="color: ${retColor};">
+                <div class="slide-detail-metric-card card-return ${isRetPos ? 'pos' : 'neg'}">
+                    <div class="slide-detail-m-lbl"><i class="fa-solid ${retIcon}" style="color: ${retColor};"></i> Günlük Getiri</div>
+                    <div class="slide-detail-m-val ${isRetPos ? 'pos' : 'neg'}" style="color: ${retColor};">
                         <i class="fa-solid ${retIcon}"></i> ${retSign}%${Math.abs(retVal).toFixed(2)}
                     </div>
                     <div class="slide-detail-m-sub">Günlük Değişim Oranı</div>
                 </div>
-                <div class="slide-detail-metric-card">
+                <div class="slide-detail-metric-card card-aum">
                     <div class="slide-detail-m-lbl"><i class="fa-solid fa-vault" style="color: #F59E0B;"></i> Fon Büyüklüğü</div>
                     <div class="slide-detail-m-val">${aumStr}</div>
                     <div class="slide-detail-m-sub">Toplam Portföy (AUM)</div>
                 </div>
-                <div class="slide-detail-metric-card">
+                <div class="slide-detail-metric-card card-cash ${isCashPos ? 'pos' : 'neg'}">
                     <div class="slide-detail-m-lbl"><i class="fa-solid fa-money-bill-transfer" style="color: ${cashColor};"></i> Günlük Para Akışı</div>
-                    <div class="slide-detail-m-val" style="color: ${cashColor};">
+                    <div class="slide-detail-m-val ${isCashPos ? 'pos' : 'neg'}" style="color: ${cashColor};">
                         ${cashStr}
                     </div>
-                    <div class="slide-detail-m-sub">Net Sermaye Hareketi</div>
+                    <div class="slide-detail-m-sub">${isCashPos ? 'Net Sermaye Girişi' : 'Net Sermaye Çıkışı'}</div>
                 </div>
-                <div class="slide-detail-metric-card">
-                    <div class="slide-detail-m-lbl"><i class="fa-solid fa-users" style="color: #C084FC;"></i> Günlük Yatırımcı</div>
-                    <div class="slide-detail-m-val" style="color: ${invColor};">
+                <div class="slide-detail-metric-card card-inv ${isInvPos ? 'pos' : 'neg'}">
+                    <div class="slide-detail-m-lbl"><i class="fa-solid ${isInvPos ? 'fa-user-plus' : 'fa-user-minus'}" style="color: ${invColor};"></i> Günlük Yatırımcı</div>
+                    <div class="slide-detail-m-val ${isInvPos ? 'pos' : 'neg'}" style="color: ${invColor};">
                         ${deltaInvStr}
                     </div>
                     <div class="slide-detail-m-sub">Toplam: <strong>${totalInvestorsStr}</strong></div>

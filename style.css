@@ -13261,6 +13261,14 @@ body.theme-neo-brutalism .sort-option.active {
     letter-spacing: -0.01em;
 }
 
+.slide-detail-m-val.pos {
+    color: #34D399;
+}
+
+.slide-detail-m-val.neg {
+    color: #FB7185;
+}
+
 .slide-detail-m-sub {
     font-size: 0.65rem;
     color: #64748B;
@@ -14211,6 +14219,14 @@ body.theme-neo-brutalism .sort-option.active {
     color: #1C1917 !important;
 }
 
+.slide-aspect-box.theme-vintage .slide-detail-m-val.pos {
+    color: #15803D !important;
+}
+
+.slide-aspect-box.theme-vintage .slide-detail-m-val.neg {
+    color: #DC2626 !important;
+}
+
 .slide-aspect-box.theme-vintage .slide-detail-m-sub {
     color: #78716C !important;
 }
@@ -14812,46 +14828,109 @@ body.theme-neo-brutalism .sort-option.active {
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5), 0 0 14px rgba(212, 246, 60, 0.2) !important;
 }
 
-/* Card 2: HERO BENTO TILE (Günlük Getiri) - Zirvede Büyük Vitrin */
+/* Card 2 / .card-return: HERO BENTO TILE (Günlük Getiri) - Zirvede Büyük Vitrin */
+.slide-aspect-box.theme-bento .slide-detail-metric-card.card-return,
 .slide-aspect-box.theme-bento .slide-detail-metric-card:nth-child(2) {
     order: 1 !important;
-    background: linear-gradient(135deg, rgba(28, 42, 20, 0.95) 0%, rgba(10, 14, 24, 0.98) 100%) !important;
-    border: 1.5px solid #D4F63C !important;
-    border-left: 6px solid #D4F63C !important;
-    box-shadow: 0 0 25px rgba(212, 246, 60, 0.18) !important;
     padding: 10px 14px !important;
     flex: 1.15 !important;
 }
 
-.slide-aspect-box.theme-bento .slide-detail-metric-card:nth-child(2) .slide-detail-m-lbl {
+.slide-aspect-box.theme-bento .slide-detail-metric-card.card-return.pos,
+.slide-aspect-box.theme-bento .slide-detail-metric-card:nth-child(2).pos {
+    background: linear-gradient(135deg, rgba(28, 42, 20, 0.95) 0%, rgba(10, 14, 24, 0.98) 100%) !important;
+    border: 1.5px solid #D4F63C !important;
+    border-left: 6px solid #D4F63C !important;
+    box-shadow: 0 0 25px rgba(212, 246, 60, 0.18) !important;
+}
+
+.slide-aspect-box.theme-bento .slide-detail-metric-card.card-return.pos .slide-detail-m-lbl {
     color: #D4F63C !important;
     font-size: 0.65rem !important;
 }
 
-.slide-aspect-box.theme-bento .slide-detail-metric-card:nth-child(2) .slide-detail-m-val {
+.slide-aspect-box.theme-bento .slide-detail-metric-card.card-return.pos .slide-detail-m-val {
     font-size: 1.75rem !important;
     color: #D4F63C !important;
     text-shadow: 0 0 16px rgba(212, 246, 60, 0.4) !important;
     margin: 3px 0 !important;
 }
 
-/* Card 4: SUB-HERO TILE (Günlük Para Akışı) */
+.slide-aspect-box.theme-bento .slide-detail-metric-card.card-return.neg,
+.slide-aspect-box.theme-bento .slide-detail-metric-card:nth-child(2).neg {
+    background: linear-gradient(135deg, rgba(42, 16, 24, 0.95) 0%, rgba(14, 10, 18, 0.98) 100%) !important;
+    border: 1.5px solid #F43F5E !important;
+    border-left: 6px solid #F43F5E !important;
+    box-shadow: 0 0 25px rgba(244, 63, 94, 0.22) !important;
+}
+
+.slide-aspect-box.theme-bento .slide-detail-metric-card.card-return.neg .slide-detail-m-lbl {
+    color: #FB7185 !important;
+    font-size: 0.65rem !important;
+}
+
+.slide-aspect-box.theme-bento .slide-detail-metric-card.card-return.neg .slide-detail-m-val {
+    font-size: 1.75rem !important;
+    color: #FB7185 !important;
+    text-shadow: 0 0 16px rgba(251, 113, 133, 0.45) !important;
+    margin: 3px 0 !important;
+}
+
+/* Card 4 / .card-cash: SUB-HERO TILE (Günlük Para Akışı - Giriş Yeşil / Çıkış Kırmızı) */
+.slide-aspect-box.theme-bento .slide-detail-metric-card.card-cash,
 .slide-aspect-box.theme-bento .slide-detail-metric-card:nth-child(4) {
     order: 2 !important;
-    background: linear-gradient(135deg, rgba(16, 28, 44, 0.95) 0%, rgba(10, 14, 24, 0.98) 100%) !important;
-    border: 1.5px solid #38BDF8 !important;
-    border-left: 5px solid #38BDF8 !important;
-    box-shadow: 0 0 20px rgba(56, 189, 248, 0.15) !important;
     padding: 8px 12px !important;
     flex: 1 !important;
 }
 
-.slide-aspect-box.theme-bento .slide-detail-metric-card:nth-child(4) .slide-detail-m-val {
-    font-size: 1.30rem !important;
-    color: #38BDF8 !important;
+.slide-aspect-box.theme-bento .slide-detail-metric-card.card-cash.pos,
+.slide-aspect-box.theme-bento .slide-detail-metric-card:nth-child(4).pos {
+    background: linear-gradient(135deg, rgba(16, 36, 28, 0.95) 0%, rgba(10, 14, 24, 0.98) 100%) !important;
+    border: 1.5px solid #34D399 !important;
+    border-left: 5px solid #34D399 !important;
+    box-shadow: 0 0 20px rgba(52, 211, 153, 0.18) !important;
 }
 
-/* Cards 3, 5, 1: Compact Supporting Tiles */
+.slide-aspect-box.theme-bento .slide-detail-metric-card.card-cash.pos .slide-detail-m-lbl {
+    color: #34D399 !important;
+}
+
+.slide-aspect-box.theme-bento .slide-detail-metric-card.card-cash.pos .slide-detail-m-val {
+    font-size: 1.30rem !important;
+    color: #34D399 !important;
+    text-shadow: 0 0 14px rgba(52, 211, 153, 0.4) !important;
+}
+
+.slide-aspect-box.theme-bento .slide-detail-metric-card.card-cash.pos .slide-detail-m-sub {
+    color: #6EE7B7 !important;
+}
+
+.slide-aspect-box.theme-bento .slide-detail-metric-card.card-cash.neg,
+.slide-aspect-box.theme-bento .slide-detail-metric-card:nth-child(4).neg {
+    background: linear-gradient(135deg, rgba(38, 14, 22, 0.95) 0%, rgba(14, 10, 18, 0.98) 100%) !important;
+    border: 1.5px solid #F43F5E !important;
+    border-left: 5px solid #F43F5E !important;
+    box-shadow: 0 0 20px rgba(244, 63, 94, 0.18) !important;
+}
+
+.slide-aspect-box.theme-bento .slide-detail-metric-card.card-cash.neg .slide-detail-m-lbl {
+    color: #FB7185 !important;
+}
+
+.slide-aspect-box.theme-bento .slide-detail-metric-card.card-cash.neg .slide-detail-m-val {
+    font-size: 1.30rem !important;
+    color: #FB7185 !important;
+    text-shadow: 0 0 14px rgba(251, 113, 133, 0.45) !important;
+}
+
+.slide-aspect-box.theme-bento .slide-detail-metric-card.card-cash.neg .slide-detail-m-sub {
+    color: #FDA4AF !important;
+}
+
+/* Cards 3, 5, 1: Supporting Tiles */
+/* Card 3: Fon Büyüklüğü */
+.slide-aspect-box.theme-bento .slide-detail-metric-card.card-aum,
 .slide-aspect-box.theme-bento .slide-detail-metric-card:nth-child(3) {
     order: 3 !important;
     border-left: 4px solid #F59E0B !important;
@@ -14859,16 +14938,50 @@ body.theme-neo-brutalism .sort-option.active {
     flex: 0.8 !important;
 }
 
+/* Card 5: Günlük Yatırımcı (Artış Yeşil / Azalış Kırmızı) */
+.slide-aspect-box.theme-bento .slide-detail-metric-card.card-inv,
 .slide-aspect-box.theme-bento .slide-detail-metric-card:nth-child(5) {
     order: 4 !important;
-    border-left: 4px solid #A855F7 !important;
+    border-left: 4px solid #38BDF8 !important;
     padding: 6px 12px !important;
     flex: 0.8 !important;
 }
 
+.slide-aspect-box.theme-bento .slide-detail-metric-card.card-inv.pos,
+.slide-aspect-box.theme-bento .slide-detail-metric-card:nth-child(5).pos {
+    border-left: 4px solid #34D399 !important;
+    border-color: rgba(52, 211, 153, 0.25) !important;
+}
+
+.slide-aspect-box.theme-bento .slide-detail-metric-card.card-inv.pos .slide-detail-m-val {
+    color: #34D399 !important;
+    text-shadow: 0 0 12px rgba(52, 211, 153, 0.35) !important;
+}
+
+.slide-aspect-box.theme-bento .slide-detail-metric-card.card-inv.pos .slide-detail-m-lbl {
+    color: #34D399 !important;
+}
+
+.slide-aspect-box.theme-bento .slide-detail-metric-card.card-inv.neg,
+.slide-aspect-box.theme-bento .slide-detail-metric-card:nth-child(5).neg {
+    border-left: 4px solid #F43F5E !important;
+    border-color: rgba(244, 63, 94, 0.25) !important;
+}
+
+.slide-aspect-box.theme-bento .slide-detail-metric-card.card-inv.neg .slide-detail-m-val {
+    color: #FB7185 !important;
+    text-shadow: 0 0 12px rgba(251, 113, 133, 0.35) !important;
+}
+
+.slide-aspect-box.theme-bento .slide-detail-metric-card.card-inv.neg .slide-detail-m-lbl {
+    color: #FB7185 !important;
+}
+
+/* Card 1: Son Pay Fiyatı */
+.slide-aspect-box.theme-bento .slide-detail-metric-card.card-price,
 .slide-aspect-box.theme-bento .slide-detail-metric-card:nth-child(1) {
     order: 5 !important;
-    border-left: 4px solid #E2E8F0 !important;
+    border-left: 4px solid #38BDF8 !important;
     padding: 6px 12px !important;
     flex: 0.8 !important;
 }
@@ -14887,6 +15000,14 @@ body.theme-neo-brutalism .sort-option.active {
     color: #FFFFFF !important;
     font-family: 'JetBrains Mono', 'Plus Jakarta Sans', sans-serif !important;
     letter-spacing: -0.02em !important;
+}
+
+.slide-aspect-box.theme-bento .slide-detail-m-val.pos {
+    color: #34D399 !important;
+}
+
+.slide-aspect-box.theme-bento .slide-detail-m-val.neg {
+    color: #FB7185 !important;
 }
 
 .slide-aspect-box.theme-bento .slide-detail-m-sub {
@@ -14934,6 +15055,14 @@ body.theme-neo-brutalism .sort-option.active {
     border: 1px solid #D4F63C !important;
     color: #D4F63C !important;
     box-shadow: 0 0 12px rgba(212, 246, 60, 0.25) !important;
+    font-weight: 800 !important;
+}
+
+.slide-aspect-box.theme-bento .slide-investor-stats-pill.neg {
+    background: rgba(244, 63, 94, 0.15) !important;
+    border: 1px solid #F43F5E !important;
+    color: #FB7185 !important;
+    box-shadow: 0 0 12px rgba(244, 63, 94, 0.25) !important;
     font-weight: 800 !important;
 }
 
