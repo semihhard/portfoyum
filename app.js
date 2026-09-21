@@ -5320,6 +5320,9 @@ async function computeFundLeadersFromActiveUniverse() {
     const topInvestorOutflow = [...results].filter(d => d.deltaInvestors < 0).sort((a, b) => a.deltaInvestors - b.deltaInvestors);
     const topCashInflow = [...results].filter(d => d.cashFlow > 0).sort((a, b) => b.cashFlow - a.cashFlow);
     const topCashOutflow = [...results].filter(d => d.cashFlow < 0).sort((a, b) => a.cashFlow - b.cashFlow);
+    const validPerformers = [...results].filter(d => (d.aum || 0) > 1000000 && typeof d.change === 'number');
+    const topGainers = validPerformers.filter(d => d.change > 0).sort((a, b) => (b.change || 0) - (a.change || 0));
+    const topLosers = validPerformers.filter(d => d.change < 0).sort((a, b) => (a.change || 0) - (b.change || 0));
 
     const dates = results.map(d => d.date).filter(Boolean).sort().reverse();
     const effectiveDate = dates[0] || results[0]?.date || "2026-09-21";
@@ -5330,7 +5333,9 @@ async function computeFundLeadersFromActiveUniverse() {
             topInvestorInflow,
             topInvestorOutflow,
             topCashInflow,
-            topCashOutflow
+            topCashOutflow,
+            topGainers,
+            topLosers
         }
     };
 }
@@ -6246,6 +6251,160 @@ function getFallbackFundLeadersSnapshot() {
         "deltaShares": -196801988,
         "cashFlow": -1706594220.0024278,
         "perPerson": 22754590
+      }
+    ],
+    "topGainers": [
+      {
+        "code": "DZS",
+        "name": "AK PORTFÖY DOKUZUNCU SERBEST FON",
+        "date": "2026-09-21",
+        "price": 1.995401,
+        "prevPrice": 1.634146,
+        "change": 22.1067,
+        "aum": 2621422.08,
+        "investors": 117,
+        "prevInvestors": 117,
+        "deltaInvestors": 0,
+        "deltaShares": -96970701,
+        "cashFlow": -193495433.75,
+        "perPerson": 0
+      },
+      {
+        "code": "DIH",
+        "name": "DENİZ PORTFÖY İKİNCİ HİSSE SENEDİ SERBEST (TL) FON (HİSSE SENEDİ YOĞUN FON)",
+        "date": "2026-09-21",
+        "price": 2.865067,
+        "prevPrice": 2.701683,
+        "change": 6.0475,
+        "aum": 218483628.52,
+        "investors": 11,
+        "prevInvestors": 11,
+        "deltaInvestors": 0,
+        "deltaShares": 0,
+        "cashFlow": 0,
+        "perPerson": 0
+      },
+      {
+        "code": "PHF",
+        "name": "PİRAMİT PORTFÖY BİST 50 DIŞI ŞİRKETLER HİSSE SENEDİ SERBEST FON (HİSSE SENEDİ YOĞUN FON)",
+        "date": "2026-09-21",
+        "price": 1.512362,
+        "prevPrice": 1.431533,
+        "change": 5.6463,
+        "aum": 460514158.75,
+        "investors": 218,
+        "prevInvestors": 241,
+        "deltaInvestors": -23,
+        "deltaShares": -7596334,
+        "cashFlow": -11488406.88,
+        "perPerson": 499496
+      },
+      {
+        "code": "YHY",
+        "name": "INVEO PORTFÖY YEDİNCİ HİSSE SENEDİ SERBEST FON (HİSSE SENEDİ YOĞUN FON)",
+        "date": "2026-09-21",
+        "price": 0.867152,
+        "prevPrice": 0.824597,
+        "change": 5.1607,
+        "aum": 158099048.69,
+        "investors": 18,
+        "prevInvestors": 18,
+        "deltaInvestors": 0,
+        "deltaShares": 0,
+        "cashFlow": 0,
+        "perPerson": 0
+      },
+      {
+        "code": "NTD",
+        "name": "ÜNLÜ PORTFÖY UFT HİSSE SENEDİ SERBEST ÖZEL FON (HİSSE SENEDİ YOĞUN FON)",
+        "date": "2026-09-21",
+        "price": 0.38843,
+        "prevPrice": 0.369466,
+        "change": 5.1328,
+        "aum": 526487255.45,
+        "investors": 1,
+        "prevInvestors": 1,
+        "deltaInvestors": 0,
+        "deltaShares": 0,
+        "cashFlow": 0,
+        "perPerson": 0
+      }
+    ],
+    "topLosers": [
+      {
+        "code": "BHH",
+        "name": "PARDUS PORTFÖY BEŞİNCİ HİSSE SENEDİ SERBEST (TL) FON (HİSSE SENEDİ YOĞUN FON)",
+        "date": "2026-09-21",
+        "price": 0.041706,
+        "prevPrice": 0.092607,
+        "change": -54.9645,
+        "aum": 80806820.31,
+        "investors": 71,
+        "prevInvestors": 71,
+        "deltaInvestors": 0,
+        "deltaShares": 0,
+        "cashFlow": 0,
+        "perPerson": 0
+      },
+      {
+        "code": "MT7",
+        "name": "MT PORTFÖY YEDİNCİ HİSSE SENEDİ SERBEST FON (HİSSE SENEDİ YOĞUN FON)",
+        "date": "2026-09-21",
+        "price": 0.132501,
+        "prevPrice": 0.190126,
+        "change": -30.3088,
+        "aum": 17284339.48,
+        "investors": 15,
+        "prevInvestors": 15,
+        "deltaInvestors": 0,
+        "deltaShares": 0,
+        "cashFlow": 0,
+        "perPerson": 0
+      },
+      {
+        "code": "DFI",
+        "name": "ATLAS PORTFÖY SERBEST FON",
+        "date": "2026-09-21",
+        "price": 3.446779,
+        "prevPrice": 4.695444,
+        "change": -26.5931,
+        "aum": 7792408650.4,
+        "investors": 47645,
+        "prevInvestors": 47638,
+        "deltaInvestors": 7,
+        "deltaShares": 488010,
+        "cashFlow": 1682062.62,
+        "perPerson": 240295
+      },
+      {
+        "code": "HPF",
+        "name": "HEDEF PORTFÖY KUZEY HİSSE SENEDİ SERBEST (TL) FON (HİSSE SENEDİ YOĞUN FON)",
+        "date": "2026-09-21",
+        "price": 9.849325,
+        "prevPrice": 12.531925,
+        "change": -21.4061,
+        "aum": 424989714.32,
+        "investors": 12,
+        "prevInvestors": 12,
+        "deltaInvestors": 0,
+        "deltaShares": 0,
+        "cashFlow": 0,
+        "perPerson": 0
+      },
+      {
+        "code": "HVA",
+        "name": "HEDEF PORTFÖY ECE HİSSE SENEDİ SERBEST (TL) FON (HİSSE SENEDİ YOĞUN FON)",
+        "date": "2026-09-21",
+        "price": 60.065875,
+        "prevPrice": 75.319632,
+        "change": -20.252,
+        "aum": 34818265.39,
+        "investors": 16,
+        "prevInvestors": 16,
+        "deltaInvestors": 0,
+        "deltaShares": 0,
+        "cashFlow": 0,
+        "perPerson": 0
       }
     ]
   }
@@ -10306,6 +10465,9 @@ document.addEventListener("DOMContentLoaded", () => {
     try {
         loadAndRenderFundLeaders(false);
     } catch (e) {}
+    try {
+        fetchTefasAllFundsForScan().catch(() => {});
+    } catch (e) {}
 
     // Check for deep link params (?fon=TAU&slide=1) from PowerPoint or PDF exports
     setTimeout(handleUrlDeepLinkParams, 150);
@@ -11457,6 +11619,8 @@ function handleUrlDeepLinkParams() {
 }
 window.addEventListener("popstate", handleUrlDeepLinkParams);
 
+var liveScannerAllFundsCache = null;
+
 function buildSlideReportDataset() {
     // 1. Ensure authoritative leaders cache is loaded
     if (!fundLeadersDataCache || !fundLeadersDataCache.categories || (fundLeadersDataCache.categories.topInvestorInflow?.length || 0) <= 3) {
@@ -11514,9 +11678,16 @@ function buildSlideReportDataset() {
 
     // 2. Build full funds list for categories and marketOverview calculations
     const fundsMap = new Map();
-    if (typeof BASE_CURATED_CATEGORY_FUNDS !== 'undefined' && Array.isArray(BASE_CURATED_CATEGORY_FUNDS)) {
-        BASE_CURATED_CATEGORY_FUNDS.forEach(f => fundsMap.set(f.code, { ...f }));
+
+    // Include full live scanner cache if available (2,041 TEFAS funds)
+    if (typeof liveScannerAllFundsCache !== 'undefined' && liveScannerAllFundsCache && Array.isArray(liveScannerAllFundsCache) && liveScannerAllFundsCache.length > 50) {
+        liveScannerAllFundsCache.forEach(f => {
+            if (!f || !f.code) return;
+            const formatted = formatLeaderFund(f);
+            if (formatted) fundsMap.set(formatted.code, formatted);
+        });
     }
+
     // Include full analyzed funds universe if available
     if (fundLeadersDataCache && Array.isArray(fundLeadersDataCache.allFunds)) {
         fundLeadersDataCache.allFunds.forEach(f => {
@@ -11525,11 +11696,19 @@ function buildSlideReportDataset() {
             if (formatted) fundsMap.set(formatted.code, formatted);
         });
     }
+
+    // Only fallback to BASE_CURATED_CATEGORY_FUNDS if fundsMap is empty
+    if (fundsMap.size === 0 && typeof BASE_CURATED_CATEGORY_FUNDS !== 'undefined' && Array.isArray(BASE_CURATED_CATEGORY_FUNDS)) {
+        BASE_CURATED_CATEGORY_FUNDS.forEach(f => fundsMap.set(f.code, { ...f }));
+    }
+
     const allLeaderFunds = [
         ...(leaders.topCashInflow || []),
         ...(leaders.topCashOutflow || []),
         ...(leaders.topInvestorInflow || []),
-        ...(leaders.topInvestorOutflow || [])
+        ...(leaders.topInvestorOutflow || []),
+        ...(leaders.topGainers || []),
+        ...(leaders.topLosers || [])
     ];
     allLeaderFunds.forEach(f => {
         if (!f || !f.code) return;
@@ -11552,9 +11731,25 @@ function buildSlideReportDataset() {
     const topCashOutflowCategory = sortedCatsByCashAsc[0] || null;
 
     // Filter for top gainers (en çok artan 3 fon) and top losers (en çok düşen 3 fon)
-    const validPerformers = allFunds.filter(f => f && f.price > 0 && (f.aum || 0) > 1000000 && typeof f.change === 'number' && !isNaN(f.change));
-    const topGainers = [...validPerformers].sort((a, b) => (b.change || 0) - (a.change || 0)).slice(0, 3);
-    const topLosers = [...validPerformers].sort((a, b) => (a.change || 0) - (b.change || 0)).slice(0, 3);
+    let topGainers = [];
+    let topLosers = [];
+
+    if (leaders.topGainers && Array.isArray(leaders.topGainers) && leaders.topGainers.length >= 3) {
+        topGainers = filterValid(leaders.topGainers).slice(0, 3);
+    }
+    if (leaders.topLosers && Array.isArray(leaders.topLosers) && leaders.topLosers.length >= 3) {
+        topLosers = filterValid(leaders.topLosers).slice(0, 3);
+    }
+
+    // Dynamic calculation from allFunds if missing or fewer than 3
+    if (topGainers.length < 3) {
+        const validGainers = allFunds.filter(f => f && f.price > 0 && (f.aum || 0) > 1000000 && typeof f.change === 'number' && f.change > 0);
+        topGainers = [...validGainers].sort((a, b) => (b.change || 0) - (a.change || 0)).slice(0, 3);
+    }
+    if (topLosers.length < 3) {
+        const validLosers = allFunds.filter(f => f && f.price > 0 && (f.aum || 0) > 1000000 && typeof f.change === 'number' && f.change < 0);
+        topLosers = [...validLosers].sort((a, b) => (a.change || 0) - (b.change || 0)).slice(0, 3);
+    }
 
     const rawReportDate = (fundLeadersDataCache && fundLeadersDataCache.date) 
         ? String(fundLeadersDataCache.date).trim() 
@@ -11736,8 +11931,8 @@ function renderSlidePerfCardHTML(fund, rank, type) {
     const reg = (typeof TEFAS_CATEGORIES_REGISTRY !== 'undefined' && TEFAS_CATEGORIES_REGISTRY[catKey]) || { name: 'Fon', shortName: 'Fon', color: '#94A3B8' };
 
     const isGainer = type === 'gainer';
-    const changeVal = typeof fund.change === 'number' ? fund.change : 0;
-    const sign = changeVal >= 0 ? '+' : '';
+    const changeVal = typeof fund.change === 'number' ? fund.change : (parseFloat(fund.change) || 0);
+    const sign = changeVal >= 0 ? '+' : '-';
     const icon = isGainer ? 'fa-arrow-trend-up' : 'fa-arrow-trend-down';
     const cardClass = isGainer ? 'gainer' : 'loser';
 
@@ -12449,7 +12644,7 @@ function renderInteractiveSlides(data) {
 // ==========================================================================
 let isLiveFundScannerRunning = false;
 let liveFundScannerShouldSkip = false;
-let liveScannerAllFundsCache = null;
+if (typeof liveScannerAllFundsCache === 'undefined') { var liveScannerAllFundsCache = null; }
 
 async function fetchTefasAllFundsForScan() {
     if (liveScannerAllFundsCache && Array.isArray(liveScannerAllFundsCache) && liveScannerAllFundsCache.length > 500) {
@@ -12771,7 +12966,16 @@ async function finishLiveFundMarketScan(funds, options = { autoOpenSlide: true }
     const sortedInvIn = [...validFunds].filter(f => f.deltaInvestors > 0).sort((a, b) => (b.deltaInvestors || 0) - (a.deltaInvestors || 0));
     const sortedInvOut = [...validFunds].filter(f => f.deltaInvestors < 0).sort((a, b) => (a.deltaInvestors || 0) - (b.deltaInvestors || 0));
 
-    // Save into fundLeadersDataCache
+    // Compute top gainers and top losers across the entire market
+    const sortedGainers = [...validFunds]
+        .filter(f => (f.aum || 0) > 1000000 && typeof f.change === 'number' && f.change > 0)
+        .sort((a, b) => (b.change || 0) - (a.change || 0));
+    const sortedLosers = [...validFunds]
+        .filter(f => (f.aum || 0) > 1000000 && typeof f.change === 'number' && f.change < 0)
+        .sort((a, b) => (a.change || 0) - (b.change || 0));
+
+    // Save into fundLeadersDataCache & liveScannerAllFundsCache
+    liveScannerAllFundsCache = funds;
     fundLeadersDataCache = {
         timestamp: Date.now(),
         date: funds[0]?.date || "2026-09-21",
@@ -12780,7 +12984,9 @@ async function finishLiveFundMarketScan(funds, options = { autoOpenSlide: true }
             topCashInflow: sortedCashIn.slice(0, 50),
             topCashOutflow: sortedCashOut.slice(0, 50),
             topInvestorInflow: sortedInvIn.slice(0, 50),
-            topInvestorOutflow: sortedInvOut.slice(0, 50)
+            topInvestorOutflow: sortedInvOut.slice(0, 50),
+            topGainers: sortedGainers.slice(0, 50),
+            topLosers: sortedLosers.slice(0, 50)
         },
         allFunds: funds
     };
@@ -12866,6 +13072,17 @@ function openFundSlideReportModal() {
                 }
             }
         } catch (e) {}
+    }
+
+    // If liveScannerAllFundsCache is not yet loaded, prefetch and re-render slides once ready
+    if (!liveScannerAllFundsCache || liveScannerAllFundsCache.length < 50) {
+        fetchTefasAllFundsForScan().then(funds => {
+            if (funds && funds.length > 100 && isSlideReportModalOpen) {
+                const refreshed = buildSlideReportDataset();
+                slideReportDatasetCache = refreshed;
+                renderInteractiveSlides(refreshed);
+            }
+        }).catch(() => {});
     }
 
     const data = buildSlideReportDataset();

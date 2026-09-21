@@ -123,6 +123,8 @@ export default {
             const topInvestorOutflow = [...valid].filter(d => d.deltaInvestors < 0).sort((a,b) => a.deltaInvestors - b.deltaInvestors).slice(0, limit);
             const topCashInflow = [...valid].filter(d => d.cashFlow > 0).sort((a,b) => b.cashFlow - a.cashFlow).slice(0, limit);
             const topCashOutflow = [...valid].filter(d => d.cashFlow < 0).sort((a,b) => a.cashFlow - b.cashFlow).slice(0, limit);
+            const topGainers = [...valid].filter(d => (d.aum || 0) > 1000000 && typeof d.change === 'number' && d.change > 0).sort((a,b) => (b.change || 0) - (a.change || 0)).slice(0, limit);
+            const topLosers = [...valid].filter(d => (d.aum || 0) > 1000000 && typeof d.change === 'number' && d.change < 0).sort((a,b) => (a.change || 0) - (b.change || 0)).slice(0, limit);
 
             const dates = diffs.map(d => d.date).filter(Boolean).sort().reverse();
             const latestDate = dates[0] || `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}`;
@@ -134,7 +136,9 @@ export default {
                 topInvestorInflow,
                 topInvestorOutflow,
                 topCashInflow,
-                topCashOutflow
+                topCashOutflow,
+                topGainers,
+                topLosers
               },
               allFunds: wantsAll ? diffs : undefined
             };
