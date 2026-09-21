@@ -2536,7 +2536,7 @@
                     <div>
                         <div class="slide-topbar-title-row">
                             <h3 class="slide-topbar-title">TEFAS Günlük Fon & Sermaye Akış Slayt Raporu</h3>
-                            <span class="slide-badge-pill" id="slideCurrentNumberBadge">Slayt 1 / 6</span>
+                            <span class="slide-badge-pill" id="slideCurrentNumberBadge">Slayt 1 / 8</span>
                         </div>
                         <span class="slide-topbar-sub" id="slideReportDateSub">Canlı TEFAS Verileri</span>
                     </div>
@@ -2577,7 +2577,7 @@
                         <span>PowerPoint İndir</span>
                         <span class="slide-btn-badge pptx">PPTX</span>
                     </button>
-                    <button type="button" class="btn-slide-action pdf" id="btnSlideExportPdf" onclick="exportToPDF()" title="6 Sayfalık Yüksek Çözünürlüklü 16:9 PDF Raporu Olarak İndir">
+                    <button type="button" class="btn-slide-action pdf" id="btnSlideExportPdf" onclick="exportToPDF()" title="8 Sayfalık Yüksek Çözünürlüklü 16:9 PDF Raporu Olarak İndir">
                         <i class="fa-solid fa-file-pdf"></i>
                         <span>PDF İndir</span>
                         <span class="slide-btn-badge pdf">PDF</span>
@@ -2606,10 +2606,12 @@
                         <div class="slide-page" id="slidePage-4" data-slide="4"></div>
                         <!-- Slide 5: Top 3 Investor Outflow Funds -->
                         <div class="slide-page" id="slidePage-5" data-slide="5"></div>
-                        <!-- Slide 6: Category Breakdown & Flow Leader Categories -->
+                        <!-- Slide 6: Top 3 Gainers & Top 3 Losers (Performans & Getiri Liderleri) -->
                         <div class="slide-page" id="slidePage-6" data-slide="6"></div>
-                        <!-- Slide 7: Capital Purchasing Power & Real-World Equivalence Comparison -->
+                        <!-- Slide 7: Category Breakdown & Flow Leader Categories -->
                         <div class="slide-page" id="slidePage-7" data-slide="7"></div>
+                        <!-- Slide 8: Capital Purchasing Power & Real-World Equivalence Comparison -->
+                        <div class="slide-page" id="slidePage-8" data-slide="8"></div>
                         <!-- Slide Detail: Individual Fund Deep-Dive Presentation Slide -->
                         <div class="slide-page" id="slidePage-detail" data-slide="detail" style="display: none;"></div>
                     </div>
@@ -2632,15 +2634,16 @@
                         <span>Önceki</span>
                     </button>
                     
-                    <!-- 7 Slide Indicator Dots -->
+                    <!-- 8 Slide Indicator Dots -->
                     <div class="slide-dots-group" id="slideDotsGroup">
                         <button type="button" class="slide-dot active" onclick="goToSlide(1)" title="1. Genel Pazar Özeti"></button>
                         <button type="button" class="slide-dot" onclick="goToSlide(2)" title="2. En Çok Para Giren 3 Fon"></button>
                         <button type="button" class="slide-dot" onclick="goToSlide(3)" title="3. En Çok Para Çıkan 3 Fon"></button>
                         <button type="button" class="slide-dot" onclick="goToSlide(4)" title="4. En Çok Yatırımcı Giren 3 Fon"></button>
                         <button type="button" class="slide-dot" onclick="goToSlide(5)" title="5. En Çok Yatırımcı Çıkan 3 Fon"></button>
-                        <button type="button" class="slide-dot" onclick="goToSlide(6)" title="6. Kategori Pazar Özeti"></button>
-                        <button type="button" class="slide-dot" onclick="goToSlide(7)" title="7. Sermaye Gücü & Referans Değer Karşılaştırması"></button>
+                        <button type="button" class="slide-dot" onclick="goToSlide(6)" title="6. En Çok Artan ve En Çok Düşen Fonlar (Getiri Liderleri)"></button>
+                        <button type="button" class="slide-dot" onclick="goToSlide(7)" title="7. Kategori Pazar Özeti"></button>
+                        <button type="button" class="slide-dot" onclick="goToSlide(8)" title="8. Sermaye Gücü & Referans Değer Karşılaştırması"></button>
                     </div>
 
                     <button type="button" class="btn-slide-nav-next" onclick="navigateSlide(1)">

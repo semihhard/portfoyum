@@ -11550,6 +11550,12 @@ function buildSlideReportDataset() {
 
     const topCashInflowCategory = sortedCatsByCashDesc[0] || null;
     const topCashOutflowCategory = sortedCatsByCashAsc[0] || null;
+
+    // Filter for top gainers (en çok artan 3 fon) and top losers (en çok düşen 3 fon)
+    const validPerformers = allFunds.filter(f => f && f.price > 0 && (f.aum || 0) > 1000000 && typeof f.change === 'number' && !isNaN(f.change));
+    const topGainers = [...validPerformers].sort((a, b) => (b.change || 0) - (a.change || 0)).slice(0, 3);
+    const topLosers = [...validPerformers].sort((a, b) => (a.change || 0) - (b.change || 0)).slice(0, 3);
+
     const rawReportDate = (fundLeadersDataCache && fundLeadersDataCache.date) 
         ? String(fundLeadersDataCache.date).trim() 
         : "2026-09-21";
@@ -11575,6 +11581,8 @@ function buildSlideReportDataset() {
         topCashOutflow,
         topInvestorInflow,
         topInvestorOutflow,
+        topGainers,
+        topLosers,
         categories: stats.categories,
         marketOverview: stats.marketOverview
     };
@@ -11720,6 +11728,81 @@ function renderSlideFundCardHTML(fund, rank, mode) {
     `;
 }
 
+function renderSlidePerfCardHTML(fund, rank, type) {
+    if (!fund) return '';
+    const code = String(fund.code || 'FON').toUpperCase().trim();
+    const cleanName = typeof cleanFundTitle === 'function' ? cleanFundTitle(fund.name) : (fund.name || `${code} FONU`);
+    const catKey = fund.category || (typeof detectFundCategoryKey === 'function' ? detectFundCategoryKey(fund.name, code) : 'DİĞER');
+    const reg = (typeof TEFAS_CATEGORIES_REGISTRY !== 'undefined' && TEFAS_CATEGORIES_REGISTRY[catKey]) || { name: 'Fon', shortName: 'Fon', color: '#94A3B8' };
+
+    const isGainer = type === 'gainer';
+    const changeVal = typeof fund.change === 'number' ? fund.change : 0;
+    const sign = changeVal >= 0 ? '+' : '';
+    const icon = isGainer ? 'fa-arrow-trend-up' : 'fa-arrow-trend-down';
+    const cardClass = isGainer ? 'gainer' : 'loser';
+
+    let rankBadge = '';
+    if (isGainer) {
+        if (rank === 1) rankBadge = '<span class="slide-perf-rank rank-1"><span class="slide-perf-crown">👑</span> #1 ŞAMPİYON</span>';
+        else if (rank === 2) rankBadge = '<span class="slide-perf-rank rank-2"><span class="slide-perf-crown">🥈</span> #2 LİDER</span>';
+        else rankBadge = '<span class="slide-perf-rank rank-3"><span class="slide-perf-crown">🥉</span> #3 TAKİPÇİ</span>';
+    } else {
+        if (rank === 1) rankBadge = '<span class="slide-perf-rank rank-1-loss">🔻 #1 EN ÇOK DÜŞEN</span>';
+        else if (rank === 2) rankBadge = '<span class="slide-perf-rank rank-2-loss">🔻 #2 İKİNCİ</span>';
+        else rankBadge = '<span class="slide-perf-rank rank-3-loss">🔻 #3 ÜÇÜNCÜ</span>';
+    }
+
+    const price = typeof fund.price === 'number' ? fund.price : parseFloat(fund.price) || 0;
+    const priceStr = price > 0 ? `₺${price.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 4 })}` : '—';
+    const aum = typeof fund.aum === 'number' ? fund.aum : parseFloat(fund.aum) || 0;
+    const aumStr = typeof formatBillionOrMillion === 'function' ? formatBillionOrMillion(aum) : `₺${aum.toLocaleString('tr-TR')}`;
+    const inv = typeof fund.investors === 'number' ? fund.investors : parseInt(fund.investors) || 0;
+    const invStr = inv > 0 ? `${inv.toLocaleString('tr-TR')} Kişi` : '—';
+
+    return `
+        <div class="slide-perf-card slide-fund-card ${cardClass}" data-fund-code="${code}" onclick="openSlideFundDetail('${code}', 6)" title="${code} Detay Slaytını Aç">
+            <div class="slide-perf-card-top">
+                <div class="slide-perf-card-meta">
+                    ${rankBadge}
+                    <div class="slide-perf-code-row">
+                        <span class="slide-code-badge">${code}</span>
+                        <span class="slide-perf-cat-name" style="color: ${reg.color};">
+                            <span class="slide-cat-dot" style="background: ${reg.color}; box-shadow: 0 0 6px ${reg.color};"></span>
+                            ${reg.shortName}
+                        </span>
+                    </div>
+                </div>
+                <div class="slide-perf-return-pill ${cardClass}">
+                    <i class="fa-solid ${icon}"></i>
+                    <span>${sign}%${Math.abs(changeVal).toFixed(2)}</span>
+                </div>
+            </div>
+
+            <div class="slide-perf-fund-name" title="${fund.name}">${cleanName}</div>
+
+            <div class="slide-perf-metrics-row">
+                <div class="slide-perf-metric">
+                    <span class="slide-perf-lbl"><i class="fa-solid fa-tag"></i> Pay Fiyatı</span>
+                    <span class="slide-perf-val">${priceStr}</span>
+                </div>
+                <div class="slide-perf-metric">
+                    <span class="slide-perf-lbl"><i class="fa-solid fa-vault"></i> Büyüklük</span>
+                    <span class="slide-perf-val">${aumStr}</span>
+                </div>
+                <div class="slide-perf-metric">
+                    <span class="slide-perf-lbl"><i class="fa-solid fa-users"></i> Yatırımcı</span>
+                    <span class="slide-perf-val">${invStr}</span>
+                </div>
+            </div>
+
+            <div class="slide-perf-card-hint">
+                <span><i class="fa-solid fa-arrow-right"></i> Fon Detayı</span>
+                <i class="fa-solid fa-chevron-right" style="font-size: 0.6rem;"></i>
+            </div>
+        </div>
+    `;
+}
+
 function getPurchasingPowerEquivalents(rawAmount) {
     const amount = Math.abs(Number(rawAmount) || 0);
     const toggUnit = 1850000;      // ₺1.85M - Sıfır Yerli TOGG T10X
@@ -11784,7 +11867,7 @@ function renderInteractiveSlides(data) {
             <div class="slide-header-block">
                 <div class="slide-header-meta-row">
                     <div class="slide-meta-left">
-                        <span class="slide-page-number-capsule">SLAYT 01 / 07</span>
+                        <span class="slide-page-number-capsule">SLAYT 01 / 08</span>
                         <div class="slide-category-tag cyan"><i class="fa-solid fa-chart-pie"></i> MAKRO PİYASA LİKİDİTE RAPORU</div>
                     </div>
                     <div class="slide-date-pill">
@@ -11902,7 +11985,7 @@ function renderInteractiveSlides(data) {
             <div class="slide-header-block">
                 <div class="slide-header-meta-row">
                     <div class="slide-meta-left">
-                        <span class="slide-page-number-capsule">SLAYT 02 / 07</span>
+                        <span class="slide-page-number-capsule">SLAYT 02 / 08</span>
                         <div class="slide-category-tag emerald"><i class="fa-solid fa-arrow-trend-up"></i> SERMAYE GİRİŞİ LİDERLERİ</div>
                     </div>
                     <div class="slide-date-pill">
@@ -11926,7 +12009,7 @@ function renderInteractiveSlides(data) {
             <div class="slide-header-block">
                 <div class="slide-header-meta-row">
                     <div class="slide-meta-left">
-                        <span class="slide-page-number-capsule">SLAYT 03 / 07</span>
+                        <span class="slide-page-number-capsule">SLAYT 03 / 08</span>
                         <div class="slide-category-tag rose"><i class="fa-solid fa-arrow-trend-down"></i> SERMAYE ÇIKIŞI LİDERLERİ</div>
                     </div>
                     <div class="slide-date-pill">
@@ -11950,7 +12033,7 @@ function renderInteractiveSlides(data) {
             <div class="slide-header-block">
                 <div class="slide-header-meta-row">
                     <div class="slide-meta-left">
-                        <span class="slide-page-number-capsule">SLAYT 04 / 07</span>
+                        <span class="slide-page-number-capsule">SLAYT 04 / 08</span>
                         <div class="slide-category-tag cyan"><i class="fa-solid fa-user-plus"></i> YATIRIMCI TERCİHİ</div>
                     </div>
                     <div class="slide-date-pill">
@@ -11974,7 +12057,7 @@ function renderInteractiveSlides(data) {
             <div class="slide-header-block">
                 <div class="slide-header-meta-row">
                     <div class="slide-meta-left">
-                        <span class="slide-page-number-capsule">SLAYT 05 / 07</span>
+                        <span class="slide-page-number-capsule">SLAYT 05 / 08</span>
                         <div class="slide-category-tag purple"><i class="fa-solid fa-user-minus"></i> YATIRIMCI ÇIKIŞI</div>
                     </div>
                     <div class="slide-date-pill">
@@ -11991,9 +12074,69 @@ function renderInteractiveSlides(data) {
         `;
     }
 
-    // Slide 6: Category Breakdown Matrix
+    // Slide 6: Top 3 Gainers & Top 3 Losers (Tek Sayfada Günün En Çok Artan ve En Çok Düşen 3 Fonu)
     const p6 = document.getElementById("slidePage-6");
     if (p6) {
+        const gainers = data.topGainers || [];
+        const losers = data.topLosers || [];
+
+        p6.innerHTML = `
+            <div class="slide-header-block">
+                <div class="slide-header-meta-row">
+                    <div class="slide-meta-left">
+                        <span class="slide-page-number-capsule">SLAYT 06 / 08</span>
+                        <div class="slide-category-tag amber"><i class="fa-solid fa-chart-line"></i> FİYAT PERFORMANS LİDERLERİ</div>
+                    </div>
+                    <div class="slide-date-pill">
+                        <span class="slide-live-dot"></span>
+                        <span>${data.date} • GÜNLÜK GETİRİ</span>
+                    </div>
+                </div>
+                <h2 class="slide-main-title">Günün En Çok Artan ve En Çok Düşen Fonları</h2>
+                <p class="slide-subtitle">Gün içinde pay fiyatı en yüksek prim yapan 3 fon ve en sert değer kaybı yaşayan 3 fonun karşılaştırmalı performans vitrini</p>
+            </div>
+
+            <div class="slide-perf-arena">
+                <!-- Left: Top 3 Gainers (Boğa Kanadı) -->
+                <div class="slide-perf-column gainers">
+                    <div class="slide-perf-col-header emerald">
+                        <div class="slide-perf-col-title">
+                            <span class="slide-perf-icon emerald"><i class="fa-solid fa-arrow-trend-up"></i></span>
+                            <div>
+                                <div class="slide-perf-title-text">Günün En Çok Artan 3 Fonu</div>
+                                <div class="slide-perf-sub-text">En Yüksek Günlük Prim Yapan Liderler</div>
+                            </div>
+                        </div>
+                        <span class="slide-perf-badge emerald"><i class="fa-solid fa-crown"></i> BOĞA KANADI</span>
+                    </div>
+                    <div class="slide-perf-cards-list">
+                        ${gainers.map((f, i) => renderSlidePerfCardHTML(f, i + 1, 'gainer')).join('')}
+                    </div>
+                </div>
+
+                <!-- Right: Top 3 Losers (Ayı Kanadı) -->
+                <div class="slide-perf-column losers">
+                    <div class="slide-perf-col-header rose">
+                        <div class="slide-perf-col-title">
+                            <span class="slide-perf-icon rose"><i class="fa-solid fa-arrow-trend-down"></i></span>
+                            <div>
+                                <div class="slide-perf-title-text">Günün En Çok Düşen 3 Fonu</div>
+                                <div class="slide-perf-sub-text">En Sert Günlük Değer Kaybı Yaşayanlar</div>
+                            </div>
+                        </div>
+                        <span class="slide-perf-badge rose"><i class="fa-solid fa-cloud-rain"></i> AYI KANADI</span>
+                    </div>
+                    <div class="slide-perf-cards-list">
+                        ${losers.map((f, i) => renderSlidePerfCardHTML(f, i + 1, 'loser')).join('')}
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    // Slide 7: Category Breakdown Matrix
+    const p7 = document.getElementById("slidePage-7");
+    if (p7) {
         const catRows = Object.values(data.categories || {}).map(cat => {
             const isCashPos = (cat.cashFlow || 0) >= 0;
             const cashSign = isCashPos ? '+' : '';
@@ -12038,11 +12181,11 @@ function renderInteractiveSlides(data) {
             `;
         }).join('');
 
-        p6.innerHTML = `
+        p7.innerHTML = `
             <div class="slide-header-block">
                 <div class="slide-header-meta-row">
                     <div class="slide-meta-left">
-                        <span class="slide-page-number-capsule">SLAYT 06 / 07</span>
+                        <span class="slide-page-number-capsule">SLAYT 07 / 08</span>
                         <div class="slide-category-tag purple"><i class="fa-solid fa-layer-group"></i> ŞEMSİYE KATEGORİ MATRİSİ</div>
                     </div>
                     <div class="slide-date-pill">
@@ -12075,9 +12218,9 @@ function renderInteractiveSlides(data) {
         `;
     }
 
-    // Slide 7: Real-World Capital Purchasing Power & Benchmark Equivalence Comparison
-    const p7 = document.getElementById("slidePage-7");
-    if (p7) {
+    // Slide 8: Real-World Capital Purchasing Power & Benchmark Equivalence Comparison
+    const p8 = document.getElementById("slidePage-8");
+    if (p8) {
         const inFund = (data.topCashInflow && data.topCashInflow.length > 0) ? data.topCashInflow[0] : null;
         const outFund = (data.topCashOutflow && data.topCashOutflow.length > 0) ? data.topCashOutflow[0] : null;
 
@@ -12104,11 +12247,11 @@ function renderInteractiveSlides(data) {
         const diffStr = (typeof formatBillionOrMillion === 'function' ? formatBillionOrMillion(Math.abs(deltaDiff)) : `₺${Math.abs(deltaDiff).toLocaleString('tr-TR')}`);
         const ratioMultiplier = outAmount > 0 ? (inAmount / outAmount).toFixed(1) : '∞';
 
-        p7.innerHTML = `
+        p8.innerHTML = `
             <div class="slide-header-block">
                 <div class="slide-header-meta-row">
                     <div class="slide-meta-left">
-                        <span class="slide-page-number-capsule">SLAYT 07 / 07</span>
+                        <span class="slide-page-number-capsule">SLAYT 08 / 08</span>
                         <div class="slide-category-tag amber"><i class="fa-solid fa-scale-balanced"></i> SERMAYE GÜCÜ & REFERANS VİTRİNİ</div>
                     </div>
                     <div class="slide-date-pill">
@@ -12128,7 +12271,7 @@ function renderInteractiveSlides(data) {
                         <span class="slide-power-type-pill emerald"><i class="fa-solid fa-arrow-trend-up"></i> Net Giriş</span>
                     </div>
 
-                    <div class="slide-power-fund-pill" onclick="openSlideFundDetail('${inFund ? inFund.code : ''}', 7)" title="${inFund ? inFund.code : ''} Fon Analizine Git">
+                    <div class="slide-power-fund-pill" onclick="openSlideFundDetail('${inFund ? inFund.code : ''}', 8)" title="${inFund ? inFund.code : ''} Fon Analizine Git">
                         <div class="slide-power-fund-left">
                             <span class="slide-power-fund-code emerald">${inFund ? inFund.code : '—'}</span>
                             <div class="slide-power-fund-info">
@@ -12216,7 +12359,7 @@ function renderInteractiveSlides(data) {
                         <span class="slide-power-type-pill rose"><i class="fa-solid fa-arrow-trend-down"></i> Net Çıkış</span>
                     </div>
 
-                    <div class="slide-power-fund-pill" onclick="openSlideFundDetail('${outFund ? outFund.code : ''}', 7)" title="${outFund ? outFund.code : ''} Fon Analizine Git">
+                    <div class="slide-power-fund-pill" onclick="openSlideFundDetail('${outFund ? outFund.code : ''}', 8)" title="${outFund ? outFund.code : ''} Fon Analizine Git">
                         <div class="slide-power-fund-left">
                             <span class="slide-power-fund-code rose">${outFund ? outFund.code : '—'}</span>
                             <div class="slide-power-fund-info">
@@ -12871,7 +13014,7 @@ function updateSlideFullscreenScale() {
 window.updateSlideFullscreenScale = updateSlideFullscreenScale;
 
 function goToSlide(n) {
-    currentSlideIndex = Math.max(1, Math.min(7, n));
+    currentSlideIndex = Math.max(1, Math.min(8, n));
     isSlideDetailActive = false;
 
     const viewport = document.querySelector(".slide-stage-viewport");
@@ -12888,7 +13031,7 @@ function goToSlide(n) {
         slideInvestorChartInstance = null;
     }
 
-    for (let i = 1; i <= 7; i++) {
+    for (let i = 1; i <= 8; i++) {
         const slide = document.getElementById(`slidePage-${i}`);
         if (slide) {
             slide.classList.toggle("active", i === currentSlideIndex);
@@ -12903,7 +13046,7 @@ function goToSlide(n) {
 
     const badge = document.getElementById("slideCurrentNumberBadge");
     if (badge) {
-        badge.innerText = `Slayt ${currentSlideIndex} / 7`;
+        badge.innerText = `Slayt ${currentSlideIndex} / 8`;
     }
     requestAnimationFrame(() => {
         updateSlideFullscreenScale();
@@ -12941,6 +13084,7 @@ function getSlideBackLabel(slideNum) {
     if (s === 2) suffix = "'ye";
     else if (s === 6) suffix = "'ya";
     else if (s === 7) suffix = "'ye";
+    else if (s === 8) suffix = "'e";
     else if (s === 9) suffix = "'a";
     return `← Slayt ${s}${suffix} Geri Dön`;
 }
@@ -12959,8 +13103,8 @@ async function openSlideFundDetail(fundCode, originSlideIndex = null) {
     const viewport = document.querySelector(".slide-stage-viewport");
     if (viewport) viewport.scrollTop = 0;
 
-    // Hide main slides 1-7
-    for (let i = 1; i <= 7; i++) {
+    // Hide main slides 1-8
+    for (let i = 1; i <= 8; i++) {
         const slide = document.getElementById(`slidePage-${i}`);
         if (slide) {
             slide.classList.remove("active");
@@ -13007,7 +13151,9 @@ async function openSlideFundDetail(fundCode, originSlideIndex = null) {
             ...(slideReportDatasetCache.topCashInflow || []),
             ...(slideReportDatasetCache.topCashOutflow || []),
             ...(slideReportDatasetCache.topInvestorInflow || []),
-            ...(slideReportDatasetCache.topInvestorOutflow || [])
+            ...(slideReportDatasetCache.topInvestorOutflow || []),
+            ...(slideReportDatasetCache.topGainers || []),
+            ...(slideReportDatasetCache.topLosers || [])
         ];
         fundMeta = candidates.find(f => f.code === fCode);
     }
@@ -13692,7 +13838,9 @@ async function exportToPDF() {
             ...(data.topCashInflow || []).map(f => ({ fund: f, originSlide: 2 })),
             ...(data.topCashOutflow || []).map(f => ({ fund: f, originSlide: 3 })),
             ...(data.topInvestorInflow || []).map(f => ({ fund: f, originSlide: 4 })),
-            ...(data.topInvestorOutflow || []).map(f => ({ fund: f, originSlide: 5 }))
+            ...(data.topInvestorOutflow || []).map(f => ({ fund: f, originSlide: 5 })),
+            ...(data.topGainers || []).map(f => ({ fund: f, originSlide: 6 })),
+            ...(data.topLosers || []).map(f => ({ fund: f, originSlide: 6 }))
         ].forEach(item => {
             if (item.fund && item.fund.code && !seenCodes.has(item.fund.code)) {
                 seenCodes.add(item.fund.code);
@@ -13703,13 +13851,13 @@ async function exportToPDF() {
         const fundSlideMap = new Map();
         featuredFunds.forEach((item, idx) => {
             fundSlideMap.set(item.fund.code, {
-                targetSlide: 7 + idx + 1,
+                targetSlide: 8 + idx + 1,
                 originSlide: item.originSlide,
                 fund: item.fund
             });
         });
 
-        const totalPages = 7 + featuredFunds.length;
+        const totalPages = 8 + featuredFunds.length;
         const aspectBox = document.getElementById("slideAspectBox");
         const prevTransform = aspectBox ? aspectBox.style.transform : '';
         if (aspectBox) aspectBox.style.transform = 'none';
@@ -13719,8 +13867,8 @@ async function exportToPDF() {
             pdfRgb: [7, 12, 24]
         };
 
-        // 1. Render Main Overview Slides (1 to 7)
-        for (let pageNum = 1; pageNum <= 7; pageNum++) {
+        // 1. Render Main Overview Slides (1 to 8)
+        for (let pageNum = 1; pageNum <= 8; pageNum++) {
             if (btn) {
                 btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> <span>Sayfa ${pageNum}/${totalPages}...</span>`;
             }
@@ -13792,10 +13940,10 @@ async function exportToPDF() {
             }
         }
 
-        // 2. Render Dedicated Detail Slide for Each Featured Fund (Slides 7 to totalPages)
+        // 2. Render Dedicated Detail Slide for Each Featured Fund (Slides 9 to totalPages)
         for (let i = 0; i < featuredFunds.length; i++) {
             const item = featuredFunds[i];
-            const detailPageNum = 6 + i + 1;
+            const detailPageNum = 8 + i + 1;
             if (btn) {
                 btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> <span>Sayfa ${detailPageNum}/${totalPages} (${item.fund.code})...</span>`;
             }
@@ -13966,14 +14114,16 @@ async function exportToPowerPoint() {
             await document.fonts.ready;
         }
 
-        // Map featured funds to dedicated detail slide numbers (starting at slide 7)
+        // Map featured funds to dedicated detail slide numbers (starting at slide 8)
         const featuredFunds = [];
         const seenCodes = new Set();
         [
             ...(data.topCashInflow || []).map(f => ({ fund: f, originSlide: 2 })),
             ...(data.topCashOutflow || []).map(f => ({ fund: f, originSlide: 3 })),
             ...(data.topInvestorInflow || []).map(f => ({ fund: f, originSlide: 4 })),
-            ...(data.topInvestorOutflow || []).map(f => ({ fund: f, originSlide: 5 }))
+            ...(data.topInvestorOutflow || []).map(f => ({ fund: f, originSlide: 5 })),
+            ...(data.topGainers || []).map(f => ({ fund: f, originSlide: 6 })),
+            ...(data.topLosers || []).map(f => ({ fund: f, originSlide: 6 }))
         ].forEach(item => {
             if (item.fund && item.fund.code && !seenCodes.has(item.fund.code)) {
                 seenCodes.add(item.fund.code);
@@ -13984,7 +14134,7 @@ async function exportToPowerPoint() {
         const fundSlideMap = new Map();
         featuredFunds.forEach((item, idx) => {
             fundSlideMap.set(item.fund.code, {
-                targetSlide: 7 + idx + 1,
+                targetSlide: 8 + idx + 1,
                 originSlide: item.originSlide,
                 fund: item.fund
             });
@@ -13996,7 +14146,7 @@ async function exportToPowerPoint() {
         pptx.company = 'Portföyüm - TEFAS Fon Analiz';
         pptx.title = `TEFAS Günlük Fon & Sermaye Akış Slayt Raporu - ${data.date || ''}`;
 
-        const totalPages = 7 + featuredFunds.length;
+        const totalPages = 8 + featuredFunds.length;
         const aspectBox = document.getElementById("slideAspectBox");
         const themeCfg = (typeof SLIDE_THEMES !== 'undefined' && SLIDE_THEMES[currentSlideTheme]) || {
             bgCanvas: '#070C18',
@@ -14006,8 +14156,8 @@ async function exportToPowerPoint() {
         const slideW = 10.0;
         const slideH = 5.625;
 
-        // 1. Render Main Overview Slides (1 to 7)
-        for (let pageNum = 1; pageNum <= 7; pageNum++) {
+        // 1. Render Main Overview Slides (1 to 8)
+        for (let pageNum = 1; pageNum <= 8; pageNum++) {
             if (btn) {
                 btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> <span>Sayfa ${pageNum}/${totalPages}...</span>`;
             }
@@ -14094,10 +14244,10 @@ async function exportToPowerPoint() {
             }
         }
 
-        // 2. Render Dedicated Detail Slide for Each Featured Fund (Slides 7 to totalPages)
+        // 2. Render Dedicated Detail Slide for Each Featured Fund (Slides 9 to totalPages)
         for (let i = 0; i < featuredFunds.length; i++) {
             const item = featuredFunds[i];
-            const detailPageNum = 6 + i + 1;
+            const detailPageNum = 8 + i + 1;
             if (btn) {
                 btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> <span>Slayt ${detailPageNum}/${totalPages} (${item.fund.code})...</span>`;
             }
