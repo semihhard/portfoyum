@@ -14903,6 +14903,35 @@ function buildAllCompaniesDataset(funds) {
     };
 }
 
+async function loadAllFundsForCompanies() {
+    if (typeof liveScannerAllFundsCache !== 'undefined' && liveScannerAllFundsCache && Array.isArray(liveScannerAllFundsCache) && liveScannerAllFundsCache.length > 500) {
+        return liveScannerAllFundsCache;
+    }
+    if (typeof fetchTefasAllFundsForScan === 'function') {
+        try {
+            const funds = await fetchTefasAllFundsForScan();
+            if (funds && Array.isArray(funds) && funds.length > 100) {
+                return funds;
+            }
+        } catch (e) {
+            console.warn("fetchTefasAllFundsForScan error:", e);
+        }
+    }
+    try {
+        const res = await fetch("tefas_all_funds.json?v=" + Date.now());
+        if (res.ok) {
+            const json = await res.json();
+            if (json && Array.isArray(json.funds) && json.funds.length > 100) {
+                if (typeof liveScannerAllFundsCache !== 'undefined') liveScannerAllFundsCache = json.funds;
+                return json.funds;
+            }
+        }
+    } catch (err) {
+        console.warn("Direct tefas_all_funds.json fetch error:", err);
+    }
+    return [];
+}
+
 async function loadAndRenderCompaniesExplorer(force = false) {
     const listEl = document.getElementById('pysCompaniesList');
     const dossierEl = document.getElementById('pysCompanyDossier');
@@ -14918,7 +14947,10 @@ async function loadAndRenderCompaniesExplorer(force = false) {
         }
 
         try {
-            const funds = await fetchAllTefasFundsForScan();
+            const funds = await loadAllFundsForCompanies();
+            if (!funds || funds.length === 0) {
+                throw new Error("Fon verileri yüklenemedi. Lütfen internet bağlantınızı kontrol edip tekrar deneyin.");
+            }
             pysCompaniesDataCache = buildAllCompaniesDataset(funds);
         } catch (e) {
             console.error("loadAndRenderCompaniesExplorer failed:", e);
@@ -15688,7 +15720,7 @@ function goToCompanySlide(index) {
 }
 
 // Global Keyboard Navigation for Company Slide Deck
-if (typeof document !== 'undefined') {
+if (typeof document !== 'undefined' && typeof document.addEventListener === 'function') {
     document.addEventListener('keydown', (e) => {
         const modal = document.getElementById('companySlideReportModal');
         if (!modal || modal.style.display === 'none') return;
@@ -15727,4 +15759,7 @@ window.toggleCompanySlideFullscreen = toggleCompanySlideFullscreen;
 window.printCompanySlideReport = printCompanySlideReport;
 window.goToCompanySlide = goToCompanySlide;
 window.currentCompanySlideIndex = currentCompanySlideIndex;
+window.loadAllFundsForCompanies = loadAllFundsForCompanies;
+window.fetchAllTefasFundsForScan = loadAllFundsForCompanies;
+window.fetchTefasAllFundsForScan = (typeof fetchTefasAllFundsForScan !== 'undefined') ? fetchTefasAllFundsForScan : loadAllFundsForCompanies;
 
