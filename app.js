@@ -11517,6 +11517,14 @@ function buildSlideReportDataset() {
     if (typeof BASE_CURATED_CATEGORY_FUNDS !== 'undefined' && Array.isArray(BASE_CURATED_CATEGORY_FUNDS)) {
         BASE_CURATED_CATEGORY_FUNDS.forEach(f => fundsMap.set(f.code, { ...f }));
     }
+    // Include full analyzed funds universe if available
+    if (fundLeadersDataCache && Array.isArray(fundLeadersDataCache.allFunds)) {
+        fundLeadersDataCache.allFunds.forEach(f => {
+            if (!f || !f.code) return;
+            const formatted = formatLeaderFund(f);
+            if (formatted) fundsMap.set(formatted.code, formatted);
+        });
+    }
     const allLeaderFunds = [
         ...(leaders.topCashInflow || []),
         ...(leaders.topCashOutflow || []),
@@ -12293,42 +12301,405 @@ function renderInteractiveSlides(data) {
     }
 }
 
-async function refreshSlideReportData(force = true) {
-    const btn = document.getElementById("btnSlideRefresh");
-    const icon = btn?.querySelector("i");
-    const dateSub = document.getElementById("slideReportDateSub");
+// ==========================================================================
+// TEFAS CANLI PİYASA TARAYICISI (SCANNER HUD) & DİNAMİK 4'LÜ SIRALAMA MOTORU
+// ==========================================================================
+let isLiveFundScannerRunning = false;
+let liveFundScannerShouldSkip = false;
+let liveScannerAllFundsCache = null;
 
-    if (icon) icon.classList.add("fa-spin");
-    if (dateSub) {
-        dateSub.innerHTML = `<i class="fa-solid fa-arrows-rotate fa-spin" style="margin-right: 5px;"></i> Canlı TEFAS Verileri Güncelleniyor...`;
+async function fetchTefasAllFundsForScan() {
+    if (liveScannerAllFundsCache && Array.isArray(liveScannerAllFundsCache) && liveScannerAllFundsCache.length > 500) {
+        return liveScannerAllFundsCache;
     }
 
+    // 1. Try local official dataset (instant, 0 CORS, no rate limit)
     try {
-        await loadAndRenderFundLeaders(force);
+        const res = await fetch("tefas_all_funds.json?v=" + Date.now());
+        if (res.ok) {
+            const json = await res.json();
+            if (json && Array.isArray(json.funds) && json.funds.length > 100) {
+                liveScannerAllFundsCache = json.funds;
+                return json.funds;
+            }
+        }
+    } catch (e) {
+        console.warn("Local tefas_all_funds.json fetch failed, trying worker:", e);
+    }
+
+    // 2. Try Cloudflare Worker proxy (?leaders=1&all=1)
+    try {
+        const workerUrl = `${IS_YATIRIM_WORKER_URL}?leaders=1&all=1&limit=50&_t=${Date.now()}`;
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 6000);
+        const res = await fetch(workerUrl, { signal: controller.signal });
+        clearTimeout(timeoutId);
+        if (res.ok) {
+            const json = await res.json();
+            if (json && Array.isArray(json.allFunds) && json.allFunds.length > 100) {
+                liveScannerAllFundsCache = json.allFunds;
+                return json.allFunds;
+            }
+        }
+    } catch (e) {
+        console.warn("Worker allFunds fetch failed:", e);
+    }
+
+    // 3. Fallback: Curated snapshot
+    const snap = getFallbackFundLeadersSnapshot();
+    const flat = [
+        ...(snap.categories.topInvestorInflow || []),
+        ...(snap.categories.topInvestorOutflow || []),
+        ...(snap.categories.topCashInflow || []),
+        ...(snap.categories.topCashOutflow || [])
+    ];
+    return flat;
+}
+
+function formatScannerMoney(amount) {
+    if (amount === undefined || amount === null || isNaN(amount)) return '₺0';
+    const abs = Math.abs(amount);
+    const sign = amount >= 0 ? '+' : '-';
+    if (abs >= 1e9) {
+        return `${sign}₺${(abs / 1e9).toFixed(2)} Mr`;
+    }
+    if (abs >= 1e6) {
+        return `${sign}₺${(abs / 1e6).toFixed(1)} Mn`;
+    }
+    if (abs >= 1e3) {
+        return `${sign}₺${(abs / 1e3).toFixed(0)} Bin`;
+    }
+    return `${sign}₺${Math.round(abs).toLocaleString('tr-TR')}`;
+}
+
+function formatScannerInvestors(delta) {
+    if (delta === undefined || delta === null || isNaN(delta)) return '0 kişi';
+    const sign = delta > 0 ? '+' : '';
+    return `${sign}${delta.toLocaleString('tr-TR')} kişi`;
+}
+
+function renderScannerPodiumList(elementId, items, type) {
+    const el = document.getElementById(elementId);
+    if (!el) return;
+    if (!items || items.length === 0) {
+        el.innerHTML = '<div class="podium-empty-slot">Taranıyor...</div>';
+        return;
+    }
+    el.innerHTML = items.slice(0, 3).map((f, i) => {
+        const rankClass = `rank-${i + 1}`;
+        let valStr = '';
+        let valColor = '#FFFFFF';
+        if (type === 'cash-in') {
+            valStr = formatScannerMoney(f.cashFlow);
+            valColor = '#34D399';
+        } else if (type === 'cash-out') {
+            valStr = formatScannerMoney(f.cashFlow);
+            valColor = '#FB7185';
+        } else if (type === 'inv-in') {
+            valStr = formatScannerInvestors(f.deltaInvestors);
+            valColor = '#38BDF8';
+        } else {
+            valStr = formatScannerInvestors(f.deltaInvestors);
+            valColor = '#FB7185';
+        }
+        return `
+            <div class="scanner-podium-item">
+                <div class="podium-item-left">
+                    <span class="podium-rank-badge ${rankClass}">#${i + 1}</span>
+                    <span class="podium-code">${f.code}</span>
+                </div>
+                <span class="podium-val" style="color: ${valColor};">${valStr}</span>
+            </div>
+        `;
+    }).join('');
+}
+
+function closeLiveFundScanner() {
+    const modal = document.getElementById("tefasLiveMarketScannerModal");
+    if (modal) modal.style.display = "none";
+    isLiveFundScannerRunning = false;
+    liveFundScannerShouldSkip = false;
+    document.body.style.overflow = "";
+}
+
+function skipLiveFundScanner() {
+    liveFundScannerShouldSkip = true;
+}
+
+function applyScannerResultsAndOpenSlides() {
+    closeLiveFundScanner();
+    openFundSlideReportModal();
+    setTimeout(() => {
+        if (typeof goToSlide === 'function') goToSlide(2);
+    }, 150);
+}
+
+async function startLiveFundMarketScan(options = { autoOpenSlide: true }) {
+    const modal = document.getElementById("tefasLiveMarketScannerModal");
+    if (!modal) {
+        return refreshSlideReportData(true);
+    }
+
+    modal.style.display = "flex";
+    document.body.style.overflow = "hidden";
+    isLiveFundScannerRunning = true;
+    liveFundScannerShouldSkip = false;
+
+    // Reset UI Elements
+    const fillEl = document.getElementById("scannerProgressFill");
+    const countEl = document.getElementById("scannerCountText");
+    const pctEl = document.getElementById("scannerPctText");
+    const speedEl = document.getElementById("scannerSpeedText");
+    const subEl = document.getElementById("scannerStatusSubtitle");
+    const terminalEl = document.getElementById("scannerTerminalFeed");
+    const streamCountEl = document.getElementById("scannerStreamCount");
+    const footerMsgEl = document.getElementById("scannerFooterMsg");
+    const applyBtn = document.getElementById("btnScannerApply");
+    const skipBtn = document.getElementById("btnSkipScanner");
+    const dateLabel = document.getElementById("scannerDateLabel");
+
+    if (fillEl) fillEl.style.width = "0%";
+    if (countEl) countEl.innerText = "0 / 2.041";
+    if (pctEl) pctEl.innerText = "0%";
+    if (speedEl) speedEl.innerHTML = `<i class="fa-solid fa-bolt"></i> Yüksek Hızlı Analiz Motoru`;
+    if (subEl) subEl.innerText = "Tüm TEFAS yatırım fonları tek tek taranıyor ve gün içi sermaye akışları hesaplanıyor...";
+    if (terminalEl) {
+        terminalEl.innerHTML = `
+            <div class="scanner-terminal-placeholder">
+                <i class="fa-solid fa-circle-notch fa-spin"></i>
+                <span>TEFAS Piyasa veri tabanı taranmaya başlanıyor...</span>
+            </div>
+        `;
+    }
+    if (streamCountEl) streamCountEl.innerText = "0 fon akışı";
+    if (footerMsgEl) {
+        footerMsgEl.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin"></i> <span>Tüm fonlar tek tek taranıyor, portföy sermaye akışları hesaplanıyor...</span>`;
+    }
+    if (applyBtn) applyBtn.style.display = "none";
+    if (skipBtn) skipBtn.style.display = "flex";
+
+    renderScannerPodiumList("podiumCashIn", [], "cash-in");
+    renderScannerPodiumList("podiumCashOut", [], "cash-out");
+    renderScannerPodiumList("podiumInvIn", [], "inv-in");
+    renderScannerPodiumList("podiumInvOut", [], "inv-out");
+
+    // Fetch full funds
+    const funds = await fetchTefasAllFundsForScan();
+    const total = (funds && funds.length) ? funds.length : 2041;
+    const sessionDate = (funds && funds[0] && funds[0].date) ? funds[0].date : "2026-09-21";
+    if (dateLabel) {
+        let fmtDate = sessionDate;
+        if (sessionDate.includes("-")) {
+            const p = sessionDate.split("-");
+            if (p.length === 3) fmtDate = `${p[2]}.${p[1]}.${p[0]}`;
+        }
+        dateLabel.innerText = `${fmtDate} Seansı`;
+    }
+
+    if (terminalEl) terminalEl.innerHTML = "";
+
+    // Running leader trackers
+    let runningCashIn = [];
+    let runningCashOut = [];
+    let runningInvIn = [];
+    let runningInvOut = [];
+
+    const updateRunningLeaders = (f) => {
+        const cash = f.cashFlow || 0;
+        const inv = f.deltaInvestors || 0;
+
+        if (cash > 0) {
+            runningCashIn.push(f);
+            runningCashIn.sort((a, b) => (b.cashFlow || 0) - (a.cashFlow || 0));
+            if (runningCashIn.length > 5) runningCashIn.length = 5;
+        } else if (cash < 0) {
+            runningCashOut.push(f);
+            runningCashOut.sort((a, b) => (a.cashFlow || 0) - (b.cashFlow || 0));
+            if (runningCashOut.length > 5) runningCashOut.length = 5;
+        }
+
+        if (inv > 0) {
+            runningInvIn.push(f);
+            runningInvIn.sort((a, b) => (b.deltaInvestors || 0) - (a.deltaInvestors || 0));
+            if (runningInvIn.length > 5) runningInvIn.length = 5;
+        } else if (inv < 0) {
+            runningInvOut.push(f);
+            runningInvOut.sort((a, b) => (a.deltaInvestors || 0) - (b.deltaInvestors || 0));
+            if (runningInvOut.length > 5) runningInvOut.length = 5;
+        }
+    };
+
+    let processed = 0;
+    const batchSize = 35; // 35 funds per frame
+    let terminalEntryCount = 0;
+
+    return new Promise((resolve) => {
+        const step = () => {
+            if (!isLiveFundScannerRunning) {
+                resolve();
+                return;
+            }
+
+            if (liveFundScannerShouldSkip) {
+                // Instantly process all remaining funds
+                for (let i = processed; i < total; i++) {
+                    if (funds[i]) updateRunningLeaders(funds[i]);
+                }
+                processed = total;
+            } else {
+                const end = Math.min(processed + batchSize, total);
+                const sampleRowsHTML = [];
+
+                for (let i = processed; i < end; i++) {
+                    const f = funds[i];
+                    if (!f) continue;
+                    updateRunningLeaders(f);
+
+                    // Add occasional sample to visual terminal stream (every 6th fund or significant movement)
+                    if (i % 6 === 0 || Math.abs(f.cashFlow || 0) > 1e8 || Math.abs(f.deltaInvestors || 0) > 100) {
+                        const flowVal = f.cashFlow || 0;
+                        const isPos = flowVal >= 0;
+                        const flowClass = isPos ? 'pos' : 'neg';
+                        const flowStr = formatScannerMoney(flowVal);
+                        const invStr = formatScannerInvestors(f.deltaInvestors || 0);
+                        const cleanName = (f.name || `${f.code} FONU`).replace(/PORTFÖYÜ?|FONU?/gi, '').trim();
+
+                        sampleRowsHTML.push(`
+                            <div class="scanner-terminal-row">
+                                <div class="scanner-row-left">
+                                    <span class="scanner-row-code">${f.code}</span>
+                                    <span class="scanner-row-name" title="${f.name}">${cleanName}</span>
+                                </div>
+                                <div class="scanner-row-right">
+                                    <span class="scanner-row-flow ${flowClass}">${flowStr}</span>
+                                    <span class="scanner-row-inv">${invStr}</span>
+                                </div>
+                            </div>
+                        `);
+                    }
+                }
+
+                if (terminalEl && sampleRowsHTML.length > 0) {
+                    terminalEl.insertAdjacentHTML('beforeend', sampleRowsHTML.join(''));
+                    terminalEntryCount += sampleRowsHTML.length;
+                    // Cap DOM nodes to keep performance 60fps
+                    if (terminalEl.children.length > 35) {
+                        const removeCount = terminalEl.children.length - 35;
+                        for (let r = 0; r < removeCount; r++) {
+                            terminalEl.removeChild(terminalEl.firstElementChild);
+                        }
+                    }
+                    terminalEl.scrollTop = terminalEl.scrollHeight;
+                }
+
+                processed = end;
+            }
+
+            // Update UI
+            const pct = Math.min(100, Math.round((processed / total) * 100));
+            if (fillEl) fillEl.style.width = `${pct}%`;
+            if (countEl) countEl.innerText = `${processed.toLocaleString('tr-TR')} / ${total.toLocaleString('tr-TR')}`;
+            if (pctEl) pctEl.innerText = `${pct}%`;
+            if (streamCountEl) streamCountEl.innerText = `${processed} fon akışı`;
+
+            renderScannerPodiumList("podiumCashIn", runningCashIn, "cash-in");
+            renderScannerPodiumList("podiumCashOut", runningCashOut, "cash-out");
+            renderScannerPodiumList("podiumInvIn", runningInvIn, "inv-in");
+            renderScannerPodiumList("podiumInvOut", runningInvOut, "inv-out");
+
+            if (processed < total && !liveFundScannerShouldSkip) {
+                setTimeout(step, 18);
+            } else {
+                // Finalize Scan
+                finishLiveFundMarketScan(funds, options).then(resolve);
+            }
+        };
+
+        step();
+    });
+}
+
+async function finishLiveFundMarketScan(funds, options = { autoOpenSlide: true }) {
+    const validFunds = (funds || []).filter(f => f && f.price > 0 && f.aum > 0);
+
+    // Compute complete ranked lists across the entire market
+    const sortedCashIn = [...validFunds].filter(f => f.cashFlow > 0).sort((a, b) => (b.cashFlow || 0) - (a.cashFlow || 0));
+    const sortedCashOut = [...validFunds].filter(f => f.cashFlow < 0).sort((a, b) => (a.cashFlow || 0) - (b.cashFlow || 0));
+    const sortedInvIn = [...validFunds].filter(f => f.deltaInvestors > 0).sort((a, b) => (b.deltaInvestors || 0) - (a.deltaInvestors || 0));
+    const sortedInvOut = [...validFunds].filter(f => f.deltaInvestors < 0).sort((a, b) => (a.deltaInvestors || 0) - (b.deltaInvestors || 0));
+
+    // Save into fundLeadersDataCache
+    fundLeadersDataCache = {
+        timestamp: Date.now(),
+        date: funds[0]?.date || "2026-09-21",
+        totalAnalyzed: funds.length,
+        categories: {
+            topCashInflow: sortedCashIn.slice(0, 50),
+            topCashOutflow: sortedCashOut.slice(0, 50),
+            topInvestorInflow: sortedInvIn.slice(0, 50),
+            topInvestorOutflow: sortedInvOut.slice(0, 50)
+        },
+        allFunds: funds
+    };
+
+    try {
+        localStorage.setItem("tefas_leaders_cache_v6", JSON.stringify(fundLeadersDataCache));
+    } catch (e) {}
+
+    // Update main page leaders tables
+    if (typeof renderFundLeadersUI === 'function') {
+        renderFundLeadersUI(fundLeadersDataCache);
+    }
+
+    // Build and render slides
+    const slideData = buildSlideReportDataset();
+    slideReportDatasetCache = slideData;
+    renderInteractiveSlides(slideData);
+    if (typeof setSlideTheme === 'function') {
+        setSlideTheme(currentSlideTheme);
+    }
+
+    // Update Scanner Modal Final State
+    const subEl = document.getElementById("scannerStatusSubtitle");
+    const footerMsgEl = document.getElementById("scannerFooterMsg");
+    const applyBtn = document.getElementById("btnScannerApply");
+    const skipBtn = document.getElementById("btnSkipScanner");
+
+    if (subEl) subEl.innerHTML = `<strong>${funds.length.toLocaleString('tr-TR')} Fon Başarıyla Analiz Edildi!</strong> 4 Ana Kategori Liderleri Çıkarıldı.`;
+    if (footerMsgEl) {
+        footerMsgEl.innerHTML = `<span style="color: #34D399; font-weight: 800;"><i class="fa-solid fa-circle-check"></i> Analiz Tamamlandı! En Çok Para Girişi/Çıkışı ve Yatırımcı Girişi/Çıkışı Belirlendi.</span>`;
+    }
+    if (applyBtn) applyBtn.style.display = "inline-flex";
+    if (skipBtn) skipBtn.style.display = "none";
+
+    renderScannerPodiumList("podiumCashIn", sortedCashIn.slice(0, 3), "cash-in");
+    renderScannerPodiumList("podiumCashOut", sortedCashOut.slice(0, 3), "cash-out");
+    renderScannerPodiumList("podiumInvIn", sortedInvIn.slice(0, 3), "inv-in");
+    renderScannerPodiumList("podiumInvOut", sortedInvOut.slice(0, 3), "inv-out");
+
+    // Auto open slide if requested
+    if (options.autoOpenSlide) {
+        setTimeout(() => {
+            closeLiveFundScanner();
+            openFundSlideReportModal();
+            setTimeout(() => {
+                if (typeof goToSlide === 'function') goToSlide(2);
+            }, 100);
+        }, 850);
+    }
+}
+
+async function refreshSlideReportData(force = true) {
+    if (force) {
+        return startLiveFundMarketScan({ autoOpenSlide: true });
+    }
+    try {
+        await loadAndRenderFundLeaders(false);
         const data = buildSlideReportDataset();
         slideReportDatasetCache = data;
-
-        if (dateSub) {
-            dateSub.innerText = `${data.date} Tarihli TEFAS Piyasası Verileri`;
-        }
-
         renderInteractiveSlides(data);
-        if (typeof setSlideTheme === 'function') {
-            setSlideTheme(currentSlideTheme);
-        }
-
-        if (isSlideDetailActive && currentSlideFundCode) {
-            openSlideFundDetail(currentSlideFundCode, previousSlideIndex);
-        } else {
-            goToSlide(currentSlideIndex || 1);
-        }
-    } catch (err) {
-        console.warn("Slide refresh error:", err);
-        if (dateSub && slideReportDatasetCache) {
-            dateSub.innerText = `${slideReportDatasetCache.date} Tarihli TEFAS Piyasası Verileri`;
-        }
-    } finally {
-        if (icon) icon.classList.remove("fa-spin");
+    } catch (e) {
+        console.warn("Background slide refresh error:", e);
     }
 }
 
@@ -13847,6 +14218,8 @@ window.filterSlideKapStocks = filterSlideKapStocks;
 window.showSlideMacroAllocView = showSlideMacroAllocView;
 window.getFundShareWebUrl = getFundShareWebUrl;
 window.handleUrlDeepLinkParams = handleUrlDeepLinkParams;
-
-
-
+window.startLiveFundMarketScan = startLiveFundMarketScan;
+window.closeLiveFundScanner = closeLiveFundScanner;
+window.skipLiveFundScanner = skipLiveFundScanner;
+window.applyScannerResultsAndOpenSlides = applyScannerResultsAndOpenSlides;
+window.refreshSlideReportData = refreshSlideReportData;

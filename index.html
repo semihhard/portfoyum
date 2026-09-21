@@ -863,11 +863,18 @@
                                 <span class="fund-pulse-dot"></span>
                             </button>
                         </div>
-                        <button type="button" class="btn-slide-export-pill" onclick="openFundSlideReportModal()" title="Günün TEFAS verilerini PowerPoint (.pptx) ve canlı slayt sunumu olarak dışarı aktar">
-                            <i class="fa-solid fa-file-powerpoint"></i>
-                            <span>Slayt Raporu İndir</span>
-                            <span class="slide-export-badge">PPTX</span>
-                        </button>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <button type="button" class="btn-slide-export-pill" style="background: linear-gradient(135deg, rgba(56, 189, 248, 0.2) 0%, rgba(37, 99, 235, 0.2) 100%); border-color: rgba(56, 189, 248, 0.4); color: #38BDF8;" onclick="startLiveFundMarketScan({ autoOpenSlide: true })" title="Tüm 2.041 fonu ekranda canlı tara, analiz et ve liderlik slaytlarını hazırla">
+                                <i class="fa-solid fa-satellite-dish"></i>
+                                <span>Canlı Analiz & Slayt</span>
+                                <span class="slide-export-badge" style="background: #38BDF8; color: #020617;">CANLI</span>
+                            </button>
+                            <button type="button" class="btn-slide-export-pill" onclick="openFundSlideReportModal()" title="Günün TEFAS verilerini PowerPoint (.pptx) ve canlı slayt sunumu olarak dışarı aktar">
+                                <i class="fa-solid fa-file-powerpoint"></i>
+                                <span>Slayt Sunumu</span>
+                                <span class="slide-export-badge">PPTX</span>
+                            </button>
+                        </div>
                     </div>
 
                     <!-- SUBVIEW 2-A: TEKİL FON ANALİZİ (MEVCUT) -->
@@ -2561,9 +2568,9 @@
                 </div>
 
                 <div class="slide-topbar-actions">
-                    <button type="button" class="btn-slide-action refresh" id="btnSlideRefresh" onclick="refreshSlideReportData(true)" title="Canlı TEFAS Verilerini Yenile">
-                        <i class="fa-solid fa-arrows-rotate"></i>
-                        <span>Yenile</span>
+                    <button type="button" class="btn-slide-action refresh" id="btnSlideRefresh" onclick="startLiveFundMarketScan({ autoOpenSlide: true })" title="Tüm 2.041 Fonu Ekranda Canlı Tara & Slaytları Güncelle">
+                        <i class="fa-solid fa-satellite-dish"></i>
+                        <span>Piyasa Taraması & Yenile</span>
                     </button>
                     <button type="button" class="btn-slide-action pptx" id="btnSlideExportPptx" onclick="exportToPowerPoint()" title="Düzenlenebilir PowerPoint (.pptx) Dosyası Olarak İndir">
                         <i class="fa-solid fa-file-powerpoint"></i>
@@ -2650,6 +2657,154 @@
         </div>
     </div>
 
-    <script src="app.js?v=100"></script>
+    <!-- TEFAS CANLI PİYASA TARAYICISI & ANALİZ MOTORU MODALI -->
+    <div id="tefasLiveMarketScannerModal" class="tefas-scanner-modal" style="display: none;">
+        <div class="tefas-scanner-backdrop" onclick="closeLiveFundScanner()"></div>
+        <div class="tefas-scanner-dialog">
+            <!-- Scanner Header -->
+            <div class="tefas-scanner-header">
+                <div class="tefas-scanner-header-left">
+                    <div class="scanner-radar-pulse">
+                        <i class="fa-solid fa-satellite-dish"></i>
+                    </div>
+                    <div>
+                        <div class="scanner-title-row">
+                            <h3 class="scanner-main-title">TEFAS Canlı Piyasa Tarayıcısı & Analiz Motoru</h3>
+                            <span class="scanner-live-badge"><span class="scanner-pulse-dot"></span> CANLI AKIŞ</span>
+                        </div>
+                        <p class="scanner-subtitle" id="scannerStatusSubtitle">Tüm TEFAS yatırım fonları tek tek taranıyor ve gün içi sermaye akışları hesaplanıyor...</p>
+                    </div>
+                </div>
+                <div class="tefas-scanner-header-right">
+                    <div class="scanner-date-pill" id="scannerDatePill">
+                        <i class="fa-solid fa-calendar-day"></i>
+                        <span id="scannerDateLabel">21.09.2026 Seansı</span>
+                    </div>
+                    <button type="button" class="btn-scanner-skip" id="btnSkipScanner" onclick="skipLiveFundScanner()" title="Taramayı anında tamamla ve slaytları aç">
+                        <i class="fa-solid fa-forward-step"></i>
+                        <span>Sonuçları Gör</span>
+                    </button>
+                    <button type="button" class="btn-scanner-close" onclick="closeLiveFundScanner()" title="Kapat">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Scanner Progress Bar & Counters -->
+            <div class="tefas-scanner-progress-box">
+                <div class="scanner-progress-track">
+                    <div class="scanner-progress-bar" id="scannerProgressFill" style="width: 0%;">
+                        <div class="scanner-progress-glow"></div>
+                    </div>
+                </div>
+                <div class="scanner-progress-meta">
+                    <div class="scanner-meta-item">
+                        <i class="fa-solid fa-layer-group"></i>
+                        <span>İncelenen: <strong id="scannerCountText">0 / 2.041</strong> Fon</span>
+                    </div>
+                    <div class="scanner-meta-item center">
+                        <span class="scanner-pct-display" id="scannerPctText">0%</span>
+                    </div>
+                    <div class="scanner-meta-item right">
+                        <i class="fa-solid fa-bolt"></i>
+                        <span id="scannerSpeedText">Yüksek Hızlı Analiz Motoru</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Scanner Main Workstation: Split Feed & Live Top 3 Podiums -->
+            <div class="tefas-scanner-body">
+                <!-- Left: Live Ticker Stream Terminal -->
+                <div class="tefas-scanner-stream-panel">
+                    <div class="scanner-panel-head">
+                        <div class="scanner-panel-title">
+                            <i class="fa-solid fa-terminal"></i>
+                            <span>Anlık Fon Tarama Konsolu</span>
+                        </div>
+                        <span class="scanner-stream-counter" id="scannerStreamCount">0 fon akışı</span>
+                    </div>
+                    <div class="scanner-terminal-scroll" id="scannerTerminalFeed">
+                        <div class="scanner-terminal-placeholder">
+                            <i class="fa-solid fa-circle-notch fa-spin"></i>
+                            <span>TEFAS Piyasa veri tabanı taranmaya başlanıyor...</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: Real-time 4 Leaderboards (Top 3 in each) -->
+                <div class="tefas-scanner-podiums-panel">
+                    <div class="scanner-panel-head">
+                        <div class="scanner-panel-title">
+                            <i class="fa-solid fa-trophy"></i>
+                            <span>Canlı Liderlik Radar Tabloları</span>
+                        </div>
+                        <span class="scanner-podium-tag">GÜNÜN İLK 3'LERİ</span>
+                    </div>
+
+                    <div class="scanner-podiums-grid">
+                        <!-- 1. En Çok Para Girişi Olan 3 Fon -->
+                        <div class="scanner-podium-card cash-in">
+                            <div class="scanner-podium-title emerald">
+                                <i class="fa-solid fa-arrow-trend-up"></i>
+                                <span>En Çok Para Girişi (Top 3)</span>
+                            </div>
+                            <div class="scanner-podium-list" id="podiumCashIn">
+                                <div class="podium-empty-slot">Taranıyor...</div>
+                            </div>
+                        </div>
+
+                        <!-- 2. En Çok Para Çıkışı Olan 3 Fon -->
+                        <div class="scanner-podium-card cash-out">
+                            <div class="scanner-podium-title rose">
+                                <i class="fa-solid fa-arrow-trend-down"></i>
+                                <span>En Çok Para Çıkışı (Top 3)</span>
+                            </div>
+                            <div class="scanner-podium-list" id="podiumCashOut">
+                                <div class="podium-empty-slot">Taranıyor...</div>
+                            </div>
+                        </div>
+
+                        <!-- 3. En Çok Yatırımcı Giren 3 Fon -->
+                        <div class="scanner-podium-card inv-in">
+                            <div class="scanner-podium-title cyan">
+                                <i class="fa-solid fa-user-plus"></i>
+                                <span>En Çok Yatırımcı Giren (Top 3)</span>
+                            </div>
+                            <div class="scanner-podium-list" id="podiumInvIn">
+                                <div class="podium-empty-slot">Taranıyor...</div>
+                            </div>
+                        </div>
+
+                        <!-- 4. En Çok Yatırımcı Çıkan 3 Fon -->
+                        <div class="scanner-podium-card inv-out">
+                            <div class="scanner-podium-title purple">
+                                <i class="fa-solid fa-user-minus"></i>
+                                <span>En Çok Yatırımcı Çıkan (Top 3)</span>
+                            </div>
+                            <div class="scanner-podium-list" id="podiumInvOut">
+                                <div class="podium-empty-slot">Taranıyor...</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Scanner Footer -->
+            <div class="tefas-scanner-footer">
+                <div class="scanner-footer-status" id="scannerFooterMsg">
+                    <i class="fa-solid fa-circle-notch fa-spin"></i>
+                    <span>Tüm fonlar tek tek taranıyor, portföy sermaye akışları hesaplanıyor...</span>
+                </div>
+                <div class="scanner-footer-actions">
+                    <button type="button" class="btn-scanner-action primary" id="btnScannerApply" onclick="applyScannerResultsAndOpenSlides()">
+                        <i class="fa-solid fa-chart-pie"></i>
+                        <span>Slayt Raporuna Git (Top 3 Analiz)</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js?v=101"></script>
 </body>
 </html>

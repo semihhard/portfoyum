@@ -1,3 +1,6 @@
+let memoryLeadersCache = null;
+let memoryLeadersTime = 0;
+
 export default {
   async fetch(request, env, ctx) {
     if (request.method === "OPTIONS") {
@@ -17,6 +20,20 @@ export default {
 
       const isLeaders = url.searchParams.get("leaders") === "1" || url.searchParams.get("liderler") === "1" || fonCode === "LEADERS";
       if (isLeaders) {
+        // Return memory cache if fresh (< 5 mins) and not explicitly bypassed
+        const nowMs = Date.now();
+        const wantsAll = url.searchParams.get("all") === "1";
+        const hasNoCache = url.searchParams.has("_t") || url.searchParams.has("nocache");
+        if (memoryLeadersCache && (nowMs - memoryLeadersTime < 300000) && !hasNoCache) {
+          return new Response(JSON.stringify(memoryLeadersCache), {
+            headers: {
+              "Content-Type": "application/json; charset=utf-8",
+              "Access-Control-Allow-Origin": "*",
+              "Cache-Control": "public, max-age=180"
+            }
+          });
+        }
+
         const TEFAS_URL = "https://www.tefas.gov.tr/api/funds/fonGnlBlgSiraliGetir";
         const pad = n => String(n).padStart(2, '0');
         const dStr = d => '' + d.getFullYear() + pad(d.getMonth()+1) + pad(d.getDate());
@@ -109,9 +126,7 @@ export default {
 
             const dates = diffs.map(d => d.date).filter(Boolean).sort().reverse();
             const latestDate = dates[0] || `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}`;
-            const hasNoCache = url.searchParams.has("_t") || url.searchParams.has("nocache");
-
-            return new Response(JSON.stringify({
+            const payload = {
               ok: true,
               date: latestDate,
               totalAnalyzed: diffs.length,
@@ -120,8 +135,13 @@ export default {
                 topInvestorOutflow,
                 topCashInflow,
                 topCashOutflow
-              }
-            }), {
+              },
+              allFunds: wantsAll ? diffs : undefined
+            };
+            memoryLeadersCache = payload;
+            memoryLeadersTime = Date.now();
+
+            return new Response(JSON.stringify(payload), {
               headers: {
                 "Content-Type": "application/json; charset=utf-8",
                 "Access-Control-Allow-Origin": "*",
@@ -129,6 +149,11 @@ export default {
               },
             });
           } else {
+            if (memoryLeadersCache) {
+              return new Response(JSON.stringify({ ...memoryLeadersCache, isStale: true }), {
+                headers: { "Content-Type": "application/json; charset=utf-8", "Access-Control-Allow-Origin": "*" }
+              });
+            }
             return new Response(JSON.stringify({ ok: false, error: `TEFAS API HTTP ${res.status}` }), {
               status: 502,
               headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" }
@@ -136,6 +161,11 @@ export default {
           }
         } catch(e) {
           console.warn("Worker leaders calculation error:", e);
+          if (memoryLeadersCache) {
+            return new Response(JSON.stringify({ ...memoryLeadersCache, isStale: true }), {
+              headers: { "Content-Type": "application/json; charset=utf-8", "Access-Control-Allow-Origin": "*" }
+            });
+          }
           return new Response(JSON.stringify({ ok: false, error: "TEFAS leaders calculation failed", details: String(e) }), {
             status: 502,
             headers: {
