@@ -862,6 +862,11 @@
                                 <span>Günün Akış Liderleri (Top 3)</span>
                                 <span class="fund-pulse-dot"></span>
                             </button>
+                            <button type="button" class="fund-subnav-btn" id="btnFundSubtabCompanies" onclick="switchFundSubTab('companies')">
+                                <i class="fa-solid fa-building-columns"></i>
+                                <span>Portföy Şirketleri (PYŞ)</span>
+                                <span class="fund-badge-subnav-cat">64+ Şirket</span>
+                            </button>
                         </div>
                         <div style="display: flex; align-items: center; gap: 8px;">
                             <button type="button" class="btn-slide-export-pill" style="background: linear-gradient(135deg, rgba(56, 189, 248, 0.2) 0%, rgba(37, 99, 235, 0.2) 100%); border-color: rgba(56, 189, 248, 0.4); color: #38BDF8;" onclick="startLiveFundMarketScan({ autoOpenSlide: true })" title="Tüm 2.041 fonu ekranda canlı tara, analiz et ve liderlik slaytlarını hazırla">
@@ -1671,6 +1676,81 @@
                         <span>Listedeki herhangi bir fona dokunarak doğrudan <strong>Tekil Fon Analizi</strong> sayfasına geçebilir, geçmiş fiyat ve yatırımcı grafiklerini detaylı inceleyebilirsiniz.</span>
                     </div>
                 </div>
+                <!-- /fundViewLeadersArea -->
+
+                <!-- SUBVIEW 2-D: PORTFÖY YÖNETİM ŞİRKETLERİ (PYŞ) KEŞİF & ANALİZ ALANI -->
+                <div id="fundViewCompaniesArea" style="display: none;">
+                    <!-- PYŞ Hero Header -->
+                    <div class="pys-hero-header ultra-glass-card">
+                        <div class="pys-hero-left">
+                            <div class="pys-hero-icon-box">
+                                <i class="fa-solid fa-building-columns"></i>
+                            </div>
+                            <div>
+                                <div class="pys-hero-title-row">
+                                    <h2 class="pys-hero-title">Portföy Yönetim Şirketleri (PYŞ) & Fon Karargahı</h2>
+                                    <span class="pys-live-badge"><span class="pys-live-dot"></span> 63+ Şirket Canlı</span>
+                                </div>
+                                <p class="pys-hero-subtitle">Türkiye'deki tüm portföy yönetim şirketlerini, pazar büyüklüklerini ve şirketlere ait 2.041 fonun tamamını listeleyin; şirket bazlı özel slayt sunumu hazırlayın.</p>
+                            </div>
+                        </div>
+                        <div class="pys-hero-right">
+                            <div class="pys-quick-summary-chips">
+                                <div class="pys-chip">
+                                    <span class="pys-chip-label">Toplam Varlık (AUM)</span>
+                                    <strong class="pys-chip-val cyan" id="pysTotalAumSummary">--</strong>
+                                </div>
+                                <div class="pys-chip">
+                                    <span class="pys-chip-label">Toplam Yatırımcı</span>
+                                    <strong class="pys-chip-val" id="pysTotalInvSummary">--</strong>
+                                </div>
+                                <div class="pys-chip">
+                                    <span class="pys-chip-label">Günlük Para Akışı</span>
+                                    <strong class="pys-chip-val" id="pysTotalFlowSummary">--</strong>
+                                </div>
+                            </div>
+                            <button type="button" class="btn-slide-export-pill" style="background: linear-gradient(135deg, #0284c7 0%, #2563eb 100%); color: #fff; border-color: rgba(56, 189, 248, 0.5);" onclick="openCompanySlidePresentation()" title="Seçili veya dilediğiniz şirket için 5 slaytlık özel analiz sunumu aç">
+                                <i class="fa-solid fa-file-powerpoint"></i>
+                                <span>PYŞ Slayt Sunumu</span>
+                                <span class="slide-export-badge" style="background: #38BDF8; color: #020617;">SLAYT</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Master-Detail Workstation -->
+                    <div class="pys-master-detail-grid">
+                        <!-- Left Panel: Companies Directory & Filter -->
+                        <div class="pys-companies-panel ultra-glass-card">
+                            <div class="pys-panel-head">
+                                <div class="pys-search-box">
+                                    <i class="fa-solid fa-magnifying-glass"></i>
+                                    <input type="text" id="pysSearchInput" placeholder="Portföy şirketi ara... (Örn: Ak, İş, Bulls, Garanti)" oninput="handlePysSearch(this.value)">
+                                </div>
+                                <div class="pys-sort-selector-row">
+                                    <span class="pys-sort-label"><i class="fa-solid fa-arrow-down-wide-short"></i> Sırala:</span>
+                                    <select id="pysSortSelect" class="pys-select-input" onchange="handlePysSortChange(this.value)">
+                                        <option value="aum" selected>Büyüklük (AUM)</option>
+                                        <option value="funds">Fon Sayısı</option>
+                                        <option value="investors">Yatırımcı Sayısı</option>
+                                        <option value="cashFlow">Günlük Para Girişi</option>
+                                        <option value="name">Alfabetik (A-Z)</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Scrollable Companies List -->
+                            <div class="pys-companies-scroll" id="pysCompaniesList">
+                                <!-- Dynamically rendered company cards -->
+                            </div>
+                        </div>
+
+                        <!-- Right Panel: Selected Company Dossier & Funds Directory -->
+                        <div class="pys-dossier-panel ultra-glass-card" id="pysCompanyDossier">
+                            <!-- Dynamically populated company dossier -->
+                        </div>
+                    </div>
+                </div>
+                <!-- /fundViewCompaniesArea -->
                 </div>
             </section>
 
@@ -2825,6 +2905,80 @@
         </div>
     </div>
 
-    <script src="app.js?v=101"></script>
+    <!-- ==========================================================================
+         COMPANY-SPECIFIC INTERACTIVE SLIDE DECK MODAL (PYŞ ÖZEL SLAYT ALANI)
+         ========================================================================== -->
+    <div id="companySlideReportModal" class="company-slide-modal-container" style="display: none;">
+        <div class="company-slide-modal-backdrop" onclick="closeCompanySlideModal()"></div>
+        <div class="company-slide-modal-dialog">
+            <!-- Topbar Toolbar -->
+            <div class="company-slide-topbar">
+                <div class="company-slide-topbar-left">
+                    <div class="company-slide-logo-badge" id="cslideLogoBadge">PYŞ</div>
+                    <div>
+                        <div class="company-slide-title-row">
+                            <h3 class="company-slide-title" id="cslideCompanyTitle">Ak Portföy Yönetimi A.Ş.</h3>
+                            <span class="company-slide-type-tag">ŞİRKET ÖZEL SUNUMU</span>
+                        </div>
+                        <p class="company-slide-subtitle">Kurumsal Portföy, Fon Karnesi & Sermaye Akış Raporu</p>
+                    </div>
+                </div>
+
+                <!-- Center: Interactive Company Switcher Dropdown! -->
+                <div class="company-slide-topbar-center">
+                    <div class="cslide-picker-wrap" title="Başka bir Portföy Yönetim Şirketine geç">
+                        <i class="fa-solid fa-building-columns"></i>
+                        <select id="cslideCompanySelect" class="cslide-company-select" onchange="changeCompanySlideDeck(this.value)">
+                            <!-- Populated with all companies -->
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Right: Controls -->
+                <div class="company-slide-topbar-right">
+                    <span class="cslide-page-indicator" id="cslidePageIndicator">Slayt 1 / 5</span>
+                    <button type="button" class="btn-cslide-tool" onclick="toggleCompanySlideFullscreen()" title="Tam Ekran Modu (F)">
+                        <i class="fa-solid fa-expand"></i>
+                    </button>
+                    <button type="button" class="btn-cslide-tool" onclick="printCompanySlideReport()" title="Yazdır / PDF Kaydet">
+                        <i class="fa-solid fa-print"></i>
+                    </button>
+                    <button type="button" class="btn-cslide-close" onclick="closeCompanySlideModal()" title="Kapat (ESC)">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Slide Stage Viewport -->
+            <div class="company-slide-stage">
+                <div class="company-slide-deck" id="companySlideDeckContainer">
+                    <!-- 5 Slides dynamically generated -->
+                </div>
+            </div>
+
+            <!-- Slide Footer Navigation Bar -->
+            <div class="company-slide-footer">
+                <div class="company-slide-footer-left">
+                    <span id="cslideDatePill" class="cslide-date-pill"><i class="fa-solid fa-calendar-day"></i> 21.09.2026 Seansı</span>
+                    <span class="cslide-disclaimer"><i class="fa-solid fa-shield-halved"></i> Resmi TEFAS verileri ile üretilmiştir.</span>
+                </div>
+                <div class="company-slide-nav-pills" id="cslideNavDots">
+                    <!-- Dots for Slide 1, 2, 3, 4, 5 -->
+                </div>
+                <div class="company-slide-footer-right">
+                    <button type="button" class="btn-cslide-nav" id="btnCslidePrev" onclick="goToCompanySlide(currentCompanySlideIndex - 1)" title="Önceki Slayt (Sol Ok)">
+                        <i class="fa-solid fa-chevron-left"></i>
+                        <span>Önceki</span>
+                    </button>
+                    <button type="button" class="btn-cslide-nav primary" id="btnCslideNext" onclick="goToCompanySlide(currentCompanySlideIndex + 1)" title="Sonraki Slayt (Sağ Ok)">
+                        <span>Sonraki</span>
+                        <i class="fa-solid fa-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js?v=102"></script>
 </body>
 </html>

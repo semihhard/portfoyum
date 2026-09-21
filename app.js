@@ -4103,22 +4103,28 @@ function switchFundSubTab(tab) {
     const btnSingle = document.getElementById("btnFundSubtabSingle");
     const btnCategories = document.getElementById("btnFundSubtabCategories");
     const btnLeaders = document.getElementById("btnFundSubtabLeaders");
+    const btnCompanies = document.getElementById("btnFundSubtabCompanies");
     const viewSingle = document.getElementById("fundViewSingleArea");
     const viewCategories = document.getElementById("fundViewCategoriesArea");
     const viewLeaders = document.getElementById("fundViewLeadersArea");
+    const viewCompanies = document.getElementById("fundViewCompaniesArea");
 
     if (btnSingle) btnSingle.classList.toggle("active", tab === "single");
     if (btnCategories) btnCategories.classList.toggle("active", tab === "categories");
     if (btnLeaders) btnLeaders.classList.toggle("active", tab === "leaders");
+    if (btnCompanies) btnCompanies.classList.toggle("active", tab === "companies");
 
     if (viewSingle) viewSingle.style.display = tab === "single" ? "block" : "none";
     if (viewCategories) viewCategories.style.display = tab === "categories" ? "block" : "none";
     if (viewLeaders) viewLeaders.style.display = tab === "leaders" ? "block" : "none";
+    if (viewCompanies) viewCompanies.style.display = tab === "companies" ? "block" : "none";
 
     if (tab === "categories") {
         loadAndRenderFundCategories();
     } else if (tab === "leaders") {
         loadAndRenderFundLeaders();
+    } else if (tab === "companies") {
+        loadAndRenderCompaniesExplorer();
     } else {
         if (!appState.activeFundCode) appState.activeFundCode = "TI1";
         loadAndRenderFundAnalysis(appState.activeFundCode, appState.activeFundPeriod || 30);
@@ -14657,3 +14663,1068 @@ window.skipLiveFundScanner = skipLiveFundScanner;
 window.applyScannerResultsAndOpenSlides = applyScannerResultsAndOpenSlides;
 window.refreshSlideReportData = refreshSlideReportData;
 window.setLiveScannerSpeed = setLiveScannerSpeed;
+
+// ==========================================================================
+// PORTFÖY YÖNETİM ŞİRKETLERİ (PYŞ) KEŞİF & SLAYT SUNUM MOTORU
+// ==========================================================================
+
+const COMPANY_META_REGISTRY = {
+    'Garanti BBVA Portföy': { color: '#10B981', badge: 'GBV', fullName: 'Garanti Portföy Yönetimi A.Ş.' },
+    'İş Portföy': { color: '#2563EB', badge: 'İŞP', fullName: 'İş Portföy Yönetimi A.Ş.' },
+    'Ak Portföy': { color: '#EF4444', badge: 'AKP', fullName: 'Ak Portföy Yönetimi A.Ş.' },
+    'Yapı Kredi Portföy': { color: '#0284C7', badge: 'YKP', fullName: 'Yapı Kredi Portföy Yönetimi A.Ş.' },
+    'Ziraat Portföy': { color: '#DC2626', badge: 'ZRT', fullName: 'Ziraat Portföy Yönetimi A.Ş.' },
+    'Vakıf Portföy': { color: '#F59E0B', badge: 'VKF', fullName: 'Vakıf Portföy Yönetimi A.Ş.' },
+    'Halk Portföy': { color: '#0EA5E9', badge: 'HLK', fullName: 'Halk Portföy Yönetimi A.Ş.' },
+    'TEB Portföy': { color: '#059669', badge: 'TEB', fullName: 'TEB Portföy Yönetimi A.Ş.' },
+    'Deniz Portföy': { color: '#1D4ED8', badge: 'DNZ', fullName: 'Deniz Portföy Yönetimi A.Ş.' },
+    'QNB Portföy': { color: '#7C3AED', badge: 'QNB', fullName: 'QNB Portföy Yönetimi A.Ş.' },
+    'Kuveyt Türk Portföy': { color: '#0D9488', badge: 'KT', fullName: 'KT Portföy Yönetimi A.Ş.' },
+    'Re-Pie Portföy': { color: '#6366F1', badge: 'REP', fullName: 'Re-Pie Portföy Yönetimi A.Ş.' },
+    'Bulls Portföy': { color: '#D97706', badge: 'BLS', fullName: 'Bulls Portföy Yönetimi A.Ş.' },
+    'İstanbul Portföy': { color: '#8B5CF6', badge: 'İST', fullName: 'İstanbul Portföy Yönetimi A.Ş.' },
+    'Pardus Portföy': { color: '#EC4899', badge: 'PRD', fullName: 'Pardus Portföy Yönetimi A.Ş.' },
+    'Azimut Portföy': { color: '#06B6D4', badge: 'AZM', fullName: 'Azimut Portföy Yönetimi A.Ş.' },
+    'Albaraka Portföy': { color: '#15803D', badge: 'ALB', fullName: 'Albaraka Portföy Yönetimi A.Ş.' },
+    'Allbatross Portföy': { color: '#4F46E5', badge: 'ALB', fullName: 'Allbatross Portföy Yönetimi A.Ş.' },
+    'Ata Portföy': { color: '#B91C1C', badge: 'ATA', fullName: 'Ata Portföy Yönetimi A.Ş.' },
+    'Atlas Portföy': { color: '#0369A1', badge: 'ATL', fullName: 'Atlas Portföy Yönetimi A.Ş.' },
+    'Aura Portföy': { color: '#9333EA', badge: 'AUR', fullName: 'Aura Portföy Yönetimi A.Ş.' },
+    'Aktif Portföy': { color: '#C026D3', badge: 'AKT', fullName: 'Aktif Portföy Yönetimi A.Ş.' },
+    'BV Portföy': { color: '#475569', badge: 'BVP', fullName: 'BV Portföy Yönetimi A.Ş.' },
+    'Strateji Portföy': { color: '#047857', badge: 'STR', fullName: 'Strateji Portföy Yönetimi A.Ş.' },
+    'Tacirler Portföy': { color: '#BE185D', badge: 'TCR', fullName: 'Tacirler Portföy Yönetimi A.Ş.' },
+    'Gedik Portföy': { color: '#E11D48', badge: 'GDK', fullName: 'Gedik Portföy Yönetimi A.Ş.' },
+    'İnfo Portföy': { color: '#2563EB', badge: 'INF', fullName: 'İnfo Portföy Yönetimi A.Ş.' },
+    'İnvea Portföy': { color: '#0284C7', badge: 'INV', fullName: 'İnvea Portföy Yönetimi A.Ş.' },
+    'Hedef Portföy': { color: '#0891B2', badge: 'HDF', fullName: 'Hedef Portföy Yönetimi A.Ş.' },
+    'Ünlü Portföy': { color: '#4338CA', badge: 'UNL', fullName: 'Ünlü Portföy Yönetimi A.Ş.' },
+    'Rota Portföy': { color: '#EA580C', badge: 'ROT', fullName: 'Rota Portföy Yönetimi A.Ş.' },
+    'Neo Portföy': { color: '#0D9488', badge: 'NEO', fullName: 'Neo Portföy Yönetimi A.Ş.' },
+    'Dinamik Portföy': { color: '#D97706', badge: 'DNM', fullName: 'Dinamik Portföy Yönetimi A.Ş.' },
+    'Gri Portföy': { color: '#64748B', badge: 'GRI', fullName: 'Gri Portföy Yönetimi A.Ş.' },
+    'Tera Portföy': { color: '#7C3AED', badge: 'TER', fullName: 'Tera Portföy Yönetimi A.Ş.' },
+    'Nurol Portföy': { color: '#1E3A8A', badge: 'NRL', fullName: 'Nurol Portföy Yönetimi A.Ş.' },
+    'Oyak Portföy': { color: '#991B1B', badge: 'OYK', fullName: 'Oyak Portföy Yönetimi A.Ş.' },
+    'Osmanlı Portföy': { color: '#92400E', badge: 'OSM', fullName: 'Osmanlı Portföy Yönetimi A.Ş.' },
+    'GCM Portföy': { color: '#2563EB', badge: 'GCM', fullName: 'GCM Portföy Yönetimi A.Ş.' },
+    'Fiba Portföy': { color: '#047857', badge: 'FIB', fullName: 'Fiba Portföy Yönetimi A.Ş.' },
+    'Mükafat Portföy': { color: '#B45309', badge: 'MKF', fullName: 'Mükafat Portföy Yönetimi A.Ş.' },
+    'Rotasyon Portföy': { color: '#7E22CE', badge: 'RTS', fullName: 'Rotasyon Portföy Yönetimi A.Ş.' },
+    'BtcTurk Portföy': { color: '#3B82F6', badge: 'BTC', fullName: 'BtcTurk Portföy Yönetimi A.Ş.' },
+    'Astra Portföy': { color: '#6366F1', badge: 'AST', fullName: 'Astra Portföy Yönetimi A.Ş.' },
+    'Trive Portföy': { color: '#E11D48', badge: 'TRV', fullName: 'Trive Portföy Yönetimi A.Ş.' },
+    'A1 Capital Portföy': { color: '#DC2626', badge: 'A1C', fullName: 'A1 Capital Portföy Yönetimi A.Ş.' },
+    'Global MD Portföy': { color: '#0284C7', badge: 'GMD', fullName: 'Global MD Portföy Yönetimi A.Ş.' },
+    'PhillipCapital Portföy': { color: '#2563EB', badge: 'PHL', fullName: 'PhillipCapital Portföy Yönetimi A.Ş.' }
+};
+
+let pysCompaniesDataCache = null;
+let pysSelectedCompanyName = "Ak Portföy";
+let pysSearchQuery = "";
+let pysSortBy = "aum";
+let pysFundTableSearchQuery = "";
+let pysFundTableCategoryFilter = "ALL";
+let currentCompanySlideIndex = 1;
+const TOTAL_COMPANY_SLIDES = 5;
+
+function extractCompanyFromFundName(name) {
+    if (!name) return 'Diğer Portföy';
+    const up = name.toUpperCase().replace(/İ/g, 'I').replace(/Ğ/g, 'G').replace(/Ü/g, 'U').replace(/Ş/g, 'S').replace(/Ö/g, 'O').replace(/Ç/g, 'C').trim();
+
+    if (up.startsWith('GARANTI BBVA') || up.startsWith('GARANTI')) return 'Garanti BBVA Portföy';
+    if (up.startsWith('YAPI KREDI')) return 'Yapı Kredi Portföy';
+    if (up.startsWith('IS PORTFOY') || up.startsWith('IS BANKASI')) return 'İş Portföy';
+    if (up.startsWith('AK PORTFOY')) return 'Ak Portföy';
+    if (up.startsWith('ZIRAAT PORTFOY')) return 'Ziraat Portföy';
+    if (up.startsWith('VAKIF PORTFOY') || up.startsWith('V PORTFOY')) return 'Vakıf Portföy';
+    if (up.startsWith('HALK PORTFOY')) return 'Halk Portföy';
+    if (up.startsWith('TEB PORTFOY')) return 'TEB Portföy';
+    if (up.startsWith('DENIZ PORTFOY')) return 'Deniz Portföy';
+    if (up.startsWith('QNB PORTFOY') || up.startsWith('QNB FINANS')) return 'QNB Portföy';
+    if (up.startsWith('KUVEYT TURK') || up.startsWith('KT PORTFOY')) return 'Kuveyt Türk Portföy';
+    if (up.startsWith('RE-PIE') || up.startsWith('RE PIE')) return 'Re-Pie Portföy';
+    if (up.startsWith('ISTANBUL PORTFOY')) return 'İstanbul Portföy';
+    if (up.startsWith('BULLS PORTFOY')) return 'Bulls Portföy';
+    if (up.startsWith('ALBARAKA PORTFOY')) return 'Albaraka Portföy';
+    if (up.startsWith('ALLBATROSS PORTFOY')) return 'Allbatross Portföy';
+    if (up.startsWith('AZIMUT PORTFOY') || up.startsWith('AZIMUT PYS')) return 'Azimut Portföy';
+    if (up.startsWith('A1 CAPITAL') || up.startsWith('A1 CAPİTAL')) return 'A1 Capital Portföy';
+    if (up.startsWith('GLOBAL MD')) return 'Global MD Portföy';
+    if (up.startsWith('PHILLIP') || up.startsWith('PHILCAPITAL')) return 'PhillipCapital Portföy';
+    if (up.startsWith('PARDUS PORTFOY')) return 'Pardus Portföy';
+    if (up.startsWith('ATA PORTFOY')) return 'Ata Portföy';
+    if (up.startsWith('ATLAS PORTFOY')) return 'Atlas Portföy';
+    if (up.startsWith('AURA PORTFOY')) return 'Aura Portföy';
+    if (up.startsWith('AKTIF PORTFOY')) return 'Aktif Portföy';
+    if (up.startsWith('BV PORTFOY')) return 'BV Portföy';
+    if (up.startsWith('STRATEJI PORTFOY')) return 'Strateji Portföy';
+    if (up.startsWith('TACIRLER PORTFOY')) return 'Tacirler Portföy';
+    if (up.startsWith('GEDIK PORTFOY')) return 'Gedik Portföy';
+    if (up.startsWith('INFO PORTFOY')) return 'İnfo Portföy';
+    if (up.startsWith('INVEA PORTFOY')) return 'İnvea Portföy';
+    if (up.startsWith('HEDEF PORTFOY')) return 'Hedef Portföy';
+    if (up.startsWith('UNLU PORTFOY')) return 'Ünlü Portföy';
+    if (up.startsWith('ROTA PORTFOY')) return 'Rota Portföy';
+    if (up.startsWith('NEO PORTFOY')) return 'Neo Portföy';
+    if (up.startsWith('DINAMIK PORTFOY') || up.startsWith('DYNAMIC')) return 'Dinamik Portföy';
+    if (up.startsWith('GRI PORTFOY')) return 'Gri Portföy';
+    if (up.startsWith('TERA PORTFOY')) return 'Tera Portföy';
+    if (up.startsWith('NUROL PORTFOY')) return 'Nurol Portföy';
+    if (up.startsWith('OYAK PORTFOY')) return 'Oyak Portföy';
+    if (up.startsWith('OSMANLI PORTFOY')) return 'Osmanlı Portföy';
+    if (up.startsWith('GCM PORTFOY')) return 'GCM Portföy';
+    if (up.startsWith('FIBA PORTFOY')) return 'Fiba Portföy';
+    if (up.startsWith('MUKAFAT PORTFOY')) return 'Mükafat Portföy';
+    if (up.startsWith('ROTASYON PORTFOY')) return 'Rotasyon Portföy';
+    if (up.startsWith('BTCTURK PORTFOY')) return 'BtcTurk Portföy';
+    if (up.startsWith('ASTRA PORTFOY')) return 'Astra Portföy';
+    if (up.startsWith('TRIVE PORTFOY')) return 'Trive Portföy';
+
+    const m = name.match(/^([A-ZÇĞİÖŞÜa-zçğıöşü0-9\-\.\s]+?)\s+(?:PORTFÖY[ÜU]?|PYS|PYŞ)/i);
+    if (m && m[1]) {
+        let clean = m[1].trim();
+        clean = clean.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ');
+        return clean + ' Portföy';
+    }
+
+    return 'Diğer Portföy';
+}
+
+function getCompanyMonogram(compName) {
+    if (COMPANY_META_REGISTRY[compName]?.badge) return COMPANY_META_REGISTRY[compName].badge;
+    const parts = compName.replace(/Portföy/i, '').trim().split(/\s+/);
+    if (parts.length >= 2) {
+        return (parts[0].slice(0, 1) + parts[1].slice(0, 2)).toUpperCase();
+    }
+    return compName.slice(0, 3).toUpperCase();
+}
+
+function getCompanyBrandColor(compName) {
+    if (COMPANY_META_REGISTRY[compName]?.color) return COMPANY_META_REGISTRY[compName].color;
+    return '#38BDF8';
+}
+
+function buildAllCompaniesDataset(funds) {
+    const compMap = new Map();
+    let grandAum = 0;
+    let grandInvestors = 0;
+    let grandCashFlow = 0;
+
+    funds.forEach(f => {
+        const compName = extractCompanyFromFundName(f.name);
+        const aum = parseFloat(f.aum) || 0;
+        const investors = parseInt(f.investors) || 0;
+        const cashFlow = parseFloat(f.cashFlow) || 0;
+        const change = parseFloat(f.change) || 0;
+        const catKey = f.category || (typeof detectFundCategoryKey === 'function' ? detectFundCategoryKey(f.name, f.code) : 'HISSE');
+
+        grandAum += aum;
+        grandInvestors += investors;
+        grandCashFlow += cashFlow;
+
+        if (!compMap.has(compName)) {
+            const meta = COMPANY_META_REGISTRY[compName] || {};
+            compMap.set(compName, {
+                name: compName,
+                fullName: meta.fullName || `${compName} Yönetimi A.Ş.`,
+                color: meta.color || getCompanyBrandColor(compName),
+                badge: meta.badge || getCompanyMonogram(compName),
+                funds: [],
+                totalAum: 0,
+                totalInvestors: 0,
+                totalCashFlow: 0,
+                categories: {},
+                flagship: null,
+                topGainer: null,
+                worstPerformer: null,
+                topInflow: null
+            });
+        }
+
+        const comp = compMap.get(compName);
+        const fundObj = {
+            code: f.code,
+            name: f.name,
+            category: catKey,
+            price: parseFloat(f.price) || 0,
+            change: change,
+            aum: aum,
+            investors: investors,
+            cashFlow: cashFlow,
+            deltaInvestors: parseInt(f.deltaInvestors) || 0
+        };
+
+        comp.funds.push(fundObj);
+        comp.totalAum += aum;
+        comp.totalInvestors += investors;
+        comp.totalCashFlow += cashFlow;
+
+        if (!comp.categories[catKey]) {
+            comp.categories[catKey] = { count: 0, aum: 0 };
+        }
+        comp.categories[catKey].count++;
+        comp.categories[catKey].aum += aum;
+    });
+
+    const companies = Array.from(compMap.values()).map(comp => {
+        comp.fundCount = comp.funds.length;
+        comp.marketShare = grandAum > 0 ? (comp.totalAum / grandAum) * 100 : 0;
+
+        // Sort funds by AUM desc
+        comp.funds.sort((a, b) => b.aum - a.aum);
+        comp.flagship = comp.funds[0] || null;
+
+        // Find top gainer
+        const validGainers = [...comp.funds].filter(f => !isNaN(f.change) && f.change > -90).sort((a, b) => b.change - a.change);
+        comp.topGainer = validGainers[0] || comp.funds[0] || null;
+
+        // Find worst performer
+        const validLosers = [...comp.funds].filter(f => !isNaN(f.change) && f.change > -90).sort((a, b) => a.change - b.change);
+        comp.worstPerformer = validLosers[0] || null;
+
+        // Find top inflow
+        const sortedInflow = [...comp.funds].sort((a, b) => b.cashFlow - a.cashFlow);
+        comp.topInflow = sortedInflow[0] || null;
+
+        return comp;
+    });
+
+    // Default sort by AUM desc
+    companies.sort((a, b) => b.totalAum - a.totalAum);
+
+    return {
+        totalCompanies: companies.length,
+        totalFunds: funds.length,
+        grandAum,
+        grandInvestors,
+        grandCashFlow,
+        companies
+    };
+}
+
+async function loadAndRenderCompaniesExplorer(force = false) {
+    const listEl = document.getElementById('pysCompaniesList');
+    const dossierEl = document.getElementById('pysCompanyDossier');
+
+    if (!pysCompaniesDataCache || force) {
+        if (listEl) {
+            listEl.innerHTML = `
+                <div style="text-align: center; padding: 40px 10px; color: #94A3B8;">
+                    <i class="fa-solid fa-circle-notch fa-spin fa-2x" style="color: #38BDF8; margin-bottom: 12px;"></i>
+                    <p style="font-size: 13px;">63+ Portföy Şirketi ve 2.041 Fon Verisi Yükleniyor...</p>
+                </div>
+            `;
+        }
+
+        try {
+            const funds = await fetchAllTefasFundsForScan();
+            pysCompaniesDataCache = buildAllCompaniesDataset(funds);
+        } catch (e) {
+            console.error("loadAndRenderCompaniesExplorer failed:", e);
+            if (listEl) {
+                listEl.innerHTML = `<div style="padding: 20px; color: #F87171;">Veri yüklenemedi: ${e.message}</div>`;
+            }
+            return;
+        }
+    }
+
+    // Update Hero chips
+    const aumEl = document.getElementById('pysTotalAumSummary');
+    const invEl = document.getElementById('pysTotalInvSummary');
+    const flowEl = document.getElementById('pysTotalFlowSummary');
+
+    if (aumEl) aumEl.textContent = formatScannerMoney(pysCompaniesDataCache.grandAum).replace('+', '');
+    if (invEl) invEl.textContent = pysCompaniesDataCache.grandInvestors.toLocaleString('tr-TR');
+    if (flowEl) {
+        flowEl.textContent = formatScannerMoney(pysCompaniesDataCache.grandCashFlow);
+        flowEl.className = `pys-chip-val ${pysCompaniesDataCache.grandCashFlow >= 0 ? 'cyan' : 'neg'}`;
+    }
+
+    renderPysCompaniesList();
+
+    // Default select active or first company
+    if (!pysSelectedCompanyName && pysCompaniesDataCache.companies.length > 0) {
+        pysSelectedCompanyName = pysCompaniesDataCache.companies[0].name;
+    }
+    selectCompanyForExplorer(pysSelectedCompanyName);
+}
+
+function handlePysSearch(query) {
+    pysSearchQuery = (query || '').trim().toLowerCase();
+    renderPysCompaniesList();
+}
+
+function handlePysSortChange(criteria) {
+    pysSortBy = criteria || 'aum';
+    renderPysCompaniesList();
+}
+
+function renderPysCompaniesList() {
+    const listEl = document.getElementById('pysCompaniesList');
+    if (!listEl || !pysCompaniesDataCache) return;
+
+    let list = [...pysCompaniesDataCache.companies];
+
+    if (pysSearchQuery) {
+        list = list.filter(c => c.name.toLowerCase().includes(pysSearchQuery) || c.fullName.toLowerCase().includes(pysSearchQuery) || c.badge.toLowerCase().includes(pysSearchQuery));
+    }
+
+    if (pysSortBy === 'aum') {
+        list.sort((a, b) => b.totalAum - a.totalAum);
+    } else if (pysSortBy === 'funds') {
+        list.sort((a, b) => b.fundCount - a.fundCount);
+    } else if (pysSortBy === 'investors') {
+        list.sort((a, b) => b.totalInvestors - a.totalInvestors);
+    } else if (pysSortBy === 'cashFlow') {
+        list.sort((a, b) => b.totalCashFlow - a.totalCashFlow);
+    } else if (pysSortBy === 'name') {
+        list.sort((a, b) => a.name.localeCompare(b.name, 'tr'));
+    }
+
+    if (list.length === 0) {
+        listEl.innerHTML = `
+            <div style="text-align: center; padding: 40px 10px; color: #64748B;">
+                <i class="fa-solid fa-magnifying-glass" style="font-size: 24px; margin-bottom: 8px;"></i>
+                <p style="font-size: 13px;">Aramanızla eşleşen şirket bulunamadı.</p>
+            </div>
+        `;
+        return;
+    }
+
+    listEl.innerHTML = list.map(comp => {
+        const isActive = comp.name === pysSelectedCompanyName;
+        const flowSign = comp.totalCashFlow > 0 ? 'pos' : (comp.totalCashFlow < 0 ? 'neg' : 'neutral');
+        const flowText = formatScannerMoney(comp.totalCashFlow);
+        const aumText = formatScannerMoney(comp.totalAum).replace('+', '');
+        const safeName = comp.name.replace(/'/g, "\\'");
+
+        return `
+            <div class="pys-company-card ${isActive ? 'active' : ''}" onclick="selectCompanyForExplorer('${safeName}')">
+                <div class="pys-card-logo-badge" style="background: ${comp.color}22; color: ${comp.color}; border-color: ${comp.color}44;">
+                    ${comp.badge}
+                </div>
+                <div class="pys-card-info">
+                    <div class="pys-card-title-row">
+                        <span class="pys-card-name" title="${comp.fullName}">${comp.name}</span>
+                        <span class="pys-card-count-badge">${comp.fundCount} Fon</span>
+                    </div>
+                    <div class="pys-card-meta-row">
+                        <span class="pys-card-aum">${aumText}</span>
+                        <span class="pys-card-flow ${flowSign}" title="Günlük Para Giriş/Çıkışı">${flowText}</span>
+                    </div>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+function selectCompanyForExplorer(companyName) {
+    pysSelectedCompanyName = companyName;
+
+    // Update active highlight in left list
+    const cards = document.querySelectorAll('.pys-company-card');
+    cards.forEach(c => {
+        const nameEl = c.querySelector('.pys-card-name');
+        if (nameEl && nameEl.textContent === companyName) {
+            c.classList.add('active');
+        } else {
+            c.classList.remove('active');
+        }
+    });
+
+    // Reset table search & category filter when switching company
+    pysFundTableSearchQuery = "";
+    pysFundTableCategoryFilter = "ALL";
+
+    renderCompanyDossier();
+}
+
+function renderCompanyDossier() {
+    const dossierEl = document.getElementById('pysCompanyDossier');
+    if (!dossierEl || !pysCompaniesDataCache) return;
+
+    const comp = pysCompaniesDataCache.companies.find(c => c.name === pysSelectedCompanyName) || pysCompaniesDataCache.companies[0];
+    if (!comp) return;
+
+    const safeName = comp.name.replace(/'/g, "\\'");
+    const aumStr = formatScannerMoney(comp.totalAum).replace('+', '');
+    const flowStr = formatScannerMoney(comp.totalCashFlow);
+    const flowClass = comp.totalCashFlow >= 0 ? 'cyan' : 'neg';
+
+    // Asset allocation segments
+    const catKeys = Object.keys(comp.categories).sort((a, b) => comp.categories[b].aum - comp.categories[a].aum);
+    const catSegmentsHTML = catKeys.map(k => {
+        const item = comp.categories[k];
+        const pct = comp.totalAum > 0 ? ((item.aum / comp.totalAum) * 100).toFixed(1) : '0';
+        const reg = (typeof TEFAS_CATEGORIES_REGISTRY !== 'undefined' && TEFAS_CATEGORIES_REGISTRY[k]) || { name: k, shortName: k, color: '#38BDF8' };
+        if (parseFloat(pct) <= 0) return '';
+        return `<div class="pys-asset-seg" style="width: ${pct}%; background: ${reg.color};" title="${reg.shortName}: %${pct} (${formatScannerMoney(item.aum).replace('+', '')})"></div>`;
+    }).join('');
+
+    const catLegendHTML = catKeys.slice(0, 6).map(k => {
+        const item = comp.categories[k];
+        const pct = comp.totalAum > 0 ? ((item.aum / comp.totalAum) * 100).toFixed(1) : '0';
+        const reg = (typeof TEFAS_CATEGORIES_REGISTRY !== 'undefined' && TEFAS_CATEGORIES_REGISTRY[k]) || { name: k, shortName: k, color: '#38BDF8' };
+        return `
+            <div class="pys-asset-leg-item">
+                <span class="pys-leg-dot" style="background: ${reg.color};"></span>
+                <span>${reg.shortName}:</span>
+                <span class="pys-leg-pct">%${pct}</span>
+                <span style="color: #64748B; font-size: 10.5px;">(${formatScannerMoney(item.aum).replace('+', '')})</span>
+            </div>
+        `;
+    }).join('');
+
+    // Stars Podium
+    const flagship = comp.flagship;
+    const topGainer = comp.topGainer;
+    const topInflow = comp.topInflow;
+
+    dossierEl.innerHTML = `
+        <!-- Dossier Header -->
+        <div class="pys-dossier-header">
+            <div class="pys-dossier-title-wrap">
+                <div class="pys-dossier-big-logo" style="background: ${comp.color}22; color: ${comp.color}; border-color: ${comp.color}66;">
+                    ${comp.badge}
+                </div>
+                <div>
+                    <h3 class="pys-dossier-title">${comp.name}</h3>
+                    <p class="pys-dossier-subtitle">${comp.fullName} &bull; TEFAS Pazar Payı: %${comp.marketShare.toFixed(2)}</p>
+                </div>
+            </div>
+            <div class="pys-dossier-actions">
+                <button type="button" class="btn-pys-slide" onclick="openCompanySlidePresentation('${safeName}')" title="Bu şirketin verileriyle interaktif 5 slaytlık sunumu aç">
+                    <i class="fa-solid fa-file-powerpoint"></i>
+                    <span>Bu Şirket İçin Slayt Sunumu</span>
+                    <span class="slide-export-badge" style="background: #38BDF8; color: #020617; padding: 2px 6px; border-radius: 4px; font-size: 10px; margin-left: 4px;">SLAYT</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- 4 KPI Metrics -->
+        <div class="pys-kpi-grid">
+            <div class="pys-kpi-card">
+                <div class="pys-kpi-header">
+                    <span>Toplam Büyüklük (AUM)</span>
+                    <i class="fa-solid fa-vault"></i>
+                </div>
+                <div class="pys-kpi-val">${aumStr}</div>
+                <div class="pys-kpi-sub">Pazar Payı: %${comp.marketShare.toFixed(2)}</div>
+            </div>
+            <div class="pys-kpi-card">
+                <div class="pys-kpi-header">
+                    <span>Aktif Fon Sayısı</span>
+                    <i class="fa-solid fa-shapes"></i>
+                </div>
+                <div class="pys-kpi-val">${comp.fundCount} Adet</div>
+                <div class="pys-kpi-sub">${catKeys.length} Farklı Kategori</div>
+            </div>
+            <div class="pys-kpi-card">
+                <div class="pys-kpi-header">
+                    <span>Toplam Yatırımcı</span>
+                    <i class="fa-solid fa-users"></i>
+                </div>
+                <div class="pys-kpi-val">${comp.totalInvestors.toLocaleString('tr-TR')}</div>
+                <div class="pys-kpi-sub">Aktif portföy hesabı</div>
+            </div>
+            <div class="pys-kpi-card">
+                <div class="pys-kpi-header">
+                    <span>Günlük Net Nakit Akışı</span>
+                    <i class="fa-solid fa-money-bill-transfer"></i>
+                </div>
+                <div class="pys-kpi-val ${flowClass}">${flowStr}</div>
+                <div class="pys-kpi-sub">Bugünkü sermaye hareketi</div>
+            </div>
+        </div>
+
+        <!-- Asset Allocation Distribution Card -->
+        <div class="pys-asset-card">
+            <h4 class="pys-card-title"><i class="fa-solid fa-chart-pie"></i> Şirket Varlık & Kategori Dağılımı</h4>
+            <div class="pys-asset-bar">
+                ${catSegmentsHTML}
+            </div>
+            <div class="pys-asset-legend">
+                ${catLegendHTML}
+            </div>
+        </div>
+
+        <!-- Star Funds Podium -->
+        <div class="pys-stars-grid">
+            <!-- 1. Top Gainer -->
+            <div class="pys-star-card" onclick="${topGainer ? `switchFundSubTab('single'); loadAndRenderFundAnalysis('${topGainer.code}', 30);` : ''}">
+                <div>
+                    <div class="pys-star-tag gainer"><i class="fa-solid fa-arrow-trend-up"></i> Günün En Çok Kazandıranı</div>
+                    <div class="pys-star-code-row">
+                        <span class="pys-star-code">${topGainer ? topGainer.code : '--'}</span>
+                        <span class="pys-star-stat" style="color: #34D399;">${topGainer ? `+${topGainer.change.toFixed(2)}%` : '--'}</span>
+                    </div>
+                    <div class="pys-star-name">${topGainer ? topGainer.name : 'Veri yok'}</div>
+                </div>
+                <div style="font-size: 11px; color: #64748B; margin-top: 8px;">AUM: ${topGainer ? formatScannerMoney(topGainer.aum).replace('+', '') : '--'}</div>
+            </div>
+
+            <!-- 2. Flagship Fund -->
+            <div class="pys-star-card" onclick="${flagship ? `switchFundSubTab('single'); loadAndRenderFundAnalysis('${flagship.code}', 30);` : ''}">
+                <div>
+                    <div class="pys-star-tag flagship"><i class="fa-solid fa-crown"></i> Amiral Gemisi (En Büyük Fon)</div>
+                    <div class="pys-star-code-row">
+                        <span class="pys-star-code">${flagship ? flagship.code : '--'}</span>
+                        <span class="pys-star-stat" style="color: #38BDF8;">${flagship ? formatScannerMoney(flagship.aum).replace('+', '') : '--'}</span>
+                    </div>
+                    <div class="pys-star-name">${flagship ? flagship.name : 'Veri yok'}</div>
+                </div>
+                <div style="font-size: 11px; color: #64748B; margin-top: 8px;">Yatırımcı: ${flagship ? flagship.investors.toLocaleString('tr-TR') : '--'} kişi</div>
+            </div>
+
+            <!-- 3. Top Net Inflow -->
+            <div class="pys-star-card" onclick="${topInflow ? `switchFundSubTab('single'); loadAndRenderFundAnalysis('${topInflow.code}', 30);` : ''}">
+                <div>
+                    <div class="pys-star-tag inflow"><i class="fa-solid fa-sack-dollar"></i> En Çok Para Girişi Olan</div>
+                    <div class="pys-star-code-row">
+                        <span class="pys-star-code">${topInflow ? topInflow.code : '--'}</span>
+                        <span class="pys-star-stat" style="color: #F59E0B;">${topInflow ? formatScannerMoney(topInflow.cashFlow) : '--'}</span>
+                    </div>
+                    <div class="pys-star-name">${topInflow ? topInflow.name : 'Veri yok'}</div>
+                </div>
+                <div style="font-size: 11px; color: #64748B; margin-top: 8px;">Birim Fiyat: ₺${topInflow ? topInflow.price.toFixed(4) : '--'}</div>
+            </div>
+        </div>
+
+        <!-- Company Funds Table Section -->
+        <div class="pys-funds-section">
+            <div class="pys-funds-section-head">
+                <div style="display: flex; align-items: center;">
+                    <h4 style="margin: 0; font-size: 15px; font-weight: 800; color: #F8FAFC;">
+                        ${comp.name} Fonları Kataloğu
+                    </h4>
+                    <span class="pys-funds-count-badge" id="pysFundCountBadge">${comp.fundCount} Fon</span>
+                </div>
+                <div class="pys-funds-filters">
+                    <input type="text" id="pysFundFilterSearch" class="pys-fund-filter-search" placeholder="Fon adı veya kod ara... (örn: TI1)" oninput="handlePysFundTableSearch(this.value)">
+                    <select id="pysFundFilterCategory" class="pys-select-input" onchange="handlePysFundCategoryFilter(this.value)">
+                        <option value="ALL">Tüm Kategoriler</option>
+                        ${catKeys.map(k => {
+                            const reg = (typeof TEFAS_CATEGORIES_REGISTRY !== 'undefined' && TEFAS_CATEGORIES_REGISTRY[k]) || { shortName: k };
+                            return `<option value="${k}">${reg.shortName} (${comp.categories[k].count})</option>`;
+                        }).join('')}
+                    </select>
+                </div>
+            </div>
+
+            <div class="pys-funds-table-wrap">
+                <table class="pys-funds-table">
+                    <thead>
+                        <tr>
+                            <th>Kod</th>
+                            <th>Fon Adı</th>
+                            <th>Kategori</th>
+                            <th>Fiyat (₺)</th>
+                            <th>Günlük Getiri</th>
+                            <th>Büyüklük (AUM)</th>
+                            <th>Para Akışı</th>
+                            <th>Yatırımcı</th>
+                            <th>İşlem</th>
+                        </tr>
+                    </thead>
+                    <tbody id="pysFundsTableBody">
+                        <!-- Populated by renderPysCompanyFundsTable -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    `;
+
+    renderPysCompanyFundsTable(comp);
+}
+
+function handlePysFundTableSearch(val) {
+    pysFundTableSearchQuery = (val || '').trim().toLowerCase();
+    const comp = pysCompaniesDataCache?.companies?.find(c => c.name === pysSelectedCompanyName);
+    if (comp) renderPysCompanyFundsTable(comp);
+}
+
+function handlePysFundCategoryFilter(cat) {
+    pysFundTableCategoryFilter = cat || 'ALL';
+    const comp = pysCompaniesDataCache?.companies?.find(c => c.name === pysSelectedCompanyName);
+    if (comp) renderPysCompanyFundsTable(comp);
+}
+
+function renderPysCompanyFundsTable(comp) {
+    const tbody = document.getElementById('pysFundsTableBody');
+    const badge = document.getElementById('pysFundCountBadge');
+    if (!tbody || !comp) return;
+
+    let funds = [...comp.funds];
+
+    if (pysFundTableCategoryFilter && pysFundTableCategoryFilter !== 'ALL') {
+        funds = funds.filter(f => f.category === pysFundTableCategoryFilter);
+    }
+
+    if (pysFundTableSearchQuery) {
+        funds = funds.filter(f => f.code.toLowerCase().includes(pysFundTableSearchQuery) || f.name.toLowerCase().includes(pysFundTableSearchQuery));
+    }
+
+    if (badge) badge.textContent = `${funds.length} / ${comp.fundCount} Fon`;
+
+    if (funds.length === 0) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="9" style="text-align: center; padding: 30px; color: #64748B;">
+                    Kriterlere uygun fon bulunamadı.
+                </td>
+            </tr>
+        `;
+        return;
+    }
+
+    tbody.innerHTML = funds.map(f => {
+        const changeSign = f.change > 0 ? 'pos' : (f.change < 0 ? 'neg' : 'neutral');
+        const changePrefix = f.change > 0 ? '+' : '';
+        const changeStr = `${changePrefix}${f.change.toFixed(2)}%`;
+        const flowSign = f.cashFlow > 0 ? 'pos' : (f.cashFlow < 0 ? 'neg' : 'neutral');
+        const reg = (typeof TEFAS_CATEGORIES_REGISTRY !== 'undefined' && TEFAS_CATEGORIES_REGISTRY[f.category]) || { shortName: 'Fon', color: '#38BDF8' };
+
+        return `
+            <tr>
+                <td><span class="pys-fund-code-pill">${f.code}</span></td>
+                <td class="pys-fund-name-cell" title="${f.name}">${f.name}</td>
+                <td><span style="font-size: 11px; font-weight: 700; color: ${reg.color};">${reg.shortName}</span></td>
+                <td>₺${f.price.toFixed(4)}</td>
+                <td><span class="pys-change-pill ${changeSign}">${changeStr}</span></td>
+                <td style="font-weight: 700;">${formatScannerMoney(f.aum).replace('+', '')}</td>
+                <td class="pys-card-flow ${flowSign}">${formatScannerMoney(f.cashFlow)}</td>
+                <td>${f.investors.toLocaleString('tr-TR')}</td>
+                <td>
+                    <button type="button" class="btn-pys-fund-act" onclick="switchFundSubTab('single'); loadAndRenderFundAnalysis('${f.code}', 30);" title="Bu fonun detaylı analizini aç">
+                        İncele
+                    </button>
+                </td>
+            </tr>
+        `;
+    }).join('');
+}
+
+// ==========================================================================
+// DEDICATED COMPANY SLIDE DECK ENGINE (5 SLIDES PER COMPANY)
+// ==========================================================================
+
+function openCompanySlidePresentation(companyName) {
+    if (!pysCompaniesDataCache || !pysCompaniesDataCache.companies || pysCompaniesDataCache.companies.length === 0) {
+        alert("Portföy şirketleri verisi henüz hazır değil, lütfen birkaç saniye bekleyin.");
+        return;
+    }
+
+    const targetCompany = companyName || pysSelectedCompanyName || pysCompaniesDataCache.companies[0].name;
+
+    // Populate Company Dropdown Switcher inside the slide modal
+    const compSelect = document.getElementById('cslideCompanySelect');
+    if (compSelect) {
+        compSelect.innerHTML = pysCompaniesDataCache.companies.map(c => {
+            return `<option value="${c.name}" ${c.name === targetCompany ? 'selected' : ''}>${c.name} (${c.fundCount} Fon - ${formatScannerMoney(c.totalAum).replace('+', '')})</option>`;
+        }).join('');
+    }
+
+    const modal = document.getElementById('companySlideReportModal');
+    if (modal) modal.style.display = 'flex';
+
+    renderCompanySlideDeck(targetCompany);
+    goToCompanySlide(1);
+}
+
+function changeCompanySlideDeck(companyName) {
+    if (!companyName) return;
+    renderCompanySlideDeck(companyName);
+    goToCompanySlide(1);
+}
+
+function closeCompanySlideModal() {
+    const modal = document.getElementById('companySlideReportModal');
+    if (modal) modal.style.display = 'none';
+
+    const dialog = modal?.querySelector('.company-slide-modal-dialog');
+    if (dialog) dialog.classList.remove('is-fullscreen');
+}
+
+function toggleCompanySlideFullscreen() {
+    const dialog = document.querySelector('#companySlideReportModal .company-slide-modal-dialog');
+    if (!dialog) return;
+    dialog.classList.toggle('is-fullscreen');
+}
+
+function printCompanySlideReport() {
+    window.print();
+}
+
+function renderCompanySlideDeck(companyName) {
+    const comp = pysCompaniesDataCache?.companies?.find(c => c.name === companyName) || pysCompaniesDataCache?.companies?.[0];
+    if (!comp) return;
+
+    // Update Topbar
+    const titleEl = document.getElementById('cslideCompanyTitle');
+    const logoBadge = document.getElementById('cslideLogoBadge');
+    if (titleEl) titleEl.textContent = comp.fullName;
+    if (logoBadge) {
+        logoBadge.textContent = comp.badge;
+        logoBadge.style.background = `${comp.color}22`;
+        logoBadge.style.color = comp.color;
+        logoBadge.style.borderColor = `${comp.color}66`;
+    }
+
+    const deckContainer = document.getElementById('companySlideDeckContainer');
+    if (!deckContainer) return;
+
+    const aumFormatted = formatScannerMoney(comp.totalAum).replace('+', '');
+    const cashFlowFormatted = formatScannerMoney(comp.totalCashFlow);
+    const flowClass = comp.totalCashFlow >= 0 ? 'green' : 'amber';
+    const rankIndex = pysCompaniesDataCache.companies.findIndex(c => c.name === comp.name) + 1;
+
+    // Categorized breakdown for Slide 4
+    const catKeys = Object.keys(comp.categories).sort((a, b) => comp.categories[b].aum - comp.categories[a].aum);
+
+    deckContainer.innerHTML = `
+        <!-- SLIDE 1: ŞİRKET KARNESİ & YÖNETİCİ ÖZETİ -->
+        <div class="company-slide-page" id="cslidePage1">
+            <div class="cslide-hero-banner">
+                <div class="cslide-hero-brand-row">
+                    <div class="cslide-hero-logo" style="background: ${comp.color};">
+                        ${comp.badge}
+                    </div>
+                    <div>
+                        <h2 class="cslide-hero-name">${comp.name}</h2>
+                        <p class="cslide-hero-desc">${comp.fullName}</p>
+                    </div>
+                </div>
+                <div class="cslide-hero-badge-pill">
+                    <i class="fa-solid fa-ranking-star"></i> TEFAS Sıralaması: #${rankIndex} (Pazar Payı: %${comp.marketShare.toFixed(2)})
+                </div>
+            </div>
+
+            <div class="cslide-grid-4">
+                <div class="cslide-metric-box featured">
+                    <div class="cslide-metric-label">
+                        <span>Toplam Fon Varlığı (AUM)</span>
+                        <i class="fa-solid fa-vault"></i>
+                    </div>
+                    <div class="cslide-metric-val cyan">${aumFormatted}</div>
+                    <div class="cslide-metric-note">Türkiye toplam pazar payı: %${comp.marketShare.toFixed(2)}</div>
+                </div>
+
+                <div class="cslide-metric-box">
+                    <div class="cslide-metric-label">
+                        <span>Yönetilen Fon Sayısı</span>
+                        <i class="fa-solid fa-layer-group"></i>
+                    </div>
+                    <div class="cslide-metric-val">${comp.fundCount} Fon</div>
+                    <div class="cslide-metric-note">${catKeys.length} farklı varlık sınıfında</div>
+                </div>
+
+                <div class="cslide-metric-box">
+                    <div class="cslide-metric-label">
+                        <span>Yatırımcı Tabanı</span>
+                        <i class="fa-solid fa-users"></i>
+                    </div>
+                    <div class="cslide-metric-val">${comp.totalInvestors.toLocaleString('tr-TR')}</div>
+                    <div class="cslide-metric-note">Aktif kayıtlı portföy yatırımcısı</div>
+                </div>
+
+                <div class="cslide-metric-box">
+                    <div class="cslide-metric-label">
+                        <span>Günlük Net Sermaye Akışı</span>
+                        <i class="fa-solid fa-arrow-right-arrow-left"></i>
+                    </div>
+                    <div class="cslide-metric-val ${flowClass}">${cashFlowFormatted}</div>
+                    <div class="cslide-metric-note">Bugün kasaya giren/çıkan net fon</div>
+                </div>
+            </div>
+
+            <div class="cslide-summary-box">
+                <h4 class="cslide-summary-title"><i class="fa-solid fa-clipboard-check"></i> Kurumsal Şirket Değerlendirmesi & Portföy Özeti</h4>
+                <ul class="cslide-bullets">
+                    <li><strong>Pazar Hakimiyeti:</strong> ${comp.name}, TEFAS pazarında ${aumFormatted} büyüklük ile en büyük ${rankIndex}. portföy yönetim şirketidir.</li>
+                    <li><strong>Varlık Odak Noktası:</strong> Şirket portföyünün en büyük payını <strong>${catKeys[0] || 'Çeşitli'}</strong> fonları oluşturmakta olup, bu gruptaki varlık büyüklüğü ${comp.categories[catKeys[0]] ? formatScannerMoney(comp.categories[catKeys[0]].aum).replace('+', '') : '--'} seviyesindedir.</li>
+                    <li><strong>Amiral Gemisi Fonu:</strong> Şirketin en yüksek hacimli fonu <strong>${comp.flagship ? comp.flagship.code : '--'} (${comp.flagship ? comp.flagship.name : ''})</strong> olup şirket varlıklarının %${comp.flagship && comp.totalAum > 0 ? ((comp.flagship.aum / comp.totalAum) * 100).toFixed(1) : '0'}'ini temsil etmektedir.</li>
+                    <li><strong>Günün Performansı:</strong> Şirket genelinde bugün en yüksek getiriyi <strong>${comp.topGainer ? comp.topGainer.code : '--'}</strong> (+%${comp.topGainer ? comp.topGainer.change.toFixed(2) : '0'}) sağlarken, günlük sermaye akışı ${cashFlowFormatted} olarak gerçekleşmiştir.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- SLIDE 2: AMİRAL GEMİSİ & EN BÜYÜK FONLAR -->
+        <div class="company-slide-page" id="cslidePage2">
+            <div style="margin-bottom: 20px;">
+                <h3 style="margin: 0 0 6px 0; font-size: 18px; font-weight: 800; color: #F8FAFC;">
+                    <i class="fa-solid fa-ship" style="color: #38BDF8; margin-right: 8px;"></i>
+                    ${comp.name} Amiral Gemileri (En Büyük 4 Fon)
+                </h3>
+                <p style="margin: 0; font-size: 13px; color: #94A3B8;">Portföy büyüklüğü açısından şirketin omurgasını oluşturan lider fonların detay karnesi.</p>
+            </div>
+
+            <div class="cslide-grid-2">
+                ${comp.funds.slice(0, 4).map((f, i) => {
+                    const shareInCompany = comp.totalAum > 0 ? ((f.aum / comp.totalAum) * 100).toFixed(1) : '0';
+                    const changeSign = f.change > 0 ? 'pos' : (f.change < 0 ? 'neg' : 'neutral');
+                    const changeStr = `${f.change > 0 ? '+' : ''}${f.change.toFixed(2)}%`;
+                    const reg = (typeof TEFAS_CATEGORIES_REGISTRY !== 'undefined' && TEFAS_CATEGORIES_REGISTRY[f.category]) || { shortName: 'Fon', color: '#38BDF8' };
+
+                    return `
+                        <div class="cslide-mega-card">
+                            <div>
+                                <div class="cslide-mega-head">
+                                    <span class="cslide-mega-code">${f.code}</span>
+                                    <span class="cslide-mega-share">Şirket Payı: %${shareInCompany}</span>
+                                </div>
+                                <div class="cslide-mega-name">${f.name}</div>
+                                <div style="display: flex; gap: 8px; margin-bottom: 12px;">
+                                    <span style="font-size: 11px; font-weight: 700; color: ${reg.color}; background: ${reg.color}15; padding: 2px 7px; border-radius: 4px;">${reg.shortName}</span>
+                                    <span class="pys-change-pill ${changeSign}" style="font-size: 11px;">${changeStr}</span>
+                                </div>
+                            </div>
+                            <div class="cslide-mega-footer">
+                                <div>
+                                    <div style="font-size: 10.5px; color: #64748B;">FON BÜYÜKLÜĞÜ</div>
+                                    <div class="cslide-mega-aum">${formatScannerMoney(f.aum).replace('+', '')}</div>
+                                </div>
+                                <div style="text-align: right;">
+                                    <div style="font-size: 10.5px; color: #64748B;">YATIRIMCI SAYISI</div>
+                                    <div style="font-weight: 700; color: #F1F5F9;">${f.investors.toLocaleString('tr-TR')} kişi</div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('')}
+            </div>
+        </div>
+
+        <!-- SLIDE 3: GÜNÜN YILDIZLARI: GETİRİ & SERMAYE AKIŞI -->
+        <div class="company-slide-page" id="cslidePage3">
+            <div style="margin-bottom: 20px;">
+                <h3 style="margin: 0 0 6px 0; font-size: 18px; font-weight: 800; color: #F8FAFC;">
+                    <i class="fa-solid fa-bolt" style="color: #F59E0B; margin-right: 8px;"></i>
+                    Günün Yıldızları: Getiri & Nakit Akış Liderleri
+                </h3>
+                <p style="margin: 0; font-size: 13px; color: #94A3B8;">Şirket bünyesinde günün en çok kazandıran fonları ile en yoğun para girişi sağlayan fonlar.</p>
+            </div>
+
+            <div class="cslide-grid-2">
+                <!-- Top 3 Gainers -->
+                <div style="background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(16, 185, 129, 0.25); border-radius: 16px; padding: 18px;">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px;">
+                        <span style="font-size: 13px; font-weight: 800; color: #34D399; text-transform: uppercase; letter-spacing: 0.5px;">
+                            <i class="fa-solid fa-arrow-trend-up"></i> En Çok Yükselen 3 Fon
+                        </span>
+                        <span style="font-size: 11px; color: #64748B;">Günlük Değişim</span>
+                    </div>
+                    <div style="display: flex; flex-direction: column; gap: 10px;">
+                        ${[...comp.funds].sort((a, b) => b.change - a.change).slice(0, 3).map((f, i) => `
+                            <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; background: rgba(255, 255, 255, 0.03); border-radius: 10px;">
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <span style="font-size: 12px; font-weight: 800; color: #64748B; width: 18px;">#${i + 1}</span>
+                                    <div>
+                                        <div style="font-size: 13px; font-weight: 800; color: #F8FAFC;">${f.code}</div>
+                                        <div style="font-size: 11px; color: #94A3B8; max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${f.name}</div>
+                                    </div>
+                                </div>
+                                <div style="text-align: right;">
+                                    <span style="font-size: 14px; font-weight: 800; color: #34D399;">+${f.change.toFixed(2)}%</span>
+                                    <div style="font-size: 10.5px; color: #64748B;">₺${f.price.toFixed(4)}</div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+
+                <!-- Top 3 Cash Inflow -->
+                <div style="background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(56, 189, 248, 0.25); border-radius: 16px; padding: 18px;">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px;">
+                        <span style="font-size: 13px; font-weight: 800; color: #38BDF8; text-transform: uppercase; letter-spacing: 0.5px;">
+                            <i class="fa-solid fa-sack-dollar"></i> En Çok Para Girişi (Top 3)
+                        </span>
+                        <span style="font-size: 11px; color: #64748B;">Net Sermaye</span>
+                    </div>
+                    <div style="display: flex; flex-direction: column; gap: 10px;">
+                        ${[...comp.funds].sort((a, b) => b.cashFlow - a.cashFlow).slice(0, 3).map((f, i) => `
+                            <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; background: rgba(255, 255, 255, 0.03); border-radius: 10px;">
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <span style="font-size: 12px; font-weight: 800; color: #64748B; width: 18px;">#${i + 1}</span>
+                                    <div>
+                                        <div style="font-size: 13px; font-weight: 800; color: #F8FAFC;">${f.code}</div>
+                                        <div style="font-size: 11px; color: #94A3B8; max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${f.name}</div>
+                                    </div>
+                                </div>
+                                <div style="text-align: right;">
+                                    <span style="font-size: 14px; font-weight: 800; color: #38BDF8;">${formatScannerMoney(f.cashFlow)}</span>
+                                    <div style="font-size: 10.5px; color: #64748B;">AUM: ${formatScannerMoney(f.aum).replace('+', '')}</div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 4: VARLIK & STRATEJİ DAĞILIMI -->
+        <div class="company-slide-page" id="cslidePage4">
+            <div style="margin-bottom: 20px;">
+                <h3 style="margin: 0 0 6px 0; font-size: 18px; font-weight: 800; color: #F8FAFC;">
+                    <i class="fa-solid fa-chart-pie" style="color: #38BDF8; margin-right: 8px;"></i>
+                    Varlık & Şemsiye Kategori Dağılımı
+                </h3>
+                <p style="margin: 0; font-size: 13px; color: #94A3B8;">${comp.name} bünyesindeki fonların TEFAS şemsiye kategorilerine göre varlık ve adet payı.</p>
+            </div>
+
+            <div class="cslide-grid-4">
+                ${catKeys.slice(0, 8).map(k => {
+                    const item = comp.categories[k];
+                    const pct = comp.totalAum > 0 ? ((item.aum / comp.totalAum) * 100).toFixed(1) : '0';
+                    const reg = (typeof TEFAS_CATEGORIES_REGISTRY !== 'undefined' && TEFAS_CATEGORIES_REGISTRY[k]) || { shortName: k, color: '#38BDF8', icon: 'fa-solid fa-folder' };
+
+                    return `
+                        <div class="cslide-metric-box" style="border-top: 2px solid ${reg.color};">
+                            <div class="cslide-metric-label">
+                                <span>${reg.shortName}</span>
+                                <i class="${reg.icon}" style="color: ${reg.color};"></i>
+                            </div>
+                            <div class="cslide-metric-val" style="font-size: 18px; color: ${reg.color};">%${pct}</div>
+                            <div style="display: flex; justify-content: space-between; font-size: 11px; color: #94A3B8; margin-top: 4px;">
+                                <span>${item.count} Fon</span>
+                                <span style="font-weight: 700; color: #F1F5F9;">${formatScannerMoney(item.aum).replace('+', '')}</span>
+                            </div>
+                        </div>
+                    `;
+                }).join('')}
+            </div>
+        </div>
+
+        <!-- SLIDE 5: ŞİRKETİN FON KATALOĞU & PORTFÖY MATRİSİ -->
+        <div class="company-slide-page" id="cslidePage5">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
+                <div>
+                    <h3 style="margin: 0 0 4px 0; font-size: 18px; font-weight: 800; color: #F8FAFC;">
+                        <i class="fa-solid fa-table-list" style="color: #38BDF8; margin-right: 8px;"></i>
+                        ${comp.name} Fon Kataloğu & Portföy Matrisi
+                    </h3>
+                    <p style="margin: 0; font-size: 12.5px; color: #94A3B8;">Şirkete ait en yüksek hacimli fonların tam listesi (Toplam ${comp.fundCount} fon).</p>
+                </div>
+                <div style="font-size: 12px; font-weight: 700; color: #38BDF8; background: rgba(56, 189, 248, 0.12); padding: 4px 12px; border-radius: 8px;">
+                    Toplam: ${aumFormatted}
+                </div>
+            </div>
+
+            <div style="max-height: 400px; overflow-y: auto; border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px;">
+                <table class="pys-funds-table">
+                    <thead>
+                        <tr>
+                            <th>Kod</th>
+                            <th>Fon Adı</th>
+                            <th>Kategori</th>
+                            <th>Fiyat (₺)</th>
+                            <th>Getiri</th>
+                            <th>Büyüklük (AUM)</th>
+                            <th>Günlük Akış</th>
+                            <th>Yatırımcı</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${comp.funds.slice(0, 30).map(f => {
+                            const changeSign = f.change > 0 ? 'pos' : (f.change < 0 ? 'neg' : 'neutral');
+                            const flowSign = f.cashFlow > 0 ? 'pos' : (f.cashFlow < 0 ? 'neg' : 'neutral');
+                            const reg = (typeof TEFAS_CATEGORIES_REGISTRY !== 'undefined' && TEFAS_CATEGORIES_REGISTRY[f.category]) || { shortName: 'Fon', color: '#38BDF8' };
+
+                            return `
+                                <tr>
+                                    <td><span class="pys-fund-code-pill">${f.code}</span></td>
+                                    <td class="pys-fund-name-cell" title="${f.name}">${f.name}</td>
+                                    <td><span style="font-size: 11px; font-weight: 700; color: ${reg.color};">${reg.shortName}</span></td>
+                                    <td>₺${f.price.toFixed(4)}</td>
+                                    <td><span class="pys-change-pill ${changeSign}">${f.change > 0 ? '+' : ''}${f.change.toFixed(2)}%</span></td>
+                                    <td style="font-weight: 700;">${formatScannerMoney(f.aum).replace('+', '')}</td>
+                                    <td class="pys-card-flow ${flowSign}">${formatScannerMoney(f.cashFlow)}</td>
+                                    <td>${f.investors.toLocaleString('tr-TR')}</td>
+                                </tr>
+                            `;
+                        }).join('')}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    `;
+
+    // Render Navigation Dots
+    const dotsContainer = document.getElementById('cslideNavDots');
+    if (dotsContainer) {
+        dotsContainer.innerHTML = Array.from({ length: TOTAL_COMPANY_SLIDES }, (_, i) => {
+            const slideNum = i + 1;
+            return `<span class="cslide-nav-dot ${slideNum === 1 ? 'active' : ''}" onclick="goToCompanySlide(${slideNum})" title="Slayt ${slideNum}"></span>`;
+        }).join('');
+    }
+}
+
+function goToCompanySlide(index) {
+    if (index < 1) index = 1;
+    if (index > TOTAL_COMPANY_SLIDES) index = TOTAL_COMPANY_SLIDES;
+    currentCompanySlideIndex = index;
+
+    // Toggle pages
+    for (let i = 1; i <= TOTAL_COMPANY_SLIDES; i++) {
+        const page = document.getElementById(`cslidePage${i}`);
+        if (page) page.classList.toggle('active', i === index);
+    }
+
+    // Update Dots
+    const dots = document.querySelectorAll('#cslideNavDots .cslide-nav-dot');
+    dots.forEach((dot, idx) => {
+        dot.classList.toggle('active', idx + 1 === index);
+    });
+
+    // Update buttons
+    const prevBtn = document.getElementById('btnCslidePrev');
+    const nextBtn = document.getElementById('btnCslideNext');
+    if (prevBtn) prevBtn.disabled = index === 1;
+    if (nextBtn) nextBtn.disabled = index === TOTAL_COMPANY_SLIDES;
+
+    // Update indicator
+    const indicator = document.getElementById('cslidePageIndicator');
+    if (indicator) indicator.textContent = `Slayt ${index} / ${TOTAL_COMPANY_SLIDES}`;
+}
+
+// Global Keyboard Navigation for Company Slide Deck
+if (typeof document !== 'undefined') {
+    document.addEventListener('keydown', (e) => {
+        const modal = document.getElementById('companySlideReportModal');
+        if (!modal || modal.style.display === 'none') return;
+
+        if (e.key === 'ArrowRight' || e.key === 'PageDown') {
+            e.preventDefault();
+            goToCompanySlide(currentCompanySlideIndex + 1);
+        } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+            e.preventDefault();
+            goToCompanySlide(currentCompanySlideIndex - 1);
+        } else if (e.key === 'Escape') {
+            closeCompanySlideModal();
+        } else if (e.key === 'f' || e.key === 'F') {
+            toggleCompanySlideFullscreen();
+        }
+    });
+}
+
+// Export all PYŞ Explorer & Slide Deck functions to window
+window.extractCompanyFromFundName = extractCompanyFromFundName;
+window.buildAllCompaniesDataset = buildAllCompaniesDataset;
+window.loadAndRenderCompaniesExplorer = loadAndRenderCompaniesExplorer;
+window.handlePysSearch = handlePysSearch;
+window.handlePysSortChange = handlePysSortChange;
+window.renderPysCompaniesList = renderPysCompaniesList;
+window.selectCompanyForExplorer = selectCompanyForExplorer;
+window.renderCompanyDossier = renderCompanyDossier;
+window.handlePysFundTableSearch = handlePysFundTableSearch;
+window.handlePysFundCategoryFilter = handlePysFundCategoryFilter;
+window.renderPysCompanyFundsTable = renderPysCompanyFundsTable;
+
+window.openCompanySlidePresentation = openCompanySlidePresentation;
+window.changeCompanySlideDeck = changeCompanySlideDeck;
+window.closeCompanySlideModal = closeCompanySlideModal;
+window.toggleCompanySlideFullscreen = toggleCompanySlideFullscreen;
+window.printCompanySlideReport = printCompanySlideReport;
+window.goToCompanySlide = goToCompanySlide;
+window.currentCompanySlideIndex = currentCompanySlideIndex;
+
