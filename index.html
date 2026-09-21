@@ -2679,6 +2679,17 @@
                     </div>
                 </div>
                 <div class="tefas-scanner-header-right">
+                    <div class="scanner-speed-selector" title="Tarama Hızını Ayarla">
+                        <button type="button" class="btn-scanner-speed" data-speed="slow" onclick="setLiveScannerSpeed('slow')" title="Detaylı izleme modu (~18 sn)">
+                            <i class="fa-solid fa-gauge"></i> Yavaş
+                        </button>
+                        <button type="button" class="btn-scanner-speed active" data-speed="normal" onclick="setLiveScannerSpeed('normal')" title="Önerilen akıcı tarama (~8 sn)">
+                            <i class="fa-solid fa-chart-line"></i> Normal
+                        </button>
+                        <button type="button" class="btn-scanner-speed" data-speed="fast" onclick="setLiveScannerSpeed('fast')" title="Hızlı tarama (~2 sn)">
+                            <i class="fa-solid fa-bolt"></i> Hızlı
+                        </button>
+                    </div>
                     <div class="scanner-date-pill" id="scannerDatePill">
                         <i class="fa-solid fa-calendar-day"></i>
                         <span id="scannerDateLabel">21.09.2026 Seansı</span>

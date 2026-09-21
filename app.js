@@ -12772,6 +12772,22 @@ function applyScannerResultsAndOpenSlides() {
     }, 150);
 }
 
+let liveScannerSpeedMode = 'normal'; // 'slow', 'normal', 'fast'
+
+function setLiveScannerSpeed(mode) {
+    liveScannerSpeedMode = mode;
+    document.querySelectorAll('.btn-scanner-speed').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.speed === mode);
+    });
+    const speedEl = document.getElementById("scannerSpeedText");
+    if (speedEl) {
+        if (mode === 'slow') speedEl.innerHTML = `<i class="fa-solid fa-gauge"></i> Yavaş İzleme Modu (~18 sn)`;
+        else if (mode === 'fast') speedEl.innerHTML = `<i class="fa-solid fa-bolt"></i> Hızlı Analiz Motoru (~2 sn)`;
+        else speedEl.innerHTML = `<i class="fa-solid fa-chart-line"></i> Akıcı Tarama Modu (~8 sn)`;
+    }
+}
+window.setLiveScannerSpeed = setLiveScannerSpeed;
+
 async function startLiveFundMarketScan(options = { autoOpenSlide: true }) {
     const modal = document.getElementById("tefasLiveMarketScannerModal");
     if (!modal) {
@@ -12799,7 +12815,11 @@ async function startLiveFundMarketScan(options = { autoOpenSlide: true }) {
     if (fillEl) fillEl.style.width = "0%";
     if (countEl) countEl.innerText = "0 / 2.041";
     if (pctEl) pctEl.innerText = "0%";
-    if (speedEl) speedEl.innerHTML = `<i class="fa-solid fa-bolt"></i> Yüksek Hızlı Analiz Motoru`;
+    if (speedEl) {
+        if (liveScannerSpeedMode === 'slow') speedEl.innerHTML = `<i class="fa-solid fa-gauge"></i> Yavaş İzleme Modu (~18 sn)`;
+        else if (liveScannerSpeedMode === 'fast') speedEl.innerHTML = `<i class="fa-solid fa-bolt"></i> Hızlı Analiz Motoru (~2 sn)`;
+        else speedEl.innerHTML = `<i class="fa-solid fa-chart-line"></i> Akıcı Tarama Modu (~8 sn)`;
+    }
     if (subEl) subEl.innerText = "Tüm TEFAS yatırım fonları tek tek taranıyor ve gün içi sermaye akışları hesaplanıyor...";
     if (terminalEl) {
         terminalEl.innerHTML = `
@@ -12868,8 +12888,13 @@ async function startLiveFundMarketScan(options = { autoOpenSlide: true }) {
     };
 
     let processed = 0;
-    const batchSize = 35; // 35 funds per frame
     let terminalEntryCount = 0;
+    let isScannerTerminalUserHovered = false;
+
+    if (terminalEl) {
+        terminalEl.onmouseenter = () => { isScannerTerminalUserHovered = true; };
+        terminalEl.onmouseleave = () => { isScannerTerminalUserHovered = false; };
+    }
 
     return new Promise((resolve) => {
         const step = () => {
@@ -12885,25 +12910,51 @@ async function startLiveFundMarketScan(options = { autoOpenSlide: true }) {
                 }
                 processed = total;
             } else {
-                const end = Math.min(processed + batchSize, total);
+                // Speed-based batch sizing & delay
+                let currentBatchSize = 8;
+                let currentDelay = 30;
+                if (liveScannerSpeedMode === 'slow') {
+                    currentBatchSize = 4;
+                    currentDelay = 35;
+                } else if (liveScannerSpeedMode === 'fast') {
+                    currentBatchSize = 25;
+                    currentDelay = 18;
+                }
+
+                const end = Math.min(processed + currentBatchSize, total);
                 const sampleRowsHTML = [];
+                let addedInThisStep = 0;
 
                 for (let i = processed; i < end; i++) {
                     const f = funds[i];
                     if (!f) continue;
                     updateRunningLeaders(f);
 
-                    // Add occasional sample to visual terminal stream (every 6th fund or significant movement)
-                    if (i % 6 === 0 || Math.abs(f.cashFlow || 0) > 1e8 || Math.abs(f.deltaInvestors || 0) > 100) {
+                    const hasMajorFlow = Math.abs(f.cashFlow || 0) > 1e7 || Math.abs(f.deltaInvestors || 0) > 20;
+
+                    let shouldAdd = false;
+                    if (liveScannerSpeedMode === 'slow') {
+                        // In slow mode (~18s), add most funds so user can read everything comfortably
+                        shouldAdd = (i % 2 === 0 || hasMajorFlow || (i === end - 1 && addedInThisStep === 0));
+                    } else if (liveScannerSpeedMode === 'fast') {
+                        shouldAdd = (i % 8 === 0 || Math.abs(f.cashFlow || 0) > 5e8);
+                    } else {
+                        // In normal mode (~8s), stream steady, readable funds
+                        shouldAdd = (i % 3 === 0 || hasMajorFlow || (i === end - 1 && addedInThisStep === 0));
+                    }
+
+                    if (shouldAdd) {
+                        addedInThisStep++;
                         const flowVal = f.cashFlow || 0;
                         const isPos = flowVal >= 0;
                         const flowClass = isPos ? 'pos' : 'neg';
+                        const flowRowClass = isPos ? 'flow-pos' : 'flow-neg';
                         const flowStr = formatScannerMoney(flowVal);
                         const invStr = formatScannerInvestors(f.deltaInvestors || 0);
                         const cleanName = (f.name || `${f.code} FONU`).replace(/PORTFÖYÜ?|FONU?/gi, '').trim();
 
                         sampleRowsHTML.push(`
-                            <div class="scanner-terminal-row">
+                            <div class="scanner-terminal-row ${flowRowClass}">
                                 <div class="scanner-row-left">
                                     <span class="scanner-row-code">${f.code}</span>
                                     <span class="scanner-row-name" title="${f.name}">${cleanName}</span>
@@ -12920,14 +12971,16 @@ async function startLiveFundMarketScan(options = { autoOpenSlide: true }) {
                 if (terminalEl && sampleRowsHTML.length > 0) {
                     terminalEl.insertAdjacentHTML('beforeend', sampleRowsHTML.join(''));
                     terminalEntryCount += sampleRowsHTML.length;
-                    // Cap DOM nodes to keep performance 60fps
-                    if (terminalEl.children.length > 35) {
-                        const removeCount = terminalEl.children.length - 35;
+                    // Cap DOM nodes to 65 entries for smooth 60fps and plenty of viewable history
+                    if (terminalEl.children.length > 65) {
+                        const removeCount = terminalEl.children.length - 65;
                         for (let r = 0; r < removeCount; r++) {
                             terminalEl.removeChild(terminalEl.firstElementChild);
                         }
                     }
-                    terminalEl.scrollTop = terminalEl.scrollHeight;
+                    if (!isScannerTerminalUserHovered) {
+                        terminalEl.scrollTop = terminalEl.scrollHeight;
+                    }
                 }
 
                 processed = end;
@@ -12946,7 +12999,10 @@ async function startLiveFundMarketScan(options = { autoOpenSlide: true }) {
             renderScannerPodiumList("podiumInvOut", runningInvOut, "inv-out");
 
             if (processed < total && !liveFundScannerShouldSkip) {
-                setTimeout(step, 18);
+                let currentDelay = 30;
+                if (liveScannerSpeedMode === 'slow') currentDelay = 35;
+                else if (liveScannerSpeedMode === 'fast') currentDelay = 18;
+                setTimeout(step, currentDelay);
             } else {
                 // Finalize Scan
                 finishLiveFundMarketScan(funds, options).then(resolve);
@@ -14590,3 +14646,4 @@ window.closeLiveFundScanner = closeLiveFundScanner;
 window.skipLiveFundScanner = skipLiveFundScanner;
 window.applyScannerResultsAndOpenSlides = applyScannerResultsAndOpenSlides;
 window.refreshSlideReportData = refreshSlideReportData;
+window.setLiveScannerSpeed = setLiveScannerSpeed;
