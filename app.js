@@ -12781,9 +12781,9 @@ function setLiveScannerSpeed(mode) {
     });
     const speedEl = document.getElementById("scannerSpeedText");
     if (speedEl) {
-        if (mode === 'slow') speedEl.innerHTML = `<i class="fa-solid fa-gauge"></i> Yavaş İzleme Modu (~18 sn)`;
-        else if (mode === 'fast') speedEl.innerHTML = `<i class="fa-solid fa-bolt"></i> Hızlı Analiz Motoru (~2 sn)`;
-        else speedEl.innerHTML = `<i class="fa-solid fa-chart-line"></i> Akıcı Tarama Modu (~8 sn)`;
+        if (mode === 'slow') speedEl.innerHTML = `<i class="fa-solid fa-gauge"></i> Yavaş İzleme Modu (60 sn)`;
+        else if (mode === 'fast') speedEl.innerHTML = `<i class="fa-solid fa-bolt"></i> Hızlı Tarama Modu (15 sn)`;
+        else speedEl.innerHTML = `<i class="fa-solid fa-chart-line"></i> Normal Tarama Modu (30 sn)`;
     }
 }
 window.setLiveScannerSpeed = setLiveScannerSpeed;
@@ -12816,9 +12816,9 @@ async function startLiveFundMarketScan(options = { autoOpenSlide: true }) {
     if (countEl) countEl.innerText = "0 / 2.041";
     if (pctEl) pctEl.innerText = "0%";
     if (speedEl) {
-        if (liveScannerSpeedMode === 'slow') speedEl.innerHTML = `<i class="fa-solid fa-gauge"></i> Yavaş İzleme Modu (~18 sn)`;
-        else if (liveScannerSpeedMode === 'fast') speedEl.innerHTML = `<i class="fa-solid fa-bolt"></i> Hızlı Analiz Motoru (~2 sn)`;
-        else speedEl.innerHTML = `<i class="fa-solid fa-chart-line"></i> Akıcı Tarama Modu (~8 sn)`;
+        if (liveScannerSpeedMode === 'slow') speedEl.innerHTML = `<i class="fa-solid fa-gauge"></i> Yavaş İzleme Modu (60 sn)`;
+        else if (liveScannerSpeedMode === 'fast') speedEl.innerHTML = `<i class="fa-solid fa-bolt"></i> Hızlı Tarama Modu (15 sn)`;
+        else speedEl.innerHTML = `<i class="fa-solid fa-chart-line"></i> Normal Tarama Modu (30 sn)`;
     }
     if (subEl) subEl.innerText = "Tüm TEFAS yatırım fonları tek tek taranıyor ve gün içi sermaye akışları hesaplanıyor...";
     if (terminalEl) {
@@ -12910,15 +12910,16 @@ async function startLiveFundMarketScan(options = { autoOpenSlide: true }) {
                 }
                 processed = total;
             } else {
-                // Speed-based batch sizing & delay
-                let currentBatchSize = 8;
-                let currentDelay = 30;
+                // Calibrated pacing: Yavaş = 60s (1 fund/tick), Normal = 30s (2 funds/tick), Hızlı = 15s (4 funds/tick)
+                let currentBatchSize = 2; // Normal: ~30s
+                let currentDelay = 29;
+
                 if (liveScannerSpeedMode === 'slow') {
-                    currentBatchSize = 4;
-                    currentDelay = 35;
+                    currentBatchSize = 1; // Yavaş: ~60s
+                    currentDelay = 29;
                 } else if (liveScannerSpeedMode === 'fast') {
-                    currentBatchSize = 25;
-                    currentDelay = 18;
+                    currentBatchSize = 4; // Hızlı: ~15s
+                    currentDelay = 29;
                 }
 
                 const end = Math.min(processed + currentBatchSize, total);
@@ -12934,13 +12935,14 @@ async function startLiveFundMarketScan(options = { autoOpenSlide: true }) {
 
                     let shouldAdd = false;
                     if (liveScannerSpeedMode === 'slow') {
-                        // In slow mode (~18s), add most funds so user can read everything comfortably
-                        shouldAdd = (i % 2 === 0 || hasMajorFlow || (i === end - 1 && addedInThisStep === 0));
+                        // In slow mode (60s), stream every single fund to terminal
+                        shouldAdd = true;
                     } else if (liveScannerSpeedMode === 'fast') {
-                        shouldAdd = (i % 8 === 0 || Math.abs(f.cashFlow || 0) > 5e8);
+                        // In fast mode (15s), show every 2nd fund or major movements
+                        shouldAdd = (i % 2 === 0 || hasMajorFlow || (i === end - 1 && addedInThisStep === 0));
                     } else {
-                        // In normal mode (~8s), stream steady, readable funds
-                        shouldAdd = (i % 3 === 0 || hasMajorFlow || (i === end - 1 && addedInThisStep === 0));
+                        // In normal mode (30s), stream 1 fund per tick or major movements
+                        shouldAdd = (i % 2 === 0 || hasMajorFlow || (i === end - 1 && addedInThisStep === 0));
                     }
 
                     if (shouldAdd) {
@@ -12971,9 +12973,9 @@ async function startLiveFundMarketScan(options = { autoOpenSlide: true }) {
                 if (terminalEl && sampleRowsHTML.length > 0) {
                     terminalEl.insertAdjacentHTML('beforeend', sampleRowsHTML.join(''));
                     terminalEntryCount += sampleRowsHTML.length;
-                    // Cap DOM nodes to 65 entries for smooth 60fps and plenty of viewable history
-                    if (terminalEl.children.length > 65) {
-                        const removeCount = terminalEl.children.length - 65;
+                    // Cap DOM nodes to 70 entries for smooth 60fps and plenty of viewable history
+                    if (terminalEl.children.length > 70) {
+                        const removeCount = terminalEl.children.length - 70;
                         for (let r = 0; r < removeCount; r++) {
                             terminalEl.removeChild(terminalEl.firstElementChild);
                         }
@@ -12999,9 +13001,7 @@ async function startLiveFundMarketScan(options = { autoOpenSlide: true }) {
             renderScannerPodiumList("podiumInvOut", runningInvOut, "inv-out");
 
             if (processed < total && !liveFundScannerShouldSkip) {
-                let currentDelay = 30;
-                if (liveScannerSpeedMode === 'slow') currentDelay = 35;
-                else if (liveScannerSpeedMode === 'fast') currentDelay = 18;
+                let currentDelay = 29;
                 setTimeout(step, currentDelay);
             } else {
                 // Finalize Scan
