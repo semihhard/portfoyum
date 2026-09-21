@@ -14726,7 +14726,7 @@ let pysSortBy = "aum";
 let pysFundTableSearchQuery = "";
 let pysFundTableCategoryFilter = "ALL";
 let currentCompanySlideIndex = 1;
-const TOTAL_COMPANY_SLIDES = 5;
+const TOTAL_COMPANY_SLIDES = 6;
 
 function extractCompanyFromFundName(name) {
     if (!name) return 'Diğer Portföy';
@@ -15410,12 +15410,74 @@ function renderCompanySlideDeck(companyName) {
     const cashFlowFormatted = formatScannerMoney(comp.totalCashFlow);
     const flowClass = comp.totalCashFlow >= 0 ? 'green' : 'amber';
     const rankIndex = pysCompaniesDataCache.companies.findIndex(c => c.name === comp.name) + 1;
+    const totalCompanies = pysCompaniesDataCache.companies.length;
 
-    // Categorized breakdown for Slide 4
+    // Advanced derived metrics
+    const avgAumPerFund = comp.totalAum / Math.max(1, comp.fundCount);
+    const avgAumPerFundStr = formatScannerMoney(avgAumPerFund).replace('+', '');
+    const avgInvestorsPerFund = Math.round(comp.totalInvestors / Math.max(1, comp.fundCount));
+    const avgBalancePerInvestor = Math.round(comp.totalAum / Math.max(1, comp.totalInvestors));
+    const avgBalancePerInvestorStr = '₺' + avgBalancePerInvestor.toLocaleString('tr-TR');
+
+    // Weighted daily return
+    let sumWeightedReturn = 0;
+    comp.funds.forEach(f => {
+        sumWeightedReturn += (f.change || 0) * (f.aum || 0);
+    });
+    const weightedReturn = comp.totalAum > 0 ? (sumWeightedReturn / comp.totalAum) : 0;
+    const weightedReturnStr = (weightedReturn >= 0 ? '+' : '') + weightedReturn.toFixed(2) + '%';
+    const weightedReturnClass = weightedReturn >= 0 ? 'green' : 'amber';
+
+    // Market dynamics (positive, negative, flat)
+    const validGainers = comp.funds.filter(f => !isNaN(f.change) && f.change > 0);
+    const validLosers = comp.funds.filter(f => !isNaN(f.change) && f.change < 0);
+    const positiveFundsCount = validGainers.length;
+    const negativeFundsCount = validLosers.length;
+    const flatFundsCount = comp.fundCount - positiveFundsCount - negativeFundsCount;
+    const positivePct = Math.round((positiveFundsCount / Math.max(1, comp.fundCount)) * 100);
+    const negativePct = Math.round((negativeFundsCount / Math.max(1, comp.fundCount)) * 100);
+    const flatPct = Math.max(0, 100 - positivePct - negativePct);
+
+    // Categorized breakdown for Slide 5
     const catKeys = Object.keys(comp.categories).sort((a, b) => comp.categories[b].aum - comp.categories[a].aum);
+    const topCatKey = catKeys[0] || 'DİĞER';
+    const topCatItem = comp.categories[topCatKey] || { aum: 0, count: 0 };
+    const topCatPct = comp.totalAum > 0 ? ((topCatItem.aum / comp.totalAum) * 100).toFixed(1) : '0';
+    const topCatReg = (typeof TEFAS_CATEGORIES_REGISTRY !== 'undefined' && TEFAS_CATEGORIES_REGISTRY[topCatKey]) || { shortName: topCatKey, name: topCatKey };
+
+    // Concentration analysis
+    const flagshipShare = comp.flagship && comp.totalAum > 0 ? ((comp.flagship.aum / comp.totalAum) * 100).toFixed(1) : '0';
+    const top4Funds = comp.funds.slice(0, 4);
+    const top4AumSum = top4Funds.reduce((acc, f) => acc + f.aum, 0);
+    const top4Share = comp.totalAum > 0 ? ((top4AumSum / comp.totalAum) * 100).toFixed(1) : '0';
+
+    // Competitor benchmark
+    const prevCompany = rankIndex > 1 ? pysCompaniesDataCache.companies[rankIndex - 2] : null;
+    const nextCompany = rankIndex < totalCompanies ? pysCompaniesDataCache.companies[rankIndex] : null;
+    const deltaToPrev = prevCompany ? prevCompany.totalAum - comp.totalAum : 0;
+    const deltaToNext = nextCompany ? comp.totalAum - nextCompany.totalAum : 0;
+
+    // Top 5 Gainers & Top 5 Losers
+    const sortedGainers = [...comp.funds].filter(f => !isNaN(f.change) && f.change > -90).sort((a, b) => b.change - a.change).slice(0, 5);
+    const sortedLosers = [...comp.funds].filter(f => !isNaN(f.change) && f.change > -90).sort((a, b) => a.change - b.change).slice(0, 5);
+
+    // Top 5 Inflow & Top 5 Outflow
+    const sortedInflows = [...comp.funds].sort((a, b) => b.cashFlow - a.cashFlow).slice(0, 5);
+    const sortedOutflows = [...comp.funds].sort((a, b) => a.cashFlow - b.cashFlow).slice(0, 5);
+
+    // Top 3 Investor Growth
+    const sortedInvGrowth = [...comp.funds].sort((a, b) => (b.deltaInvestors || 0) - (a.deltaInvestors || 0)).slice(0, 3);
+
+    // Role tags for top 4 funds
+    const roleTags = [
+        "👑 1. Amiral Gemisi (Ana Büyüklük)",
+        "🛡️ 2. Temel Strateji Direği",
+        "⚡ 3. Stratejik Varlık Havuzu",
+        "🚀 4. Dinamik Portföy Bileşeni"
+    ];
 
     deckContainer.innerHTML = `
-        <!-- SLIDE 1: ŞİRKET KARNESİ & YÖNETİCİ ÖZETİ -->
+        <!-- SLIDE 1: ŞİRKET KARNESİ & MAKRO YÖNETİCİ ÖZETİ -->
         <div class="company-slide-page" id="cslidePage1">
             <div class="cslide-hero-banner">
                 <div class="cslide-hero-brand-row">
@@ -15428,27 +15490,28 @@ function renderCompanySlideDeck(companyName) {
                     </div>
                 </div>
                 <div class="cslide-hero-badge-pill">
-                    <i class="fa-solid fa-ranking-star"></i> TEFAS Sıralaması: #${rankIndex} (Pazar Payı: %${comp.marketShare.toFixed(2)})
+                    <i class="fa-solid fa-ranking-star"></i> TEFAS Sıralaması: #${rankIndex} / ${totalCompanies} (Pazar Payı: %${comp.marketShare.toFixed(2)})
                 </div>
             </div>
 
-            <div class="cslide-grid-4">
+            <!-- 6 Key Performance Indicators -->
+            <div class="cslide-grid-6">
                 <div class="cslide-metric-box featured">
                     <div class="cslide-metric-label">
-                        <span>Toplam Fon Varlığı (AUM)</span>
+                        <span>Toplam AUM</span>
                         <i class="fa-solid fa-vault"></i>
                     </div>
                     <div class="cslide-metric-val cyan">${aumFormatted}</div>
-                    <div class="cslide-metric-note">Türkiye toplam pazar payı: %${comp.marketShare.toFixed(2)}</div>
+                    <div class="cslide-metric-note">Pazar Payı: %${comp.marketShare.toFixed(2)}</div>
                 </div>
 
                 <div class="cslide-metric-box">
                     <div class="cslide-metric-label">
-                        <span>Yönetilen Fon Sayısı</span>
+                        <span>Fon Portföyü</span>
                         <i class="fa-solid fa-layer-group"></i>
                     </div>
                     <div class="cslide-metric-val">${comp.fundCount} Fon</div>
-                    <div class="cslide-metric-note">${catKeys.length} farklı varlık sınıfında</div>
+                    <div class="cslide-metric-note">${catKeys.length} Farklı Kategori</div>
                 </div>
 
                 <div class="cslide-metric-box">
@@ -15457,68 +15520,148 @@ function renderCompanySlideDeck(companyName) {
                         <i class="fa-solid fa-users"></i>
                     </div>
                     <div class="cslide-metric-val">${comp.totalInvestors.toLocaleString('tr-TR')}</div>
-                    <div class="cslide-metric-note">Aktif kayıtlı portföy yatırımcısı</div>
+                    <div class="cslide-metric-note">Fon Başı Ort: ${avgInvestorsPerFund.toLocaleString('tr-TR')}</div>
                 </div>
 
                 <div class="cslide-metric-box">
                     <div class="cslide-metric-label">
-                        <span>Günlük Net Sermaye Akışı</span>
+                        <span>Günlük Net Akış</span>
                         <i class="fa-solid fa-arrow-right-arrow-left"></i>
                     </div>
                     <div class="cslide-metric-val ${flowClass}">${cashFlowFormatted}</div>
-                    <div class="cslide-metric-note">Bugün kasaya giren/çıkan net fon</div>
+                    <div class="cslide-metric-note">Bugünkü sermaye yönü</div>
+                </div>
+
+                <div class="cslide-metric-box">
+                    <div class="cslide-metric-label">
+                        <span>Ağırlıklı Getiri</span>
+                        <i class="fa-solid fa-chart-line"></i>
+                    </div>
+                    <div class="cslide-metric-val ${weightedReturnClass}">${weightedReturnStr}</div>
+                    <div class="cslide-metric-note">Varlık ağırlıklı günlük getiri</div>
+                </div>
+
+                <div class="cslide-metric-box">
+                    <div class="cslide-metric-label">
+                        <span>Ort. Fon Hacmi</span>
+                        <i class="fa-solid fa-scale-balanced"></i>
+                    </div>
+                    <div class="cslide-metric-val">${avgAumPerFundStr}</div>
+                    <div class="cslide-metric-note">Fon başına düşen AUM</div>
                 </div>
             </div>
 
-            <div class="cslide-summary-box">
-                <h4 class="cslide-summary-title"><i class="fa-solid fa-clipboard-check"></i> Kurumsal Şirket Değerlendirmesi & Portföy Özeti</h4>
-                <ul class="cslide-bullets">
-                    <li><strong>Pazar Hakimiyeti:</strong> ${comp.name}, TEFAS pazarında ${aumFormatted} büyüklük ile en büyük ${rankIndex}. portföy yönetim şirketidir.</li>
-                    <li><strong>Varlık Odak Noktası:</strong> Şirket portföyünün en büyük payını <strong>${catKeys[0] || 'Çeşitli'}</strong> fonları oluşturmakta olup, bu gruptaki varlık büyüklüğü ${comp.categories[catKeys[0]] ? formatScannerMoney(comp.categories[catKeys[0]].aum).replace('+', '') : '--'} seviyesindedir.</li>
-                    <li><strong>Amiral Gemisi Fonu:</strong> Şirketin en yüksek hacimli fonu <strong>${comp.flagship ? comp.flagship.code : '--'} (${comp.flagship ? comp.flagship.name : ''})</strong> olup şirket varlıklarının %${comp.flagship && comp.totalAum > 0 ? ((comp.flagship.aum / comp.totalAum) * 100).toFixed(1) : '0'}'ini temsil etmektedir.</li>
-                    <li><strong>Günün Performansı:</strong> Şirket genelinde bugün en yüksek getiriyi <strong>${comp.topGainer ? comp.topGainer.code : '--'}</strong> (+%${comp.topGainer ? comp.topGainer.change.toFixed(2) : '0'}) sağlarken, günlük sermaye akışı ${cashFlowFormatted} olarak gerçekleşmiştir.</li>
-                </ul>
+            <!-- 4 Financial Intelligence Cards -->
+            <div class="cslide-intel-grid">
+                <div class="cslide-intel-card">
+                    <div class="cslide-intel-header">
+                        <i class="fa-solid fa-bullseye"></i>
+                        <span>Portföy Konsantrasyonu</span>
+                    </div>
+                    <div class="cslide-intel-title">Amiral Fon Payı: %${flagshipShare}</div>
+                    <p class="cslide-intel-desc">
+                        En büyük fon olan <strong>${comp.flagship ? comp.flagship.code : '--'}</strong>, şirket portföyünün %${flagshipShare}'ini oluşturuyor. İlk 4 fon ise toplamın %${top4Share}'ini kapsamaktadır.
+                    </p>
+                </div>
+
+                <div class="cslide-intel-card">
+                    <div class="cslide-intel-header">
+                        <i class="fa-solid fa-landmark"></i>
+                        <span>Dominant Strateji</span>
+                    </div>
+                    <div class="cslide-intel-title">${topCatReg.shortName} (%${topCatPct})</div>
+                    <p class="cslide-intel-desc">
+                        Şirketin en büyük varlık ağırlığı <strong>${topCatReg.name}</strong> alanında toplanmış olup bu kategoride ${formatScannerMoney(topCatItem.aum).replace('+', '')} hacim yönetilmektedir.
+                    </p>
+                </div>
+
+                <div class="cslide-intel-card">
+                    <div class="cslide-intel-header">
+                        <i class="fa-solid fa-wallet"></i>
+                        <span>Yatırımcı Derinliği</span>
+                    </div>
+                    <div class="cslide-intel-title">${avgBalancePerInvestorStr} / Kişi</div>
+                    <p class="cslide-intel-desc">
+                        ${avgBalancePerInvestor > 250000 
+                            ? 'Yüksek net değerli (HNW) ve nitelikli/kurumsal yatırımcı ağırlığı şirketin portföy büyüklüğünü desteklemektedir.' 
+                            : 'Geniş tabanlı, dinamik perakende yatırımcı profili fon tabanını yaygınlaştırmaktadır.'}
+                    </p>
+                </div>
+
+                <div class="cslide-intel-card">
+                    <div class="cslide-intel-header">
+                        <i class="fa-solid fa-arrows-split-up-and-left"></i>
+                        <span>Piyasa Nabzı Dağılımı</span>
+                    </div>
+                    <div class="cslide-intel-title">%${positivePct} Yükseliş / %${negativePct} Düşüş</div>
+                    <p class="cslide-intel-desc">
+                        Bugünkü seansta şirkete ait fonlardan <strong>${positiveFundsCount}</strong> adedi prim yaparken, <strong>${negativeFundsCount}</strong> adedi negatif getiri kaydetmiştir.
+                    </p>
+                </div>
             </div>
         </div>
 
-        <!-- SLIDE 2: AMİRAL GEMİSİ & EN BÜYÜK FONLAR -->
+        <!-- SLIDE 2: AMİRAL GEMİSİ & MEGA FONLAR (EN BÜYÜK 4 FON DERİN ANALİZİ) -->
         <div class="company-slide-page" id="cslidePage2">
-            <div style="margin-bottom: 20px;">
-                <h3 style="margin: 0 0 6px 0; font-size: 18px; font-weight: 800; color: #F8FAFC;">
-                    <i class="fa-solid fa-ship" style="color: #38BDF8; margin-right: 8px;"></i>
-                    ${comp.name} Amiral Gemileri (En Büyük 4 Fon)
-                </h3>
-                <p style="margin: 0; font-size: 13px; color: #94A3B8;">Portföy büyüklüğü açısından şirketin omurgasını oluşturan lider fonların detay karnesi.</p>
+            <div style="margin-bottom: 18px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+                <div>
+                    <h3 style="margin: 0 0 4px 0; font-size: 18px; font-weight: 800; color: #F8FAFC;">
+                        <i class="fa-solid fa-ship" style="color: #38BDF8; margin-right: 8px;"></i>
+                        ${comp.name} Amiral Gemileri & Mega Fonlar
+                    </h3>
+                    <p style="margin: 0; font-size: 13px; color: #94A3B8;">Şirket varlıklarının %${top4Share}'lik kısmını yöneten en büyük 4 amiral fonun detaylı anatomisi.</p>
+                </div>
+                <div style="font-size: 12px; font-weight: 800; color: #38BDF8; background: rgba(56, 189, 248, 0.12); padding: 4px 12px; border-radius: 8px;">
+                    İlk 4 Fon Toplamı: ${formatScannerMoney(top4AumSum).replace('+', '')}
+                </div>
             </div>
 
             <div class="cslide-grid-2">
-                ${comp.funds.slice(0, 4).map((f, i) => {
+                ${top4Funds.map((f, i) => {
                     const shareInCompany = comp.totalAum > 0 ? ((f.aum / comp.totalAum) * 100).toFixed(1) : '0';
                     const changeSign = f.change > 0 ? 'pos' : (f.change < 0 ? 'neg' : 'neutral');
                     const changeStr = `${f.change > 0 ? '+' : ''}${f.change.toFixed(2)}%`;
+                    const flowSign = f.cashFlow > 0 ? 'pos' : (f.cashFlow < 0 ? 'neg' : 'neutral');
                     const reg = (typeof TEFAS_CATEGORIES_REGISTRY !== 'undefined' && TEFAS_CATEGORIES_REGISTRY[f.category]) || { shortName: 'Fon', color: '#38BDF8' };
+                    const perInvestor = f.investors > 0 ? Math.round(f.aum / f.investors) : 0;
 
                     return `
-                        <div class="cslide-mega-card">
+                        <div class="cslide-mega-card-detailed">
                             <div>
-                                <div class="cslide-mega-head">
-                                    <span class="cslide-mega-code">${f.code}</span>
-                                    <span class="cslide-mega-share">Şirket Payı: %${shareInCompany}</span>
+                                <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 8px;">
+                                    <div style="display: flex; align-items: center; gap: 8px;">
+                                        <span class="cslide-mega-code">${f.code}</span>
+                                        <span class="cslide-fund-role-badge">${roleTags[i] || 'Mega Fon'}</span>
+                                    </div>
+                                    <span class="pys-change-pill ${changeSign}" style="font-size: 12px;">${changeStr}</span>
                                 </div>
-                                <div class="cslide-mega-name">${f.name}</div>
-                                <div style="display: flex; gap: 8px; margin-bottom: 12px;">
-                                    <span style="font-size: 11px; font-weight: 700; color: ${reg.color}; background: ${reg.color}15; padding: 2px 7px; border-radius: 4px;">${reg.shortName}</span>
-                                    <span class="pys-change-pill ${changeSign}" style="font-size: 11px;">${changeStr}</span>
+                                <div class="cslide-mega-name" title="${f.name}" style="font-size: 13px; margin-bottom: 8px;">${f.name}</div>
+                                <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 10px;">
+                                    <span style="font-size: 11px; font-weight: 700; color: ${reg.color}; background: ${reg.color}15; padding: 2px 8px; border-radius: 4px;">${reg.shortName}</span>
+                                    <span style="font-size: 11.5px; color: #CBD5E1; font-weight: 600;">₺${f.price.toFixed(4)}</span>
+                                </div>
+                                <div class="cslide-share-bar-wrap">
+                                    <div style="display: flex; justify-content: space-between; font-size: 11px; color: #94A3B8; margin-bottom: 4px;">
+                                        <span>Şirket Portföy Payı</span>
+                                        <strong style="color: #38BDF8;">%${shareInCompany}</strong>
+                                    </div>
+                                    <div class="cslide-share-bar-rail">
+                                        <div class="cslide-share-bar-fill" style="width: ${shareInCompany}%;"></div>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="cslide-mega-footer">
+                            <div class="cslide-mega-footer" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; padding-top: 10px;">
                                 <div>
-                                    <div style="font-size: 10.5px; color: #64748B;">FON BÜYÜKLÜĞÜ</div>
-                                    <div class="cslide-mega-aum">${formatScannerMoney(f.aum).replace('+', '')}</div>
+                                    <div style="font-size: 10px; color: #64748B; font-weight: 700;">FON BÜYÜKLÜĞÜ</div>
+                                    <div style="font-size: 13.5px; font-weight: 800; color: #F8FAFC;">${formatScannerMoney(f.aum).replace('+', '')}</div>
+                                </div>
+                                <div>
+                                    <div style="font-size: 10px; color: #64748B; font-weight: 700;">GÜNLÜK AKIŞ</div>
+                                    <div class="pys-card-flow ${flowSign}" style="font-size: 13px; font-weight: 700;">${formatScannerMoney(f.cashFlow)}</div>
                                 </div>
                                 <div style="text-align: right;">
-                                    <div style="font-size: 10.5px; color: #64748B;">YATIRIMCI SAYISI</div>
-                                    <div style="font-weight: 700; color: #F1F5F9;">${f.investors.toLocaleString('tr-TR')} kişi</div>
+                                    <div style="font-size: 10px; color: #64748B; font-weight: 700;">KİŞİ BAŞI BAKİYE</div>
+                                    <div style="font-size: 13px; font-weight: 800; color: #38BDF8;">₺${perInvestor.toLocaleString('tr-TR')}</div>
                                 </div>
                             </div>
                         </div>
@@ -15527,99 +15670,225 @@ function renderCompanySlideDeck(companyName) {
             </div>
         </div>
 
-        <!-- SLIDE 3: GÜNÜN YILDIZLARI: GETİRİ & SERMAYE AKIŞI -->
+        <!-- SLIDE 3: GÜNÜN PERFORMANS ARENASI (GETİRİ KUTUPLARI & DAĞILIM NABZI) -->
         <div class="company-slide-page" id="cslidePage3">
-            <div style="margin-bottom: 20px;">
-                <h3 style="margin: 0 0 6px 0; font-size: 18px; font-weight: 800; color: #F8FAFC;">
-                    <i class="fa-solid fa-bolt" style="color: #F59E0B; margin-right: 8px;"></i>
-                    Günün Yıldızları: Getiri & Nakit Akış Liderleri
+            <div style="margin-bottom: 16px;">
+                <h3 style="margin: 0 0 4px 0; font-size: 18px; font-weight: 800; color: #F8FAFC;">
+                    <i class="fa-solid fa-chart-line" style="color: #34D399; margin-right: 8px;"></i>
+                    Performans Arenası: Getiri Kutupları & Nabız
                 </h3>
-                <p style="margin: 0; font-size: 13px; color: #94A3B8;">Şirket bünyesinde günün en çok kazandıran fonları ile en yoğun para girişi sağlayan fonlar.</p>
+                <p style="margin: 0; font-size: 13px; color: #94A3B8;">Şirketin günün en çok kazandıran fonları ile gerileyen fonlarının karşılaştırmalı görünümü.</p>
             </div>
 
             <div class="cslide-grid-2">
-                <!-- Top 3 Gainers -->
-                <div style="background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(16, 185, 129, 0.25); border-radius: 16px; padding: 18px;">
-                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px;">
-                        <span style="font-size: 13px; font-weight: 800; color: #34D399; text-transform: uppercase; letter-spacing: 0.5px;">
-                            <i class="fa-solid fa-arrow-trend-up"></i> En Çok Yükselen 3 Fon
+                <!-- Top 5 Gainers -->
+                <div style="background: rgba(15, 23, 42, 0.75); border: 1px solid rgba(16, 185, 129, 0.25); border-radius: 16px; padding: 16px;">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+                        <span style="font-size: 12.5px; font-weight: 800; color: #34D399; text-transform: uppercase; letter-spacing: 0.5px;">
+                            <i class="fa-solid fa-arrow-trend-up"></i> En Çok Yükselen 5 Fon
                         </span>
-                        <span style="font-size: 11px; color: #64748B;">Günlük Değişim</span>
+                        <span style="font-size: 11px; color: #64748B;">Günlük Getiri</span>
                     </div>
-                    <div style="display: flex; flex-direction: column; gap: 10px;">
-                        ${[...comp.funds].sort((a, b) => b.change - a.change).slice(0, 3).map((f, i) => `
-                            <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; background: rgba(255, 255, 255, 0.03); border-radius: 10px;">
-                                <div style="display: flex; align-items: center; gap: 10px;">
-                                    <span style="font-size: 12px; font-weight: 800; color: #64748B; width: 18px;">#${i + 1}</span>
-                                    <div>
-                                        <div style="font-size: 13px; font-weight: 800; color: #F8FAFC;">${f.code}</div>
-                                        <div style="font-size: 11px; color: #94A3B8; max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${f.name}</div>
+                    <div style="display: flex; flex-direction: column; gap: 8px;">
+                        ${sortedGainers.map((f, i) => {
+                            const reg = (typeof TEFAS_CATEGORIES_REGISTRY !== 'undefined' && TEFAS_CATEGORIES_REGISTRY[f.category]) || { shortName: 'Fon', color: '#38BDF8' };
+                            return `
+                                <div style="display: flex; align-items: center; justify-content: space-between; padding: 8px 10px; background: rgba(255, 255, 255, 0.03); border-radius: 8px;">
+                                    <div style="display: flex; align-items: center; gap: 8px;">
+                                        <span style="font-size: 11px; font-weight: 800; color: #64748B; width: 16px;">#${i + 1}</span>
+                                        <div>
+                                            <div style="display: flex; align-items: center; gap: 6px;">
+                                                <strong style="font-size: 12.5px; color: #F8FAFC;">${f.code}</strong>
+                                                <span style="font-size: 9.5px; font-weight: 700; color: ${reg.color}; background: ${reg.color}15; padding: 1px 5px; border-radius: 3px;">${reg.shortName}</span>
+                                            </div>
+                                            <div style="font-size: 11px; color: #94A3B8; max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${f.name}</div>
+                                        </div>
+                                    </div>
+                                    <div style="text-align: right;">
+                                        <span style="font-size: 13.5px; font-weight: 800; color: #34D399;">+${f.change.toFixed(2)}%</span>
+                                        <div style="font-size: 10.5px; color: #64748B;">₺${f.price.toFixed(4)}</div>
                                     </div>
                                 </div>
-                                <div style="text-align: right;">
-                                    <span style="font-size: 14px; font-weight: 800; color: #34D399;">+${f.change.toFixed(2)}%</span>
-                                    <div style="font-size: 10.5px; color: #64748B;">₺${f.price.toFixed(4)}</div>
-                                </div>
-                            </div>
-                        `).join('')}
+                            `;
+                        }).join('')}
                     </div>
                 </div>
 
-                <!-- Top 3 Cash Inflow -->
-                <div style="background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(56, 189, 248, 0.25); border-radius: 16px; padding: 18px;">
-                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px;">
-                        <span style="font-size: 13px; font-weight: 800; color: #38BDF8; text-transform: uppercase; letter-spacing: 0.5px;">
-                            <i class="fa-solid fa-sack-dollar"></i> En Çok Para Girişi (Top 3)
+                <!-- Top 5 Losers -->
+                <div style="background: rgba(15, 23, 42, 0.75); border: 1px solid rgba(239, 68, 68, 0.25); border-radius: 16px; padding: 16px;">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+                        <span style="font-size: 12.5px; font-weight: 800; color: #F87171; text-transform: uppercase; letter-spacing: 0.5px;">
+                            <i class="fa-solid fa-arrow-trend-down"></i> En Çok Gerileyen 5 Fon
                         </span>
-                        <span style="font-size: 11px; color: #64748B;">Net Sermaye</span>
+                        <span style="font-size: 11px; color: #64748B;">Günlük Değişim</span>
                     </div>
-                    <div style="display: flex; flex-direction: column; gap: 10px;">
-                        ${[...comp.funds].sort((a, b) => b.cashFlow - a.cashFlow).slice(0, 3).map((f, i) => `
-                            <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; background: rgba(255, 255, 255, 0.03); border-radius: 10px;">
-                                <div style="display: flex; align-items: center; gap: 10px;">
-                                    <span style="font-size: 12px; font-weight: 800; color: #64748B; width: 18px;">#${i + 1}</span>
-                                    <div>
-                                        <div style="font-size: 13px; font-weight: 800; color: #F8FAFC;">${f.code}</div>
-                                        <div style="font-size: 11px; color: #94A3B8; max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${f.name}</div>
+                    <div style="display: flex; flex-direction: column; gap: 8px;">
+                        ${sortedLosers.map((f, i) => {
+                            const reg = (typeof TEFAS_CATEGORIES_REGISTRY !== 'undefined' && TEFAS_CATEGORIES_REGISTRY[f.category]) || { shortName: 'Fon', color: '#38BDF8' };
+                            return `
+                                <div style="display: flex; align-items: center; justify-content: space-between; padding: 8px 10px; background: rgba(255, 255, 255, 0.03); border-radius: 8px;">
+                                    <div style="display: flex; align-items: center; gap: 8px;">
+                                        <span style="font-size: 11px; font-weight: 800; color: #64748B; width: 16px;">#${i + 1}</span>
+                                        <div>
+                                            <div style="display: flex; align-items: center; gap: 6px;">
+                                                <strong style="font-size: 12.5px; color: #F8FAFC;">${f.code}</strong>
+                                                <span style="font-size: 9.5px; font-weight: 700; color: ${reg.color}; background: ${reg.color}15; padding: 1px 5px; border-radius: 3px;">${reg.shortName}</span>
+                                            </div>
+                                            <div style="font-size: 11px; color: #94A3B8; max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${f.name}</div>
+                                        </div>
+                                    </div>
+                                    <div style="text-align: right;">
+                                        <span style="font-size: 13.5px; font-weight: 800; color: #F87171;">${f.change.toFixed(2)}%</span>
+                                        <div style="font-size: 10.5px; color: #64748B;">₺${f.price.toFixed(4)}</div>
                                     </div>
                                 </div>
-                                <div style="text-align: right;">
-                                    <span style="font-size: 14px; font-weight: 800; color: #38BDF8;">${formatScannerMoney(f.cashFlow)}</span>
-                                    <div style="font-size: 10.5px; color: #64748B;">AUM: ${formatScannerMoney(f.aum).replace('+', '')}</div>
-                                </div>
-                            </div>
-                        `).join('')}
+                            `;
+                        }).join('')}
                     </div>
+                </div>
+            </div>
+
+            <!-- Performance Ratio Bar (Nabız) -->
+            <div class="cslide-ratio-bar-wrap">
+                <div class="cslide-ratio-labels">
+                    <span style="color: #34D399;">🟢 ${positiveFundsCount} Fon Kazandırdı (%${positivePct})</span>
+                    <span style="color: #94A3B8;">⚪ ${flatFundsCount} Fon Değişmedi</span>
+                    <span style="color: #F87171;">🔴 ${negativeFundsCount} Fon Geriledi (%${negativePct})</span>
+                </div>
+                <div class="cslide-ratio-bar">
+                    <div class="cslide-ratio-seg pos" style="width: ${positivePct}%;"></div>
+                    <div class="cslide-ratio-seg flat" style="width: ${flatPct}%;"></div>
+                    <div class="cslide-ratio-seg neg" style="width: ${negativePct}%;"></div>
                 </div>
             </div>
         </div>
 
-        <!-- SLIDE 4: VARLIK & STRATEJİ DAĞILIMI -->
+        <!-- SLIDE 4: SERMAYE AKIŞLARI & LİKİDİTE RADARI (PARA GİRİŞİ / ÇIKIŞI) -->
         <div class="company-slide-page" id="cslidePage4">
-            <div style="margin-bottom: 20px;">
-                <h3 style="margin: 0 0 6px 0; font-size: 18px; font-weight: 800; color: #F8FAFC;">
-                    <i class="fa-solid fa-chart-pie" style="color: #38BDF8; margin-right: 8px;"></i>
-                    Varlık & Şemsiye Kategori Dağılımı
+            <div style="margin-bottom: 16px;">
+                <h3 style="margin: 0 0 4px 0; font-size: 18px; font-weight: 800; color: #F8FAFC;">
+                    <i class="fa-solid fa-money-bill-transfer" style="color: #38BDF8; margin-right: 8px;"></i>
+                    Likidite & Sermaye Akışı Radarı
                 </h3>
-                <p style="margin: 0; font-size: 13px; color: #94A3B8;">${comp.name} bünyesindeki fonların TEFAS şemsiye kategorilerine göre varlık ve adet payı.</p>
+                <p style="margin: 0; font-size: 13px; color: #94A3B8;">Şirkete en çok taze para çeken lider fonlar ve sermaye çıkışı yaşanan fonlar.</p>
+            </div>
+
+            <div class="cslide-grid-2">
+                <!-- Top 5 Inflow -->
+                <div style="background: rgba(15, 23, 42, 0.75); border: 1px solid rgba(56, 189, 248, 0.25); border-radius: 16px; padding: 16px;">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+                        <span style="font-size: 12.5px; font-weight: 800; color: #38BDF8; text-transform: uppercase; letter-spacing: 0.5px;">
+                            <i class="fa-solid fa-sack-dollar"></i> En Çok Para Girişi (Top 5)
+                        </span>
+                        <span style="font-size: 11px; color: #64748B;">Net Sermaye Girişi</span>
+                    </div>
+                    <div style="display: flex; flex-direction: column; gap: 8px;">
+                        ${sortedInflows.map((f, i) => {
+                            const reg = (typeof TEFAS_CATEGORIES_REGISTRY !== 'undefined' && TEFAS_CATEGORIES_REGISTRY[f.category]) || { shortName: 'Fon', color: '#38BDF8' };
+                            return `
+                                <div style="display: flex; align-items: center; justify-content: space-between; padding: 8px 10px; background: rgba(255, 255, 255, 0.03); border-radius: 8px;">
+                                    <div style="display: flex; align-items: center; gap: 8px;">
+                                        <span style="font-size: 11px; font-weight: 800; color: #64748B; width: 16px;">#${i + 1}</span>
+                                        <div>
+                                            <div style="display: flex; align-items: center; gap: 6px;">
+                                                <strong style="font-size: 12.5px; color: #F8FAFC;">${f.code}</strong>
+                                                <span style="font-size: 9.5px; font-weight: 700; color: ${reg.color}; background: ${reg.color}15; padding: 1px 5px; border-radius: 3px;">${reg.shortName}</span>
+                                            </div>
+                                            <div style="font-size: 11px; color: #94A3B8; max-width: 190px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${f.name}</div>
+                                        </div>
+                                    </div>
+                                    <div style="text-align: right;">
+                                        <span style="font-size: 13.5px; font-weight: 800; color: #38BDF8;">${formatScannerMoney(f.cashFlow)}</span>
+                                        <div style="font-size: 10.5px; color: #64748B;">AUM: ${formatScannerMoney(f.aum).replace('+', '')}</div>
+                                    </div>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                </div>
+
+                <!-- Top 5 Outflow -->
+                <div style="background: rgba(15, 23, 42, 0.75); border: 1px solid rgba(239, 68, 68, 0.25); border-radius: 16px; padding: 16px;">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+                        <span style="font-size: 12.5px; font-weight: 800; color: #F87171; text-transform: uppercase; letter-spacing: 0.5px;">
+                            <i class="fa-solid fa-arrow-trend-down"></i> En Çok Para Çıkışı (Top 5)
+                        </span>
+                        <span style="font-size: 11px; color: #64748B;">Net Sermaye Çıkışı</span>
+                    </div>
+                    <div style="display: flex; flex-direction: column; gap: 8px;">
+                        ${sortedOutflows.map((f, i) => {
+                            const reg = (typeof TEFAS_CATEGORIES_REGISTRY !== 'undefined' && TEFAS_CATEGORIES_REGISTRY[f.category]) || { shortName: 'Fon', color: '#38BDF8' };
+                            return `
+                                <div style="display: flex; align-items: center; justify-content: space-between; padding: 8px 10px; background: rgba(255, 255, 255, 0.03); border-radius: 8px;">
+                                    <div style="display: flex; align-items: center; gap: 8px;">
+                                        <span style="font-size: 11px; font-weight: 800; color: #64748B; width: 16px;">#${i + 1}</span>
+                                        <div>
+                                            <div style="display: flex; align-items: center; gap: 6px;">
+                                                <strong style="font-size: 12.5px; color: #F8FAFC;">${f.code}</strong>
+                                                <span style="font-size: 9.5px; font-weight: 700; color: ${reg.color}; background: ${reg.color}15; padding: 1px 5px; border-radius: 3px;">${reg.shortName}</span>
+                                            </div>
+                                            <div style="font-size: 11px; color: #94A3B8; max-width: 190px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${f.name}</div>
+                                        </div>
+                                    </div>
+                                    <div style="text-align: right;">
+                                        <span style="font-size: 13.5px; font-weight: 800; color: #F87171;">${formatScannerMoney(f.cashFlow)}</span>
+                                        <div style="font-size: 10.5px; color: #64748B;">AUM: ${formatScannerMoney(f.aum).replace('+', '')}</div>
+                                    </div>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Investor Momentum Box -->
+            <div style="margin-top: 14px; background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 14px; padding: 12px 18px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <i class="fa-solid fa-user-plus" style="color: #38BDF8; font-size: 16px;"></i>
+                    <span style="font-size: 12px; font-weight: 700; color: #F1F5F9;">Yatırımcı Tabanı En Çok Genişleyen Fonlar:</span>
+                </div>
+                <div style="display: flex; gap: 14px; flex-wrap: wrap;">
+                    ${sortedInvGrowth.map(f => `
+                        <div style="font-size: 11.5px; color: #94A3B8;">
+                            <strong style="color: #38BDF8;">${f.code}:</strong> 
+                            <span style="color: #34D399; font-weight: 700;">+${(f.deltaInvestors || 0).toLocaleString('tr-TR')} yeni yatırımcı</span>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 5: VARLIK SINIFLARI & KATEGORİ DAĞILIM MATRİSİ -->
+        <div class="company-slide-page" id="cslidePage5">
+            <div style="margin-bottom: 18px;">
+                <h3 style="margin: 0 0 4px 0; font-size: 18px; font-weight: 800; color: #F8FAFC;">
+                    <i class="fa-solid fa-chart-pie" style="color: #38BDF8; margin-right: 8px;"></i>
+                    Varlık Sınıfları & Kategori Dağılım Matrisi
+                </h3>
+                <p style="margin: 0; font-size: 13px; color: #94A3B8;">${comp.name} portföyünün TEFAS şemsiye kategorilerine göre fon adedi, varlık hacmi ve kategori liderleri.</p>
             </div>
 
             <div class="cslide-grid-4">
-                ${catKeys.slice(0, 8).map(k => {
+                ${catKeys.map(k => {
                     const item = comp.categories[k];
                     const pct = comp.totalAum > 0 ? ((item.aum / comp.totalAum) * 100).toFixed(1) : '0';
                     const reg = (typeof TEFAS_CATEGORIES_REGISTRY !== 'undefined' && TEFAS_CATEGORIES_REGISTRY[k]) || { shortName: k, color: '#38BDF8', icon: 'fa-solid fa-folder' };
+                    const catFunds = comp.funds.filter(f => f.category === k);
+                    const catLeader = catFunds[0]; // sorted by AUM
 
                     return `
-                        <div class="cslide-metric-box" style="border-top: 2px solid ${reg.color};">
+                        <div class="cslide-metric-box" style="border-top: 2.5px solid ${reg.color}; background: rgba(15, 23, 42, 0.75);">
                             <div class="cslide-metric-label">
-                                <span>${reg.shortName}</span>
+                                <span style="color: #F8FAFC;">${reg.shortName}</span>
                                 <i class="${reg.icon}" style="color: ${reg.color};"></i>
                             </div>
-                            <div class="cslide-metric-val" style="font-size: 18px; color: ${reg.color};">%${pct}</div>
-                            <div style="display: flex; justify-content: space-between; font-size: 11px; color: #94A3B8; margin-top: 4px;">
+                            <div style="display: flex; align-items: baseline; justify-content: space-between; margin-top: 4px;">
+                                <div class="cslide-metric-val" style="font-size: 20px; color: ${reg.color};">%${pct}</div>
+                                <span style="font-size: 12px; font-weight: 700; color: #F1F5F9;">${formatScannerMoney(item.aum).replace('+', '')}</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; font-size: 11px; color: #94A3B8; margin-top: 8px; padding-top: 6px; border-top: 1px solid rgba(255, 255, 255, 0.06);">
                                 <span>${item.count} Fon</span>
-                                <span style="font-weight: 700; color: #F1F5F9;">${formatScannerMoney(item.aum).replace('+', '')}</span>
+                                <span>Amiral: <strong style="color: #38BDF8;">${catLeader ? catLeader.code : '--'}</strong></span>
                             </div>
                         </div>
                     `;
@@ -15627,22 +15896,53 @@ function renderCompanySlideDeck(companyName) {
             </div>
         </div>
 
-        <!-- SLIDE 5: ŞİRKETİN FON KATALOĞU & PORTFÖY MATRİSİ -->
-        <div class="company-slide-page" id="cslidePage5">
-            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
-                <div>
-                    <h3 style="margin: 0 0 4px 0; font-size: 18px; font-weight: 800; color: #F8FAFC;">
-                        <i class="fa-solid fa-table-list" style="color: #38BDF8; margin-right: 8px;"></i>
-                        ${comp.name} Fon Kataloğu & Portföy Matrisi
-                    </h3>
-                    <p style="margin: 0; font-size: 12.5px; color: #94A3B8;">Şirkete ait en yüksek hacimli fonların tam listesi (Toplam ${comp.fundCount} fon).</p>
+        <!-- SLIDE 6: TEFAS SEKTÖREL REKABET BENCHMARK & FON KATALOĞU -->
+        <div class="company-slide-page" id="cslidePage6">
+            <div style="margin-bottom: 16px;">
+                <h3 style="margin: 0 0 4px 0; font-size: 18px; font-weight: 800; color: #F8FAFC;">
+                    <i class="fa-solid fa-trophy" style="color: #F59E0B; margin-right: 8px;"></i>
+                    Sektörel Rekabet Konumu & Fon Portföy Matrisi
+                </h3>
+                <p style="margin: 0; font-size: 13px; color: #94A3B8;">${comp.name} şirketinin en yakın rakip portföy yönetim şirketleriyle karşılaştırması ve tüm fon listesi.</p>
+            </div>
+
+            <!-- Competitor Benchmark Row -->
+            <div class="cslide-competitor-benchmark">
+                <!-- 1. Previous Company -->
+                <div class="cslide-comp-card">
+                    <span class="cslide-comp-rank-badge">${prevCompany ? `#${rankIndex - 1} Bir Üst Sıradaki` : 'Zirvede (Lider)'}</span>
+                    <h4 style="margin: 4px 0; font-size: 15px; font-weight: 800; color: #F1F5F9;">${prevCompany ? prevCompany.name : 'Lider Konumda'}</h4>
+                    <div style="font-size: 14px; font-weight: 800; color: #94A3B8; margin: 4px 0;">
+                        ${prevCompany ? formatScannerMoney(prevCompany.totalAum).replace('+', '') : '--'}
+                    </div>
+                    <div style="font-size: 11px; color: #F59E0B;">
+                        ${prevCompany ? `Fark: +${formatScannerMoney(deltaToPrev).replace('+', '')}` : 'TEFAS 1. Sırası'}
+                    </div>
                 </div>
-                <div style="font-size: 12px; font-weight: 700; color: #38BDF8; background: rgba(56, 189, 248, 0.12); padding: 4px 12px; border-radius: 8px;">
-                    Toplam: ${aumFormatted}
+
+                <!-- 2. Selected Company -->
+                <div class="cslide-comp-card current">
+                    <span class="cslide-comp-rank-badge">#${rankIndex} Bu Şirket</span>
+                    <h4 style="margin: 4px 0; font-size: 17px; font-weight: 800; color: #38BDF8;">${comp.name}</h4>
+                    <div style="font-size: 18px; font-weight: 800; color: #F8FAFC; margin: 4px 0;">${aumFormatted}</div>
+                    <div style="font-size: 11.5px; color: #CBD5E1; font-weight: 600;">Pazar Payı: %${comp.marketShare.toFixed(2)} &bull; ${comp.fundCount} Fon</div>
+                </div>
+
+                <!-- 3. Next Company -->
+                <div class="cslide-comp-card">
+                    <span class="cslide-comp-rank-badge">${nextCompany ? `#${rankIndex + 1} Bir Alt Sıradaki` : 'En Son Sıra'}</span>
+                    <h4 style="margin: 4px 0; font-size: 15px; font-weight: 800; color: #F1F5F9;">${nextCompany ? nextCompany.name : '--'}</h4>
+                    <div style="font-size: 14px; font-weight: 800; color: #94A3B8; margin: 4px 0;">
+                        ${nextCompany ? formatScannerMoney(nextCompany.totalAum).replace('+', '') : '--'}
+                    </div>
+                    <div style="font-size: 11px; color: #34D399;">
+                        ${nextCompany ? `Öndesiniz: +${formatScannerMoney(deltaToNext).replace('+', '')}` : '--'}
+                    </div>
                 </div>
             </div>
 
-            <div style="max-height: 400px; overflow-y: auto; border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px;">
+            <!-- Fund Matrix Table -->
+            <div style="max-height: 280px; overflow-y: auto; border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px;">
                 <table class="pys-funds-table">
                     <thead>
                         <tr>
@@ -15654,6 +15954,7 @@ function renderCompanySlideDeck(companyName) {
                             <th>Büyüklük (AUM)</th>
                             <th>Günlük Akış</th>
                             <th>Yatırımcı</th>
+                            <th>Ort. Bakiye</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -15661,6 +15962,7 @@ function renderCompanySlideDeck(companyName) {
                             const changeSign = f.change > 0 ? 'pos' : (f.change < 0 ? 'neg' : 'neutral');
                             const flowSign = f.cashFlow > 0 ? 'pos' : (f.cashFlow < 0 ? 'neg' : 'neutral');
                             const reg = (typeof TEFAS_CATEGORIES_REGISTRY !== 'undefined' && TEFAS_CATEGORIES_REGISTRY[f.category]) || { shortName: 'Fon', color: '#38BDF8' };
+                            const perInv = f.investors > 0 ? Math.round(f.aum / f.investors) : 0;
 
                             return `
                                 <tr>
@@ -15672,6 +15974,7 @@ function renderCompanySlideDeck(companyName) {
                                     <td style="font-weight: 700;">${formatScannerMoney(f.aum).replace('+', '')}</td>
                                     <td class="pys-card-flow ${flowSign}">${formatScannerMoney(f.cashFlow)}</td>
                                     <td>${f.investors.toLocaleString('tr-TR')}</td>
+                                    <td style="color: #38BDF8; font-weight: 600;">₺${perInv.toLocaleString('tr-TR')}</td>
                                 </tr>
                             `;
                         }).join('')}
@@ -15681,7 +15984,7 @@ function renderCompanySlideDeck(companyName) {
         </div>
     `;
 
-    // Render Navigation Dots
+    // Render Navigation Dots (6 dots)
     const dotsContainer = document.getElementById('cslideNavDots');
     if (dotsContainer) {
         dotsContainer.innerHTML = Array.from({ length: TOTAL_COMPANY_SLIDES }, (_, i) => {
