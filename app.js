@@ -12720,33 +12720,41 @@ function renderScannerPodiumList(elementId, items, type) {
     const el = document.getElementById(elementId);
     if (!el) return;
     if (!items || items.length === 0) {
-        el.innerHTML = '<div class="podium-empty-slot">Taranıyor...</div>';
+        el.innerHTML = `
+            <div class="podium-empty-slot">
+                <i class="fa-solid fa-circle-notch fa-spin"></i>
+                <span>Taranıyor...</span>
+            </div>
+        `;
         return;
     }
     el.innerHTML = items.slice(0, 3).map((f, i) => {
-        const rankClass = `rank-${i + 1}`;
+        const rankNum = i + 1;
+        const rankClass = `rank-${rankNum}`;
         let valStr = '';
-        let valColor = '#FFFFFF';
+        let valColorClass = 'val-emerald';
         if (type === 'cash-in') {
             valStr = formatScannerMoney(f.cashFlow);
-            valColor = '#34D399';
+            valColorClass = 'val-emerald';
         } else if (type === 'cash-out') {
             valStr = formatScannerMoney(f.cashFlow);
-            valColor = '#FB7185';
+            valColorClass = 'val-rose';
         } else if (type === 'inv-in') {
             valStr = formatScannerInvestors(f.deltaInvestors);
-            valColor = '#38BDF8';
+            valColorClass = 'val-cyan';
         } else {
             valStr = formatScannerInvestors(f.deltaInvestors);
-            valColor = '#FB7185';
+            valColorClass = 'val-purple';
         }
+        const cleanName = (f.name || `${f.code} FONU`).replace(/PORTFÖYÜ?|FONU?/gi, '').trim();
         return `
-            <div class="scanner-podium-item">
+            <div class="scanner-podium-item ${rankClass}">
                 <div class="podium-item-left">
-                    <span class="podium-rank-badge ${rankClass}">#${i + 1}</span>
+                    <span class="podium-rank-badge ${rankClass}">#${rankNum}</span>
                     <span class="podium-code">${f.code}</span>
+                    <span class="podium-name-sub" title="${f.name || ''}">${cleanName}</span>
                 </div>
-                <span class="podium-val" style="color: ${valColor};">${valStr}</span>
+                <span class="podium-val ${valColorClass}">${valStr}</span>
             </div>
         `;
     }).join('');
@@ -12829,9 +12837,9 @@ async function startLiveFundMarketScan(options = { autoOpenSlide: true }) {
             </div>
         `;
     }
-    if (streamCountEl) streamCountEl.innerText = "0 fon akışı";
+    if (streamCountEl) streamCountEl.innerText = "0 fon incelendi";
     if (footerMsgEl) {
-        footerMsgEl.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin"></i> <span>Tüm fonlar tek tek taranıyor, portföy sermaye akışları hesaplanıyor...</span>`;
+        footerMsgEl.innerHTML = `<span class="scanner-live-beacon"></span> <span>Tüm fonlar tek tek taranıyor, portföy sermaye akışları hesaplanıyor...</span>`;
     }
     if (applyBtn) applyBtn.style.display = "none";
     if (skipBtn) skipBtn.style.display = "flex";
@@ -12996,7 +13004,7 @@ async function startLiveFundMarketScan(options = { autoOpenSlide: true }) {
             if (fillEl) fillEl.style.width = `${pct}%`;
             if (countEl) countEl.innerText = `${processed.toLocaleString('tr-TR')} / ${total.toLocaleString('tr-TR')}`;
             if (pctEl) pctEl.innerText = `${pct}%`;
-            if (streamCountEl) streamCountEl.innerText = `${processed} fon akışı`;
+            if (streamCountEl) streamCountEl.innerText = `${processed.toLocaleString('tr-TR')} fon incelendi`;
 
             renderScannerPodiumList("podiumCashIn", runningCashIn, "cash-in");
             renderScannerPodiumList("podiumCashOut", runningCashOut, "cash-out");

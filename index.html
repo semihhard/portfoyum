@@ -2670,58 +2670,60 @@
                     <div class="scanner-radar-pulse">
                         <i class="fa-solid fa-satellite-dish"></i>
                     </div>
-                    <div>
+                    <div class="scanner-header-text">
                         <div class="scanner-title-row">
-                            <h3 class="scanner-main-title">TEFAS Canlı Piyasa Tarayıcısı & Analiz Motoru</h3>
+                            <h3 class="scanner-main-title">TEFAS Canlı Piyasa Tarayıcısı</h3>
                             <span class="scanner-live-badge"><span class="scanner-pulse-dot"></span> CANLI AKIŞ</span>
                         </div>
-                        <p class="scanner-subtitle" id="scannerStatusSubtitle">Tüm TEFAS yatırım fonları tek tek taranıyor ve gün içi sermaye akışları hesaplanıyor...</p>
+                        <p class="scanner-subtitle" id="scannerStatusSubtitle">Tüm TEFAS yatırım fonları tek tek taranıyor ve sermaye akışları hesaplanıyor...</p>
                     </div>
                 </div>
                 <div class="tefas-scanner-header-right">
                     <div class="scanner-speed-selector" title="Tarama Hızını Ayarla">
                         <button type="button" class="btn-scanner-speed" data-speed="slow" onclick="setLiveScannerSpeed('slow')" title="Detaylı okuma modu (600 sn - 10 dk)">
-                            <i class="fa-solid fa-gauge"></i> Yavaş (600s)
+                            <i class="fa-solid fa-gauge"></i> <span>Yavaş (600s)</span>
                         </button>
                         <button type="button" class="btn-scanner-speed active" data-speed="normal" onclick="setLiveScannerSpeed('normal')" title="Standart tarama modu (60 sn)">
-                            <i class="fa-solid fa-chart-line"></i> Normal (60s)
+                            <i class="fa-solid fa-chart-line"></i> <span>Normal (60s)</span>
                         </button>
                         <button type="button" class="btn-scanner-speed" data-speed="fast" onclick="setLiveScannerSpeed('fast')" title="Hızlı tarama modu (30 sn)">
-                            <i class="fa-solid fa-bolt"></i> Hızlı (30s)
+                            <i class="fa-solid fa-bolt"></i> <span>Hızlı (30s)</span>
                         </button>
                     </div>
-                    <div class="scanner-date-pill" id="scannerDatePill">
-                        <i class="fa-solid fa-calendar-day"></i>
-                        <span id="scannerDateLabel">21.09.2026 Seansı</span>
+                    <div class="scanner-header-controls-group">
+                        <div class="scanner-date-pill" id="scannerDatePill">
+                            <i class="fa-solid fa-calendar-day"></i>
+                            <span id="scannerDateLabel">21.09.2026 Seansı</span>
+                        </div>
+                        <button type="button" class="btn-scanner-skip" id="btnSkipScanner" onclick="skipLiveFundScanner()" title="Taramayı anında tamamla ve slaytları aç">
+                            <i class="fa-solid fa-forward-step"></i>
+                            <span>Sonuçları Gör</span>
+                        </button>
+                        <button type="button" class="btn-scanner-close" onclick="closeLiveFundScanner()" title="Kapat">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
                     </div>
-                    <button type="button" class="btn-scanner-skip" id="btnSkipScanner" onclick="skipLiveFundScanner()" title="Taramayı anında tamamla ve slaytları aç">
-                        <i class="fa-solid fa-forward-step"></i>
-                        <span>Sonuçları Gör</span>
-                    </button>
-                    <button type="button" class="btn-scanner-close" onclick="closeLiveFundScanner()" title="Kapat">
-                        <i class="fa-solid fa-xmark"></i>
-                    </button>
                 </div>
             </div>
 
             <!-- Scanner Progress Bar & Counters -->
             <div class="tefas-scanner-progress-box">
+                <div class="scanner-progress-meta-top">
+                    <div class="scanner-meta-stat-group">
+                        <div class="scanner-stat-chip">
+                            <i class="fa-solid fa-layer-group"></i>
+                            <span>İncelenen Fon:</span>
+                            <strong id="scannerCountText">0 / 2.041</strong>
+                        </div>
+                        <div class="scanner-pct-pill" id="scannerPctText">0%</div>
+                    </div>
+                    <div class="scanner-active-speed-chip" id="scannerSpeedText">
+                        <i class="fa-solid fa-gauge"></i> Yavaş Okuma Modu (600 sn - 10 dk)
+                    </div>
+                </div>
                 <div class="scanner-progress-track">
                     <div class="scanner-progress-bar" id="scannerProgressFill" style="width: 0%;">
                         <div class="scanner-progress-glow"></div>
-                    </div>
-                </div>
-                <div class="scanner-progress-meta">
-                    <div class="scanner-meta-item">
-                        <i class="fa-solid fa-layer-group"></i>
-                        <span>İncelenen: <strong id="scannerCountText">0 / 2.041</strong> Fon</span>
-                    </div>
-                    <div class="scanner-meta-item center">
-                        <span class="scanner-pct-display" id="scannerPctText">0%</span>
-                    </div>
-                    <div class="scanner-meta-item right">
-                        <i class="fa-solid fa-bolt"></i>
-                        <span id="scannerSpeedText">Yüksek Hızlı Analiz Motoru</span>
                     </div>
                 </div>
             </div>
@@ -2732,7 +2734,7 @@
                 <div class="tefas-scanner-stream-panel">
                     <div class="scanner-panel-head">
                         <div class="scanner-panel-title">
-                            <i class="fa-solid fa-terminal"></i>
+                            <span class="scanner-panel-icon"><i class="fa-solid fa-terminal"></i></span>
                             <span>Anlık Fon Tarama Konsolu</span>
                         </div>
                         <span class="scanner-stream-counter" id="scannerStreamCount">0 fon akışı</span>
@@ -2749,18 +2751,19 @@
                 <div class="tefas-scanner-podiums-panel">
                     <div class="scanner-panel-head">
                         <div class="scanner-panel-title">
-                            <i class="fa-solid fa-trophy"></i>
+                            <span class="scanner-panel-icon gold"><i class="fa-solid fa-trophy"></i></span>
                             <span>Canlı Liderlik Radar Tabloları</span>
                         </div>
-                        <span class="scanner-podium-tag">GÜNÜN İLK 3'LERİ</span>
+                        <span class="scanner-podium-tag"><i class="fa-solid fa-fire"></i> GÜNÜN İLK 3'LERİ</span>
                     </div>
 
                     <div class="scanner-podiums-grid">
                         <!-- 1. En Çok Para Girişi Olan 3 Fon -->
                         <div class="scanner-podium-card cash-in">
                             <div class="scanner-podium-title emerald">
-                                <i class="fa-solid fa-arrow-trend-up"></i>
-                                <span>En Çok Para Girişi (Top 3)</span>
+                                <div class="podium-title-icon"><i class="fa-solid fa-arrow-trend-up"></i></div>
+                                <span class="podium-title-text">En Çok Para Girişi</span>
+                                <span class="podium-top-badge">TOP 3</span>
                             </div>
                             <div class="scanner-podium-list" id="podiumCashIn">
                                 <div class="podium-empty-slot">Taranıyor...</div>
@@ -2770,8 +2773,9 @@
                         <!-- 2. En Çok Para Çıkışı Olan 3 Fon -->
                         <div class="scanner-podium-card cash-out">
                             <div class="scanner-podium-title rose">
-                                <i class="fa-solid fa-arrow-trend-down"></i>
-                                <span>En Çok Para Çıkışı (Top 3)</span>
+                                <div class="podium-title-icon"><i class="fa-solid fa-arrow-trend-down"></i></div>
+                                <span class="podium-title-text">En Çok Para Çıkışı</span>
+                                <span class="podium-top-badge">TOP 3</span>
                             </div>
                             <div class="scanner-podium-list" id="podiumCashOut">
                                 <div class="podium-empty-slot">Taranıyor...</div>
@@ -2781,8 +2785,9 @@
                         <!-- 3. En Çok Yatırımcı Giren 3 Fon -->
                         <div class="scanner-podium-card inv-in">
                             <div class="scanner-podium-title cyan">
-                                <i class="fa-solid fa-user-plus"></i>
-                                <span>En Çok Yatırımcı Giren (Top 3)</span>
+                                <div class="podium-title-icon"><i class="fa-solid fa-user-plus"></i></div>
+                                <span class="podium-title-text">En Çok Yatırımcı Giren</span>
+                                <span class="podium-top-badge">TOP 3</span>
                             </div>
                             <div class="scanner-podium-list" id="podiumInvIn">
                                 <div class="podium-empty-slot">Taranıyor...</div>
@@ -2792,8 +2797,9 @@
                         <!-- 4. En Çok Yatırımcı Çıkan 3 Fon -->
                         <div class="scanner-podium-card inv-out">
                             <div class="scanner-podium-title purple">
-                                <i class="fa-solid fa-user-minus"></i>
-                                <span>En Çok Yatırımcı Çıkan (Top 3)</span>
+                                <div class="podium-title-icon"><i class="fa-solid fa-user-minus"></i></div>
+                                <span class="podium-title-text">En Çok Yatırımcı Çıkan</span>
+                                <span class="podium-top-badge">TOP 3</span>
                             </div>
                             <div class="scanner-podium-list" id="podiumInvOut">
                                 <div class="podium-empty-slot">Taranıyor...</div>
@@ -2806,7 +2812,7 @@
             <!-- Scanner Footer -->
             <div class="tefas-scanner-footer">
                 <div class="scanner-footer-status" id="scannerFooterMsg">
-                    <i class="fa-solid fa-circle-notch fa-spin"></i>
+                    <span class="scanner-live-beacon"></span>
                     <span>Tüm fonlar tek tek taranıyor, portföy sermaye akışları hesaplanıyor...</span>
                 </div>
                 <div class="scanner-footer-actions">
