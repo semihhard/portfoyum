@@ -12781,7 +12781,7 @@ function setLiveScannerSpeed(mode) {
     });
     const speedEl = document.getElementById("scannerSpeedText");
     if (speedEl) {
-        if (mode === 'slow') speedEl.innerHTML = `<i class="fa-solid fa-gauge"></i> Yavaş İzleme Modu (120 sn)`;
+        if (mode === 'slow') speedEl.innerHTML = `<i class="fa-solid fa-gauge"></i> Yavaş Okuma Modu (600 sn - 10 dk)`;
         else if (mode === 'fast') speedEl.innerHTML = `<i class="fa-solid fa-bolt"></i> Hızlı Tarama Modu (30 sn)`;
         else speedEl.innerHTML = `<i class="fa-solid fa-chart-line"></i> Normal Tarama Modu (60 sn)`;
     }
@@ -12816,7 +12816,7 @@ async function startLiveFundMarketScan(options = { autoOpenSlide: true }) {
     if (countEl) countEl.innerText = "0 / 2.041";
     if (pctEl) pctEl.innerText = "0%";
     if (speedEl) {
-        if (liveScannerSpeedMode === 'slow') speedEl.innerHTML = `<i class="fa-solid fa-gauge"></i> Yavaş İzleme Modu (120 sn)`;
+        if (liveScannerSpeedMode === 'slow') speedEl.innerHTML = `<i class="fa-solid fa-gauge"></i> Yavaş Okuma Modu (600 sn - 10 dk)`;
         else if (liveScannerSpeedMode === 'fast') speedEl.innerHTML = `<i class="fa-solid fa-bolt"></i> Hızlı Tarama Modu (30 sn)`;
         else speedEl.innerHTML = `<i class="fa-solid fa-chart-line"></i> Normal Tarama Modu (60 sn)`;
     }
@@ -12913,10 +12913,10 @@ async function startLiveFundMarketScan(options = { autoOpenSlide: true }) {
                 }
                 processed = total;
             } else {
-                // Calibrated pacing: Yavaş = 120s (1 fund/tick @ 59ms), Normal = 60s (1 fund/tick @ 29ms), Hızlı = 30s (2 funds/tick @ 29ms)
+                // Calibrated pacing: Yavaş = 600s (1 fund/tick @ 294ms), Normal = 60s (1 fund/tick @ 29ms), Hızlı = 30s (2 funds/tick @ 29ms)
                 if (liveScannerSpeedMode === 'slow') {
-                    currentBatchSize = 1; // Yavaş: 2,041 * 59ms = 120.4s (~120 sn)
-                    currentDelay = 59;
+                    currentBatchSize = 1; // Yavaş: 2,041 * 294ms = 600.05s (~600 sn - 10 dk)
+                    currentDelay = 294;
                 } else if (liveScannerSpeedMode === 'fast') {
                     currentBatchSize = 2; // Hızlı: 1,021 * 29ms = 29.6s (~30 sn)
                     currentDelay = 29;
@@ -12938,7 +12938,7 @@ async function startLiveFundMarketScan(options = { autoOpenSlide: true }) {
 
                     let shouldAdd = false;
                     if (liveScannerSpeedMode === 'slow') {
-                        // In slow mode (120s), stream every single fund to terminal
+                        // In slow mode (600s), stream every single fund to terminal
                         shouldAdd = true;
                     } else if (liveScannerSpeedMode === 'fast') {
                         // In fast mode (30s), show every 2nd fund or major movements
@@ -12976,9 +12976,9 @@ async function startLiveFundMarketScan(options = { autoOpenSlide: true }) {
                 if (terminalEl && sampleRowsHTML.length > 0) {
                     terminalEl.insertAdjacentHTML('beforeend', sampleRowsHTML.join(''));
                     terminalEntryCount += sampleRowsHTML.length;
-                    // Cap DOM nodes to 70 entries for smooth 60fps and plenty of viewable history
-                    if (terminalEl.children.length > 70) {
-                        const removeCount = terminalEl.children.length - 70;
+                    // Cap DOM nodes to 120 entries for smooth 60fps and plenty of viewable history
+                    if (terminalEl.children.length > 120) {
+                        const removeCount = terminalEl.children.length - 120;
                         for (let r = 0; r < removeCount; r++) {
                             terminalEl.removeChild(terminalEl.firstElementChild);
                         }
