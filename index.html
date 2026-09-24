@@ -27,7 +27,7 @@
     <script src="https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js"></script>
     <!-- jsPDF for High-Resolution Multi-Page PDF Export -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <link rel="stylesheet" href="style.css?v=106">    <style>
+    <link rel="stylesheet" href="style.css?v=107">    <style>
         /* Refresh Button Loading Animation */
         .icon-btn.loading i {
             animation: spin 1s linear infinite;
@@ -54,7 +54,7 @@
         </div>
     </div>
 
-    <!-- PIN Lock Overlay (iOS Ultra-Glass Animated Cyber Security) -->
+    <!-- PIN Lock Overlay (Next-Gen Cyber Glassmorphic Security Vault) -->
     <div id="pinLockOverlay" class="pin-lock-screen" style="display: none;">
         <!-- Cyber Background Elements -->
         <div class="pin-cyber-grid"></div>
@@ -63,10 +63,18 @@
         <div class="pin-floating-orb orb-2"></div>
         <div class="pin-floating-orb orb-3"></div>
 
+        <!-- Native Lock Screen Live Clock & Date -->
+        <div class="pin-lock-top-bar">
+            <div class="pin-live-clock" id="pinLiveClock">--:--</div>
+            <div class="pin-live-date" id="pinLiveDate">Yükleniyor...</div>
+        </div>
+
         <div class="pin-lock-container">
             <!-- Top Security Pill -->
             <div class="pin-security-badge">
-                <i class="fa-solid fa-lock"></i> Uçtan Uca Şifreli Oturum
+                <span class="pin-live-dot"></span>
+                <i class="fa-solid fa-shield-halved"></i>
+                <span>GÜVENLİ OTURUM • AES-256</span>
             </div>
 
             <!-- Animated Holographic Shield Header -->
@@ -75,15 +83,14 @@
                 <div class="holo-ring holo-ring-2"></div>
                 <div class="holo-ring holo-ring-3"></div>
                 <div class="shield-icon-circle" id="pinShieldIcon">
-                    <i class="fa-solid fa-shield-halved"></i>
+                    <i class="fa-solid fa-fingerprint"></i>
                 </div>
             </div>
             
             <div class="pin-greeting-pill" id="pinGreetingPill">
-                <span class="pin-live-dot"></span>
                 <span id="pinGreetingText">İyi akşamlar, Yatırımcı</span>
             </div>
-            <h2 class="pin-title" id="pinTitleText">Portföyüm Güvenlik</h2>
+            <h2 class="pin-title" id="pinTitleText">Portföy Güvenlik Kilidi</h2>
             <p class="pin-subtitle" id="pinSubtitleText">Devam etmek için 4 haneli PIN kodunuzu girin</p>
 
             <div class="pin-dots-row" id="pinDots">
@@ -2994,6 +3001,6 @@
         </div>
     </div>
 
-    <script src="app.js?v=106"></script>
+    <script src="app.js?v=107"></script>
 </body>
 </html>

@@ -10621,6 +10621,24 @@ function updatePinGreeting() {
     el.textContent = msg;
 }
 
+let pinClockTimer = null;
+
+function updatePinLiveClock() {
+    const clockEl = document.getElementById("pinLiveClock");
+    const dateEl = document.getElementById("pinLiveDate");
+    if (!clockEl && !dateEl) return;
+    const now = new Date();
+    if (clockEl) {
+        const hours = String(now.getHours()).padStart(2, '0');
+        const minutes = String(now.getMinutes()).padStart(2, '0');
+        clockEl.textContent = `${hours}:${minutes}`;
+    }
+    if (dateEl) {
+        const options = { day: 'numeric', month: 'long', weekday: 'long' };
+        dateEl.textContent = now.toLocaleDateString('tr-TR', options);
+    }
+}
+
 function openPinModal() {
     const modal = document.getElementById("pinModal");
     if (modal) modal.classList.add("active");
@@ -10913,6 +10931,10 @@ async function authenticateBiometric() {
         if (assertion) {
             // Success! Unlock the app.
             triggerHaptic('success');
+            if (pinClockTimer) {
+                clearInterval(pinClockTimer);
+                pinClockTimer = null;
+            }
             const overlay = document.getElementById("pinLockOverlay");
             if (overlay) {
                 overlay.style.opacity = "0";
@@ -10954,6 +10976,9 @@ function updateBiometricButtonState() {
 function initPinLock() {
     if (appState.pin) {
         updatePinGreeting();
+        updatePinLiveClock();
+        if (pinClockTimer) clearInterval(pinClockTimer);
+        pinClockTimer = setInterval(updatePinLiveClock, 1000);
         enteredPin = "";
         updatePinDots();
         const overlay = document.getElementById("pinLockOverlay");
@@ -11005,6 +11030,12 @@ function pressPin(num) {
         playKeyClickSound();
         triggerHaptic('tap');
         updatePinDots();
+
+        const shield = document.getElementById("pinShieldIcon");
+        if (shield) {
+            shield.classList.add("pulse-glow");
+            setTimeout(() => shield.classList.remove("pulse-glow"), 180);
+        }
         
         if (enteredPin.length === 4) {
             setTimeout(verifyPin, 160);
@@ -11025,6 +11056,10 @@ function verifyPin() {
     if (enteredPin === appState.pin) {
         // Unlock with smooth emerald green transformation and holographic burst
         triggerHaptic('success');
+        if (pinClockTimer) {
+            clearInterval(pinClockTimer);
+            pinClockTimer = null;
+        }
         const dots = document.querySelectorAll("#pinDots .pin-dot");
         dots.forEach(d => d.classList.add("success"));
 
@@ -11039,7 +11074,7 @@ function verifyPin() {
             if (overlay) {
                 overlay.style.opacity = "0";
                 overlay.style.transform = "scale(1.04)";
-                overlay.style.transition = "all 0.35s cubic-bezier(0.4, 0, 0.2, 1)";
+                overlay.style.transition = "all 0.35s cubic-bezier(0.16, 1, 0.3, 1)";
                 setTimeout(() => {
                     overlay.style.display = "none";
                     overlay.style.opacity = "1";
@@ -11105,6 +11140,10 @@ function confirmResetPin() {
     saveData();
     closeForgotPinModal();
     
+    if (pinClockTimer) {
+        clearInterval(pinClockTimer);
+        pinClockTimer = null;
+    }
     const overlay = document.getElementById("pinLockOverlay");
     if (overlay) overlay.style.display = "none";
     enteredPin = "";
