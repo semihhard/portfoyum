@@ -10844,6 +10844,9 @@ body.theme-neo-brutalism .sort-option.active {
     box-shadow: 0 8px 32px -6px rgba(0, 0, 0, 0.45);
     position: relative;
     overflow: hidden;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
 }
 
 .fund-portfolio-moves-card::before {
@@ -10864,12 +10867,16 @@ body.theme-neo-brutalism .sort-option.active {
     flex-wrap: wrap;
     gap: 14px;
     margin-bottom: 20px;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .moves-title-left {
     display: flex;
     align-items: center;
     gap: 14px;
+    min-width: 0;
+    flex: 1 1 auto;
 }
 
 .moves-header-title-row {
@@ -10877,6 +10884,7 @@ body.theme-neo-brutalism .sort-option.active {
     align-items: center;
     gap: 10px;
     flex-wrap: wrap;
+    min-width: 0;
 }
 
 .moves-header-title-row h3 {
@@ -10884,6 +10892,7 @@ body.theme-neo-brutalism .sort-option.active {
     font-weight: 800;
     color: #F8FAFC;
     margin: 0;
+    word-break: break-word;
 }
 
 .moves-live-pill {
@@ -10897,6 +10906,16 @@ body.theme-neo-brutalism .sort-option.active {
     background: rgba(56, 189, 248, 0.14);
     border: 1px solid rgba(56, 189, 248, 0.35);
     color: #38BDF8;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.moves-header-right {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    max-width: 100%;
 }
 
 .moves-date-badge {
@@ -10910,6 +10929,8 @@ body.theme-neo-brutalism .sort-option.active {
     color: var(--text-secondary);
     font-size: 0.76rem;
     font-weight: 700;
+    white-space: nowrap;
+    flex-shrink: 0;
 }
 
 .moves-date-badge i {
@@ -10925,6 +10946,8 @@ body.theme-neo-brutalism .sort-option.active {
     padding: 4px;
     border-radius: 12px;
     border: 1px solid rgba(255, 255, 255, 0.08);
+    max-width: 100%;
+    flex-shrink: 0;
 }
 
 .moves-mode-btn {
@@ -10958,7 +10981,7 @@ body.theme-neo-brutalism .sort-option.active {
 
 /* Stock Ticker & Details Styling */
 .stock-ticker-pill {
-    font-size: 0.84rem;
+    font-size: 0.82rem;
     font-weight: 900;
     font-family: monospace;
     letter-spacing: 0.5px;
@@ -10971,6 +10994,7 @@ body.theme-neo-brutalism .sort-option.active {
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
+    white-space: nowrap;
 }
 
 .stock-chip-meta {
@@ -10978,7 +11002,8 @@ body.theme-neo-brutalism .sort-option.active {
     flex-direction: column;
     gap: 1px;
     min-width: 0;
-    flex: 1;
+    flex: 1 1 auto;
+    overflow: hidden;
 }
 
 .stock-company-name {
@@ -10988,6 +11013,8 @@ body.theme-neo-brutalism .sort-option.active {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    min-width: 0;
+    max-width: 100%;
 }
 
 .stock-sector-tag {
@@ -10998,6 +11025,10 @@ body.theme-neo-brutalism .sort-option.active {
     padding: 0 5px;
     border-radius: 4px;
     width: fit-content;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
 }
 
 /* Bölüm 1: En Son Varlık Dağılımı (Hangi Varlıkta Oran Ne Kadar?) */
@@ -11007,23 +11038,39 @@ body.theme-neo-brutalism .sort-option.active {
     border-radius: 14px;
     padding: 14px 16px;
     margin-bottom: 20px;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    overflow: hidden;
 }
 
 .moves-section-label {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
     font-size: 0.76rem;
     font-weight: 800;
     color: #CBD5E1;
     text-transform: uppercase;
     letter-spacing: 0.5px;
     margin-bottom: 12px;
+    min-width: 0;
 }
 
 .moves-section-label i {
     color: #38BDF8;
     margin-right: 6px;
+}
+
+.moves-label-title {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    min-width: 0;
+    flex: 1 1 auto;
+    word-break: break-word;
 }
 
 .moves-asset-count-badge {
@@ -11033,12 +11080,16 @@ body.theme-neo-brutalism .sort-option.active {
     font-weight: 700;
     background: rgba(255, 255, 255, 0.06);
     color: var(--text-secondary);
+    white-space: nowrap;
+    flex-shrink: 0;
 }
 
 .moves-asset-chips-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
     gap: 10px;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .moves-asset-chip {
@@ -11050,6 +11101,11 @@ body.theme-neo-brutalism .sort-option.active {
     background: rgba(15, 23, 42, 0.7);
     border: 1px solid rgba(255, 255, 255, 0.07);
     transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    min-width: 0;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    overflow: hidden;
 }
 
 .moves-asset-chip:hover {
@@ -11063,6 +11119,8 @@ body.theme-neo-brutalism .sort-option.active {
     align-items: center;
     justify-content: space-between;
     gap: 8px;
+    min-width: 0;
+    width: 100%;
 }
 
 .chip-asset-name {
@@ -11072,9 +11130,9 @@ body.theme-neo-brutalism .sort-option.active {
     font-size: 0.78rem;
     font-weight: 700;
     color: #F1F5F9;
-    white-space: nowrap;
+    min-width: 0;
+    flex: 1 1 auto;
     overflow: hidden;
-    text-overflow: ellipsis;
 }
 
 .chip-asset-dot {
@@ -11089,6 +11147,8 @@ body.theme-neo-brutalism .sort-option.active {
     font-weight: 800;
     color: #38BDF8;
     font-family: var(--font-mono);
+    white-space: nowrap;
+    flex-shrink: 0;
 }
 
 .chip-val-row {
@@ -11097,6 +11157,7 @@ body.theme-neo-brutalism .sort-option.active {
     justify-content: space-between;
     font-size: 0.72rem;
     color: var(--text-muted);
+    min-width: 0;
 }
 
 .chip-mini-bar {
@@ -11117,9 +11178,12 @@ body.theme-neo-brutalism .sort-option.active {
 /* Bölüm 2: İki Kolonlu Alım / Satım Karşılaştırma */
 .moves-dual-columns {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     gap: 16px;
     margin-bottom: 16px;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
 }
 
 .moves-col {
@@ -11129,6 +11193,11 @@ body.theme-neo-brutalism .sort-option.active {
     flex-direction: column;
     gap: 12px;
     min-height: 180px;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    min-width: 0;
+    overflow: hidden;
 }
 
 .moves-col.moves-bought-col {
@@ -11147,6 +11216,11 @@ body.theme-neo-brutalism .sort-option.active {
     justify-content: space-between;
     padding-bottom: 10px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    flex-wrap: wrap;
+    gap: 8px;
+    width: 100%;
+    box-sizing: border-box;
+    min-width: 0;
 }
 
 .moves-col-header.emerald .moves-col-title {
@@ -11156,6 +11230,9 @@ body.theme-neo-brutalism .sort-option.active {
     display: flex;
     align-items: center;
     gap: 8px;
+    min-width: 0;
+    flex: 1 1 auto;
+    word-break: break-word;
 }
 
 .moves-col-header.rose .moves-col-title {
@@ -11165,6 +11242,9 @@ body.theme-neo-brutalism .sort-option.active {
     display: flex;
     align-items: center;
     gap: 8px;
+    min-width: 0;
+    flex: 1 1 auto;
+    word-break: break-word;
 }
 
 .moves-col-badge {
@@ -11172,6 +11252,8 @@ body.theme-neo-brutalism .sort-option.active {
     border-radius: 20px;
     font-size: 0.72rem;
     font-weight: 700;
+    white-space: nowrap;
+    flex-shrink: 0;
 }
 
 .moves-col-badge.emerald {
@@ -11190,18 +11272,27 @@ body.theme-neo-brutalism .sort-option.active {
     display: flex;
     flex-direction: column;
     gap: 8px;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    min-width: 0;
 }
 
 .moves-item-row {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 12px;
-    padding: 10px 12px;
+    gap: 10px;
+    padding: 9px 11px;
     border-radius: 10px;
     background: rgba(0, 0, 0, 0.35);
     border: 1px solid rgba(255, 255, 255, 0.05);
     transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    min-width: 0;
+    overflow: hidden;
 }
 
 .moves-item-row:hover {
@@ -11213,9 +11304,10 @@ body.theme-neo-brutalism .sort-option.active {
 .moves-item-left {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 9px;
     min-width: 0;
-    flex: 1;
+    flex: 1 1 auto;
+    overflow: hidden;
 }
 
 .moves-item-dot {
@@ -11230,29 +11322,38 @@ body.theme-neo-brutalism .sort-option.active {
     flex-direction: column;
     gap: 2px;
     min-width: 0;
+    flex: 1 1 auto;
+    overflow: hidden;
 }
 
 .moves-item-title-row {
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 5px;
+    flex-wrap: wrap;
+    min-width: 0;
+    max-width: 100%;
 }
 
 .moves-item-name {
-    font-size: 0.8rem;
+    font-size: 0.79rem;
     font-weight: 700;
     color: #F8FAFC;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    min-width: 0;
+    max-width: 100%;
 }
 
 .moves-tag-pill {
-    padding: 1px 6px;
+    padding: 1px 5px;
     border-radius: 4px;
-    font-size: 0.65rem;
+    font-size: 0.62rem;
     font-weight: 800;
     text-transform: uppercase;
+    white-space: nowrap;
+    flex-shrink: 0;
 }
 
 .moves-tag-pill.new-entry {
@@ -11268,27 +11369,37 @@ body.theme-neo-brutalism .sort-option.active {
 }
 
 .moves-item-history-sub {
-    font-size: 0.70rem;
+    font-size: 0.68rem;
     color: var(--text-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 0;
+    max-width: 100%;
 }
 
 .moves-item-right {
     display: flex;
     flex-direction: column;
     align-items: flex-end;
+    justify-content: center;
     gap: 2px;
     flex-shrink: 0;
+    margin-left: auto;
+    white-space: nowrap;
 }
 
 .moves-delta-badge {
     display: inline-flex;
     align-items: center;
     gap: 4px;
-    padding: 2px 8px;
+    padding: 2px 7px;
     border-radius: 6px;
-    font-size: 0.78rem;
+    font-size: 0.76rem;
     font-weight: 800;
     font-family: var(--font-mono);
+    white-space: nowrap;
+    flex-shrink: 0;
 }
 
 .moves-delta-badge.pos {
@@ -11304,9 +11415,11 @@ body.theme-neo-brutalism .sort-option.active {
 }
 
 .moves-est-val {
-    font-size: 0.70rem;
+    font-size: 0.68rem;
     font-weight: 600;
     color: var(--text-secondary);
+    white-space: nowrap;
+    flex-shrink: 0;
 }
 
 .moves-empty-state {
@@ -11317,8 +11430,10 @@ body.theme-neo-brutalism .sort-option.active {
     color: var(--text-muted);
     font-size: 0.78rem;
     font-weight: 600;
-    padding: 32px 10px;
+    padding: 24px 10px;
     text-align: center;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 /* Bölüm 3: Rotasyon Özeti Barı */
@@ -11335,16 +11450,22 @@ body.theme-neo-brutalism .sort-option.active {
     font-size: 0.78rem;
     font-weight: 700;
     color: #CBD5E1;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
 }
 
 .moves-summary-item {
     display: flex;
     align-items: center;
     gap: 7px;
+    min-width: 0;
+    word-break: break-word;
 }
 
 .moves-summary-item i {
     color: #38BDF8;
+    flex-shrink: 0;
 }
 
 .moves-summary-item.bought strong {
@@ -11355,18 +11476,236 @@ body.theme-neo-brutalism .sort-option.active {
     color: #FB7185;
 }
 
+/* --------------------------------------------------------------------------
+   Responsive Adaptations for Fund Moves (Tablet, Mobile & Small Screens)
+   -------------------------------------------------------------------------- */
 @media (max-width: 900px) {
     .moves-dual-columns {
-        grid-template-columns: 1fr;
+        grid-template-columns: minmax(0, 1fr) !important;
+        gap: 14px !important;
     }
     .moves-asset-chips-grid {
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
     }
 }
 
-@media (max-width: 600px) {
+@media (max-width: 768px) {
+    .fund-portfolio-moves-card,
+    .layout-bento #tab-analytics .fund-portfolio-moves-card,
+    .layout-bento #tab-analytics #fundPortfolioMovesCard {
+        padding: 14px 11px !important;
+        border-radius: 14px !important;
+        margin-bottom: 16px !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+    }
+
+    .moves-card-header {
+        gap: 10px !important;
+        margin-bottom: 14px !important;
+    }
+
+    .moves-title-left {
+        gap: 10px !important;
+        width: 100% !important;
+    }
+
+    .moves-header-title-row {
+        gap: 6px !important;
+    }
+
+    .moves-header-title-row h3 {
+        font-size: 0.96rem !important;
+    }
+
+    .moves-live-pill {
+        font-size: 0.68rem !important;
+        padding: 2px 7px !important;
+    }
+
+    .moves-header-right {
+        width: 100% !important;
+        justify-content: flex-start !important;
+        gap: 6px !important;
+    }
+
+    .moves-mode-btn {
+        padding: 4px 8px !important;
+        font-size: 0.68rem !important;
+    }
+
+    .moves-date-badge {
+        padding: 4px 8px !important;
+        font-size: 0.68rem !important;
+    }
+
+    .moves-current-assets-section {
+        padding: 11px 10px !important;
+        border-radius: 12px !important;
+        margin-bottom: 14px !important;
+    }
+
+    .moves-section-label {
+        font-size: 0.72rem !important;
+        gap: 6px !important;
+        margin-bottom: 10px !important;
+    }
+
     .moves-asset-chips-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: minmax(0, 1fr) !important;
+        gap: 8px !important;
+    }
+
+    .moves-asset-chip {
+        padding: 7px 9px !important;
+    }
+
+    .moves-dual-columns {
+        gap: 12px !important;
+        margin-bottom: 14px !important;
+    }
+
+    .moves-col {
+        padding: 10px 8px !important;
+        border-radius: 12px !important;
+        gap: 8px !important;
+        min-height: auto !important;
+    }
+
+    .moves-col-header {
+        padding-bottom: 7px !important;
+        gap: 6px !important;
+    }
+
+    .moves-col-header.emerald .moves-col-title,
+    .moves-col-header.rose .moves-col-title {
+        font-size: 0.79rem !important;
+        gap: 5px !important;
+    }
+
+    .moves-col-badge {
+        font-size: 0.66rem !important;
+        padding: 2px 6px !important;
+    }
+
+    .moves-list {
+        gap: 6px !important;
+    }
+
+    .moves-item-row {
+        padding: 8px 8px !important;
+        gap: 7px !important;
+        border-radius: 8px !important;
+    }
+
+    .moves-item-left {
+        gap: 7px !important;
+    }
+
+    .stock-ticker-pill {
+        font-size: 0.73rem !important;
+        padding: 1px 5px !important;
+        border-radius: 5px !important;
+    }
+
+    .moves-item-meta {
+        gap: 1px !important;
+    }
+
+    .moves-item-name {
+        font-size: 0.76rem !important;
+    }
+
+    .moves-tag-pill {
+        font-size: 0.58rem !important;
+        padding: 1px 4px !important;
+    }
+
+    .moves-item-history-sub {
+        font-size: 0.65rem !important;
+    }
+
+    .moves-delta-badge {
+        font-size: 0.72rem !important;
+        padding: 1px 5px !important;
+    }
+
+    .moves-est-val {
+        font-size: 0.63rem !important;
+    }
+
+    .moves-summary-footer {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 6px !important;
+        padding: 10px 12px !important;
+        font-size: 0.72rem !important;
+    }
+
+    .moves-summary-item {
+        font-size: 0.72rem !important;
+        width: 100% !important;
+    }
+}
+
+@media (max-width: 400px) {
+    .fund-portfolio-moves-card,
+    .layout-bento #tab-analytics .fund-portfolio-moves-card,
+    .layout-bento #tab-analytics #fundPortfolioMovesCard {
+        padding: 10px 7px !important;
+        border-radius: 12px !important;
+    }
+
+    .moves-col {
+        padding: 8px 5px !important;
+        gap: 6px !important;
+    }
+
+    .moves-item-row {
+        padding: 7px 5px !important;
+        gap: 5px !important;
+    }
+
+    .moves-item-left {
+        gap: 5px !important;
+    }
+
+    .stock-ticker-pill {
+        font-size: 0.68rem !important;
+        padding: 1px 4px !important;
+    }
+
+    .moves-item-name {
+        font-size: 0.72rem !important;
+    }
+
+    .moves-tag-pill {
+        font-size: 0.55rem !important;
+        padding: 1px 3px !important;
+    }
+
+    .moves-item-history-sub {
+        font-size: 0.61rem !important;
+    }
+
+    .moves-delta-badge {
+        font-size: 0.68rem !important;
+        padding: 1px 4px !important;
+    }
+
+    .moves-est-val {
+        font-size: 0.60rem !important;
+    }
+
+    .moves-col-header.emerald .moves-col-title,
+    .moves-col-header.rose .moves-col-title {
+        font-size: 0.74rem !important;
+    }
+
+    .moves-col-badge {
+        font-size: 0.62rem !important;
+        padding: 1px 5px !important;
     }
 }
 

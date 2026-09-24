@@ -2593,8 +2593,8 @@ function renderFundStockMoves(fundCode, totalAUM = 0) {
     const boughtStocks = stocks.filter(s => s.diff > 0.05).sort((a, b) => b.diff - a.diff);
     const soldStocks = stocks.filter(s => s.diff < -0.05).sort((a, b) => a.diff - b.diff);
 
-    if (boughtCountBadge) boughtCountBadge.innerText = `${boughtStocks.length} Hisse Alındı / Artırıldı`;
-    if (soldCountBadge) soldCountBadge.innerText = `${soldStocks.length} Hisse Satıldı / Azaltıldı`;
+    if (boughtCountBadge) boughtCountBadge.innerText = `${boughtStocks.length} Alım / Artış`;
+    if (soldCountBadge) soldCountBadge.innerText = `${soldStocks.length} Satış / Azalış`;
 
     const grossRotation = stocks.reduce((acc, s) => acc + Math.abs(s.diff), 0);
     const netRotation = grossRotation / 2;
@@ -2614,17 +2614,17 @@ function renderFundStockMoves(fundCode, totalAUM = 0) {
         } else {
             boughtList.innerHTML = boughtStocks.map(stock => {
                 const estStr = totalAUM > 0 ? `+${formatBillionOrMillion(stock.estDiffVal)}` : "";
-                const tag = stock.isNew ? `<span class="moves-tag-pill new-entry"><i class="fa-solid fa-sparkles"></i> Portföye Yeni Katıldı</span>` : "";
+                const tag = stock.isNew ? `<span class="moves-tag-pill new-entry" title="Portföye Yeni Katıldı"><i class="fa-solid fa-sparkles"></i> Yeni Giriş</span>` : "";
                 return `
                     <div class="moves-item-row">
                         <div class="moves-item-left">
                             <span class="stock-ticker-pill">${stock.symbol}</span>
                             <div class="moves-item-meta">
                                 <div class="moves-item-title-row">
-                                    <span class="moves-item-name">${stock.name}</span>
+                                    <span class="moves-item-name" title="${stock.name}">${stock.name}</span>
                                     ${tag}
                                 </div>
-                                <span class="moves-item-history-sub">${stock.sector} • Önceki: %${stock.prevPct.toFixed(2)} ➔ Şimdi: %${stock.pct.toFixed(2)}</span>
+                                <span class="moves-item-history-sub" title="${stock.sector} • Önceki: %${stock.prevPct.toFixed(2)} ➔ Şimdi: %${stock.pct.toFixed(2)}">${stock.sector} • Önceki: %${stock.prevPct.toFixed(2)} ➔ Şimdi: %${stock.pct.toFixed(2)}</span>
                             </div>
                         </div>
                         <div class="moves-item-right">
@@ -2651,17 +2651,17 @@ function renderFundStockMoves(fundCode, totalAUM = 0) {
         } else {
             soldList.innerHTML = soldStocks.map(stock => {
                 const estStr = totalAUM > 0 ? `-${formatBillionOrMillion(stock.estDiffVal)}` : "";
-                const tag = stock.isExited ? `<span class="moves-tag-pill exited"><i class="fa-solid fa-xmark"></i> Tamamen Satıldı / Çıkıldı</span>` : "";
+                const tag = stock.isExited ? `<span class="moves-tag-pill exited" title="Tamamen Satıldı / Çıkıldı"><i class="fa-solid fa-xmark"></i> Tamamen Çıkıldı</span>` : "";
                 return `
                     <div class="moves-item-row">
                         <div class="moves-item-left">
                             <span class="stock-ticker-pill" style="border-color: rgba(244, 63, 94, 0.4); color: #FB7185;">${stock.symbol}</span>
                             <div class="moves-item-meta">
                                 <div class="moves-item-title-row">
-                                    <span class="moves-item-name">${stock.name}</span>
+                                    <span class="moves-item-name" title="${stock.name}">${stock.name}</span>
                                     ${tag}
                                 </div>
-                                <span class="moves-item-history-sub">${stock.sector} • Önceki: %${stock.prevPct.toFixed(2)} ➔ Şimdi: %${stock.pct.toFixed(2)}</span>
+                                <span class="moves-item-history-sub" title="${stock.sector} • Önceki: %${stock.prevPct.toFixed(2)} ➔ Şimdi: %${stock.pct.toFixed(2)}">${stock.sector} • Önceki: %${stock.prevPct.toFixed(2)} ➔ Şimdi: %${stock.pct.toFixed(2)}</span>
                             </div>
                         </div>
                         <div class="moves-item-right">
