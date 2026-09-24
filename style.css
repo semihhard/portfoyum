@@ -941,30 +941,55 @@ a {
     from { opacity: 0; transform: scale(0.92); }
     to { opacity: 1; transform: scale(1); }
 }
+/* ==========================================================================
+   Universal Responsive System: Mobile PWA, Tablet & Desktop Pro FinTech HUD
+   ========================================================================== */
+
+/* Universal Base Settings */
 html, body {
     width: 100%;
-    height: 100%;
-    height: 100dvh;
     margin: 0;
     padding: 0;
-    overflow: hidden !important;
-    position: fixed;
-    inset: 0;
-    touch-action: manipulation;
-    -webkit-text-size-adjust: 100%;
-    -webkit-touch-callout: none;
-    user-select: none;
-    -webkit-user-select: none;
-    overscroll-behavior: none !important;
     background-color: #020305;
     color: var(--text-primary);
     font-family: var(--font-sans);
-    display: flex;
-    justify-content: center;
-    align-items: stretch;
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
 }
 
 /* Ambient Background Light Orbs */
+.bg-orb {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(80px);
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.6;
+    transition: var(--transition-smooth);
+}
+.bg-orb.orb-1 {
+    width: 600px;
+    height: 600px;
+    top: -150px;
+    left: -100px;
+    background: radial-gradient(circle, rgba(14, 165, 233, 0.12) 0%, transparent 70%);
+}
+.bg-orb.orb-2 {
+    width: 700px;
+    height: 700px;
+    bottom: -200px;
+    right: -150px;
+    background: radial-gradient(circle, rgba(16, 185, 129, 0.08) 0%, transparent 70%);
+}
+.bg-orb.orb-3 {
+    width: 500px;
+    height: 500px;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: radial-gradient(circle, rgba(139, 92, 246, 0.05) 0%, transparent 70%);
+}
+
 .ambient-glow {
     position: fixed;
     width: 600px;
@@ -978,52 +1003,531 @@ html, body {
 .glow-1 { top: -200px; left: -150px; background: var(--glow-orb-1); }
 .glow-2 { bottom: -200px; right: -150px; background: var(--glow-orb-2); }
 
-/* App Container (Universal Responsive Screen Frame - Fits Screen Perfectly) */
-.app-container {
-    width: 100%;
-    max-width: 600px;
-    height: 100%;
-    height: 100dvh;
-    max-height: 100dvh;
-    background: var(--bg-main);
-    display: flex;
-    flex-direction: column;
-    position: relative;
-    overflow: hidden;
-    z-index: 10;
-    margin: 0 auto;
-    border-radius: 0;
-    border: none;
-    box-shadow: 0 0 60px rgba(0, 0, 0, 0.6);
-    padding-top: env(safe-area-inset-top, 0px);
-    overscroll-behavior: none;
-}
+/* --- 1. MOBILE & PWA MODE (< 768px): 100% Native App Feel Preserved --- */
+@media (max-width: 767px) {
+    html, body {
+        height: 100%;
+        height: 100dvh;
+        overflow: hidden !important;
+        position: fixed;
+        inset: 0;
+        touch-action: manipulation;
+        -webkit-touch-callout: none;
+        user-select: none;
+        -webkit-user-select: none;
+        overscroll-behavior: none !important;
+        display: flex;
+        justify-content: center;
+        align-items: stretch;
+    }
 
-@media (max-width: 768px) {
     .app-container {
-        max-width: 100% !important;
         width: 100% !important;
-        border-radius: 0 !important;
+        max-width: 100% !important;
+        height: 100% !important;
+        height: 100dvh !important;
+        max-height: 100dvh !important;
+        background: var(--bg-main);
+        display: flex;
+        flex-direction: column;
+        position: relative;
+        overflow: hidden;
+        z-index: 10;
+        margin: 0 auto;
         border: none !important;
         box-shadow: none !important;
+        padding-top: env(safe-area-inset-top, 0px);
+        overscroll-behavior: none;
+    }
+
+    .app-content {
+        flex: 1 1 auto;
+        min-height: 0;
+        overflow-y: auto;
+        overflow-x: hidden;
+        padding: 12px 16px calc(76px + env(safe-area-inset-bottom, 0px)) 16px;
+        scrollbar-width: none;
+        -webkit-overflow-scrolling: touch;
+        overscroll-behavior-y: contain;
+        overscroll-behavior-x: none;
+    }
+
+    .app-content::-webkit-scrollbar {
+        display: none;
+    }
+
+    .nav-desktop-brand {
+        display: none !important;
+    }
+
+    .nav-tabs-wrapper {
+        display: flex;
+        width: 100%;
+        justify-content: space-around;
+        align-items: center;
+        height: 100%;
+    }
+
+    .ios-tab-bar {
+        position: fixed !important;
+        bottom: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        width: 100% !important;
+        order: 9999 !important;
+        z-index: 1000 !important;
+    }
+
+    .dashboard-hero-row {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        margin-bottom: 20px;
     }
 }
 
-/* App Main Scroll Area (Only internal content scrolls; no infinite scroll or bounce) */
-.app-content {
-    flex: 1 1 auto;
-    min-height: 0;
-    overflow-y: auto;
-    overflow-x: hidden;
-    padding: 12px 16px calc(18px + env(safe-area-inset-bottom, 0px)) 16px;
-    scrollbar-width: none;
-    -webkit-overflow-scrolling: touch;
-    overscroll-behavior-y: contain;
-    overscroll-behavior-x: none;
+/* --- 2. TABLET & DESKTOP MODE (>= 768px): Pro Financial Dashboard --- */
+@media (min-width: 768px) {
+    html, body {
+        position: static !important;
+        overflow-x: hidden !important;
+        overflow-y: auto !important;
+        min-height: 100vh !important;
+        height: auto !important;
+        user-select: text !important;
+        -webkit-user-select: text !important;
+        display: block !important;
+        background-color: var(--bg-main) !important;
+    }
+
+    /* Custom Sleek Desktop Scrollbar */
+    ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+        background: rgba(8, 12, 20, 0.6);
+    }
+    ::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.16);
+        border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+        background: rgba(56, 189, 248, 0.45);
+    }
+
+    .app-container {
+        width: 100% !important;
+        max-width: 1380px !important;
+        min-height: 100vh !important;
+        height: auto !important;
+        max-height: none !important;
+        overflow: visible !important;
+        background: transparent !important;
+        margin: 0 auto !important;
+        padding: 0 20px !important;
+        display: flex !important;
+        flex-direction: column !important;
+        box-shadow: none !important;
+        border: none !important;
+        padding-top: 0 !important;
+    }
+
+    .app-content {
+        overflow-y: visible !important;
+        overflow-x: visible !important;
+        height: auto !important;
+        max-width: 100% !important;
+        padding: 28px 16px 80px 16px !important;
+    }
+
+    /* Desktop Navigation Bar (Docked at Top with Glassmorphism) */
+    .ios-tab-bar {
+        order: -1 !important;
+        position: sticky !important;
+        top: 0 !important;
+        width: 100% !important;
+        height: 72px !important;
+        min-height: 72px !important;
+        border-top: none !important;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+        border-radius: 0 0 20px 20px !important;
+        background: rgba(10, 14, 24, 0.88) !important;
+        backdrop-filter: blur(32px) saturate(200%) !important;
+        -webkit-backdrop-filter: blur(32px) saturate(200%) !important;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45), inset 0 -1px 0 rgba(255, 255, 255, 0.06) !important;
+        padding: 0 24px !important;
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        z-index: 1000 !important;
+    }
+
+    .nav-desktop-brand {
+        display: flex !important;
+        align-items: center !important;
+        gap: 12px !important;
+        cursor: pointer;
+        user-select: none;
+        transition: transform 0.2s ease, opacity 0.2s ease;
+    }
+
+    .nav-desktop-brand:hover {
+        opacity: 0.9;
+        transform: scale(1.02);
+    }
+
+    .nav-brand-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 12px;
+        background: linear-gradient(135deg, rgba(56, 189, 248, 0.25) 0%, rgba(14, 165, 233, 0.1) 100%);
+        border: 1px solid rgba(56, 189, 248, 0.35);
+        color: #38BDF8;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        box-shadow: 0 0 16px rgba(56, 189, 248, 0.25);
+    }
+
+    .nav-brand-info {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .nav-brand-title {
+        font-family: var(--font-sans);
+        font-size: 16.5px;
+        font-weight: 900;
+        letter-spacing: 0.5px;
+        color: #FFFFFF;
+        line-height: 1.15;
+    }
+
+    .nav-brand-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 9.5px;
+        font-weight: 700;
+        color: var(--neon-cyan);
+        letter-spacing: 0.8px;
+    }
+
+    .nav-tabs-wrapper {
+        display: flex !important;
+        align-items: center !important;
+        gap: 8px !important;
+    }
+
+    .tab-indicator {
+        display: none !important;
+    }
+
+    .tab-item {
+        flex: 0 0 auto !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        gap: 8px !important;
+        padding: 9px 16px !important;
+        border-radius: 12px !important;
+        font-size: 13.5px !important;
+        font-weight: 600 !important;
+        color: var(--text-secondary) !important;
+        border: 1px solid transparent !important;
+        height: auto !important;
+        transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    }
+
+    .tab-item[data-tab="tab-dashboard"] { order: 1 !important; }
+    .tab-item[data-tab="tab-sales"]     { order: 2 !important; }
+    .tab-item[data-tab="tab-analytics"] { order: 3 !important; }
+    .tab-item[data-tab="tab-market"]    { order: 4 !important; }
+    .tab-item[data-tab="tab-news"]      { order: 5 !important; }
+    .tab-item.add-action                { order: 6 !important; }
+
+    .tab-item i {
+        font-size: 15px !important;
+        margin-bottom: 0 !important;
+    }
+
+    .tab-item span {
+        font-size: 13px !important;
+        font-weight: 600 !important;
+    }
+
+    .tab-item:hover {
+        background: rgba(255, 255, 255, 0.06) !important;
+        color: #FFFFFF !important;
+        border-color: rgba(255, 255, 255, 0.1) !important;
+    }
+
+    .tab-item.active {
+        background: rgba(56, 189, 248, 0.12) !important;
+        color: #38BDF8 !important;
+        border-color: rgba(56, 189, 248, 0.3) !important;
+        box-shadow: 0 2px 12px rgba(56, 189, 248, 0.15) !important;
+    }
+
+    .tab-item.active i {
+        transform: none !important;
+        color: #38BDF8 !important;
+    }
+
+    .tab-item.active::after {
+        display: none !important;
+    }
+
+    .tab-item.add-action {
+        background: linear-gradient(135deg, #0EA5E9 0%, #0284C7 100%) !important;
+        color: #FFFFFF !important;
+        padding: 9px 18px !important;
+        border-radius: 12px !important;
+        box-shadow: 0 4px 16px rgba(14, 165, 233, 0.35) !important;
+        border: none !important;
+        margin-left: 6px !important;
+    }
+
+    .tab-item.add-action .add-circle {
+        display: none !important;
+    }
+
+    .tab-item.add-action span {
+        font-size: 13px !important;
+        font-weight: 700 !important;
+        color: #FFFFFF !important;
+        margin-top: 0 !important;
+    }
+
+    .tab-item.add-action::before {
+        content: '\f067';
+        font-family: 'Font Awesome 6 Free';
+        font-weight: 900;
+        font-size: 13px;
+        margin-right: 6px;
+    }
+
+    .tab-item.add-action:hover {
+        transform: translateY(-2px) !important;
+        box-shadow: 0 6px 22px rgba(14, 165, 233, 0.5) !important;
+        color: #FFFFFF !important;
+    }
+
+    /* Page Header Desktop Typography & Hit Targets */
+    .page-header {
+        margin-bottom: 24px !important;
+        padding-bottom: 12px !important;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+    }
+
+    .page-title {
+        font-size: 30px !important;
+        letter-spacing: -0.6px !important;
+    }
+
+    .header-actions {
+        gap: 10px !important;
+    }
+
+    .header-actions .icon-btn {
+        width: 42px !important;
+        height: 42px !important;
+        font-size: 15px !important;
+        border-radius: 13px !important;
+    }
+
+    /* Dashboard Hero Row (Side-by-Side Balance & T+2) */
+    .dashboard-hero-row {
+        display: grid !important;
+        grid-template-columns: 1.6fr 1fr !important;
+        gap: 18px !important;
+        align-items: stretch !important;
+        margin-bottom: 24px !important;
+    }
+
+    .dashboard-hero-row .hero-card,
+    .dashboard-hero-row .t2-valeur-card {
+        margin-bottom: 0 !important;
+        height: 100% !important;
+    }
+
+    .dashboard-hero-row .hero-card {
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: space-between !important;
+        padding: 24px 26px !important;
+    }
+
+    .dashboard-hero-row .t2-valeur-card {
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: center !important;
+        padding: 22px 24px !important;
+    }
+
+    .layout-bento .dashboard-hero-row {
+        display: none !important;
+    }
+
+    /* Bento Mode Desktop Grid */
+    .layout-bento #bentoDashboardGrid {
+        grid-template-columns: repeat(4, 1fr) !important;
+        gap: 16px !important;
+    }
+    .layout-bento .bento-vault-card {
+        grid-column: span 2 !important;
+    }
+    .layout-bento .bento-diversify-card {
+        grid-column: span 2 !important;
+    }
+
+    /* Category Filter Chips Desktop Flow */
+    .category-scroll {
+        display: flex !important;
+        flex-wrap: wrap !important;
+        overflow-x: visible !important;
+        padding-bottom: 18px !important;
+        gap: 12px !important;
+    }
+
+    .chip-btn {
+        padding: 10px 20px !important;
+        font-size: 13.5px !important;
+        border-radius: 14px !important;
+    }
+
+    /* Multi-Column Responsive Asset Cards Grid */
+    .assets-list,
+    .sales-list,
+    .market-list {
+        display: grid !important;
+        grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)) !important;
+        gap: 16px !important;
+    }
+
+    .news-list,
+    #newsList {
+        display: grid !important;
+        grid-template-columns: repeat(auto-fill, minmax(380px, 1fr)) !important;
+        gap: 18px !important;
+    }
+
+    .empty-state {
+        grid-column: 1 / -1 !important;
+    }
+
+    .asset-card,
+    .news-item {
+        margin-bottom: 0 !important;
+    }
+
+    /* Sales Tab Desktop Layout */
+    #tab-sales .hero-stats-grid {
+        grid-template-columns: repeat(4, 1fr) !important;
+    }
+
+    .top-sales-grid {
+        max-width: 680px !important;
+        margin: 0 auto 30px auto !important;
+    }
+
+    /* Analytics Tab Desktop Grid */
+    #subviewPortfolioAnalytics {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
+        gap: 20px !important;
+        align-items: start !important;
+    }
+
+    #subviewPortfolioAnalytics .analytics-bento-metrics {
+        grid-column: 1 / -1 !important;
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
+        gap: 16px !important;
+    }
+
+    #subviewPortfolioAnalytics .analytics-card:last-child {
+        grid-column: 1 / -1 !important;
+    }
+
+    .fund-alloc-wrapper {
+        display: grid !important;
+        grid-template-columns: 1fr 1.2fr !important;
+        gap: 20px !important;
+        align-items: stretch !important;
+    }
+
+    .fund-alloc-latest-card,
+    .fund-alloc-history-card {
+        margin-bottom: 0 !important;
+        height: 100% !important;
+    }
+
+    .fund-kpi-grid {
+        grid-template-columns: repeat(3, 1fr) !important;
+        gap: 16px !important;
+    }
+
+    .category-cards-grid,
+    #categoryCardsGrid,
+    .leaders-cards-grid,
+    #leaderCardsContainer,
+    .company-cards-grid,
+    #companyCardsGrid {
+        display: grid !important;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)) !important;
+        gap: 16px !important;
+    }
+
+    /* Desktop Centered Modal Dialogs */
+    .modal-overlay {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        padding: 24px !important;
+    }
+
+    .modal-sheet {
+        max-width: 540px !important;
+        width: 100% !important;
+        margin: auto !important;
+        border-radius: 24px !important;
+        border: 1px solid rgba(255, 255, 255, 0.14) !important;
+        box-shadow: 0 30px 80px -10px rgba(0, 0, 0, 0.85), 0 0 40px rgba(56, 189, 248, 0.12) !important;
+        transform: scale(0.95) !important;
+        opacity: 0 !important;
+        transition: transform 0.24s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.24s ease !important;
+    }
+
+    .modal-overlay.active .modal-sheet {
+        transform: scale(1) !important;
+        opacity: 1 !important;
+    }
+
+    #modalAssetDetail .modal-sheet,
+    #modalT2Detail .modal-sheet {
+        max-width: 720px !important;
+    }
+
+    #themeStudioModal .modal-content,
+    #pinModal .modal-sheet {
+        max-width: 480px !important;
+    }
 }
 
-.app-content::-webkit-scrollbar {
-    display: none;
+/* Extra Large Desktop / Ultrawide Monitors (>= 1440px) */
+@media (min-width: 1440px) {
+    .app-container {
+        max-width: 1440px !important;
+        padding: 0 28px !important;
+    }
+
+    .assets-list,
+    .sales-list,
+    .market-list {
+        grid-template-columns: repeat(auto-fill, minmax(380px, 1fr)) !important;
+    }
 }
 
 /* Page Animations */
@@ -19993,6 +20497,567 @@ body.theme-neo-brutalism .sort-option.active {
     justify-content: space-between;
     font-size: 11px;
     font-weight: 700;
+}
+
+/* ==========================================================================
+   UNIVERSAL RESPONSIVE ENGINE (MOBILE PWA, TABLET, LAPTOP & ULTRAWIDE DESKTOP)
+   ========================================================================== */
+
+/* Universal Reset & Container Base */
+.nav-desktop-brand {
+    display: none;
+}
+
+/* --------------------------------------------------------------------------
+   A. MOBILE PHONES & PWA FULLSCREEN APP (< 768px)
+   -------------------------------------------------------------------------- */
+@media (max-width: 767px) {
+    html, body {
+        width: 100% !important;
+        height: 100% !important;
+        height: 100dvh !important;
+        overflow: hidden !important;
+        position: fixed !important;
+        inset: 0 !important;
+        touch-action: manipulation !important;
+        overscroll-behavior: none !important;
+    }
+
+    .app-container {
+        width: 100% !important;
+        max-width: 100% !important;
+        height: 100% !important;
+        height: 100dvh !important;
+        max-height: 100dvh !important;
+        margin: 0 !important;
+        padding-top: env(safe-area-inset-top, 0px) !important;
+        box-shadow: none !important;
+        border: none !important;
+        overflow: hidden !important;
+    }
+
+    .app-content {
+        flex: 1 1 auto !important;
+        min-height: 0 !important;
+        overflow-y: auto !important;
+        overflow-x: hidden !important;
+        padding: 12px 16px calc(78px + env(safe-area-inset-bottom, 0px)) 16px !important;
+        scrollbar-width: none !important;
+        -webkit-overflow-scrolling: touch !important;
+        overscroll-behavior-y: contain !important;
+    }
+
+    .app-content::-webkit-scrollbar {
+        display: none !important;
+    }
+
+    .nav-desktop-brand {
+        display: none !important;
+    }
+
+    .nav-tabs-wrapper {
+        display: flex !important;
+        width: 100% !important;
+        justify-content: space-around !important;
+        align-items: center !important;
+        height: 100% !important;
+    }
+
+    .ios-tab-bar {
+        position: fixed !important;
+        bottom: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        width: 100% !important;
+        order: 9999 !important;
+        z-index: 1000 !important;
+        border-radius: 0 !important;
+        padding: 6px 4px max(env(safe-area-inset-bottom, 0px), 8px) 4px !important;
+        min-height: calc(60px + env(safe-area-inset-bottom, 0px)) !important;
+        background: rgba(10, 14, 24, 0.94) !important;
+        backdrop-filter: blur(32px) saturate(200%) !important;
+        -webkit-backdrop-filter: blur(32px) saturate(200%) !important;
+        box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.45) !important;
+    }
+
+    .tab-item {
+        flex-direction: column !important;
+        padding: 4px 1px !important;
+    }
+
+    .dashboard-hero-row {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 16px !important;
+        margin-bottom: 20px !important;
+    }
+
+    .modal-overlay {
+        display: flex !important;
+        align-items: flex-end !important;
+    }
+
+    .modal-sheet {
+        width: 100% !important;
+        max-width: 100% !important;
+        border-radius: 24px 24px 0 0 !important;
+        transform: translateY(100%) !important;
+        transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    }
+
+    .modal-overlay.active .modal-sheet {
+        transform: translateY(0) !important;
+    }
+}
+
+/* --------------------------------------------------------------------------
+   B. TABLETS & DESKTOPS (>= 768px): Pro Financial Dashboard
+   -------------------------------------------------------------------------- */
+@media (min-width: 768px) {
+    html, body {
+        position: static !important;
+        overflow-x: hidden !important;
+        overflow-y: auto !important;
+        min-height: 100vh !important;
+        height: auto !important;
+        user-select: text !important;
+        -webkit-user-select: text !important;
+        display: block !important;
+        background-color: var(--bg-main) !important;
+    }
+
+    /* Sleek Desktop Scrollbar */
+    ::-webkit-scrollbar {
+        width: 9px !important;
+        height: 9px !important;
+    }
+    ::-webkit-scrollbar-track {
+        background: rgba(8, 12, 22, 0.7) !important;
+    }
+    ::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.18) !important;
+        border-radius: 6px !important;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+        background: rgba(56, 189, 248, 0.5) !important;
+    }
+
+    /* Container: expands to wide executive dashboard */
+    .app-container {
+        width: 100% !important;
+        max-width: 1380px !important;
+        min-height: 100vh !important;
+        height: auto !important;
+        max-height: none !important;
+        overflow: visible !important;
+        background: transparent !important;
+        margin: 0 auto !important;
+        padding: 0 24px !important;
+        display: flex !important;
+        flex-direction: column !important;
+        box-shadow: none !important;
+        border: none !important;
+        padding-top: 0 !important;
+    }
+
+    .app-content {
+        overflow-y: visible !important;
+        overflow-x: visible !important;
+        height: auto !important;
+        max-width: 100% !important;
+        padding: 28px 12px 80px 12px !important;
+    }
+
+    /* Desktop Navigation Bar (Docked at Top with Glassmorphism) */
+    .ios-tab-bar {
+        order: -1 !important;
+        position: sticky !important;
+        top: 0 !important;
+        width: 100% !important;
+        height: 72px !important;
+        min-height: 72px !important;
+        border-top: none !important;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+        border-radius: 0 0 22px 22px !important;
+        background: rgba(10, 14, 24, 0.88) !important;
+        backdrop-filter: blur(32px) saturate(200%) !important;
+        -webkit-backdrop-filter: blur(32px) saturate(200%) !important;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45), inset 0 -1px 0 rgba(255, 255, 255, 0.06) !important;
+        padding: 0 24px !important;
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        z-index: 1000 !important;
+    }
+
+    .nav-desktop-brand {
+        display: flex !important;
+        align-items: center !important;
+        gap: 12px !important;
+        cursor: pointer !important;
+        user-select: none !important;
+        transition: transform 0.2s ease, opacity 0.2s ease !important;
+    }
+
+    .nav-desktop-brand:hover {
+        opacity: 0.9 !important;
+        transform: scale(1.02) !important;
+    }
+
+    .nav-brand-icon {
+        width: 42px !important;
+        height: 42px !important;
+        border-radius: 12px !important;
+        background: linear-gradient(135deg, rgba(56, 189, 248, 0.25) 0%, rgba(14, 165, 233, 0.1) 100%) !important;
+        border: 1px solid rgba(56, 189, 248, 0.35) !important;
+        color: #38BDF8 !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        font-size: 1.25rem !important;
+        box-shadow: 0 0 16px rgba(56, 189, 248, 0.25) !important;
+    }
+
+    .nav-brand-info {
+        display: flex !important;
+        flex-direction: column !important;
+    }
+
+    .nav-brand-title {
+        font-family: var(--font-sans) !important;
+        font-size: 17px !important;
+        font-weight: 900 !important;
+        letter-spacing: 0.5px !important;
+        color: #FFFFFF !important;
+        line-height: 1.15 !important;
+    }
+
+    .nav-brand-pill {
+        display: inline-flex !important;
+        align-items: center !important;
+        gap: 5px !important;
+        font-size: 9.5px !important;
+        font-weight: 700 !important;
+        color: var(--neon-cyan) !important;
+        letter-spacing: 0.8px !important;
+    }
+
+    .nav-tabs-wrapper {
+        display: flex !important;
+        align-items: center !important;
+        gap: 8px !important;
+    }
+
+    .tab-indicator {
+        display: none !important;
+    }
+
+    .tab-item {
+        flex: 0 0 auto !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        gap: 8px !important;
+        padding: 9px 16px !important;
+        border-radius: 12px !important;
+        font-size: 13.5px !important;
+        font-weight: 600 !important;
+        color: var(--text-secondary) !important;
+        border: 1px solid transparent !important;
+        height: auto !important;
+        transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    }
+
+    .tab-item[data-tab="tab-dashboard"] { order: 1 !important; }
+    .tab-item[data-tab="tab-sales"]     { order: 2 !important; }
+    .tab-item[data-tab="tab-analytics"] { order: 3 !important; }
+    .tab-item[data-tab="tab-market"]    { order: 4 !important; }
+    .tab-item[data-tab="tab-news"]      { order: 5 !important; }
+    .tab-item.add-action                { order: 6 !important; }
+
+    .tab-item i {
+        font-size: 15px !important;
+        margin-bottom: 0 !important;
+    }
+
+    .tab-item span {
+        font-size: 13px !important;
+        font-weight: 600 !important;
+        letter-spacing: 0.2px !important;
+    }
+
+    .tab-item:hover {
+        background: rgba(255, 255, 255, 0.06) !important;
+        color: #FFFFFF !important;
+        border-color: rgba(255, 255, 255, 0.1) !important;
+    }
+
+    .tab-item.active {
+        background: rgba(56, 189, 248, 0.12) !important;
+        color: #38BDF8 !important;
+        border-color: rgba(56, 189, 248, 0.3) !important;
+        box-shadow: 0 2px 12px rgba(56, 189, 248, 0.15) !important;
+    }
+
+    .tab-item.active i {
+        transform: none !important;
+        color: #38BDF8 !important;
+    }
+
+    .tab-item.active::after {
+        display: none !important;
+    }
+
+    .tab-item.add-action {
+        background: linear-gradient(135deg, #0EA5E9 0%, #0284C7 100%) !important;
+        color: #FFFFFF !important;
+        padding: 9px 18px !important;
+        border-radius: 12px !important;
+        box-shadow: 0 4px 16px rgba(14, 165, 233, 0.35) !important;
+        border: none !important;
+        margin-left: 6px !important;
+    }
+
+    .tab-item.add-action .add-circle {
+        display: none !important;
+    }
+
+    .tab-item.add-action span {
+        font-size: 13px !important;
+        font-weight: 700 !important;
+        color: #FFFFFF !important;
+        margin-top: 0 !important;
+    }
+
+    .tab-item.add-action::before {
+        content: '\f067' !important;
+        font-family: 'Font Awesome 6 Free' !important;
+        font-weight: 900 !important;
+        font-size: 13px !important;
+        margin-right: 6px !important;
+    }
+
+    .tab-item.add-action:hover {
+        transform: translateY(-2px) !important;
+        box-shadow: 0 6px 22px rgba(14, 165, 233, 0.5) !important;
+        color: #FFFFFF !important;
+    }
+
+    /* Page Header Desktop Typography & Hit Targets */
+    .page-header {
+        margin-bottom: 24px !important;
+        padding-bottom: 12px !important;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+    }
+
+    .page-title {
+        font-size: 30px !important;
+        letter-spacing: -0.6px !important;
+    }
+
+    .header-actions {
+        gap: 10px !important;
+    }
+
+    .header-actions .icon-btn {
+        width: 42px !important;
+        height: 42px !important;
+        font-size: 15px !important;
+        border-radius: 13px !important;
+    }
+
+    /* Dashboard Hero Row (Side-by-Side Balance & T+2) */
+    .dashboard-hero-row {
+        display: grid !important;
+        grid-template-columns: 1.6fr 1fr !important;
+        gap: 20px !important;
+        align-items: stretch !important;
+        margin-bottom: 24px !important;
+    }
+
+    .dashboard-hero-row .hero-card,
+    .dashboard-hero-row .t2-valeur-card {
+        margin-bottom: 0 !important;
+        height: 100% !important;
+    }
+
+    .dashboard-hero-row .hero-card {
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: space-between !important;
+        padding: 24px 26px !important;
+    }
+
+    .dashboard-hero-row .t2-valeur-card {
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: center !important;
+        padding: 22px 24px !important;
+    }
+
+    .layout-bento .dashboard-hero-row {
+        display: none !important;
+    }
+
+    /* Bento Mode Desktop Grid */
+    .layout-bento #bentoDashboardGrid {
+        grid-template-columns: repeat(4, 1fr) !important;
+        gap: 16px !important;
+    }
+    .layout-bento .bento-vault-card {
+        grid-column: span 2 !important;
+    }
+    .layout-bento .bento-diversify-card {
+        grid-column: span 2 !important;
+    }
+
+    /* Category Filter Chips Desktop Flow */
+    .category-scroll {
+        display: flex !important;
+        flex-wrap: wrap !important;
+        overflow-x: visible !important;
+        padding-bottom: 18px !important;
+        gap: 12px !important;
+    }
+
+    .chip-btn {
+        padding: 10px 20px !important;
+        font-size: 13.5px !important;
+        border-radius: 14px !important;
+    }
+
+    /* Multi-Column Responsive Asset Cards Grid */
+    .assets-list,
+    .sales-list,
+    .market-list {
+        display: grid !important;
+        grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)) !important;
+        gap: 16px !important;
+    }
+
+    .news-list,
+    #newsList {
+        display: grid !important;
+        grid-template-columns: repeat(auto-fill, minmax(380px, 1fr)) !important;
+        gap: 18px !important;
+    }
+
+    .empty-state {
+        grid-column: 1 / -1 !important;
+    }
+
+    .asset-card,
+    .news-item {
+        margin-bottom: 0 !important;
+    }
+
+    /* Sales Tab Desktop Layout */
+    #tab-sales .hero-stats-grid {
+        grid-template-columns: repeat(4, 1fr) !important;
+    }
+
+    .top-sales-grid {
+        max-width: 680px !important;
+        margin: 0 auto 30px auto !important;
+    }
+
+    /* Analytics Tab Desktop Grid */
+    #subviewPortfolioAnalytics {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
+        gap: 20px !important;
+        align-items: start !important;
+    }
+
+    #subviewPortfolioAnalytics .analytics-bento-metrics {
+        grid-column: 1 / -1 !important;
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
+        gap: 16px !important;
+    }
+
+    #subviewPortfolioAnalytics .analytics-card:last-child {
+        grid-column: 1 / -1 !important;
+    }
+
+    .fund-alloc-wrapper {
+        display: grid !important;
+        grid-template-columns: 1fr 1.2fr !important;
+        gap: 20px !important;
+        align-items: stretch !important;
+    }
+
+    .fund-alloc-latest-card,
+    .fund-alloc-history-card {
+        margin-bottom: 0 !important;
+        height: 100% !important;
+    }
+
+    .fund-kpi-grid {
+        grid-template-columns: repeat(3, 1fr) !important;
+        gap: 16px !important;
+    }
+
+    .category-cards-grid,
+    #categoryCardsGrid,
+    .leaders-cards-grid,
+    #leaderCardsContainer,
+    .company-cards-grid,
+    #companyCardsGrid {
+        display: grid !important;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)) !important;
+        gap: 16px !important;
+    }
+
+    /* Desktop Centered Modal Dialogs */
+    .modal-overlay {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        padding: 24px !important;
+    }
+
+    .modal-sheet {
+        max-width: 540px !important;
+        width: 100% !important;
+        margin: auto !important;
+        border-radius: 24px !important;
+        border: 1px solid rgba(255, 255, 255, 0.14) !important;
+        box-shadow: 0 30px 80px -10px rgba(0, 0, 0, 0.85), 0 0 40px rgba(56, 189, 248, 0.12) !important;
+        transform: scale(0.95) !important;
+        opacity: 0 !important;
+        transition: transform 0.24s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.24s ease !important;
+    }
+
+    .modal-overlay.active .modal-sheet {
+        transform: scale(1) !important;
+        opacity: 1 !important;
+    }
+
+    #modalAssetDetail .modal-sheet,
+    #modalT2Detail .modal-sheet {
+        max-width: 720px !important;
+    }
+
+    #themeStudioModal .modal-content,
+    #pinModal .modal-sheet {
+        max-width: 480px !important;
+    }
+}
+
+/* --------------------------------------------------------------------------
+   C. EXTRA LARGE SCREENS (>= 1440px)
+   -------------------------------------------------------------------------- */
+@media (min-width: 1440px) {
+    .app-container {
+        max-width: 1440px !important;
+        padding: 0 28px !important;
+    }
+
+    .assets-list,
+    .sales-list,
+    .market-list {
+        grid-template-columns: repeat(auto-fill, minmax(380px, 1fr)) !important;
+    }
 }
 
 

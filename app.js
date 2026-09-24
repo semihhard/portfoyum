@@ -6885,6 +6885,12 @@ async function importFromExcel(event) {
     }
 }
 
+// --- Universal Desktop / Responsive Navigation Helper ---
+function switchDesktopHome() {
+    const dashBtn = document.querySelector('.ios-tab-bar .tab-item[data-tab="tab-dashboard"]');
+    if (dashBtn) dashBtn.click();
+}
+
 // --- Navigation ---
 function initNavigation() {
     const tabBtns = document.querySelectorAll(".ios-tab-bar .tab-item[data-tab]");
@@ -10097,6 +10103,52 @@ function initEvents() {
 
     document.getElementById("btnSimulateMarket").addEventListener("click", () => {
         fetchLivePrices();
+    });
+
+    // Universal Desktop & Mobile Backdrop Click to Close Modals
+    document.querySelectorAll(".modal-overlay").forEach(overlay => {
+        overlay.addEventListener("click", (e) => {
+            if (e.target === overlay) {
+                overlay.classList.remove("active");
+                if (overlay.id === "modalForgotPinConfirm") overlay.style.display = "none";
+                if (overlay.id === "modalAddTransaction") closeAddModal();
+                if (overlay.id === "modalSellAsset") closeSellModal();
+                if (overlay.id === "modalAssetDetail") closeDetailModal();
+                if (overlay.id === "editSaleModal") closeEditSaleModal();
+                if (overlay.id === "modalKapDetail") closeKapDetail();
+                if (overlay.id === "modalT2Detail") closeT2Modal();
+                if (overlay.id === "pinModal") closePinModal();
+                if (overlay.id === "themeStudioModal") closeThemeStudioModal();
+                if (overlay.id === "modalSharePreview") {
+                    const btn = document.getElementById("btnCloseShareModal");
+                    if (btn) btn.click();
+                }
+            }
+        });
+    });
+
+    // Universal Escape Key Listener to Close Active Modals on Desktop
+    window.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") {
+            const activeOverlays = document.querySelectorAll(".modal-overlay.active");
+            activeOverlays.forEach(overlay => {
+                overlay.classList.remove("active");
+                if (overlay.id === "modalAddTransaction") closeAddModal();
+                if (overlay.id === "modalSellAsset") closeSellModal();
+                if (overlay.id === "modalAssetDetail") closeDetailModal();
+                if (overlay.id === "editSaleModal") closeEditSaleModal();
+                if (overlay.id === "modalKapDetail") closeKapDetail();
+                if (overlay.id === "modalT2Detail") closeT2Modal();
+                if (overlay.id === "pinModal") closePinModal();
+                if (overlay.id === "themeStudioModal") closeThemeStudioModal();
+            });
+            const t2Mod = document.getElementById("modalT2Detail");
+            if (t2Mod && t2Mod.classList.contains("active")) closeT2Modal();
+            const pinMod = document.getElementById("pinModal");
+            if (pinMod && pinMod.classList.contains("active")) closePinModal();
+            const themeMod = document.getElementById("themeStudioModal");
+            if (themeMod && themeMod.classList.contains("active")) closeThemeStudioModal();
+        }
     });
 }
 

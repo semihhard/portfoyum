@@ -27,7 +27,7 @@
     <script src="https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js"></script>
     <!-- jsPDF for High-Resolution Multi-Page PDF Export -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <link rel="stylesheet" href="style.css?v=100">    <style>
+    <link rel="stylesheet" href="style.css?v=105">    <style>
         /* Refresh Button Loading Animation */
         .icon-btn.loading i {
             animation: spin 1s linear infinite;
@@ -445,8 +445,10 @@
                     </div>
                 </div>
 
-                <!-- Apple / iOS 18 Glassmorphism Hero Portfolio Card (Classic View) -->
-                <div class="hero-card ultra-glass-card" id="classicHeroCard">
+                <!-- Hero Row: Classic Balance & T+2 Valör Card (Responsive Multi-Device Layout) -->
+                <div class="dashboard-hero-row">
+                    <!-- Apple / iOS 18 Glassmorphism Hero Portfolio Card (Classic View) -->
+                    <div class="hero-card ultra-glass-card" id="classicHeroCard">
                     <div class="hero-card-shine"></div>
                     <div class="hero-top">
                         <div class="hero-header-left">
@@ -525,6 +527,7 @@
                         </div>
                     </div>
                 </div>
+                </div> <!-- /dashboard-hero-row -->
 
                 <!-- Bento Grid Modular Dashboard Widgets (Active in layout-bento mode) -->
                 <div class="bento-dashboard-grid" id="bentoDashboardGrid">
@@ -1779,7 +1782,7 @@
                     </div>
                 </div>
 
-                <div class="news-list" id="newsList" style="display: flex; flex-direction: column; gap: 12px;">
+                <div class="news-list" id="newsList">
                     <div class="empty-state">
                         <i class="fa-solid fa-spinner fa-spin"></i>
                         <p>Haberler Yükleniyor...</p>
@@ -1788,35 +1791,47 @@
             </section>
         </main>
 
-        <!-- iOS Bottom Navigation Bar with Glowing Pill -->
-        <nav class="ios-tab-bar">
-            <div class="tab-indicator"></div>
-            <button class="tab-item active" data-tab="tab-dashboard">
-                <i class="fa-solid fa-chart-pie"></i>
-                <span>Portföy</span>
-            </button>
-            <button class="tab-item" data-tab="tab-sales">
-                <i class="fa-solid fa-receipt"></i>
-                <span>Satışlar</span>
-            </button>
-            <button class="tab-item add-action" id="btnNavAdd">
-                <div class="add-circle neon-pulse">
-                    <i class="fa-solid fa-plus"></i>
+        <!-- Universal Responsive Navigation Bar (Desktop Top Bar / iOS Bottom Bar) -->
+        <nav class="ios-tab-bar" id="appNavbar">
+            <!-- Desktop Brand Header (Hidden on Mobile) -->
+            <div class="nav-desktop-brand" onclick="switchDesktopHome()" title="Ana Sayfaya Dön">
+                <div class="nav-brand-icon"><i class="fa-solid fa-chart-pie"></i></div>
+                <div class="nav-brand-info">
+                    <span class="nav-brand-title">PORTFÖYÜM</span>
+                    <span class="nav-brand-pill"><span class="pulse-dot"></span> PRO FINTECH</span>
                 </div>
-                <span>Ekle</span>
-            </button>
-            <button class="tab-item" data-tab="tab-analytics">
-                <i class="fa-solid fa-chart-line"></i>
-                <span>Analiz</span>
-            </button>
-            <button class="tab-item" data-tab="tab-news">
-                <i class="fa-solid fa-satellite-dish"></i>
-                <span>Haberler</span>
-            </button>
-            <button class="tab-item" data-tab="tab-market">
-                <i class="fa-solid fa-globe"></i>
-                <span>Piyasa</span>
-            </button>
+            </div>
+
+            <!-- Navigation Tabs & Actions -->
+            <div class="nav-tabs-wrapper">
+                <div class="tab-indicator"></div>
+                <button class="tab-item active" data-tab="tab-dashboard">
+                    <i class="fa-solid fa-chart-pie"></i>
+                    <span>Portföy</span>
+                </button>
+                <button class="tab-item" data-tab="tab-sales">
+                    <i class="fa-solid fa-receipt"></i>
+                    <span>Satışlar</span>
+                </button>
+                <button class="tab-item add-action" id="btnNavAdd">
+                    <div class="add-circle neon-pulse">
+                        <i class="fa-solid fa-plus"></i>
+                    </div>
+                    <span>Ekle</span>
+                </button>
+                <button class="tab-item" data-tab="tab-analytics">
+                    <i class="fa-solid fa-chart-line"></i>
+                    <span>Analiz</span>
+                </button>
+                <button class="tab-item" data-tab="tab-news">
+                    <i class="fa-solid fa-satellite-dish"></i>
+                    <span>Haberler</span>
+                </button>
+                <button class="tab-item" data-tab="tab-market">
+                    <i class="fa-solid fa-globe"></i>
+                    <span>Piyasa</span>
+                </button>
+            </div>
         </nav>
 
     <!-- MODAL: ADD TRANSACTION (ALIM EKLE) -->
@@ -2979,6 +2994,6 @@
         </div>
     </div>
 
-    <script src="app.js?v=104"></script>
+    <script src="app.js?v=105"></script>
 </body>
 </html>
