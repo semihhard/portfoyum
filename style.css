@@ -300,7 +300,7 @@ a {
 }
 
 /* ==========================================================================
-   PIN Lock Screen: Next-Gen Cyber Glassmorphic Security Vault
+   PIN Lock Screen: Revolutionary Cyber-Vault Quantum HUD System
    ========================================================================== */
 .pin-lock-screen {
     position: fixed;
@@ -309,15 +309,15 @@ a {
     max-width: 100%;
     height: 100%;
     height: 100dvh;
-    background: radial-gradient(ellipse at 50% 20%, #0B132B 0%, #030712 65%, #01040A 100%);
-    backdrop-filter: blur(50px) saturate(200%);
-    -webkit-backdrop-filter: blur(50px) saturate(200%);
+    background: radial-gradient(ellipse at 50% 18%, #071938 0%, #030A18 55%, #01040A 100%);
+    backdrop-filter: blur(50px) saturate(220%);
+    -webkit-backdrop-filter: blur(50px) saturate(220%);
     z-index: 10000;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: space-between;
-    padding: calc(18px + env(safe-area-inset-top, 0px)) 16px calc(18px + env(safe-area-inset-bottom, 0px)) 16px;
+    padding: calc(14px + env(safe-area-inset-top, 0px)) 16px calc(14px + env(safe-area-inset-bottom, 0px)) 16px;
     user-select: none;
     -webkit-user-select: none;
     overflow-y: auto;
@@ -328,124 +328,261 @@ a {
     transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1), transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* Perspective Cyber Grid Background */
+/* Sci-Fi HUD Corner Framing Brackets */
+.pin-hud-corner {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'JetBrains Mono', 'Space Grotesk', monospace;
+    font-size: 0.62rem;
+    font-weight: 700;
+    color: rgba(56, 189, 248, 0.65);
+    letter-spacing: 1.5px;
+    pointer-events: none;
+    z-index: 4;
+    text-shadow: 0 0 10px rgba(56, 189, 248, 0.4);
+}
+
+.pin-hud-corner.corner-tl {
+    top: calc(16px + env(safe-area-inset-top, 0px));
+    left: 20px;
+    border-top: 2px solid rgba(56, 189, 248, 0.6);
+    border-left: 2px solid rgba(56, 189, 248, 0.6);
+    padding: 6px 10px;
+}
+
+.pin-hud-corner.corner-tr {
+    top: calc(16px + env(safe-area-inset-top, 0px));
+    right: 20px;
+    border-top: 2px solid rgba(56, 189, 248, 0.6);
+    border-right: 2px solid rgba(56, 189, 248, 0.6);
+    padding: 6px 10px;
+}
+
+.pin-hud-corner.corner-bl {
+    bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+    left: 20px;
+    border-bottom: 2px solid rgba(56, 189, 248, 0.4);
+    border-left: 2px solid rgba(56, 189, 248, 0.4);
+    padding: 6px 10px;
+}
+
+.pin-hud-corner.corner-br {
+    bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+    right: 20px;
+    border-bottom: 2px solid rgba(56, 189, 248, 0.4);
+    border-right: 2px solid rgba(56, 189, 248, 0.4);
+    padding: 6px 10px;
+}
+
+@media (max-width: 600px) {
+    .pin-hud-corner {
+        display: none;
+    }
+}
+
+/* Cyber Matrix Perspective Grid */
 .pin-cyber-grid {
     position: absolute;
     inset: 0;
     background-image: 
-        radial-gradient(circle, rgba(56, 189, 248, 0.12) 1px, transparent 1px);
-    background-size: 24px 24px;
-    mask-image: radial-gradient(ellipse at 50% 50%, black 40%, transparent 80%);
-    -webkit-mask-image: radial-gradient(ellipse at 50% 50%, black 40%, transparent 80%);
+        linear-gradient(rgba(56, 189, 248, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(56, 189, 248, 0.05) 1px, transparent 1px);
+    background-size: 32px 32px;
+    mask-image: radial-gradient(ellipse at 50% 45%, black 40%, transparent 85%);
+    -webkit-mask-image: radial-gradient(ellipse at 50% 45%, black 40%, transparent 85%);
     pointer-events: none;
-    opacity: 0.7;
-    animation: gridDrift 25s linear infinite;
+    opacity: 0.85;
+    animation: cyberGridDrift 30s linear infinite;
 }
 
-@keyframes gridDrift {
-    0% { transform: translateY(0); }
-    100% { transform: translateY(24px); }
+@keyframes cyberGridDrift {
+    0% { background-position: 0 0; }
+    100% { background-position: 32px 32px; }
 }
 
-/* Futuristic Scanning Laser Line */
+/* Vertical Laser Scanner Sweep */
 .pin-scanner-line {
     position: absolute;
     left: 0;
     right: 0;
     height: 2px;
-    background: linear-gradient(90deg, transparent 0%, rgba(56, 189, 248, 0.7) 30%, rgba(16, 185, 129, 0.9) 50%, rgba(56, 189, 248, 0.7) 70%, transparent 100%);
-    box-shadow: 0 0 16px rgba(56, 189, 248, 0.8), 0 0 32px rgba(16, 185, 129, 0.5);
-    opacity: 0.6;
+    background: linear-gradient(90deg, transparent 0%, rgba(56, 189, 248, 0.5) 25%, #38BDF8 50%, rgba(16, 185, 129, 0.9) 70%, transparent 100%);
+    box-shadow: 0 0 18px rgba(56, 189, 248, 0.9), 0 0 35px rgba(16, 185, 129, 0.6);
+    opacity: 0.7;
     pointer-events: none;
     z-index: 2;
-    animation: scanBeam 5s ease-in-out infinite;
+    animation: cyberScanBeam 6s ease-in-out infinite;
 }
 
-@keyframes scanBeam {
+@keyframes cyberScanBeam {
     0% { top: 0%; opacity: 0; }
-    10% { opacity: 0.7; }
-    90% { opacity: 0.7; }
+    15% { opacity: 0.8; }
+    85% { opacity: 0.8; }
     100% { top: 100%; opacity: 0; }
 }
 
-/* Animated Ambient Glowing Orbs */
+/* Ambient Floating Sci-Fi Glow Orbs */
 .pin-floating-orb {
     position: absolute;
     border-radius: 50%;
-    filter: blur(80px);
+    filter: blur(85px);
     pointer-events: none;
     z-index: 1;
-    opacity: 0.45;
-    animation: floatOrb 10s ease-in-out infinite alternate;
+    opacity: 0.5;
+    animation: cyberOrbFloat 12s ease-in-out infinite alternate;
 }
 
 .pin-floating-orb.orb-1 {
-    width: 320px;
-    height: 320px;
-    top: -60px;
+    width: 340px;
+    height: 340px;
+    top: -50px;
     left: 50%;
     transform: translateX(-50%);
-    background: radial-gradient(circle, rgba(14, 165, 233, 0.35) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(14, 165, 233, 0.38) 0%, transparent 70%);
 }
 
 .pin-floating-orb.orb-2 {
-    width: 260px;
-    height: 260px;
+    width: 280px;
+    height: 280px;
     bottom: -40px;
-    right: -30px;
-    background: radial-gradient(circle, rgba(16, 185, 129, 0.3) 0%, transparent 70%);
-    animation-delay: -3.5s;
+    right: -40px;
+    background: radial-gradient(circle, rgba(16, 185, 129, 0.32) 0%, transparent 70%);
+    animation-delay: -4s;
 }
 
 .pin-floating-orb.orb-3 {
-    width: 220px;
-    height: 220px;
-    top: 40%;
-    left: -50px;
-    background: radial-gradient(circle, rgba(139, 92, 246, 0.25) 0%, transparent 70%);
-    animation-delay: -7s;
+    width: 240px;
+    height: 240px;
+    top: 45%;
+    left: -60px;
+    background: radial-gradient(circle, rgba(99, 102, 241, 0.3) 0%, transparent 70%);
+    animation-delay: -8s;
 }
 
-@keyframes floatOrb {
+@keyframes cyberOrbFloat {
     0% { transform: translateY(0) scale(1); }
-    50% { transform: translateY(-30px) scale(1.15); }
-    100% { transform: translateY(20px) scale(0.92); }
+    50% { transform: translateY(-25px) scale(1.12); }
+    100% { transform: translateY(20px) scale(0.94); }
 }
 
-/* Lock Screen Top Bar (Native Phone Clock) */
-.pin-lock-top-bar {
+/* Live Preview Mode Floating Exit Banner */
+.pin-preview-banner {
     display: flex;
-    flex-direction: column;
     align-items: center;
-    justify-content: center;
-    text-align: center;
+    justify-content: space-between;
+    gap: 12px;
+    width: 100%;
+    max-width: 360px;
+    margin-bottom: 10px;
+    background: rgba(245, 158, 11, 0.12);
+    border: 1px solid rgba(245, 158, 11, 0.45);
+    box-shadow: 0 0 20px rgba(245, 158, 11, 0.25);
+    border-radius: 12px;
+    padding: 8px 14px;
+    z-index: 20;
+    backdrop-filter: blur(14px);
+    animation: fadeInDown 0.3s ease;
+}
+
+.pin-preview-badge {
+    font-size: 0.68rem;
+    font-weight: 800;
+    color: #FBBF24;
+    letter-spacing: 0.8px;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+}
+
+.pin-preview-close-btn {
+    background: rgba(245, 158, 11, 0.22);
+    border: 1px solid rgba(245, 158, 11, 0.5);
+    color: #FFFFFF;
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    transition: all 0.2s ease;
+}
+
+.pin-preview-close-btn:hover {
+    background: #F59E0B;
+    color: #000000;
+}
+
+/* Top Telemetry Status Bar */
+.pin-telemetry-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    max-width: 340px;
     margin-bottom: 6px;
     position: relative;
     z-index: 5;
     pointer-events: none;
 }
 
-.pin-live-clock {
-    font-size: 3.2rem;
-    font-weight: 200;
+.telemetry-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    background: rgba(15, 23, 42, 0.75);
+    border: 1px solid rgba(56, 189, 248, 0.3);
+    padding: 4px 12px;
+    border-radius: 9999px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.62rem;
+    font-weight: 700;
+    color: #38BDF8;
+    letter-spacing: 1px;
+    box-shadow: 0 0 14px rgba(56, 189, 248, 0.15);
+}
+
+.telemetry-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #10B981;
+    box-shadow: 0 0 8px #10B981;
+    animation: telemetryPulse 1.8s infinite;
+}
+
+@keyframes telemetryPulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.3; transform: scale(0.75); }
+}
+
+.telemetry-clock-wrap {
+    text-align: right;
+}
+
+.telemetry-time {
+    font-family: 'JetBrains Mono', 'Space Grotesk', monospace;
+    font-size: 1.15rem;
+    font-weight: 700;
     color: #FFFFFF;
-    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
-    letter-spacing: -1.5px;
+    letter-spacing: 1px;
     line-height: 1;
-    text-shadow: 0 4px 30px rgba(0, 0, 0, 0.7), 0 0 40px rgba(56, 189, 248, 0.2);
+    text-shadow: 0 0 12px rgba(56, 189, 248, 0.4);
 }
 
-.pin-live-date {
-    font-size: 0.84rem;
+.telemetry-date {
+    font-size: 0.66rem;
     font-weight: 600;
-    color: rgba(255, 255, 255, 0.65);
-    letter-spacing: 0.3px;
-    margin-top: 5px;
+    color: rgba(255, 255, 255, 0.55);
+    letter-spacing: 0.4px;
+    margin-top: 2px;
     text-transform: capitalize;
-    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
 }
 
-/* Center Container */
+/* Center Cyber-Vault Container */
 .pin-lock-container {
     position: relative;
     z-index: 10;
@@ -458,101 +595,84 @@ a {
     box-sizing: border-box;
 }
 
-/* Top Security Pill Badge */
-.pin-security-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 7px;
-    background: rgba(56, 189, 248, 0.08);
-    border: 1px solid rgba(56, 189, 248, 0.3);
-    color: #38BDF8;
-    font-size: 0.64rem;
-    font-weight: 800;
-    letter-spacing: 1.2px;
-    padding: 4px 14px;
-    border-radius: 9999px;
-    text-transform: uppercase;
-    margin-bottom: 12px;
-    box-shadow: 0 0 16px rgba(56, 189, 248, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.15);
-    backdrop-filter: blur(16px);
-}
-
-.pin-live-dot {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: #10B981;
-    box-shadow: 0 0 8px #10B981;
-    animation: pulseLiveDot 2s infinite;
-}
-
-@keyframes pulseLiveDot {
-    0%, 100% { opacity: 1; transform: scale(1); }
-    50% { opacity: 0.35; transform: scale(0.8); }
-}
-
-/* Holographic Rings & Shield Badge */
-.pin-shield-wrapper {
+/* Quantum Arc Reactor Core */
+.pin-reactor-wrapper {
     position: relative;
-    width: 74px;
-    height: 74px;
+    width: 82px;
+    height: 82px;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: 10px;
+    margin-bottom: 8px;
 }
 
-.holo-ring {
+.reactor-ring {
     position: absolute;
     border-radius: 50%;
     pointer-events: none;
 }
 
-.holo-ring-1 {
-    width: 74px;
-    height: 74px;
-    border: 1.5px dashed rgba(56, 189, 248, 0.45);
-    box-shadow: 0 0 18px rgba(56, 189, 248, 0.25);
-    animation: rotateHoloClockwise 12s linear infinite;
+.reactor-ring.ring-outer {
+    width: 82px;
+    height: 82px;
+    border: 1.5px dashed rgba(56, 189, 248, 0.55);
+    box-shadow: 0 0 20px rgba(56, 189, 248, 0.35);
+    animation: rotateReactorCW 14s linear infinite;
 }
 
-.holo-ring-2 {
-    width: 62px;
-    height: 62px;
-    border: 1.5px dotted rgba(16, 185, 129, 0.5);
-    box-shadow: 0 0 14px rgba(16, 185, 129, 0.25);
-    animation: rotateHoloCounter 8s linear infinite;
+.reactor-ring.ring-mid {
+    width: 70px;
+    height: 70px;
+    border: 1.5px dotted rgba(16, 185, 129, 0.65);
+    box-shadow: 0 0 16px rgba(16, 185, 129, 0.3);
+    animation: rotateReactorCCW 8s linear infinite;
 }
 
-.holo-ring-3 {
-    width: 52px;
-    height: 52px;
-    border: 1px solid rgba(139, 92, 246, 0.4);
-    animation: pulseRing 3.5s ease-in-out infinite;
+.reactor-ring.ring-inner {
+    width: 58px;
+    height: 58px;
+    border: 1px solid rgba(139, 92, 246, 0.5);
+    animation: reactorRingPulse 3s ease-in-out infinite;
 }
 
-@keyframes rotateHoloClockwise {
+@keyframes rotateReactorCW {
     from { transform: rotate(0deg); }
     to { transform: rotate(360deg); }
 }
 
-@keyframes rotateHoloCounter {
+@keyframes rotateReactorCCW {
     from { transform: rotate(360deg); }
     to { transform: rotate(0deg); }
 }
 
-@keyframes pulseRing {
-    0%, 100% { transform: scale(1); opacity: 0.25; }
-    50% { transform: scale(1.15); opacity: 0.75; }
+@keyframes reactorRingPulse {
+    0%, 100% { transform: scale(1); opacity: 0.35; }
+    50% { transform: scale(1.14); opacity: 0.85; }
 }
 
-.shield-icon-circle {
+.reactor-core-glow {
+    position: absolute;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(56, 189, 248, 0.45) 0%, transparent 70%);
+    filter: blur(10px);
+    pointer-events: none;
+    animation: coreGlowBreathe 3s ease-in-out infinite;
+}
+
+@keyframes coreGlowBreathe {
+    0%, 100% { opacity: 0.5; transform: scale(0.9); }
+    50% { opacity: 0.9; transform: scale(1.2); }
+}
+
+/* Reactor Iris / Shield Centerpiece */
+.reactor-iris {
     width: 52px;
     height: 52px;
-    border-radius: 18px;
-    background: linear-gradient(135deg, rgba(14, 165, 233, 0.25) 0%, rgba(16, 185, 129, 0.18) 100%);
-    border: 1.5px solid rgba(56, 189, 248, 0.5);
-    box-shadow: 0 10px 28px rgba(14, 165, 233, 0.35), inset 0 1px 2px rgba(255, 255, 255, 0.35);
+    background: linear-gradient(135deg, rgba(14, 165, 233, 0.3) 0%, rgba(15, 23, 42, 0.85) 100%);
+    border: 1.5px solid rgba(56, 189, 248, 0.6);
+    box-shadow: 0 0 25px rgba(56, 189, 248, 0.45), inset 0 1px 2px rgba(255, 255, 255, 0.4);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -560,418 +680,579 @@ a {
     color: #38BDF8;
     position: relative;
     z-index: 5;
+    clip-path: polygon(14% 0%, 86% 0%, 100% 14%, 100% 86%, 86% 100%, 14% 100%, 0% 86%, 0% 14%);
     transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
-    animation: shieldFloat 4s ease-in-out infinite;
+    animation: irisFloat 4s ease-in-out infinite;
 }
 
-@keyframes shieldFloat {
+@keyframes irisFloat {
     0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-4px); }
+    50% { transform: translateY(-3px); }
 }
 
-.shield-icon-circle.pulse-glow {
-    box-shadow: 0 0 35px rgba(56, 189, 248, 0.9), inset 0 1px 4px rgba(255, 255, 255, 0.6);
-    transform: scale(1.08);
+.reactor-iris.pulse-glow {
+    box-shadow: 0 0 45px rgba(56, 189, 248, 0.95), inset 0 0 15px rgba(56, 189, 248, 0.6);
+    transform: scale(1.12);
+    border-color: #38BDF8;
 }
 
-.shield-icon-circle.unlocked {
-    background: linear-gradient(135deg, #10B981 0%, #059669 100%) !important;
+.reactor-iris.unlocked {
+    background: linear-gradient(135deg, #10B981 0%, #065F46 100%) !important;
     border-color: #34D399 !important;
     color: #FFFFFF !important;
-    box-shadow: 0 0 45px rgba(16, 185, 129, 0.95), inset 0 2px 4px rgba(255, 255, 255, 0.8) !important;
-    transform: scale(1.18) rotate(360deg) !important;
+    box-shadow: 0 0 50px rgba(16, 185, 129, 1), inset 0 2px 4px rgba(255, 255, 255, 0.8) !important;
+    transform: scale(1.22) rotate(360deg) !important;
 }
 
-.shield-icon-circle.error {
-    background: linear-gradient(135deg, #EF4444 0%, #B91C1C 100%) !important;
+.reactor-iris.error {
+    background: linear-gradient(135deg, #EF4444 0%, #7F1D1D 100%) !important;
     border-color: #F87171 !important;
     color: #FFFFFF !important;
-    box-shadow: 0 0 35px rgba(239, 68, 68, 0.9) !important;
+    box-shadow: 0 0 45px rgba(239, 68, 68, 1) !important;
 }
 
-/* Dynamic Greeting Pill */
-.pin-greeting-pill {
+/* Vault System Headers */
+.pin-cyber-badge {
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 12px;
+    background: rgba(56, 189, 248, 0.08);
+    border: 1px solid rgba(56, 189, 248, 0.28);
+    border-radius: 8px;
     padding: 3px 10px;
-    font-size: 0.72rem;
-    color: #94A3B8;
-    margin-bottom: 5px;
-    font-weight: 600;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.64rem;
+    font-weight: 700;
+    color: #38BDF8;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 4px;
 }
 
-.pin-title {
-    font-size: 1.18rem;
+.pin-vault-title {
+    font-family: 'Orbitron', 'Space Grotesk', sans-serif;
+    font-size: 1.22rem;
     font-weight: 800;
     color: #FFFFFF;
-    margin-bottom: 2px;
-    letter-spacing: -0.3px;
-    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+    letter-spacing: 1.5px;
+    text-shadow: 0 0 20px rgba(56, 189, 248, 0.5);
+    margin: 0 0 2px 0;
     text-align: center;
 }
 
-.pin-subtitle {
-    font-size: 0.76rem;
-    color: var(--text-secondary);
-    margin-bottom: 12px;
+.pin-vault-subtitle {
+    font-size: 0.74rem;
+    color: rgba(255, 255, 255, 0.6);
+    margin: 0 0 10px 0;
     text-align: center;
     line-height: 1.3;
 }
 
-/* Animated PIN Dots */
-.pin-dots-row {
+/* Holographic Decryption Cells (Not standard dots!) */
+.pin-cipher-display {
     display: flex;
-    gap: 16px;
-    margin-bottom: 12px;
+    flex-direction: column;
     align-items: center;
-    justify-content: center;
-    height: 26px;
+    width: 100%;
+    margin-bottom: 10px;
 }
 
-.pin-dot {
-    width: 16px;
-    height: 16px;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1.5px solid rgba(255, 255, 255, 0.22);
-    transition: all 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
-    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.6);
+.pin-cipher-cells {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.pin-cipher-cell {
     position: relative;
+    width: 48px;
+    height: 52px;
+    background: linear-gradient(180deg, rgba(30, 41, 59, 0.7) 0%, rgba(15, 23, 42, 0.9) 100%);
+    border: 1.5px solid rgba(56, 189, 248, 0.25);
+    border-radius: 8px;
     display: flex;
     align-items: center;
     justify-content: center;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+    overflow: hidden;
 }
 
-.pin-dot::after {
-    content: '';
-    width: 4px;
-    height: 4px;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.25);
-    transition: all 0.2s ease;
+/* Corner sci-fi brackets on each cell */
+.cell-bracket {
+    position: absolute;
+    width: 5px;
+    height: 5px;
+    pointer-events: none;
+    transition: border-color 0.2s ease;
 }
 
-.pin-dot.filled {
-    background: linear-gradient(135deg, #38BDF8 0%, #0284C7 100%);
+.cell-bracket.tl { top: 2px; left: 2px; border-top: 1.5px solid rgba(56, 189, 248, 0.6); border-left: 1.5px solid rgba(56, 189, 248, 0.6); }
+.cell-bracket.tr { top: 2px; right: 2px; border-top: 1.5px solid rgba(56, 189, 248, 0.6); border-right: 1.5px solid rgba(56, 189, 248, 0.6); }
+.cell-bracket.bl { bottom: 2px; left: 2px; border-bottom: 1.5px solid rgba(56, 189, 248, 0.6); border-left: 1.5px solid rgba(56, 189, 248, 0.6); }
+.cell-bracket.br { bottom: 2px; right: 2px; border-bottom: 1.5px solid rgba(56, 189, 248, 0.6); border-right: 1.5px solid rgba(56, 189, 248, 0.6); }
+
+.cell-content {
+    font-family: 'JetBrains Mono', 'Orbitron', monospace;
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: rgba(255, 255, 255, 0.25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.cell-placeholder {
+    transition: opacity 0.2s ease;
+}
+
+/* Filled Decryption State */
+.pin-cipher-cell.filled {
     border-color: #38BDF8;
-    transform: scale(1.24);
-    box-shadow: 0 0 18px rgba(56, 189, 248, 0.95), inset 0 1px 2px rgba(255, 255, 255, 0.7);
-    animation: dotPulse 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    background: linear-gradient(180deg, rgba(14, 165, 233, 0.22) 0%, rgba(15, 23, 42, 0.95) 100%);
+    box-shadow: 0 0 20px rgba(56, 189, 248, 0.7), inset 0 0 12px rgba(56, 189, 248, 0.35);
+    transform: translateY(-2px) scale(1.05);
 }
 
-.pin-dot.filled::after {
-    background: #FFFFFF;
-    box-shadow: 0 0 6px #FFFFFF;
+.pin-cipher-cell.filled .cell-content {
+    color: #38BDF8;
+    text-shadow: 0 0 12px #38BDF8, 0 0 24px rgba(56, 189, 248, 0.8);
+    transform: scale(1.15);
 }
 
-@keyframes dotPulse {
-    0% { transform: scale(0.85); }
-    50% { transform: scale(1.4); }
-    100% { transform: scale(1.24); }
+.pin-cipher-cell.filled .cell-bracket {
+    border-color: #38BDF8;
 }
 
-.pin-dot.success {
-    background: linear-gradient(135deg, #10B981 0%, #059669 100%) !important;
+.pin-cipher-cell.filled::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 10%;
+    right: 10%;
+    height: 2px;
+    background: #38BDF8;
+    box-shadow: 0 0 8px #38BDF8;
+}
+
+/* Success Decryption State */
+.pin-cipher-cell.success {
     border-color: #10B981 !important;
-    box-shadow: 0 0 24px rgba(16, 185, 129, 1) !important;
-    transform: scale(1.32) !important;
+    background: linear-gradient(180deg, rgba(16, 185, 129, 0.3) 0%, rgba(6, 78, 59, 0.9) 100%) !important;
+    box-shadow: 0 0 25px rgba(16, 185, 129, 0.95), inset 0 0 15px rgba(16, 185, 129, 0.4) !important;
+    transform: scale(1.1) !important;
 }
 
-.pin-dot.success::after {
-    background: #FFFFFF !important;
+.pin-cipher-cell.success .cell-content {
+    color: #10B981 !important;
+    text-shadow: 0 0 16px #10B981 !important;
 }
 
-.pin-dot.error {
-    background: #EF4444 !important;
+.pin-cipher-cell.success .cell-bracket {
+    border-color: #10B981 !important;
+}
+
+/* Error Decryption State */
+.pin-cipher-cell.error {
     border-color: #EF4444 !important;
-    box-shadow: 0 0 20px rgba(239, 68, 68, 0.9) !important;
+    background: linear-gradient(180deg, rgba(239, 68, 68, 0.3) 0%, rgba(127, 29, 29, 0.9) 100%) !important;
+    box-shadow: 0 0 25px rgba(239, 68, 68, 0.95) !important;
 }
 
-.pin-error-msg {
-    color: #EF4444;
-    font-size: 0.76rem;
+.pin-cipher-cell.error .cell-content {
+    color: #EF4444 !important;
+    text-shadow: 0 0 16px #EF4444 !important;
+}
+
+.pin-cipher-cell.error .cell-bracket {
+    border-color: #EF4444 !important;
+}
+
+/* Decryption Progress Gauge */
+.pin-progress-track {
+    width: 100%;
+    max-width: 228px;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 9999px;
+    overflow: hidden;
+    position: relative;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.6);
+}
+
+.pin-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #0284C7 0%, #38BDF8 60%, #10B981 100%);
+    box-shadow: 0 0 10px #38BDF8;
+    transition: width 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.pin-progress-label {
+    margin-top: 4px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.62rem;
     font-weight: 700;
+    color: rgba(56, 189, 248, 0.75);
+    letter-spacing: 0.8px;
+}
+
+/* Cyber Error Banner */
+.pin-cyber-error {
+    color: #EF4444;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.5px;
     margin-bottom: 8px;
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 7px;
+    background: rgba(239, 68, 68, 0.12);
+    border: 1px solid rgba(239, 68, 68, 0.4);
+    box-shadow: 0 0 15px rgba(239, 68, 68, 0.25);
+    padding: 5px 12px;
+    border-radius: 8px;
     animation: fadeInDown 0.25s ease;
-    background: rgba(239, 68, 68, 0.1);
-    padding: 4px 12px;
-    border-radius: 12px;
-    border: 1px solid rgba(239, 68, 68, 0.25);
 }
 
-@keyframes fadeInDown {
-    from { opacity: 0; transform: translateY(-6px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-/* Keypad Grid & Interactive Tactile Ripple */
-.pin-keypad {
+/* Chamfered Cyber-Tile Keypad */
+.cyber-tile-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 12px 18px;
+    gap: 10px 14px;
     width: 100%;
-    max-width: 270px;
+    max-width: 280px;
     margin-bottom: 6px;
     box-sizing: border-box;
 }
 
-.pin-key {
-    width: 64px;
-    height: 64px;
-    border-radius: 50%;
-    background: linear-gradient(145deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.02) 100%);
-    border: 1px solid rgba(255, 255, 255, 0.13);
-    backdrop-filter: blur(25px) saturate(180%);
-    -webkit-backdrop-filter: blur(25px) saturate(180%);
-    color: #FFFFFF;
+.cyber-tile {
+    position: relative;
+    height: 56px;
+    width: 100%;
+    background: linear-gradient(145deg, rgba(30, 41, 59, 0.65) 0%, rgba(15, 23, 42, 0.85) 100%);
+    border: 1px solid rgba(56, 189, 248, 0.22);
+    clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35), inset 0 1px 1px rgba(255, 255, 255, 0.18);
-    transition: all 0.16s cubic-bezier(0.2, 0.8, 0.2, 1);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.15);
+    transition: all 0.14s cubic-bezier(0.2, 0.8, 0.2, 1);
     -webkit-tap-highlight-color: transparent;
     touch-action: manipulation;
-    position: relative;
-    overflow: hidden;
     padding: 0;
-    margin: 0 auto;
 }
 
-.pin-key::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border-radius: 50%;
-    background: radial-gradient(circle, rgba(56, 189, 248, 0.4) 0%, transparent 70%);
-    opacity: 0;
-    transition: opacity 0.2s ease;
-    pointer-events: none;
-}
-
-.pin-key:hover {
-    background: linear-gradient(145deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.05) 100%);
-    border-color: rgba(56, 189, 248, 0.4);
-    box-shadow: 0 8px 24px rgba(14, 165, 233, 0.25);
-}
-
-.pin-key:hover::before {
-    opacity: 0.3;
-}
-
-.pin-key:active, .pin-key.pressed, .pin-key.key-pressed {
-    background: radial-gradient(circle, rgba(56, 189, 248, 0.35) 0%, rgba(56, 189, 248, 0.08) 100%) !important;
-    border-color: #38BDF8 !important;
-    transform: scale(0.90);
-    box-shadow: 0 0 25px rgba(56, 189, 248, 0.75), inset 0 0 10px rgba(56, 189, 248, 0.4) !important;
-}
-
-.pin-key:active::before, .pin-key.pressed::before, .pin-key.key-pressed::before {
-    opacity: 1;
-}
-
-.pin-key .key-num {
-    font-size: 1.6rem;
+.cyber-tile .tile-num {
+    font-family: 'Space Grotesk', 'Orbitron', -apple-system, sans-serif;
+    font-size: 1.5rem;
     font-weight: 700;
-    line-height: 1.1;
-    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
-    pointer-events: none;
-    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
-}
-
-.pin-key .key-sub {
-    font-size: 0.52rem;
-    font-weight: 700;
-    color: rgba(255, 255, 255, 0.45);
-    letter-spacing: 1.8px;
+    color: #F8FAFC;
     line-height: 1;
     pointer-events: none;
-    margin-top: 1px;
+    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.6);
 }
 
-.pin-key.key-action {
-    background: transparent;
-    border-color: transparent;
-    box-shadow: none;
-    font-size: 1.35rem;
-    color: rgba(255, 255, 255, 0.6);
+.cyber-tile .tile-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.54rem;
+    font-weight: 700;
+    color: rgba(56, 189, 248, 0.7);
+    letter-spacing: 1.4px;
+    line-height: 1;
+    margin-top: 2px;
+    pointer-events: none;
+}
+
+.cyber-tile:hover {
+    background: linear-gradient(145deg, rgba(56, 189, 248, 0.18) 0%, rgba(15, 23, 42, 0.9) 100%);
+    border-color: rgba(56, 189, 248, 0.6);
+    box-shadow: 0 0 18px rgba(56, 189, 248, 0.4);
+    transform: translateY(-1px);
+}
+
+.cyber-tile:active, .cyber-tile.pressed, .cyber-tile.key-pressed {
+    background: radial-gradient(circle, rgba(56, 189, 248, 0.5) 0%, rgba(15, 23, 42, 0.95) 100%) !important;
+    border-color: #38BDF8 !important;
+    box-shadow: 0 0 28px rgba(56, 189, 248, 0.9), inset 0 0 15px rgba(56, 189, 248, 0.5) !important;
+    transform: scale(0.92);
+}
+
+.cyber-tile.tile-action {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 1.25rem;
 }
 
 #btnKeypadBiometric {
     color: #38BDF8;
+    border-color: rgba(56, 189, 248, 0.35);
     background: rgba(56, 189, 248, 0.08);
-    border: 1px solid rgba(56, 189, 248, 0.25);
-    box-shadow: 0 0 15px rgba(56, 189, 248, 0.15);
-    animation: biometricAura 3s ease-in-out infinite;
 }
 
-@keyframes biometricAura {
-    0%, 100% { box-shadow: 0 0 12px rgba(56, 189, 248, 0.15); border-color: rgba(56, 189, 248, 0.25); }
-    50% { box-shadow: 0 0 22px rgba(56, 189, 248, 0.45); border-color: rgba(56, 189, 248, 0.55); }
+#btnKeypadBiometric i {
+    animation: biometricIconAura 3s ease-in-out infinite;
 }
 
-.pin-key.key-action:hover {
-    background: rgba(255, 255, 255, 0.08);
-    color: #38BDF8;
+@keyframes biometricIconAura {
+    0%, 100% { filter: drop-shadow(0 0 4px rgba(56, 189, 248, 0.4)); }
+    50% { filter: drop-shadow(0 0 12px rgba(56, 189, 248, 0.9)); }
 }
 
-.pin-key.key-action:active, .pin-key.key-action.key-pressed {
-    background: rgba(56, 189, 248, 0.2) !important;
-    color: #FFFFFF !important;
-    transform: scale(0.88);
-}
-
-.pin-footer-actions {
-    margin-top: 6px;
+/* Vault Footer Actions */
+.pin-vault-footer {
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 6px;
     z-index: 10;
+    margin-top: 4px;
 }
 
-.pin-forgot-btn {
+.pin-cyber-bypass-btn {
     background: rgba(255, 255, 255, 0.04);
-    border: 1px solid rgba(255, 255, 255, 0.09);
-    color: rgba(255, 255, 255, 0.5);
-    font-size: 0.74rem;
-    font-weight: 600;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.55);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.70rem;
+    font-weight: 700;
     cursor: pointer;
     display: flex;
     align-items: center;
-    gap: 6px;
-    padding: 6px 16px;
-    border-radius: 9999px;
-    transition: all 0.25s ease;
+    gap: 7px;
+    padding: 6px 14px;
+    border-radius: 8px;
+    transition: all 0.2s ease;
     backdrop-filter: blur(12px);
 }
 
-.pin-forgot-btn:hover {
+.pin-cyber-bypass-btn:hover {
     color: #38BDF8;
     background: rgba(56, 189, 248, 0.12);
     border-color: rgba(56, 189, 248, 0.35);
-    box-shadow: 0 4px 15px rgba(14, 165, 233, 0.2);
+    box-shadow: 0 0 15px rgba(56, 189, 248, 0.25);
     transform: translateY(-1px);
 }
 
-.pin-desktop-hint {
-    font-size: 0.68rem;
+.pin-cyber-preview-exit-btn {
+    background: rgba(245, 158, 11, 0.15);
+    border: 1px solid rgba(245, 158, 11, 0.45);
+    color: #FBBF24;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 6px 16px;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    box-shadow: 0 0 14px rgba(245, 158, 11, 0.2);
+}
+
+.pin-cyber-preview-exit-btn:hover {
+    background: #F59E0B;
+    color: #000000;
+}
+
+.pin-desktop-hud-hint {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.62rem;
     color: rgba(255, 255, 255, 0.3);
     display: flex;
     align-items: center;
     gap: 6px;
-    letter-spacing: 0.3px;
+    letter-spacing: 0.6px;
 }
 
 @media (max-width: 600px) {
-    .pin-desktop-hint {
+    .pin-desktop-hud-hint {
         display: none;
     }
 }
 
-/* Screen height adaptations for compact phones (e.g. iPhone SE, iPhone 12/13 Mini) */
+/* Screen height adaptations for compact mobile screens (e.g. iPhone SE, iPhone Mini, Folded screens) */
 @media (max-height: 720px) {
     .pin-lock-screen {
-        padding: calc(10px + env(safe-area-inset-top, 0px)) 12px calc(10px + env(safe-area-inset-bottom, 0px)) 12px;
+        padding: calc(8px + env(safe-area-inset-top, 0px)) 10px calc(8px + env(safe-area-inset-bottom, 0px)) 10px;
         justify-content: center;
     }
 
-    .pin-live-clock {
-        font-size: 2.4rem;
+    .pin-telemetry-bar {
+        margin-bottom: 4px;
     }
 
-    .pin-live-date {
-        font-size: 0.75rem;
-        margin-top: 2px;
+    .telemetry-time {
+        font-size: 1rem;
     }
 
-    .pin-security-badge {
-        margin-bottom: 8px;
-        padding: 3px 10px;
-        font-size: 0.58rem;
+    .pin-reactor-wrapper {
+        width: 64px;
+        height: 64px;
+        margin-bottom: 4px;
     }
 
-    .pin-shield-wrapper {
-        width: 60px;
-        height: 60px;
-        margin-bottom: 6px;
-    }
+    .reactor-ring.ring-outer { width: 64px; height: 64px; }
+    .reactor-ring.ring-mid { width: 54px; height: 54px; }
+    .reactor-ring.ring-inner { width: 44px; height: 44px; }
 
-    .holo-ring-1 { width: 60px; height: 60px; }
-    .holo-ring-2 { width: 50px; height: 50px; }
-    .holo-ring-3 { width: 42px; height: 42px; }
-
-    .shield-icon-circle {
-        width: 44px;
-        height: 44px;
+    .reactor-iris {
+        width: 42px;
+        height: 42px;
         font-size: 18px;
-        border-radius: 14px;
     }
 
-    .pin-title {
+    .pin-cyber-badge {
+        font-size: 0.58rem;
+        padding: 2px 8px;
+    }
+
+    .pin-vault-title {
         font-size: 1.05rem;
     }
 
-    .pin-subtitle {
-        font-size: 0.70rem;
-        margin-bottom: 8px;
+    .pin-vault-subtitle {
+        font-size: 0.68rem;
+        margin-bottom: 6px;
     }
 
-    .pin-dots-row {
-        margin-bottom: 8px;
-        height: 22px;
-        gap: 12px;
+    .pin-cipher-cells {
+        gap: 8px;
+        margin-bottom: 6px;
     }
 
-    .pin-dot {
-        width: 14px;
-        height: 14px;
+    .pin-cipher-cell {
+        width: 40px;
+        height: 44px;
     }
 
-    .pin-keypad {
-        gap: 8px 14px;
-        max-width: 250px;
+    .cell-content {
+        font-size: 1.1rem;
     }
 
-    .pin-key {
-        width: 56px;
-        height: 56px;
+    .cyber-tile-grid {
+        gap: 6px 10px;
+        max-width: 255px;
     }
 
-    .pin-key .key-num {
-        font-size: 1.4rem;
+    .cyber-tile {
+        height: 48px;
     }
 
-    .pin-key .key-sub {
+    .cyber-tile .tile-num {
+        font-size: 1.3rem;
+    }
+
+    .cyber-tile .tile-tag {
         font-size: 0.48rem;
-    }
-
-    .pin-forgot-btn {
-        padding: 4px 12px;
-        font-size: 0.70rem;
     }
 }
 
 /* ==========================================================================
    PIN & Security Settings Modal Styles
    ========================================================================== */
+/* Live Preview Hero Banner in Security Modal */
+.pin-preview-trigger-card {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 14px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, rgba(14, 165, 233, 0.15) 0%, rgba(15, 23, 42, 0.8) 100%);
+    border: 1px solid rgba(56, 189, 248, 0.35);
+    box-shadow: 0 4px 20px rgba(14, 165, 233, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    margin-bottom: 14px;
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    overflow: hidden;
+}
+
+.pin-preview-trigger-card:hover {
+    border-color: #38BDF8;
+    box-shadow: 0 0 25px rgba(56, 189, 248, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
+}
+
+.preview-trigger-content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.preview-trigger-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    background: rgba(56, 189, 248, 0.15);
+    border: 1px solid rgba(56, 189, 248, 0.35);
+    color: #38BDF8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    box-shadow: 0 0 14px rgba(56, 189, 248, 0.25);
+    flex-shrink: 0;
+}
+
+.preview-trigger-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.58rem;
+    font-weight: 800;
+    color: #38BDF8;
+    letter-spacing: 0.8px;
+    margin-bottom: 2px;
+}
+
+.preview-trigger-title {
+    font-size: 0.92rem;
+    font-weight: 800;
+    color: #FFFFFF;
+}
+
+.preview-trigger-sub {
+    font-size: 0.70rem;
+    color: var(--text-secondary);
+    line-height: 1.25;
+}
+
+.preview-trigger-action {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 8px;
+    background: #38BDF8;
+    color: #030712;
+    font-weight: 800;
+    font-size: 0.74rem;
+    white-space: nowrap;
+    box-shadow: 0 0 15px rgba(56, 189, 248, 0.5);
+    transition: transform 0.2s ease;
+    flex-shrink: 0;
+}
+
+.pin-preview-trigger-card:hover .preview-trigger-action {
+    transform: translateX(3px);
+}
+
 .pin-status-banner {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 12px 16px;
-    border-radius: 14px;
+    padding: 12px 14px;
+    border-radius: 12px;
     background: rgba(255, 255, 255, 0.04);
     border: 1px solid rgba(255, 255, 255, 0.08);
-    margin-bottom: 18px;
+    margin-bottom: 16px;
 }
 
 .pin-status-info {
@@ -981,13 +1262,13 @@ a {
 }
 
 .pin-status-icon {
-    width: 38px;
-    height: 38px;
-    border-radius: 12px;
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.1rem;
+    font-size: 1.05rem;
 }
 
 .pin-status-icon.active {
@@ -1003,20 +1284,20 @@ a {
 }
 
 .pin-status-title {
-    font-size: 0.88rem;
+    font-size: 0.86rem;
     font-weight: 700;
     color: #FFFFFF;
 }
 
 .pin-status-desc {
-    font-size: 0.72rem;
+    font-size: 0.70rem;
     color: var(--text-secondary);
 }
 
 .pin-badge {
-    font-size: 0.68rem;
+    font-size: 0.65rem;
     font-weight: 700;
-    padding: 4px 10px;
+    padding: 3px 9px;
     border-radius: 20px;
     text-transform: uppercase;
     letter-spacing: 0.5px;
@@ -1039,7 +1320,7 @@ a {
     display: flex;
     flex-direction: column;
     gap: 12px;
-    margin-bottom: 18px;
+    margin-bottom: 16px;
 }
 
 .pin-segmented-group {
@@ -1067,28 +1348,30 @@ a {
     width: 52px;
     height: 56px;
     border-radius: 12px;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1.5px solid rgba(255, 255, 255, 0.15);
+    background: rgba(30, 41, 59, 0.6);
+    border: 1.5px solid rgba(56, 189, 248, 0.25);
     font-size: 1.55rem;
     font-weight: 800;
     color: #FFFFFF;
     text-align: center;
-    font-family: var(--font-mono);
+    font-family: 'JetBrains Mono', var(--font-mono);
     transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
     outline: none;
     -webkit-appearance: none;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.5);
 }
 
 .pin-digit-box:focus {
     border-color: #38BDF8;
-    box-shadow: 0 0 16px rgba(56, 189, 248, 0.4);
-    background: rgba(56, 189, 248, 0.08);
+    box-shadow: 0 0 20px rgba(56, 189, 248, 0.5), inset 0 0 8px rgba(56, 189, 248, 0.2);
+    background: rgba(14, 165, 233, 0.15);
     transform: translateY(-2px);
 }
 
 .pin-digit-box.filled {
-    border-color: rgba(56, 189, 248, 0.6);
-    background: rgba(56, 189, 248, 0.12);
+    border-color: rgba(56, 189, 248, 0.7);
+    background: rgba(14, 165, 233, 0.2);
+    color: #38BDF8;
 }
 
 .pin-visibility-btn {
@@ -1112,13 +1395,13 @@ a {
 /* Confirmation Dialog for Forgot PIN */
 .forgot-pin-card {
     background: #0B111E;
-    border: 1px solid rgba(239, 68, 68, 0.3);
+    border: 1px solid rgba(239, 68, 68, 0.35);
     border-radius: 20px;
     padding: 24px 20px;
     max-width: 340px;
     width: 90%;
     text-align: center;
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 30px rgba(239, 68, 68, 0.2);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 35px rgba(239, 68, 68, 0.25);
     animation: fadeInScale 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
