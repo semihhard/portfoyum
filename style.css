@@ -300,24 +300,24 @@ a {
 }
 
 /* ==========================================================================
-   PIN Lock Screen: Revolutionary Cyber-Vault Quantum HUD System
+   PIN Lock Screen: Ultra-Modern Luxury FinTech Interface (Apple & Revolut Style)
    ========================================================================== */
-.pin-lock-screen {
+.modern-pin-lock {
     position: fixed;
     inset: 0;
     width: 100%;
     max-width: 100%;
     height: 100%;
     height: 100dvh;
-    background: radial-gradient(ellipse at 50% 18%, #071938 0%, #030A18 55%, #01040A 100%);
-    backdrop-filter: blur(50px) saturate(220%);
-    -webkit-backdrop-filter: blur(50px) saturate(220%);
+    background: radial-gradient(circle at 50% 12%, #0E172A 0%, #080C16 55%, #030509 100%);
+    backdrop-filter: blur(50px) saturate(190%);
+    -webkit-backdrop-filter: blur(50px) saturate(190%);
     z-index: 10000;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: space-between;
-    padding: calc(14px + env(safe-area-inset-top, 0px)) 16px calc(14px + env(safe-area-inset-bottom, 0px)) 16px;
+    padding: calc(20px + env(safe-area-inset-top, 0px)) 20px calc(24px + env(safe-area-inset-bottom, 0px)) 20px;
     user-select: none;
     -webkit-user-select: none;
     overflow-y: auto;
@@ -328,262 +328,98 @@ a {
     transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1), transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* Sci-Fi HUD Corner Framing Brackets */
-.pin-hud-corner {
-    position: absolute;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-family: 'JetBrains Mono', 'Space Grotesk', monospace;
-    font-size: 0.62rem;
-    font-weight: 700;
-    color: rgba(56, 189, 248, 0.65);
-    letter-spacing: 1.5px;
-    pointer-events: none;
-    z-index: 4;
-    text-shadow: 0 0 10px rgba(56, 189, 248, 0.4);
-}
-
-.pin-hud-corner.corner-tl {
-    top: calc(16px + env(safe-area-inset-top, 0px));
-    left: 20px;
-    border-top: 2px solid rgba(56, 189, 248, 0.6);
-    border-left: 2px solid rgba(56, 189, 248, 0.6);
-    padding: 6px 10px;
-}
-
-.pin-hud-corner.corner-tr {
-    top: calc(16px + env(safe-area-inset-top, 0px));
-    right: 20px;
-    border-top: 2px solid rgba(56, 189, 248, 0.6);
-    border-right: 2px solid rgba(56, 189, 248, 0.6);
-    padding: 6px 10px;
-}
-
-.pin-hud-corner.corner-bl {
-    bottom: calc(16px + env(safe-area-inset-bottom, 0px));
-    left: 20px;
-    border-bottom: 2px solid rgba(56, 189, 248, 0.4);
-    border-left: 2px solid rgba(56, 189, 248, 0.4);
-    padding: 6px 10px;
-}
-
-.pin-hud-corner.corner-br {
-    bottom: calc(16px + env(safe-area-inset-bottom, 0px));
-    right: 20px;
-    border-bottom: 2px solid rgba(56, 189, 248, 0.4);
-    border-right: 2px solid rgba(56, 189, 248, 0.4);
-    padding: 6px 10px;
-}
-
-@media (max-width: 600px) {
-    .pin-hud-corner {
-        display: none;
-    }
-}
-
-/* Cyber Matrix Perspective Grid */
-.pin-cyber-grid {
-    position: absolute;
-    inset: 0;
-    background-image: 
-        linear-gradient(rgba(56, 189, 248, 0.05) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(56, 189, 248, 0.05) 1px, transparent 1px);
-    background-size: 32px 32px;
-    mask-image: radial-gradient(ellipse at 50% 45%, black 40%, transparent 85%);
-    -webkit-mask-image: radial-gradient(ellipse at 50% 45%, black 40%, transparent 85%);
-    pointer-events: none;
-    opacity: 0.85;
-    animation: cyberGridDrift 30s linear infinite;
-}
-
-@keyframes cyberGridDrift {
-    0% { background-position: 0 0; }
-    100% { background-position: 32px 32px; }
-}
-
-/* Vertical Laser Scanner Sweep */
-.pin-scanner-line {
-    position: absolute;
-    left: 0;
-    right: 0;
-    height: 2px;
-    background: linear-gradient(90deg, transparent 0%, rgba(56, 189, 248, 0.5) 25%, #38BDF8 50%, rgba(16, 185, 129, 0.9) 70%, transparent 100%);
-    box-shadow: 0 0 18px rgba(56, 189, 248, 0.9), 0 0 35px rgba(16, 185, 129, 0.6);
-    opacity: 0.7;
-    pointer-events: none;
-    z-index: 2;
-    animation: cyberScanBeam 6s ease-in-out infinite;
-}
-
-@keyframes cyberScanBeam {
-    0% { top: 0%; opacity: 0; }
-    15% { opacity: 0.8; }
-    85% { opacity: 0.8; }
-    100% { top: 100%; opacity: 0; }
-}
-
-/* Ambient Floating Sci-Fi Glow Orbs */
-.pin-floating-orb {
+/* Atmospheric Soft Ambient Glow Lighting */
+.pin-ambient-glow {
     position: absolute;
     border-radius: 50%;
-    filter: blur(85px);
     pointer-events: none;
     z-index: 1;
-    opacity: 0.5;
-    animation: cyberOrbFloat 12s ease-in-out infinite alternate;
 }
 
-.pin-floating-orb.orb-1 {
-    width: 340px;
-    height: 340px;
-    top: -50px;
+.pin-ambient-glow.glow-top {
+    width: 380px;
+    height: 380px;
+    top: -80px;
     left: 50%;
     transform: translateX(-50%);
-    background: radial-gradient(circle, rgba(14, 165, 233, 0.38) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(56, 189, 248, 0.18) 0%, rgba(99, 102, 241, 0.10) 45%, transparent 70%);
+    filter: blur(85px);
 }
 
-.pin-floating-orb.orb-2 {
-    width: 280px;
-    height: 280px;
-    bottom: -40px;
+.pin-ambient-glow.glow-bottom {
+    width: 300px;
+    height: 300px;
+    bottom: -60px;
     right: -40px;
-    background: radial-gradient(circle, rgba(16, 185, 129, 0.32) 0%, transparent 70%);
-    animation-delay: -4s;
+    background: radial-gradient(circle, rgba(16, 185, 129, 0.14) 0%, transparent 70%);
+    filter: blur(80px);
 }
 
-.pin-floating-orb.orb-3 {
-    width: 240px;
-    height: 240px;
-    top: 45%;
-    left: -60px;
-    background: radial-gradient(circle, rgba(99, 102, 241, 0.3) 0%, transparent 70%);
-    animation-delay: -8s;
-}
-
-@keyframes cyberOrbFloat {
-    0% { transform: translateY(0) scale(1); }
-    50% { transform: translateY(-25px) scale(1.12); }
-    100% { transform: translateY(20px) scale(0.94); }
-}
-
-/* Live Preview Mode Floating Exit Banner */
-.pin-preview-banner {
-    display: flex;
+/* Floating Test/Preview Banner */
+.pin-preview-pill {
+    position: relative;
+    z-index: 20;
+    display: inline-flex;
     align-items: center;
     justify-content: space-between;
     gap: 12px;
-    width: 100%;
-    max-width: 360px;
-    margin-bottom: 10px;
     background: rgba(245, 158, 11, 0.12);
-    border: 1px solid rgba(245, 158, 11, 0.45);
-    box-shadow: 0 0 20px rgba(245, 158, 11, 0.25);
-    border-radius: 12px;
-    padding: 8px 14px;
-    z-index: 20;
-    backdrop-filter: blur(14px);
-    animation: fadeInDown 0.3s ease;
+    border: 1px solid rgba(245, 158, 11, 0.32);
+    border-radius: 9999px;
+    padding: 6px 14px;
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    margin-bottom: 8px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+    animation: fadeInDown 0.25s ease;
 }
 
-.pin-preview-badge {
-    font-size: 0.68rem;
-    font-weight: 800;
-    color: #FBBF24;
-    letter-spacing: 0.8px;
+.preview-pill-content {
     display: flex;
     align-items: center;
-    gap: 7px;
+    gap: 8px;
+    color: #FBBF24;
+    font-size: 0.74rem;
+    font-weight: 600;
+    letter-spacing: 0.2px;
 }
 
-.pin-preview-close-btn {
+.preview-live-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #FBBF24;
+    box-shadow: 0 0 8px #FBBF24;
+    animation: pulseDot 2s infinite;
+}
+
+@keyframes pulseDot {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.35; transform: scale(0.8); }
+}
+
+.preview-exit-btn {
     background: rgba(245, 158, 11, 0.22);
-    border: 1px solid rgba(245, 158, 11, 0.5);
+    border: none;
     color: #FFFFFF;
-    font-size: 0.72rem;
+    border-radius: 9999px;
+    padding: 3px 10px;
+    font-size: 0.70rem;
     font-weight: 700;
-    padding: 4px 10px;
-    border-radius: 8px;
     cursor: pointer;
     display: inline-flex;
     align-items: center;
-    gap: 5px;
+    gap: 4px;
     transition: all 0.2s ease;
 }
 
-.pin-preview-close-btn:hover {
+.preview-exit-btn:hover {
     background: #F59E0B;
     color: #000000;
 }
 
-/* Top Telemetry Status Bar */
-.pin-telemetry-bar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    width: 100%;
-    max-width: 340px;
-    margin-bottom: 6px;
-    position: relative;
-    z-index: 5;
-    pointer-events: none;
-}
-
-.telemetry-pill {
-    display: inline-flex;
-    align-items: center;
-    gap: 7px;
-    background: rgba(15, 23, 42, 0.75);
-    border: 1px solid rgba(56, 189, 248, 0.3);
-    padding: 4px 12px;
-    border-radius: 9999px;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.62rem;
-    font-weight: 700;
-    color: #38BDF8;
-    letter-spacing: 1px;
-    box-shadow: 0 0 14px rgba(56, 189, 248, 0.15);
-}
-
-.telemetry-dot {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: #10B981;
-    box-shadow: 0 0 8px #10B981;
-    animation: telemetryPulse 1.8s infinite;
-}
-
-@keyframes telemetryPulse {
-    0%, 100% { opacity: 1; transform: scale(1); }
-    50% { opacity: 0.3; transform: scale(0.75); }
-}
-
-.telemetry-clock-wrap {
-    text-align: right;
-}
-
-.telemetry-time {
-    font-family: 'JetBrains Mono', 'Space Grotesk', monospace;
-    font-size: 1.15rem;
-    font-weight: 700;
-    color: #FFFFFF;
-    letter-spacing: 1px;
-    line-height: 1;
-    text-shadow: 0 0 12px rgba(56, 189, 248, 0.4);
-}
-
-.telemetry-date {
-    font-size: 0.66rem;
-    font-weight: 600;
-    color: rgba(255, 255, 255, 0.55);
-    letter-spacing: 0.4px;
-    margin-top: 2px;
-    text-transform: capitalize;
-}
-
-/* Center Cyber-Vault Container */
-.pin-lock-container {
+/* Main Content Container */
+.pin-content-container {
     position: relative;
     z-index: 10;
     display: flex;
@@ -591,594 +427,363 @@ a {
     align-items: center;
     width: 100%;
     max-width: 320px;
-    margin: 0 auto;
+    margin: auto 0;
     box-sizing: border-box;
 }
 
-/* Quantum Arc Reactor Core */
-.pin-reactor-wrapper {
-    position: relative;
-    width: 82px;
-    height: 82px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 8px;
-}
-
-.reactor-ring {
-    position: absolute;
-    border-radius: 50%;
-    pointer-events: none;
-}
-
-.reactor-ring.ring-outer {
-    width: 82px;
-    height: 82px;
-    border: 1.5px dashed rgba(56, 189, 248, 0.55);
-    box-shadow: 0 0 20px rgba(56, 189, 248, 0.35);
-    animation: rotateReactorCW 14s linear infinite;
-}
-
-.reactor-ring.ring-mid {
-    width: 70px;
-    height: 70px;
-    border: 1.5px dotted rgba(16, 185, 129, 0.65);
-    box-shadow: 0 0 16px rgba(16, 185, 129, 0.3);
-    animation: rotateReactorCCW 8s linear infinite;
-}
-
-.reactor-ring.ring-inner {
-    width: 58px;
-    height: 58px;
-    border: 1px solid rgba(139, 92, 246, 0.5);
-    animation: reactorRingPulse 3s ease-in-out infinite;
-}
-
-@keyframes rotateReactorCW {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
-}
-
-@keyframes rotateReactorCCW {
-    from { transform: rotate(360deg); }
-    to { transform: rotate(0deg); }
-}
-
-@keyframes reactorRingPulse {
-    0%, 100% { transform: scale(1); opacity: 0.35; }
-    50% { transform: scale(1.14); opacity: 0.85; }
-}
-
-.reactor-core-glow {
-    position: absolute;
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    background: radial-gradient(circle, rgba(56, 189, 248, 0.45) 0%, transparent 70%);
-    filter: blur(10px);
-    pointer-events: none;
-    animation: coreGlowBreathe 3s ease-in-out infinite;
-}
-
-@keyframes coreGlowBreathe {
-    0%, 100% { opacity: 0.5; transform: scale(0.9); }
-    50% { opacity: 0.9; transform: scale(1.2); }
-}
-
-/* Reactor Iris / Shield Centerpiece */
-.reactor-iris {
-    width: 52px;
-    height: 52px;
-    background: linear-gradient(135deg, rgba(14, 165, 233, 0.3) 0%, rgba(15, 23, 42, 0.85) 100%);
-    border: 1.5px solid rgba(56, 189, 248, 0.6);
-    box-shadow: 0 0 25px rgba(56, 189, 248, 0.45), inset 0 1px 2px rgba(255, 255, 255, 0.4);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 22px;
-    color: #38BDF8;
-    position: relative;
-    z-index: 5;
-    clip-path: polygon(14% 0%, 86% 0%, 100% 14%, 100% 86%, 86% 100%, 14% 100%, 0% 86%, 0% 14%);
-    transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
-    animation: irisFloat 4s ease-in-out infinite;
-}
-
-@keyframes irisFloat {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-3px); }
-}
-
-.reactor-iris.pulse-glow {
-    box-shadow: 0 0 45px rgba(56, 189, 248, 0.95), inset 0 0 15px rgba(56, 189, 248, 0.6);
-    transform: scale(1.12);
-    border-color: #38BDF8;
-}
-
-.reactor-iris.unlocked {
-    background: linear-gradient(135deg, #10B981 0%, #065F46 100%) !important;
-    border-color: #34D399 !important;
-    color: #FFFFFF !important;
-    box-shadow: 0 0 50px rgba(16, 185, 129, 1), inset 0 2px 4px rgba(255, 255, 255, 0.8) !important;
-    transform: scale(1.22) rotate(360deg) !important;
-}
-
-.reactor-iris.error {
-    background: linear-gradient(135deg, #EF4444 0%, #7F1D1D 100%) !important;
-    border-color: #F87171 !important;
-    color: #FFFFFF !important;
-    box-shadow: 0 0 45px rgba(239, 68, 68, 1) !important;
-}
-
-/* Vault System Headers */
-.pin-cyber-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    background: rgba(56, 189, 248, 0.08);
-    border: 1px solid rgba(56, 189, 248, 0.28);
-    border-radius: 8px;
-    padding: 3px 10px;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.64rem;
-    font-weight: 700;
-    color: #38BDF8;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    margin-bottom: 4px;
-}
-
-.pin-vault-title {
-    font-family: 'Orbitron', 'Space Grotesk', sans-serif;
-    font-size: 1.22rem;
-    font-weight: 800;
-    color: #FFFFFF;
-    letter-spacing: 1.5px;
-    text-shadow: 0 0 20px rgba(56, 189, 248, 0.5);
-    margin: 0 0 2px 0;
-    text-align: center;
-}
-
-.pin-vault-subtitle {
-    font-size: 0.74rem;
-    color: rgba(255, 255, 255, 0.6);
-    margin: 0 0 10px 0;
-    text-align: center;
-    line-height: 1.3;
-}
-
-/* Holographic Decryption Cells (Not standard dots!) */
-.pin-cipher-display {
+/* Brand & Security Header */
+.pin-brand-header {
     display: flex;
     flex-direction: column;
     align-items: center;
-    width: 100%;
-    margin-bottom: 10px;
+    text-align: center;
 }
 
-.pin-cipher-cells {
-    display: flex;
-    gap: 12px;
-    justify-content: center;
-    align-items: center;
-    margin-bottom: 8px;
-}
-
-.pin-cipher-cell {
-    position: relative;
-    width: 48px;
-    height: 52px;
-    background: linear-gradient(180deg, rgba(30, 41, 59, 0.7) 0%, rgba(15, 23, 42, 0.9) 100%);
-    border: 1.5px solid rgba(56, 189, 248, 0.25);
-    border-radius: 8px;
+.pin-shield-badge {
+    width: 58px;
+    height: 58px;
+    border-radius: 18px;
+    background: linear-gradient(135deg, rgba(56, 189, 248, 0.16) 0%, rgba(30, 41, 59, 0.5) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35), inset 0 1px 1px rgba(255, 255, 255, 0.25);
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1);
-    transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
-    overflow: hidden;
-}
-
-/* Corner sci-fi brackets on each cell */
-.cell-bracket {
-    position: absolute;
-    width: 5px;
-    height: 5px;
-    pointer-events: none;
-    transition: border-color 0.2s ease;
-}
-
-.cell-bracket.tl { top: 2px; left: 2px; border-top: 1.5px solid rgba(56, 189, 248, 0.6); border-left: 1.5px solid rgba(56, 189, 248, 0.6); }
-.cell-bracket.tr { top: 2px; right: 2px; border-top: 1.5px solid rgba(56, 189, 248, 0.6); border-right: 1.5px solid rgba(56, 189, 248, 0.6); }
-.cell-bracket.bl { bottom: 2px; left: 2px; border-bottom: 1.5px solid rgba(56, 189, 248, 0.6); border-left: 1.5px solid rgba(56, 189, 248, 0.6); }
-.cell-bracket.br { bottom: 2px; right: 2px; border-bottom: 1.5px solid rgba(56, 189, 248, 0.6); border-right: 1.5px solid rgba(56, 189, 248, 0.6); }
-
-.cell-content {
-    font-family: 'JetBrains Mono', 'Orbitron', monospace;
-    font-size: 1.3rem;
-    font-weight: 800;
-    color: rgba(255, 255, 255, 0.25);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-.cell-placeholder {
-    transition: opacity 0.2s ease;
-}
-
-/* Filled Decryption State */
-.pin-cipher-cell.filled {
-    border-color: #38BDF8;
-    background: linear-gradient(180deg, rgba(14, 165, 233, 0.22) 0%, rgba(15, 23, 42, 0.95) 100%);
-    box-shadow: 0 0 20px rgba(56, 189, 248, 0.7), inset 0 0 12px rgba(56, 189, 248, 0.35);
-    transform: translateY(-2px) scale(1.05);
-}
-
-.pin-cipher-cell.filled .cell-content {
+    font-size: 1.45rem;
     color: #38BDF8;
-    text-shadow: 0 0 12px #38BDF8, 0 0 24px rgba(56, 189, 248, 0.8);
-    transform: scale(1.15);
+    transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.pin-cipher-cell.filled .cell-bracket {
-    border-color: #38BDF8;
+.pin-shield-badge.unlocked {
+    background: linear-gradient(135deg, #10B981 0%, #059669 100%) !important;
+    border-color: #34D399 !important;
+    color: #FFFFFF !important;
+    box-shadow: 0 0 35px rgba(16, 185, 129, 0.65), inset 0 1px 2px rgba(255, 255, 255, 0.5) !important;
+    transform: scale(1.1);
 }
 
-.pin-cipher-cell.filled::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 10%;
-    right: 10%;
-    height: 2px;
-    background: #38BDF8;
-    box-shadow: 0 0 8px #38BDF8;
+.pin-shield-badge.error {
+    background: linear-gradient(135deg, #EF4444 0%, #B91C1C 100%) !important;
+    border-color: #F87171 !important;
+    color: #FFFFFF !important;
+    box-shadow: 0 0 30px rgba(239, 68, 68, 0.6) !important;
 }
 
-/* Success Decryption State */
-.pin-cipher-cell.success {
-    border-color: #10B981 !important;
-    background: linear-gradient(180deg, rgba(16, 185, 129, 0.3) 0%, rgba(6, 78, 59, 0.9) 100%) !important;
-    box-shadow: 0 0 25px rgba(16, 185, 129, 0.95), inset 0 0 15px rgba(16, 185, 129, 0.4) !important;
-    transform: scale(1.1) !important;
-}
-
-.pin-cipher-cell.success .cell-content {
-    color: #10B981 !important;
-    text-shadow: 0 0 16px #10B981 !important;
-}
-
-.pin-cipher-cell.success .cell-bracket {
-    border-color: #10B981 !important;
-}
-
-/* Error Decryption State */
-.pin-cipher-cell.error {
-    border-color: #EF4444 !important;
-    background: linear-gradient(180deg, rgba(239, 68, 68, 0.3) 0%, rgba(127, 29, 29, 0.9) 100%) !important;
-    box-shadow: 0 0 25px rgba(239, 68, 68, 0.95) !important;
-}
-
-.pin-cipher-cell.error .cell-content {
-    color: #EF4444 !important;
-    text-shadow: 0 0 16px #EF4444 !important;
-}
-
-.pin-cipher-cell.error .cell-bracket {
-    border-color: #EF4444 !important;
-}
-
-/* Decryption Progress Gauge */
-.pin-progress-track {
-    width: 100%;
-    max-width: 228px;
-    height: 4px;
-    background: rgba(255, 255, 255, 0.08);
-    border-radius: 9999px;
-    overflow: hidden;
-    position: relative;
-    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.6);
-}
-
-.pin-progress-fill {
-    height: 100%;
-    background: linear-gradient(90deg, #0284C7 0%, #38BDF8 60%, #10B981 100%);
-    box-shadow: 0 0 10px #38BDF8;
-    transition: width 0.22s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.pin-progress-label {
-    margin-top: 4px;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.62rem;
+.pin-header-title {
+    font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
+    font-size: 1.45rem;
     font-weight: 700;
-    color: rgba(56, 189, 248, 0.75);
-    letter-spacing: 0.8px;
+    color: #FFFFFF;
+    letter-spacing: -0.02em;
+    margin: 14px 0 4px 0;
+    text-align: center;
 }
 
-/* Cyber Error Banner */
-.pin-cyber-error {
-    color: #EF4444;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.72rem;
-    font-weight: 800;
-    letter-spacing: 0.5px;
-    margin-bottom: 8px;
+.pin-header-sub {
+    font-size: 0.84rem;
+    color: #94A3B8;
+    font-weight: 400;
+    margin: 0;
+    line-height: 1.4;
+    text-align: center;
+}
+
+/* PIN Indicator Dots */
+.pin-indicator-wrap {
+    margin: 24px 0 26px 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.pin-dots-container {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    justify-content: center;
+    height: 24px;
+}
+
+.pin-dot-item {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1.5px solid rgba(255, 255, 255, 0.22);
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.3);
+    transition: all 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+    position: relative;
     display: flex;
     align-items: center;
-    gap: 7px;
-    background: rgba(239, 68, 68, 0.12);
-    border: 1px solid rgba(239, 68, 68, 0.4);
-    box-shadow: 0 0 15px rgba(239, 68, 68, 0.25);
-    padding: 5px 12px;
-    border-radius: 8px;
-    animation: fadeInDown 0.25s ease;
+    justify-content: center;
 }
 
-/* Chamfered Cyber-Tile Keypad */
-.cyber-tile-grid {
+.pin-dot-item.filled {
+    background: #FFFFFF;
+    border-color: #FFFFFF;
+    transform: scale(1.28);
+    box-shadow: 0 0 14px rgba(255, 255, 255, 0.8), 0 0 24px rgba(56, 189, 248, 0.45);
+}
+
+.pin-dot-item.success {
+    background: #10B981 !important;
+    border-color: #10B981 !important;
+    transform: scale(1.35) !important;
+    box-shadow: 0 0 20px rgba(16, 185, 129, 0.9) !important;
+}
+
+.pin-dot-item.error {
+    background: #EF4444 !important;
+    border-color: #EF4444 !important;
+    box-shadow: 0 0 18px rgba(239, 68, 68, 0.9) !important;
+}
+
+.pin-dots-container.shake-error {
+    animation: pinShake 0.45s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
+
+@keyframes pinShake {
+    0%, 100% { transform: translateX(0); }
+    20%, 60% { transform: translateX(-10px); }
+    40%, 80% { transform: translateX(10px); }
+}
+
+.pin-shield-badge.pulse-glow {
+    transform: scale(1.08);
+    box-shadow: 0 0 30px rgba(56, 189, 248, 0.6), inset 0 1px 2px rgba(255, 255, 255, 0.4);
+}
+
+.pin-error-toast {
+    color: #EF4444;
+    font-size: 0.78rem;
+    font-weight: 600;
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.25);
+    border-radius: 9999px;
+    padding: 5px 14px;
+    margin-top: 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    animation: fadeInDown 0.2s ease;
+}
+
+/* Glassmorphic Keypad */
+.modern-keypad-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 10px 14px;
+    gap: 14px 22px;
     width: 100%;
     max-width: 280px;
-    margin-bottom: 6px;
+    margin-bottom: 20px;
     box-sizing: border-box;
 }
 
-.cyber-tile {
-    position: relative;
-    height: 56px;
-    width: 100%;
-    background: linear-gradient(145deg, rgba(30, 41, 59, 0.65) 0%, rgba(15, 23, 42, 0.85) 100%);
-    border: 1px solid rgba(56, 189, 248, 0.22);
-    clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
+.keypad-btn {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    margin: 0 auto;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    color: #FFFFFF;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.15);
-    transition: all 0.14s cubic-bezier(0.2, 0.8, 0.2, 1);
-    -webkit-tap-highlight-color: transparent;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.14);
+    transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1);
     touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
     padding: 0;
 }
 
-.cyber-tile .tile-num {
-    font-family: 'Space Grotesk', 'Orbitron', -apple-system, sans-serif;
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: #F8FAFC;
-    line-height: 1;
-    pointer-events: none;
-    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.6);
-}
-
-.cyber-tile .tile-tag {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.54rem;
-    font-weight: 700;
-    color: rgba(56, 189, 248, 0.7);
-    letter-spacing: 1.4px;
-    line-height: 1;
-    margin-top: 2px;
+.keypad-btn .key-digit {
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 1.7rem;
+    font-weight: 500;
+    line-height: 1.1;
     pointer-events: none;
 }
 
-.cyber-tile:hover {
-    background: linear-gradient(145deg, rgba(56, 189, 248, 0.18) 0%, rgba(15, 23, 42, 0.9) 100%);
-    border-color: rgba(56, 189, 248, 0.6);
-    box-shadow: 0 0 18px rgba(56, 189, 248, 0.4);
+.keypad-btn .key-letters {
+    font-size: 0.58rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.42);
+    letter-spacing: 2px;
+    margin-top: 1px;
+    line-height: 1;
+    pointer-events: none;
+}
+
+.keypad-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.22);
     transform: translateY(-1px);
 }
 
-.cyber-tile:active, .cyber-tile.pressed, .cyber-tile.key-pressed {
-    background: radial-gradient(circle, rgba(56, 189, 248, 0.5) 0%, rgba(15, 23, 42, 0.95) 100%) !important;
-    border-color: #38BDF8 !important;
-    box-shadow: 0 0 28px rgba(56, 189, 248, 0.9), inset 0 0 15px rgba(56, 189, 248, 0.5) !important;
-    transform: scale(0.92);
+.keypad-btn:active, .keypad-btn.pressed, .keypad-btn.key-pressed {
+    background: rgba(255, 255, 255, 0.24) !important;
+    border-color: rgba(255, 255, 255, 0.35) !important;
+    transform: scale(0.92) !important;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3) !important;
 }
 
-.cyber-tile.tile-action {
-    color: rgba(255, 255, 255, 0.7);
-    font-size: 1.25rem;
+.keypad-btn.key-action {
+    background: transparent;
+    border-color: transparent;
+    box-shadow: none;
+    font-size: 1.3rem;
+    color: rgba(255, 255, 255, 0.65);
+}
+
+.keypad-btn.key-action:hover {
+    color: #38BDF8;
+    background: rgba(56, 189, 248, 0.08);
+}
+
+.keypad-btn.key-action:active, .keypad-btn.key-action.key-pressed {
+    transform: scale(0.88);
+    color: #FFFFFF;
+    background: rgba(56, 189, 248, 0.2) !important;
 }
 
 #btnKeypadBiometric {
     color: #38BDF8;
-    border-color: rgba(56, 189, 248, 0.35);
-    background: rgba(56, 189, 248, 0.08);
 }
 
-#btnKeypadBiometric i {
-    animation: biometricIconAura 3s ease-in-out infinite;
-}
-
-@keyframes biometricIconAura {
-    0%, 100% { filter: drop-shadow(0 0 4px rgba(56, 189, 248, 0.4)); }
-    50% { filter: drop-shadow(0 0 12px rgba(56, 189, 248, 0.9)); }
-}
-
-/* Vault Footer Actions */
-.pin-vault-footer {
+/* Footer Minimalist Action */
+.pin-footer-section {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 6px;
+    gap: 8px;
     z-index: 10;
-    margin-top: 4px;
 }
 
-.pin-cyber-bypass-btn {
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+.pin-forgot-link {
+    background: none;
+    border: none;
     color: rgba(255, 255, 255, 0.55);
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.70rem;
-    font-weight: 700;
+    font-size: 0.82rem;
+    font-weight: 500;
     cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 7px;
-    padding: 6px 14px;
-    border-radius: 8px;
+    padding: 8px 16px;
+    border-radius: 9999px;
     transition: all 0.2s ease;
-    backdrop-filter: blur(12px);
+    font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
 }
 
-.pin-cyber-bypass-btn:hover {
+.pin-forgot-link:hover {
     color: #38BDF8;
-    background: rgba(56, 189, 248, 0.12);
-    border-color: rgba(56, 189, 248, 0.35);
-    box-shadow: 0 0 15px rgba(56, 189, 248, 0.25);
-    transform: translateY(-1px);
+    background: rgba(56, 189, 248, 0.08);
 }
 
-.pin-cyber-preview-exit-btn {
-    background: rgba(245, 158, 11, 0.15);
-    border: 1px solid rgba(245, 158, 11, 0.45);
+.pin-preview-bottom-btn {
+    background: rgba(245, 158, 11, 0.12);
+    border: 1px solid rgba(245, 158, 11, 0.35);
     color: #FBBF24;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.72rem;
-    font-weight: 700;
+    font-size: 0.76rem;
+    font-weight: 600;
+    padding: 8px 18px;
+    border-radius: 9999px;
     cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 7px;
-    padding: 6px 16px;
-    border-radius: 8px;
     transition: all 0.2s ease;
-    box-shadow: 0 0 14px rgba(245, 158, 11, 0.2);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
 }
 
-.pin-cyber-preview-exit-btn:hover {
+.pin-preview-bottom-btn:hover {
     background: #F59E0B;
     color: #000000;
 }
 
-.pin-desktop-hud-hint {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.62rem;
-    color: rgba(255, 255, 255, 0.3);
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    letter-spacing: 0.6px;
-}
-
-@media (max-width: 600px) {
-    .pin-desktop-hud-hint {
-        display: none;
-    }
-}
-
-/* Screen height adaptations for compact mobile screens (e.g. iPhone SE, iPhone Mini, Folded screens) */
+/* Screen height adaptations for compact phones (e.g. iPhone SE, iPhone Mini) */
 @media (max-height: 720px) {
-    .pin-lock-screen {
-        padding: calc(8px + env(safe-area-inset-top, 0px)) 10px calc(8px + env(safe-area-inset-bottom, 0px)) 10px;
-        justify-content: center;
+    .modern-pin-lock {
+        padding: calc(14px + env(safe-area-inset-top, 0px)) 16px calc(14px + env(safe-area-inset-bottom, 0px)) 16px;
     }
 
-    .pin-telemetry-bar {
-        margin-bottom: 4px;
-    }
-
-    .telemetry-time {
-        font-size: 1rem;
-    }
-
-    .pin-reactor-wrapper {
-        width: 64px;
-        height: 64px;
-        margin-bottom: 4px;
-    }
-
-    .reactor-ring.ring-outer { width: 64px; height: 64px; }
-    .reactor-ring.ring-mid { width: 54px; height: 54px; }
-    .reactor-ring.ring-inner { width: 44px; height: 44px; }
-
-    .reactor-iris {
-        width: 42px;
-        height: 42px;
-        font-size: 18px;
-    }
-
-    .pin-cyber-badge {
-        font-size: 0.58rem;
-        padding: 2px 8px;
-    }
-
-    .pin-vault-title {
-        font-size: 1.05rem;
-    }
-
-    .pin-vault-subtitle {
-        font-size: 0.68rem;
-        margin-bottom: 6px;
-    }
-
-    .pin-cipher-cells {
-        gap: 8px;
-        margin-bottom: 6px;
-    }
-
-    .pin-cipher-cell {
-        width: 40px;
-        height: 44px;
-    }
-
-    .cell-content {
-        font-size: 1.1rem;
-    }
-
-    .cyber-tile-grid {
-        gap: 6px 10px;
-        max-width: 255px;
-    }
-
-    .cyber-tile {
+    .pin-shield-badge {
+        width: 48px;
         height: 48px;
+        font-size: 1.25rem;
+        border-radius: 14px;
     }
 
-    .cyber-tile .tile-num {
-        font-size: 1.3rem;
+    .pin-header-title {
+        font-size: 1.25rem;
+        margin: 10px 0 2px 0;
     }
 
-    .cyber-tile .tile-tag {
-        font-size: 0.48rem;
+    .pin-header-sub {
+        font-size: 0.76rem;
+    }
+
+    .pin-indicator-wrap {
+        margin: 16px 0 18px 0;
+    }
+
+    .pin-dots-container {
+        gap: 16px;
+    }
+
+    .pin-dot-item {
+        width: 12px;
+        height: 12px;
+    }
+
+    .modern-keypad-grid {
+        gap: 10px 18px;
+        max-width: 250px;
+        margin-bottom: 12px;
+    }
+
+    .keypad-btn {
+        width: 60px;
+        height: 60px;
+    }
+
+    .keypad-btn .key-digit {
+        font-size: 1.45rem;
+    }
+
+    .keypad-btn .key-letters {
+        font-size: 0.50rem;
+    }
+
+    .pin-forgot-link {
+        font-size: 0.78rem;
+        padding: 4px 12px;
     }
 }
 
 /* ==========================================================================
    PIN & Security Settings Modal Styles
    ========================================================================== */
-/* Live Preview Hero Banner in Security Modal */
 .pin-preview-trigger-card {
     position: relative;
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 12px;
-    padding: 12px 14px;
-    border-radius: 14px;
-    background: linear-gradient(135deg, rgba(14, 165, 233, 0.15) 0%, rgba(15, 23, 42, 0.8) 100%);
-    border: 1px solid rgba(56, 189, 248, 0.35);
-    box-shadow: 0 4px 20px rgba(14, 165, 233, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    padding: 14px 16px;
+    border-radius: 16px;
+    background: linear-gradient(135deg, rgba(56, 189, 248, 0.12) 0%, rgba(30, 41, 59, 0.6) 100%);
+    border: 1px solid rgba(56, 189, 248, 0.25);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.1);
     margin-bottom: 14px;
     cursor: pointer;
     transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-    overflow: hidden;
 }
 
 .pin-preview-trigger-card:hover {
     border-color: #38BDF8;
-    box-shadow: 0 0 25px rgba(56, 189, 248, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    box-shadow: 0 0 25px rgba(56, 189, 248, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2);
     transform: translateY(-2px);
 }
 
@@ -1199,14 +804,13 @@ a {
     align-items: center;
     justify-content: center;
     font-size: 1.25rem;
-    box-shadow: 0 0 14px rgba(56, 189, 248, 0.25);
+    box-shadow: 0 0 14px rgba(56, 189, 248, 0.2);
     flex-shrink: 0;
 }
 
 .preview-trigger-tag {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.58rem;
-    font-weight: 800;
+    font-size: 0.62rem;
+    font-weight: 700;
     color: #38BDF8;
     letter-spacing: 0.8px;
     margin-bottom: 2px;
@@ -1214,12 +818,12 @@ a {
 
 .preview-trigger-title {
     font-size: 0.92rem;
-    font-weight: 800;
+    font-weight: 700;
     color: #FFFFFF;
 }
 
 .preview-trigger-sub {
-    font-size: 0.70rem;
+    font-size: 0.72rem;
     color: var(--text-secondary);
     line-height: 1.25;
 }
@@ -1232,10 +836,10 @@ a {
     border-radius: 8px;
     background: #38BDF8;
     color: #030712;
-    font-weight: 800;
+    font-weight: 700;
     font-size: 0.74rem;
     white-space: nowrap;
-    box-shadow: 0 0 15px rgba(56, 189, 248, 0.5);
+    box-shadow: 0 0 15px rgba(56, 189, 248, 0.4);
     transition: transform 0.2s ease;
     flex-shrink: 0;
 }
@@ -1354,7 +958,7 @@ a {
     font-weight: 800;
     color: #FFFFFF;
     text-align: center;
-    font-family: 'JetBrains Mono', var(--font-mono);
+    font-family: 'Plus Jakarta Sans', var(--font-mono);
     transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
     outline: none;
     -webkit-appearance: none;

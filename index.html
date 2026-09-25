@@ -27,7 +27,7 @@
     <script src="https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js"></script>
     <!-- jsPDF for High-Resolution Multi-Page PDF Export -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <link rel="stylesheet" href="style.css?v=108">    <style>
+    <link rel="stylesheet" href="style.css?v=110">    <style>
         /* Refresh Button Loading Animation */
         .icon-btn.loading i {
             animation: spin 1s linear infinite;
@@ -54,204 +54,109 @@
         </div>
     </div>
 
-    <!-- PIN Lock Overlay (Radical Cyber-Vault Quantum HUD Interface) -->
-    <div id="pinLockOverlay" class="pin-lock-screen" style="display: none;">
-        <!-- HUD Sci-Fi Corner Brackets -->
-        <div class="pin-hud-corner corner-tl">
-            <span class="hud-corner-line"></span>
-            <span class="hud-corner-text">SEC.SYS // VAULT-01</span>
-        </div>
-        <div class="pin-hud-corner corner-tr">
-            <span class="hud-corner-line"></span>
-            <span class="hud-corner-text">ENC // AES-GCM-256</span>
-        </div>
-        <div class="pin-hud-corner corner-bl">
-            <span class="hud-corner-line"></span>
-            <span class="hud-corner-text">PORTFOYUM // QUANTUM-HUD</span>
-        </div>
-        <div class="pin-hud-corner corner-br">
-            <span class="hud-corner-line"></span>
-            <span class="hud-corner-text">STATUS // LOCKED</span>
-        </div>
+    <!-- Modern FinTech PIN Lock Screen (Apple & Revolut Ultra Luxury Design) -->
+    <div id="pinLockOverlay" class="modern-pin-lock" style="display: none;">
+        <!-- Soft Ambient Atmospheric Lighting -->
+        <div class="pin-ambient-glow glow-top"></div>
+        <div class="pin-ambient-glow glow-bottom"></div>
 
-        <!-- Ambient Cyber Matrix Elements -->
-        <div class="pin-cyber-grid"></div>
-        <div class="pin-scanner-line"></div>
-        <div class="pin-floating-orb orb-1"></div>
-        <div class="pin-floating-orb orb-2"></div>
-        <div class="pin-floating-orb orb-3"></div>
-
-        <!-- Preview Mode Exit Banner (shown when opened in preview/test mode) -->
-        <div id="pinPreviewBanner" class="pin-preview-banner" style="display: none;">
-            <div class="pin-preview-badge">
-                <i class="fa-solid fa-wand-magic-sparkles"></i> CANLI TASARIM ÖNİZLEMESİ (TEST MODU)
+        <!-- Preview Mode Exit Pill (Only shown during test/preview) -->
+        <div id="pinPreviewBanner" class="pin-preview-pill" style="display: none;">
+            <div class="preview-pill-content">
+                <span class="preview-live-dot"></span>
+                <span>Tasarım Önizleme Modu</span>
             </div>
-            <button type="button" class="pin-preview-close-btn" onclick="exitPinPreview()">
-                <i class="fa-solid fa-xmark"></i> Önizlemeyi Kapat
+            <button type="button" class="preview-exit-btn" onclick="exitPinPreview()" title="Önizlemeyi Kapat">
+                <span>Kapat</span>
+                <i class="fa-solid fa-xmark"></i>
             </button>
         </div>
 
-        <!-- Lock Screen Telemetry Bar -->
-        <div class="pin-telemetry-bar">
-            <div class="telemetry-pill">
-                <span class="telemetry-dot"></span>
-                <span id="pinLiveStatusText">SECURE PROTOCOL ACTIVE</span>
+        <div class="pin-content-container">
+            <!-- Brand & Security Header -->
+            <div class="pin-brand-header">
+                <div class="pin-shield-badge" id="pinShieldIcon">
+                    <i class="fa-solid fa-lock"></i>
+                </div>
+                <h1 class="pin-header-title" id="pinTitleText">Portföy Kilidi</h1>
+                <p class="pin-header-sub" id="pinSubtitleText">Giriş yapmak için 4 haneli PIN kodunuzu girin</p>
             </div>
-            <div class="telemetry-clock-wrap">
-                <div class="telemetry-time" id="pinLiveClock">--:--</div>
-                <div class="telemetry-date" id="pinLiveDate">Yükleniyor...</div>
-            </div>
-        </div>
 
-        <div class="pin-lock-container">
-            <!-- Quantum Arc Reactor Core -->
-            <div class="pin-reactor-wrapper" id="pinReactor">
-                <div class="reactor-ring ring-outer"></div>
-                <div class="reactor-ring ring-mid"></div>
-                <div class="reactor-ring ring-inner"></div>
-                <div class="reactor-core-glow"></div>
-                <div class="reactor-iris" id="pinShieldIcon">
+            <!-- Modern Minimalist PIN Dots Indicator -->
+            <div class="pin-indicator-wrap">
+                <div class="pin-dots-container" id="pinDots">
+                    <div class="pin-dot-item" data-idx="0"><div class="dot-inner"></div></div>
+                    <div class="pin-dot-item" data-idx="1"><div class="dot-inner"></div></div>
+                    <div class="pin-dot-item" data-idx="2"><div class="dot-inner"></div></div>
+                    <div class="pin-dot-item" data-idx="3"><div class="dot-inner"></div></div>
+                </div>
+                <div id="pinErrorMessage" class="pin-error-toast" style="display: none;">
+                    <i class="fa-solid fa-circle-exclamation"></i>
+                    <span id="pinErrorText">Hatalı PIN kodu, tekrar deneyin</span>
+                </div>
+            </div>
+
+            <!-- Apple / Revolut Grade Glassmorphic Keypad -->
+            <div class="modern-keypad-grid">
+                <button class="keypad-btn" data-pin-key="1" onclick="pressPin(1)" type="button">
+                    <span class="key-digit">1</span>
+                    <span class="key-letters">&nbsp;</span>
+                </button>
+                <button class="keypad-btn" data-pin-key="2" onclick="pressPin(2)" type="button">
+                    <span class="key-digit">2</span>
+                    <span class="key-letters">ABC</span>
+                </button>
+                <button class="keypad-btn" data-pin-key="3" onclick="pressPin(3)" type="button">
+                    <span class="key-digit">3</span>
+                    <span class="key-letters">DEF</span>
+                </button>
+
+                <button class="keypad-btn" data-pin-key="4" onclick="pressPin(4)" type="button">
+                    <span class="key-digit">4</span>
+                    <span class="key-letters">GHI</span>
+                </button>
+                <button class="keypad-btn" data-pin-key="5" onclick="pressPin(5)" type="button">
+                    <span class="key-digit">5</span>
+                    <span class="key-letters">JKL</span>
+                </button>
+                <button class="keypad-btn" data-pin-key="6" onclick="pressPin(6)" type="button">
+                    <span class="key-digit">6</span>
+                    <span class="key-letters">MNO</span>
+                </button>
+
+                <button class="keypad-btn" data-pin-key="7" onclick="pressPin(7)" type="button">
+                    <span class="key-digit">7</span>
+                    <span class="key-letters">PQRS</span>
+                </button>
+                <button class="keypad-btn" data-pin-key="8" onclick="pressPin(8)" type="button">
+                    <span class="key-digit">8</span>
+                    <span class="key-letters">TUV</span>
+                </button>
+                <button class="keypad-btn" data-pin-key="9" onclick="pressPin(9)" type="button">
+                    <span class="key-digit">9</span>
+                    <span class="key-letters">WXYZ</span>
+                </button>
+
+                <button class="keypad-btn key-action" id="btnKeypadBiometric" onclick="authenticateBiometric()" type="button" title="Biyometrik Giriş (Face ID / Parmak İzi)">
                     <i class="fa-solid fa-fingerprint"></i>
-                </div>
-            </div>
-
-            <!-- Vault System Headers -->
-            <div class="pin-cyber-badge">
-                <i class="fa-solid fa-shield-halved"></i>
-                <span id="pinGreetingText">PORTFÖYÜM SİBER KORUMA SİSTEMİ</span>
-            </div>
-            <h2 class="pin-vault-title" id="pinTitleText">ERİŞİM DOĞRULAMA</h2>
-            <p class="pin-vault-subtitle" id="pinSubtitleText">Kasa kilidini açmak için 4 haneli şifrenizi girin</p>
-
-            <!-- Holographic Decryption Cells (Not standard dots!) -->
-            <div class="pin-cipher-display">
-                <div class="pin-cipher-cells" id="pinCipherCells">
-                    <div class="pin-cipher-cell" data-idx="0">
-                        <span class="cell-bracket tl"></span>
-                        <span class="cell-bracket tr"></span>
-                        <span class="cell-bracket bl"></span>
-                        <span class="cell-bracket br"></span>
-                        <div class="cell-content"><span class="cell-placeholder">-</span></div>
-                    </div>
-                    <div class="pin-cipher-cell" data-idx="1">
-                        <span class="cell-bracket tl"></span>
-                        <span class="cell-bracket tr"></span>
-                        <span class="cell-bracket bl"></span>
-                        <span class="cell-bracket br"></span>
-                        <div class="cell-content"><span class="cell-placeholder">-</span></div>
-                    </div>
-                    <div class="pin-cipher-cell" data-idx="2">
-                        <span class="cell-bracket tl"></span>
-                        <span class="cell-bracket tr"></span>
-                        <span class="cell-bracket bl"></span>
-                        <span class="cell-bracket br"></span>
-                        <div class="cell-content"><span class="cell-placeholder">-</span></div>
-                    </div>
-                    <div class="pin-cipher-cell" data-idx="3">
-                        <span class="cell-bracket tl"></span>
-                        <span class="cell-bracket tr"></span>
-                        <span class="cell-bracket bl"></span>
-                        <span class="cell-bracket br"></span>
-                        <div class="cell-content"><span class="cell-placeholder">-</span></div>
-                    </div>
-                </div>
-
-                <!-- Decryption Progress Gauge -->
-                <div class="pin-progress-track">
-                    <div class="pin-progress-fill" id="pinProgressFill" style="width: 0%;"></div>
-                </div>
-                <div class="pin-progress-label">
-                    <span id="pinProgressText">DEŞİFRE: %0 (4 HANE BEKLENİYOR)</span>
-                </div>
-            </div>
-
-            <!-- Error message HUD alert -->
-            <div id="pinErrorMessage" class="pin-cyber-error" style="display: none;">
-                <i class="fa-solid fa-triangle-exclamation"></i>
-                <span id="pinErrorText">ERİŞİM REDDEDİLDİ: HATALI GÜVENLİK KODU</span>
-            </div>
-
-            <!-- Chamfered Cyber-Tile Keypad -->
-            <div class="cyber-tile-grid">
-                <button class="cyber-tile" data-pin-key="1" onclick="pressPin(1)" type="button">
-                    <div class="tile-brackets"></div>
-                    <span class="tile-num">1</span>
-                    <span class="tile-tag">SYS</span>
                 </button>
-                <button class="cyber-tile" data-pin-key="2" onclick="pressPin(2)" type="button">
-                    <div class="tile-brackets"></div>
-                    <span class="tile-num">2</span>
-                    <span class="tile-tag">ABC</span>
+                <button class="keypad-btn" data-pin-key="0" onclick="pressPin(0)" type="button">
+                    <span class="key-digit">0</span>
+                    <span class="key-letters">+</span>
                 </button>
-                <button class="cyber-tile" data-pin-key="3" onclick="pressPin(3)" type="button">
-                    <div class="tile-brackets"></div>
-                    <span class="tile-num">3</span>
-                    <span class="tile-tag">DEF</span>
-                </button>
-
-                <button class="cyber-tile" data-pin-key="4" onclick="pressPin(4)" type="button">
-                    <div class="tile-brackets"></div>
-                    <span class="tile-num">4</span>
-                    <span class="tile-tag">GHI</span>
-                </button>
-                <button class="cyber-tile" data-pin-key="5" onclick="pressPin(5)" type="button">
-                    <div class="tile-brackets"></div>
-                    <span class="tile-num">5</span>
-                    <span class="tile-tag">JKL</span>
-                </button>
-                <button class="cyber-tile" data-pin-key="6" onclick="pressPin(6)" type="button">
-                    <div class="tile-brackets"></div>
-                    <span class="tile-num">6</span>
-                    <span class="tile-tag">MNO</span>
-                </button>
-
-                <button class="cyber-tile" data-pin-key="7" onclick="pressPin(7)" type="button">
-                    <div class="tile-brackets"></div>
-                    <span class="tile-num">7</span>
-                    <span class="tile-tag">PQRS</span>
-                </button>
-                <button class="cyber-tile" data-pin-key="8" onclick="pressPin(8)" type="button">
-                    <div class="tile-brackets"></div>
-                    <span class="tile-num">8</span>
-                    <span class="tile-tag">TUV</span>
-                </button>
-                <button class="cyber-tile" data-pin-key="9" onclick="pressPin(9)" type="button">
-                    <div class="tile-brackets"></div>
-                    <span class="tile-num">9</span>
-                    <span class="tile-tag">WXYZ</span>
-                </button>
-
-                <button class="cyber-tile tile-action" id="btnKeypadBiometric" onclick="authenticateBiometric()" type="button" title="Biyometrik Kimlik Doğrulama">
-                    <div class="tile-brackets"></div>
-                    <i class="fa-solid fa-fingerprint"></i>
-                    <span class="tile-tag">SCAN</span>
-                </button>
-                <button class="cyber-tile" data-pin-key="0" onclick="pressPin(0)" type="button">
-                    <div class="tile-brackets"></div>
-                    <span class="tile-num">0</span>
-                    <span class="tile-tag">ZERO</span>
-                </button>
-                <button class="cyber-tile tile-action" data-pin-key="backspace" onclick="deletePin()" type="button" title="Geri Al / Sil">
-                    <div class="tile-brackets"></div>
+                <button class="keypad-btn key-action" data-pin-key="backspace" onclick="deletePin()" type="button" title="Sil">
                     <i class="fa-solid fa-delete-left"></i>
-                    <span class="tile-tag">DEL</span>
                 </button>
             </div>
 
-            <!-- Bottom HUD Actions -->
-            <div class="pin-vault-footer">
-                <button class="pin-cyber-bypass-btn" onclick="openForgotPinModal()" type="button">
-                    <i class="fa-solid fa-terminal"></i>
-                    <span>Şifremi Unuttum / Kasa Sıfırla</span>
+            <!-- Footer Minimalist Action -->
+            <div class="pin-footer-section">
+                <button class="pin-forgot-link" onclick="openForgotPinModal()" type="button">
+                    Şifremi Unuttum
                 </button>
-                <button id="btnExitPinPreviewBottom" class="pin-cyber-preview-exit-btn" onclick="exitPinPreview()" type="button" style="display: none;">
-                    <i class="fa-solid fa-arrow-left"></i>
-                    <span>Önizlemeden Çık ve Portföye Dön</span>
+                <button id="btnExitPinPreviewBottom" class="pin-preview-bottom-btn" onclick="exitPinPreview()" type="button" style="display: none;">
+                    <i class="fa-solid fa-arrow-left"></i> Portföye Dön (Önizlemeden Çık)
                 </button>
-                <div class="pin-desktop-hud-hint">
-                    <i class="fa-solid fa-microchip"></i>
-                    <span>TERMINAL READY • 0-9 NUMPAD AKTİF</span>
-                </div>
             </div>
         </div>
     </div>
@@ -283,17 +188,16 @@
                 <button class="modal-close" onclick="closePinModal()">&times;</button>
             </div>
 
-            <!-- Live Cyber Lock Screen Preview Hero Banner -->
+            <!-- Live Lock Screen Preview Hero Banner -->
             <div class="pin-preview-trigger-card" onclick="openPinPreviewMode()">
-                <div class="preview-trigger-glow"></div>
                 <div class="preview-trigger-content">
                     <div class="preview-trigger-icon">
-                        <i class="fa-solid fa-atom fa-spin-pulse"></i>
+                        <i class="fa-solid fa-shield-halved"></i>
                     </div>
                     <div class="preview-trigger-info">
-                        <div class="preview-trigger-tag">YENİ NESİL HUD KİLİT SİSTEMİ</div>
-                        <div class="preview-trigger-title">Kilit Ekranını Canlı Dene</div>
-                        <div class="preview-trigger-sub">Siber kasa animasyonlarını, tuşları ve efektleri hemen test et</div>
+                        <div class="preview-trigger-tag">GÜVENLİK ARAYÜZÜ</div>
+                        <div class="preview-trigger-title">Kilit Ekranını Önizle</div>
+                        <div class="preview-trigger-sub">Yeni modern kilit ekranı tasarımını hemen canlı deneyin</div>
                     </div>
                 </div>
                 <div class="preview-trigger-action">
@@ -3109,6 +3013,6 @@
         </div>
     </div>
 
-    <script src="app.js?v=108"></script>
+    <script src="app.js?v=110"></script>
 </body>
 </html>

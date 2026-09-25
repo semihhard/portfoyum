@@ -10980,7 +10980,7 @@ function openPinPreviewMode() {
     closePinModal();
     
     const previewBanner = document.getElementById("pinPreviewBanner");
-    if (previewBanner) previewBanner.style.display = "flex";
+    if (previewBanner) previewBanner.style.display = "inline-flex";
 
     const exitBtnBottom = document.getElementById("btnExitPinPreviewBottom");
     if (exitBtnBottom) exitBtnBottom.style.display = "inline-flex";
@@ -10988,19 +10988,9 @@ function openPinPreviewMode() {
     const subtitle = document.getElementById("pinSubtitleText");
     if (subtitle) {
         subtitle.textContent = appState.pin 
-            ? "Canlı test modu: Belirlediğiniz PIN veya 4 hane girerek test edin" 
-            : "Canlı test modu: İstediğiniz 4 haneli şifreyi girip animasyonu test edin";
+            ? "Önizleme Modu: Belirlediğiniz PIN veya 4 hane girerek test edin" 
+            : "Önizleme Modu: İstediğiniz 4 haneli şifreyi girip deneyin";
     }
-
-    const statusText = document.getElementById("pinLiveStatusText");
-    if (statusText) {
-        statusText.innerHTML = '<span style="color: #FBBF24;">TEST PROTOCOL // PREVIEW</span>';
-    }
-
-    updatePinGreeting();
-    updatePinLiveClock();
-    if (pinClockTimer) clearInterval(pinClockTimer);
-    pinClockTimer = setInterval(updatePinLiveClock, 1000);
 
     enteredPin = "";
     updatePinDots();
@@ -11015,15 +11005,11 @@ function openPinPreviewMode() {
 
 function exitPinPreview() {
     isPinPreviewMode = false;
-    if (pinClockTimer) {
-        clearInterval(pinClockTimer);
-        pinClockTimer = null;
-    }
     const overlay = document.getElementById("pinLockOverlay");
     if (overlay) {
         overlay.style.opacity = "0";
-        overlay.style.transform = "scale(1.04)";
-        overlay.style.transition = "all 0.3s cubic-bezier(0.16, 1, 0.3, 1)";
+        overlay.style.transform = "scale(1.02)";
+        overlay.style.transition = "all 0.28s cubic-bezier(0.16, 1, 0.3, 1)";
         setTimeout(() => {
             overlay.style.display = "none";
             overlay.style.opacity = "1";
@@ -11034,7 +11020,7 @@ function exitPinPreview() {
             if (exitBtnBottom) exitBtnBottom.style.display = "none";
             enteredPin = "";
             updatePinDots();
-        }, 300);
+        }, 280);
     }
 }
 
@@ -11046,16 +11032,9 @@ function initPinLock() {
         const exitBtnBottom = document.getElementById("btnExitPinPreviewBottom");
         if (exitBtnBottom) exitBtnBottom.style.display = "none";
 
-        const statusText = document.getElementById("pinLiveStatusText");
-        if (statusText) statusText.textContent = "SECURE PROTOCOL ACTIVE";
-
         const subtitle = document.getElementById("pinSubtitleText");
-        if (subtitle) subtitle.textContent = "Kasa kilidini açmak için 4 haneli şifrenizi girin";
+        if (subtitle) subtitle.textContent = "Giriş yapmak için 4 haneli PIN kodunuzu girin";
 
-        updatePinGreeting();
-        updatePinLiveClock();
-        if (pinClockTimer) clearInterval(pinClockTimer);
-        pinClockTimer = setInterval(updatePinLiveClock, 1000);
         enteredPin = "";
         updatePinDots();
         const overlay = document.getElementById("pinLockOverlay");
@@ -11082,36 +11061,20 @@ function initPinLock() {
 }
 
 function updatePinDots() {
-    const cells = document.querySelectorAll(".pin-cipher-cell");
-    const progressFill = document.getElementById("pinProgressFill");
-    const progressText = document.getElementById("pinProgressText");
+    const dots = document.querySelectorAll(".pin-dot-item");
     const errorMsg = document.getElementById("pinErrorMessage");
 
     if (errorMsg && enteredPin.length > 0) {
         errorMsg.style.display = "none";
     }
 
-    cells.forEach((cell, index) => {
-        const contentEl = cell.querySelector(".cell-content");
+    dots.forEach((dot, index) => {
         if (index < enteredPin.length) {
-            cell.classList.add("filled");
-            if (contentEl) contentEl.innerHTML = '<span class="cell-glyph">◆</span>';
+            dot.classList.add("filled");
         } else {
-            cell.classList.remove("filled", "success", "error");
-            if (contentEl) contentEl.innerHTML = '<span class="cell-placeholder">-</span>';
+            dot.classList.remove("filled", "success", "error");
         }
     });
-
-    const count = enteredPin.length;
-    const pct = (count / 4) * 100;
-    if (progressFill) progressFill.style.width = pct + "%";
-    if (progressText) {
-        if (count === 4) {
-            progressText.textContent = "DEŞİFRE: %100 // DOĞRULANIYOR...";
-        } else {
-            progressText.textContent = `DEŞİFRE: %${pct} (${4 - count} HANE BEKLENİYOR)`;
-        }
-    }
 }
 
 function pressPin(num) {
@@ -11121,20 +11084,14 @@ function pressPin(num) {
         triggerHaptic('tap');
         updatePinDots();
 
-        const iris = document.getElementById("pinShieldIcon");
-        if (iris) {
-            iris.classList.add("pulse-glow");
-            setTimeout(() => iris.classList.remove("pulse-glow"), 180);
-        }
-
-        const reactor = document.getElementById("pinReactor");
-        if (reactor) {
-            reactor.classList.add("pulse-glow");
-            setTimeout(() => reactor.classList.remove("pulse-glow"), 180);
+        const badge = document.getElementById("pinShieldIcon");
+        if (badge) {
+            badge.classList.add("pulse-glow");
+            setTimeout(() => badge.classList.remove("pulse-glow"), 180);
         }
         
         if (enteredPin.length === 4) {
-            setTimeout(verifyPin, 180);
+            setTimeout(verifyPin, 160);
         }
     }
 }
@@ -11152,45 +11109,31 @@ function verifyPin() {
     const isMatch = (enteredPin === appState.pin) || (isPinPreviewMode && (!appState.pin || enteredPin === appState.pin));
     
     if (isMatch) {
-        // Unlock with smooth emerald green transformation and holographic burst
+        // Unlock with smooth emerald green transformation
         triggerHaptic('success');
-        if (pinClockTimer) {
-            clearInterval(pinClockTimer);
-            pinClockTimer = null;
-        }
         
-        const cells = document.querySelectorAll(".pin-cipher-cell");
-        cells.forEach(c => c.classList.add("success"));
+        const dots = document.querySelectorAll(".pin-dot-item");
+        dots.forEach(d => d.classList.add("success"));
 
-        const iris = document.getElementById("pinShieldIcon");
-        if (iris) {
-            iris.classList.add("unlocked");
-            iris.innerHTML = '<i class="fa-solid fa-lock-open"></i>';
-        }
-
-        const progressText = document.getElementById("pinProgressText");
-        if (progressText) {
-            progressText.innerHTML = '<span style="color: #10B981;">ERİŞİM ONAYLANDI // KASA AÇILIYOR</span>';
-        }
-
-        const statusText = document.getElementById("pinLiveStatusText");
-        if (statusText) {
-            statusText.innerHTML = '<span style="color: #10B981;">ACCESS GRANTED</span>';
+        const badge = document.getElementById("pinShieldIcon");
+        if (badge) {
+            badge.classList.add("unlocked");
+            badge.innerHTML = '<i class="fa-solid fa-lock-open"></i>';
         }
 
         setTimeout(() => {
             const overlay = document.getElementById("pinLockOverlay");
             if (overlay) {
                 overlay.style.opacity = "0";
-                overlay.style.transform = "scale(1.04)";
+                overlay.style.transform = "scale(1.03)";
                 overlay.style.transition = "all 0.35s cubic-bezier(0.16, 1, 0.3, 1)";
                 setTimeout(() => {
                     overlay.style.display = "none";
                     overlay.style.opacity = "1";
                     overlay.style.transform = "scale(1)";
-                    if (iris) {
-                        iris.classList.remove("unlocked");
-                        iris.innerHTML = '<i class="fa-solid fa-fingerprint"></i>';
+                    if (badge) {
+                        badge.classList.remove("unlocked");
+                        badge.innerHTML = '<i class="fa-solid fa-lock"></i>';
                     }
                     const previewBanner = document.getElementById("pinPreviewBanner");
                     if (previewBanner) previewBanner.style.display = "none";
@@ -11204,40 +11147,31 @@ function verifyPin() {
             }
         }, 400);
     } else {
-        // Wrong PIN: shake & turn red with glitch effect
+        // Wrong PIN: shake & turn red
         triggerHaptic('error');
-        const cells = document.querySelectorAll(".pin-cipher-cell");
-        cells.forEach(c => c.classList.add("error"));
+        const dots = document.querySelectorAll(".pin-dot-item");
+        dots.forEach(d => d.classList.add("error"));
 
-        const iris = document.getElementById("pinShieldIcon");
-        if (iris) {
-            iris.classList.add("error");
-            iris.style.animation = "shake 0.45s cubic-bezier(0.36, 0.07, 0.19, 0.97) both";
+        const dotsContainer = document.getElementById("pinDots");
+        if (dotsContainer) {
+            dotsContainer.classList.add("shake-error");
         }
 
-        const reactor = document.getElementById("pinReactor");
-        if (reactor) {
-            reactor.style.animation = "shake 0.45s cubic-bezier(0.36, 0.07, 0.19, 0.97) both";
+        const badge = document.getElementById("pinShieldIcon");
+        if (badge) {
+            badge.classList.add("error");
         }
 
         const errorMsg = document.getElementById("pinErrorMessage");
         if (errorMsg) errorMsg.style.display = "flex";
 
-        const progressText = document.getElementById("pinProgressText");
-        if (progressText) {
-            progressText.innerHTML = '<span style="color: #EF4444;">ERİŞİM REDDEDİLDİ // HATALI KOD</span>';
-        }
-
         setTimeout(() => {
-            if (reactor) reactor.style.animation = "";
-            if (iris) {
-                iris.style.animation = "irisFloat 4s ease-in-out infinite";
-                iris.classList.remove("error");
-            }
-            cells.forEach(c => c.classList.remove("error"));
+            if (dotsContainer) dotsContainer.classList.remove("shake-error");
+            if (badge) badge.classList.remove("error");
+            dots.forEach(d => d.classList.remove("error"));
             enteredPin = "";
             updatePinDots();
-        }, 700);
+        }, 650);
     }
 }
 
@@ -11259,10 +11193,6 @@ function confirmResetPin() {
     saveData();
     closeForgotPinModal();
     
-    if (pinClockTimer) {
-        clearInterval(pinClockTimer);
-        pinClockTimer = null;
-    }
     const overlay = document.getElementById("pinLockOverlay");
     if (overlay) overlay.style.display = "none";
     enteredPin = "";
@@ -11290,7 +11220,7 @@ window.addEventListener("keydown", (e) => {
     if (e.key >= "0" && e.key <= "9") {
         e.preventDefault();
         pressPin(parseInt(e.key));
-        const btn = document.querySelector(`.cyber-tile[data-pin-key="${e.key}"]`) || document.querySelector(`.pin-key[data-pin-key="${e.key}"]`);
+        const btn = document.querySelector(`.keypad-btn[data-pin-key="${e.key}"]`);
         if (btn) {
             btn.classList.add("key-pressed");
             setTimeout(() => btn.classList.remove("key-pressed"), 140);
@@ -11298,23 +11228,13 @@ window.addEventListener("keydown", (e) => {
     } else if (e.key === "Backspace" || e.key === "Delete") {
         e.preventDefault();
         deletePin();
-        const btn = document.querySelector('.cyber-tile[data-pin-key="backspace"]') || document.querySelector('.pin-key[data-pin-key="backspace"]');
+        const btn = document.querySelector('.keypad-btn[data-pin-key="backspace"]');
         if (btn) {
             btn.classList.add("key-pressed");
             setTimeout(() => btn.classList.remove("key-pressed"), 140);
         }
     }
 });
-
-// Add shake animation dynamically
-const style = document.createElement('style');
-style.textContent = `
-@keyframes shake {
-    0%, 100% { transform: translateX(0); }
-    20%, 60% { transform: translateX(-10px); }
-    40%, 80% { transform: translateX(10px); }
-}`;
-document.head.appendChild(style);
 
 // Check PIN on load & setup inputs
 document.addEventListener("DOMContentLoaded", () => {
