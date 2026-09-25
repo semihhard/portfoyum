@@ -27,7 +27,7 @@
     <script src="https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js"></script>
     <!-- jsPDF for High-Resolution Multi-Page PDF Export -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <link rel="stylesheet" href="style.css?v=110">    <style>
+    <link rel="stylesheet" href="style.css?v=111">    <style>
         /* Refresh Button Loading Animation */
         .icon-btn.loading i {
             animation: spin 1s linear infinite;
@@ -54,110 +54,137 @@
         </div>
     </div>
 
-    <!-- Modern FinTech PIN Lock Screen (Apple & Revolut Ultra Luxury Design) -->
-    <div id="pinLockOverlay" class="modern-pin-lock" style="display: none;">
-        <!-- Soft Ambient Atmospheric Lighting -->
-        <div class="pin-ambient-glow glow-top"></div>
-        <div class="pin-ambient-glow glow-bottom"></div>
+    <!-- PIN Lock Screen: Bento Grid & Modular FinTech (Linear & Stripe Style) -->
+    <div class="bento-pin-overlay modern-pin-lock" id="pinLockOverlay" style="display: none;">
+        <!-- Linear Subtle Grid Pattern & Ambient Highlights -->
+        <div class="bento-grid-pattern"></div>
+        <div class="bento-ambient-glow glow-linear-top"></div>
+        <div class="bento-ambient-glow glow-linear-bottom"></div>
 
-        <!-- Preview Mode Exit Pill (Only shown during test/preview) -->
-        <div id="pinPreviewBanner" class="pin-preview-pill" style="display: none;">
-            <div class="preview-pill-content">
-                <span class="preview-live-dot"></span>
-                <span>Tasarım Önizleme Modu</span>
-            </div>
-            <button type="button" class="preview-exit-btn" onclick="exitPinPreview()" title="Önizlemeyi Kapat">
-                <span>Kapat</span>
-                <i class="fa-solid fa-xmark"></i>
-            </button>
-        </div>
-
-        <div class="pin-content-container">
-            <!-- Brand & Security Header -->
-            <div class="pin-brand-header">
-                <div class="pin-shield-badge" id="pinShieldIcon">
-                    <i class="fa-solid fa-lock"></i>
+        <div class="bento-pin-wrapper">
+            <!-- Top Telemetry Row: Modular Status Pills -->
+            <header class="bento-telemetry-row">
+                <div class="bento-telemetry-badge">
+                    <span class="bento-status-dot"></span>
+                    <span>SECURE VAULT</span>
                 </div>
-                <h1 class="pin-header-title" id="pinTitleText">Portföy Kilidi</h1>
-                <p class="pin-header-sub" id="pinSubtitleText">Giriş yapmak için 4 haneli PIN kodunuzu girin</p>
-            </div>
-
-            <!-- Modern Minimalist PIN Dots Indicator -->
-            <div class="pin-indicator-wrap">
-                <div class="pin-dots-container" id="pinDots">
-                    <div class="pin-dot-item" data-idx="0"><div class="dot-inner"></div></div>
-                    <div class="pin-dot-item" data-idx="1"><div class="dot-inner"></div></div>
-                    <div class="pin-dot-item" data-idx="2"><div class="dot-inner"></div></div>
-                    <div class="pin-dot-item" data-idx="3"><div class="dot-inner"></div></div>
+                
+                <div class="bento-telemetry-badge font-mono" id="bentoPinTime">
+                    <i class="fa-regular fa-clock" style="font-size: 0.72rem; opacity: 0.65;"></i>
+                    <span id="bentoLiveClockText">--:--</span>
                 </div>
-                <div id="pinErrorMessage" class="pin-error-toast" style="display: none;">
-                    <i class="fa-solid fa-circle-exclamation"></i>
-                    <span id="pinErrorText">Hatalı PIN kodu, tekrar deneyin</span>
+
+                <div class="bento-telemetry-badge bento-preview-tag" id="pinPreviewBanner" style="display: none;">
+                    <span class="preview-pulse-tag">ÖNİZLEME</span>
+                    <button type="button" class="bento-exit-pill" onclick="exitPinPreview()" title="Önizlemeyi Kapat">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
                 </div>
-            </div>
+            </header>
 
-            <!-- Apple / Revolut Grade Glassmorphic Keypad -->
-            <div class="modern-keypad-grid">
-                <button class="keypad-btn" data-pin-key="1" onclick="pressPin(1)" type="button">
-                    <span class="key-digit">1</span>
-                    <span class="key-letters">&nbsp;</span>
-                </button>
-                <button class="keypad-btn" data-pin-key="2" onclick="pressPin(2)" type="button">
-                    <span class="key-digit">2</span>
-                    <span class="key-letters">ABC</span>
-                </button>
-                <button class="keypad-btn" data-pin-key="3" onclick="pressPin(3)" type="button">
-                    <span class="key-digit">3</span>
-                    <span class="key-letters">DEF</span>
-                </button>
+            <!-- Bento Hero Authenticator Card -->
+            <section class="bento-card bento-hero-auth">
+                <div class="bento-card-header">
+                    <div class="bento-icon-box" id="pinShieldIcon">
+                        <i class="fa-solid fa-shield-halved"></i>
+                    </div>
+                    <div class="bento-header-meta">
+                        <h2 class="bento-title" id="pinTitleText">Portföy Kilidi</h2>
+                        <p class="bento-subtitle" id="pinSubtitleText">4 haneli güvenlik kodunuzu girin</p>
+                    </div>
+                </div>
 
-                <button class="keypad-btn" data-pin-key="4" onclick="pressPin(4)" type="button">
-                    <span class="key-digit">4</span>
-                    <span class="key-letters">GHI</span>
-                </button>
-                <button class="keypad-btn" data-pin-key="5" onclick="pressPin(5)" type="button">
-                    <span class="key-digit">5</span>
-                    <span class="key-letters">JKL</span>
-                </button>
-                <button class="keypad-btn" data-pin-key="6" onclick="pressPin(6)" type="button">
-                    <span class="key-digit">6</span>
-                    <span class="key-letters">MNO</span>
-                </button>
+                <!-- Bento Modular Digit Slots (4 Bento Capsule Tiles) -->
+                <div class="bento-slots-row" id="pinDots">
+                    <div class="bento-slot-tile pin-dot-item" data-idx="0">
+                        <span class="slot-marker"></span>
+                    </div>
+                    <div class="bento-slot-tile pin-dot-item" data-idx="1">
+                        <span class="slot-marker"></span>
+                    </div>
+                    <div class="bento-slot-tile pin-dot-item" data-idx="2">
+                        <span class="slot-marker"></span>
+                    </div>
+                    <div class="bento-slot-tile pin-dot-item" data-idx="3">
+                        <span class="slot-marker"></span>
+                    </div>
+                </div>
 
-                <button class="keypad-btn" data-pin-key="7" onclick="pressPin(7)" type="button">
-                    <span class="key-digit">7</span>
-                    <span class="key-letters">PQRS</span>
-                </button>
-                <button class="keypad-btn" data-pin-key="8" onclick="pressPin(8)" type="button">
-                    <span class="key-digit">8</span>
-                    <span class="key-letters">TUV</span>
-                </button>
-                <button class="keypad-btn" data-pin-key="9" onclick="pressPin(9)" type="button">
-                    <span class="key-digit">9</span>
-                    <span class="key-letters">WXYZ</span>
-                </button>
+                <!-- Toast Error State -->
+                <div id="pinErrorMessage" class="bento-error-toast" style="display: none;">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                    <span id="pinErrorText">Geçersiz kod. Lütfen tekrar deneyin.</span>
+                </div>
+            </section>
 
-                <button class="keypad-btn key-action" id="btnKeypadBiometric" onclick="authenticateBiometric()" type="button" title="Biyometrik Giriş (Face ID / Parmak İzi)">
-                    <i class="fa-solid fa-fingerprint"></i>
-                </button>
-                <button class="keypad-btn" data-pin-key="0" onclick="pressPin(0)" type="button">
-                    <span class="key-digit">0</span>
-                    <span class="key-letters">+</span>
-                </button>
-                <button class="keypad-btn key-action" data-pin-key="backspace" onclick="deletePin()" type="button" title="Sil">
-                    <i class="fa-solid fa-delete-left"></i>
-                </button>
-            </div>
+            <!-- Bento Keypad Card: Modular FinTech Grid (3x4) -->
+            <section class="bento-card bento-keypad-card">
+                <div class="bento-keypad-grid">
+                    <button class="bento-key-tile keypad-btn" data-pin-key="1" onclick="pressPin(1)" type="button">
+                        <span class="bento-num">1</span>
+                        <span class="bento-sub">&nbsp;</span>
+                    </button>
+                    <button class="bento-key-tile keypad-btn" data-pin-key="2" onclick="pressPin(2)" type="button">
+                        <span class="bento-num">2</span>
+                        <span class="bento-sub">ABC</span>
+                    </button>
+                    <button class="bento-key-tile keypad-btn" data-pin-key="3" onclick="pressPin(3)" type="button">
+                        <span class="bento-num">3</span>
+                        <span class="bento-sub">DEF</span>
+                    </button>
 
-            <!-- Footer Minimalist Action -->
-            <div class="pin-footer-section">
-                <button class="pin-forgot-link" onclick="openForgotPinModal()" type="button">
-                    Şifremi Unuttum
+                    <button class="bento-key-tile keypad-btn" data-pin-key="4" onclick="pressPin(4)" type="button">
+                        <span class="bento-num">4</span>
+                        <span class="bento-sub">GHI</span>
+                    </button>
+                    <button class="bento-key-tile keypad-btn" data-pin-key="5" onclick="pressPin(5)" type="button">
+                        <span class="bento-num">5</span>
+                        <span class="bento-sub">JKL</span>
+                    </button>
+                    <button class="bento-key-tile keypad-btn" data-pin-key="6" onclick="pressPin(6)" type="button">
+                        <span class="bento-num">6</span>
+                        <span class="bento-sub">MNO</span>
+                    </button>
+
+                    <button class="bento-key-tile keypad-btn" data-pin-key="7" onclick="pressPin(7)" type="button">
+                        <span class="bento-num">7</span>
+                        <span class="bento-sub">PQRS</span>
+                    </button>
+                    <button class="bento-key-tile keypad-btn" data-pin-key="8" onclick="pressPin(8)" type="button">
+                        <span class="bento-num">8</span>
+                        <span class="bento-sub">TUV</span>
+                    </button>
+                    <button class="bento-key-tile keypad-btn" data-pin-key="9" onclick="pressPin(9)" type="button">
+                        <span class="bento-num">9</span>
+                        <span class="bento-sub">WXYZ</span>
+                    </button>
+
+                    <button class="bento-key-tile bento-action-tile keypad-btn key-action" id="btnKeypadBiometric" onclick="authenticateBiometric()" type="button" title="Biyometrik Giriş (Face ID / Touch ID)">
+                        <i class="fa-solid fa-fingerprint"></i>
+                        <span class="bento-sub">TOUCH ID</span>
+                    </button>
+                    <button class="bento-key-tile keypad-btn" data-pin-key="0" onclick="pressPin(0)" type="button">
+                        <span class="bento-num">0</span>
+                        <span class="bento-sub">+</span>
+                    </button>
+                    <button class="bento-key-tile bento-action-tile keypad-btn key-action" data-pin-key="backspace" onclick="deletePin()" type="button" title="Geri / Sil">
+                        <i class="fa-solid fa-delete-left"></i>
+                        <span class="bento-sub">SİL</span>
+                    </button>
+                </div>
+            </section>
+
+            <!-- Bento Footer Telemetry & Actions -->
+            <footer class="bento-footer-row">
+                <button class="bento-footer-btn" onclick="openForgotPinModal()" type="button">
+                    <i class="fa-solid fa-key"></i>
+                    <span>Şifremi Unuttum</span>
                 </button>
-                <button id="btnExitPinPreviewBottom" class="pin-preview-bottom-btn" onclick="exitPinPreview()" type="button" style="display: none;">
-                    <i class="fa-solid fa-arrow-left"></i> Portföye Dön (Önizlemeden Çık)
+                <button id="btnExitPinPreviewBottom" class="bento-footer-btn bento-preview-exit" onclick="exitPinPreview()" type="button" style="display: none;">
+                    <i class="fa-solid fa-arrow-left"></i>
+                    <span>Portföye Dön</span>
                 </button>
-            </div>
+            </footer>
         </div>
     </div>
 
@@ -3013,6 +3040,6 @@
         </div>
     </div>
 
-    <script src="app.js?v=110"></script>
+    <script src="app.js?v=111"></script>
 </body>
 </html>

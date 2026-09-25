@@ -10975,6 +10975,17 @@ function updateBiometricButtonState() {
     }
 }
 
+let bentoClockTimer = null;
+
+function updateBentoLiveClock() {
+    const el = document.getElementById("bentoLiveClockText");
+    if (!el) return;
+    const now = new Date();
+    const h = String(now.getHours()).padStart(2, '0');
+    const m = String(now.getMinutes()).padStart(2, '0');
+    el.textContent = `${h}:${m}`;
+}
+
 function openPinPreviewMode() {
     isPinPreviewMode = true;
     closePinModal();
@@ -10988,9 +10999,13 @@ function openPinPreviewMode() {
     const subtitle = document.getElementById("pinSubtitleText");
     if (subtitle) {
         subtitle.textContent = appState.pin 
-            ? "Önizleme Modu: Belirlediğiniz PIN veya 4 hane girerek test edin" 
-            : "Önizleme Modu: İstediğiniz 4 haneli şifreyi girip deneyin";
+            ? "Önizleme: Belirlediğiniz PIN veya 4 hane girerek test edin" 
+            : "Önizleme: İstediğiniz 4 haneli şifreyi girip deneyin";
     }
+
+    updateBentoLiveClock();
+    if (bentoClockTimer) clearInterval(bentoClockTimer);
+    bentoClockTimer = setInterval(updateBentoLiveClock, 1000);
 
     enteredPin = "";
     updatePinDots();
@@ -11005,6 +11020,10 @@ function openPinPreviewMode() {
 
 function exitPinPreview() {
     isPinPreviewMode = false;
+    if (bentoClockTimer) {
+        clearInterval(bentoClockTimer);
+        bentoClockTimer = null;
+    }
     const overlay = document.getElementById("pinLockOverlay");
     if (overlay) {
         overlay.style.opacity = "0";
@@ -11033,7 +11052,11 @@ function initPinLock() {
         if (exitBtnBottom) exitBtnBottom.style.display = "none";
 
         const subtitle = document.getElementById("pinSubtitleText");
-        if (subtitle) subtitle.textContent = "Giriş yapmak için 4 haneli PIN kodunuzu girin";
+        if (subtitle) subtitle.textContent = "4 haneli güvenlik kodunuzu girin";
+
+        updateBentoLiveClock();
+        if (bentoClockTimer) clearInterval(bentoClockTimer);
+        bentoClockTimer = setInterval(updateBentoLiveClock, 1000);
 
         enteredPin = "";
         updatePinDots();
@@ -11061,7 +11084,7 @@ function initPinLock() {
 }
 
 function updatePinDots() {
-    const dots = document.querySelectorAll(".pin-dot-item");
+    const dots = document.querySelectorAll(".pin-dot-item, .bento-slot-tile");
     const errorMsg = document.getElementById("pinErrorMessage");
 
     if (errorMsg && enteredPin.length > 0) {
@@ -11111,8 +11134,12 @@ function verifyPin() {
     if (isMatch) {
         // Unlock with smooth emerald green transformation
         triggerHaptic('success');
+        if (bentoClockTimer) {
+            clearInterval(bentoClockTimer);
+            bentoClockTimer = null;
+        }
         
-        const dots = document.querySelectorAll(".pin-dot-item");
+        const dots = document.querySelectorAll(".pin-dot-item, .bento-slot-tile");
         dots.forEach(d => d.classList.add("success"));
 
         const badge = document.getElementById("pinShieldIcon");
@@ -11133,7 +11160,7 @@ function verifyPin() {
                     overlay.style.transform = "scale(1)";
                     if (badge) {
                         badge.classList.remove("unlocked");
-                        badge.innerHTML = '<i class="fa-solid fa-lock"></i>';
+                        badge.innerHTML = '<i class="fa-solid fa-shield-halved"></i>';
                     }
                     const previewBanner = document.getElementById("pinPreviewBanner");
                     if (previewBanner) previewBanner.style.display = "none";
@@ -11149,7 +11176,7 @@ function verifyPin() {
     } else {
         // Wrong PIN: shake & turn red
         triggerHaptic('error');
-        const dots = document.querySelectorAll(".pin-dot-item");
+        const dots = document.querySelectorAll(".pin-dot-item, .bento-slot-tile");
         dots.forEach(d => d.classList.add("error"));
 
         const dotsContainer = document.getElementById("pinDots");
@@ -11193,6 +11220,10 @@ function confirmResetPin() {
     saveData();
     closeForgotPinModal();
     
+    if (bentoClockTimer) {
+        clearInterval(bentoClockTimer);
+        bentoClockTimer = null;
+    }
     const overlay = document.getElementById("pinLockOverlay");
     if (overlay) overlay.style.display = "none";
     enteredPin = "";
@@ -11220,7 +11251,7 @@ window.addEventListener("keydown", (e) => {
     if (e.key >= "0" && e.key <= "9") {
         e.preventDefault();
         pressPin(parseInt(e.key));
-        const btn = document.querySelector(`.keypad-btn[data-pin-key="${e.key}"]`);
+        const btn = document.querySelector(`.bento-key-tile[data-pin-key="${e.key}"]`) || document.querySelector(`.keypad-btn[data-pin-key="${e.key}"]`);
         if (btn) {
             btn.classList.add("key-pressed");
             setTimeout(() => btn.classList.remove("key-pressed"), 140);
@@ -11228,7 +11259,7 @@ window.addEventListener("keydown", (e) => {
     } else if (e.key === "Backspace" || e.key === "Delete") {
         e.preventDefault();
         deletePin();
-        const btn = document.querySelector('.keypad-btn[data-pin-key="backspace"]');
+        const btn = document.querySelector('.bento-key-tile[data-pin-key="backspace"]') || document.querySelector('.keypad-btn[data-pin-key="backspace"]');
         if (btn) {
             btn.classList.add("key-pressed");
             setTimeout(() => btn.classList.remove("key-pressed"), 140);
@@ -11241,6 +11272,10 @@ document.addEventListener("DOMContentLoaded", () => {
     setupSegmentedPinInputs();
     if (appState.pin) {
         initPinLock();
+    }
+    // Auto preview if hash has preview-pin or param has preview=pin
+    if (window.location.hash === '#preview-pin' || window.location.search.includes('preview=pin')) {
+        setTimeout(openPinPreviewMode, 250);
     }
 });
 

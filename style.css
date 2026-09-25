@@ -300,8 +300,9 @@ a {
 }
 
 /* ==========================================================================
-   PIN Lock Screen: Ultra-Modern Luxury FinTech Interface (Apple & Revolut Style)
+   PIN Lock Screen: Bento Grid & Modular FinTech Interface (Linear & Stripe Style)
    ========================================================================== */
+.bento-pin-overlay,
 .modern-pin-lock {
     position: fixed;
     inset: 0;
@@ -309,15 +310,13 @@ a {
     max-width: 100%;
     height: 100%;
     height: 100dvh;
-    background: radial-gradient(circle at 50% 12%, #0E172A 0%, #080C16 55%, #030509 100%);
-    backdrop-filter: blur(50px) saturate(190%);
-    -webkit-backdrop-filter: blur(50px) saturate(190%);
+    background: #08090D;
     z-index: 10000;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: space-between;
-    padding: calc(20px + env(safe-area-inset-top, 0px)) 20px calc(24px + env(safe-area-inset-bottom, 0px)) 20px;
+    justify-content: center;
+    padding: calc(16px + env(safe-area-inset-top, 0px)) 16px calc(18px + env(safe-area-inset-bottom, 0px)) 16px;
     user-select: none;
     -webkit-user-select: none;
     overflow-y: auto;
@@ -325,220 +324,288 @@ a {
     overscroll-behavior: none;
     touch-action: manipulation;
     box-sizing: border-box;
-    transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1), transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1), transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* Atmospheric Soft Ambient Glow Lighting */
-.pin-ambient-glow {
+/* Subtle Linear-Style Geometric Micro-Grid */
+.bento-grid-pattern {
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(rgba(255, 255, 255, 0.07) 1px, transparent 1px);
+    background-size: 24px 24px;
+    background-position: center;
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0.85;
+}
+
+/* Ambient Indigo & Emerald Luminous Blurs */
+.bento-ambient-glow {
     position: absolute;
     border-radius: 50%;
     pointer-events: none;
     z-index: 1;
 }
 
-.pin-ambient-glow.glow-top {
-    width: 380px;
-    height: 380px;
-    top: -80px;
+.bento-ambient-glow.glow-linear-top {
+    width: 360px;
+    height: 360px;
+    top: -90px;
     left: 50%;
     transform: translateX(-50%);
-    background: radial-gradient(circle, rgba(56, 189, 248, 0.18) 0%, rgba(99, 102, 241, 0.10) 45%, transparent 70%);
-    filter: blur(85px);
-}
-
-.pin-ambient-glow.glow-bottom {
-    width: 300px;
-    height: 300px;
-    bottom: -60px;
-    right: -40px;
-    background: radial-gradient(circle, rgba(16, 185, 129, 0.14) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(94, 106, 210, 0.22) 0%, rgba(99, 102, 241, 0.08) 50%, transparent 70%);
     filter: blur(80px);
 }
 
-/* Floating Test/Preview Banner */
-.pin-preview-pill {
-    position: relative;
-    z-index: 20;
-    display: inline-flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    background: rgba(245, 158, 11, 0.12);
-    border: 1px solid rgba(245, 158, 11, 0.32);
-    border-radius: 9999px;
-    padding: 6px 14px;
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    margin-bottom: 8px;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
-    animation: fadeInDown 0.25s ease;
+.bento-ambient-glow.glow-linear-bottom {
+    width: 280px;
+    height: 280px;
+    bottom: -50px;
+    right: -30px;
+    background: radial-gradient(circle, rgba(16, 185, 129, 0.12) 0%, transparent 70%);
+    filter: blur(75px);
 }
 
-.preview-pill-content {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    color: #FBBF24;
-    font-size: 0.74rem;
-    font-weight: 600;
-    letter-spacing: 0.2px;
-}
-
-.preview-live-dot {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: #FBBF24;
-    box-shadow: 0 0 8px #FBBF24;
-    animation: pulseDot 2s infinite;
-}
-
-@keyframes pulseDot {
-    0%, 100% { opacity: 1; transform: scale(1); }
-    50% { opacity: 0.35; transform: scale(0.8); }
-}
-
-.preview-exit-btn {
-    background: rgba(245, 158, 11, 0.22);
-    border: none;
-    color: #FFFFFF;
-    border-radius: 9999px;
-    padding: 3px 10px;
-    font-size: 0.70rem;
-    font-weight: 700;
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    transition: all 0.2s ease;
-}
-
-.preview-exit-btn:hover {
-    background: #F59E0B;
-    color: #000000;
-}
-
-/* Main Content Container */
-.pin-content-container {
+/* Wrapper */
+.bento-pin-wrapper {
     position: relative;
     z-index: 10;
     display: flex;
     flex-direction: column;
     align-items: center;
     width: 100%;
-    max-width: 320px;
+    max-width: 340px;
     margin: auto 0;
+    gap: 12px;
     box-sizing: border-box;
 }
 
-/* Brand & Security Header */
-.pin-brand-header {
+/* Top Telemetry Row: Modular Status Pills */
+.bento-telemetry-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    gap: 8px;
+    margin-bottom: 2px;
+}
+
+.bento-telemetry-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 9999px;
+    padding: 4px 10px;
+    font-size: 0.68rem;
+    font-weight: 600;
+    color: #8A8F98;
+    letter-spacing: 0.5px;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+}
+
+.bento-status-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #10B981;
+    box-shadow: 0 0 8px rgba(16, 185, 129, 0.8);
+}
+
+.bento-telemetry-badge.font-mono {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    color: #D1D5DB;
+}
+
+.bento-telemetry-badge.bento-preview-tag {
+    background: rgba(245, 158, 11, 0.12);
+    border-color: rgba(245, 158, 11, 0.35);
+    color: #FBBF24;
+    padding: 3px 8px;
+}
+
+.preview-pulse-tag {
+    font-weight: 700;
+    font-size: 0.65rem;
+    letter-spacing: 0.6px;
+}
+
+.bento-exit-pill {
+    background: rgba(245, 158, 11, 0.25);
+    border: none;
+    color: #FFFFFF;
+    border-radius: 50%;
+    width: 18px;
+    height: 18px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.62rem;
+    cursor: pointer;
+    margin-left: 2px;
+    transition: all 0.2s ease;
+}
+
+.bento-exit-pill:hover {
+    background: #F59E0B;
+    color: #000;
+}
+
+/* Bento Cards (Linear Modular Container) */
+.bento-card {
+    width: 100%;
+    background: linear-gradient(180deg, rgba(20, 23, 34, 0.78) 0%, rgba(12, 14, 22, 0.88) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 20px;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12), 0 14px 34px rgba(0, 0, 0, 0.45);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    box-sizing: border-box;
+}
+
+/* Hero Authenticator Card */
+.bento-hero-auth {
+    padding: 16px 18px 18px 18px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    text-align: center;
 }
 
-.pin-shield-badge {
-    width: 58px;
-    height: 58px;
-    border-radius: 18px;
-    background: linear-gradient(135deg, rgba(56, 189, 248, 0.16) 0%, rgba(30, 41, 59, 0.5) 100%);
-    border: 1px solid rgba(255, 255, 255, 0.14);
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35), inset 0 1px 1px rgba(255, 255, 255, 0.25);
+.bento-card-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    margin-bottom: 16px;
+}
+
+.bento-icon-box {
+    width: 44px;
+    height: 44px;
+    border-radius: 13px;
+    background: linear-gradient(135deg, rgba(94, 106, 210, 0.2) 0%, rgba(30, 41, 59, 0.6) 100%);
+    border: 1px solid rgba(94, 106, 210, 0.35);
+    color: #818CF8;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.45rem;
-    color: #38BDF8;
-    transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    font-size: 1.25rem;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    flex-shrink: 0;
 }
 
-.pin-shield-badge.unlocked {
+.bento-icon-box.unlocked {
     background: linear-gradient(135deg, #10B981 0%, #059669 100%) !important;
     border-color: #34D399 !important;
     color: #FFFFFF !important;
-    box-shadow: 0 0 35px rgba(16, 185, 129, 0.65), inset 0 1px 2px rgba(255, 255, 255, 0.5) !important;
-    transform: scale(1.1);
+    box-shadow: 0 0 28px rgba(16, 185, 129, 0.65) !important;
+    transform: scale(1.08);
 }
 
-.pin-shield-badge.error {
+.bento-icon-box.error {
     background: linear-gradient(135deg, #EF4444 0%, #B91C1C 100%) !important;
     border-color: #F87171 !important;
     color: #FFFFFF !important;
-    box-shadow: 0 0 30px rgba(239, 68, 68, 0.6) !important;
+    box-shadow: 0 0 25px rgba(239, 68, 68, 0.65) !important;
 }
 
-.pin-header-title {
-    font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
-    font-size: 1.45rem;
-    font-weight: 700;
-    color: #FFFFFF;
-    letter-spacing: -0.02em;
-    margin: 14px 0 4px 0;
-    text-align: center;
-}
-
-.pin-header-sub {
-    font-size: 0.84rem;
-    color: #94A3B8;
-    font-weight: 400;
-    margin: 0;
-    line-height: 1.4;
-    text-align: center;
-}
-
-/* PIN Indicator Dots */
-.pin-indicator-wrap {
-    margin: 24px 0 26px 0;
+.bento-header-meta {
     display: flex;
     flex-direction: column;
-    align-items: center;
+    text-align: left;
 }
 
-.pin-dots-container {
+.bento-title {
+    font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
+    font-size: 1.08rem;
+    font-weight: 700;
+    color: #FFFFFF;
+    letter-spacing: -0.01em;
+    margin: 0 0 2px 0;
+}
+
+.bento-subtitle {
+    font-size: 0.74rem;
+    color: #8A8F98;
+    margin: 0;
+    line-height: 1.3;
+}
+
+/* Bento Modular Digit Slots */
+.bento-slots-row {
     display: flex;
-    gap: 20px;
     align-items: center;
     justify-content: center;
-    height: 24px;
+    gap: 12px;
+    width: 100%;
+    margin-top: 4px;
 }
 
-.pin-dot-item {
+.bento-slot-tile {
+    flex: 1;
+    max-width: 58px;
+    height: 52px;
+    border-radius: 12px;
+    background: rgba(0, 0, 0, 0.35);
+    border: 1.5px solid rgba(255, 255, 255, 0.09);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.35);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    transition: all 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.bento-slot-tile .slot-marker {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.16);
+    transition: all 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.bento-slot-tile.filled {
+    border-color: #5E6AD2;
+    background: rgba(94, 106, 210, 0.14);
+    box-shadow: 0 0 16px rgba(94, 106, 210, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
+}
+
+.bento-slot-tile.filled .slot-marker {
     width: 14px;
     height: 14px;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.1);
-    border: 1.5px solid rgba(255, 255, 255, 0.22);
-    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.3);
-    transition: all 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    background: #818CF8;
+    box-shadow: 0 0 12px #818CF8, 0 0 20px rgba(94, 106, 210, 0.8);
+    transform: scale(1.1);
 }
 
-.pin-dot-item.filled {
-    background: #FFFFFF;
-    border-color: #FFFFFF;
-    transform: scale(1.28);
-    box-shadow: 0 0 14px rgba(255, 255, 255, 0.8), 0 0 24px rgba(56, 189, 248, 0.45);
-}
-
-.pin-dot-item.success {
-    background: #10B981 !important;
+.bento-slot-tile.success {
     border-color: #10B981 !important;
-    transform: scale(1.35) !important;
-    box-shadow: 0 0 20px rgba(16, 185, 129, 0.9) !important;
+    background: rgba(16, 185, 129, 0.18) !important;
+    box-shadow: 0 0 20px rgba(16, 185, 129, 0.55) !important;
 }
 
-.pin-dot-item.error {
-    background: #EF4444 !important;
+.bento-slot-tile.success .slot-marker {
+    background: #10B981 !important;
+    box-shadow: 0 0 14px #10B981 !important;
+    transform: scale(1.2) !important;
+}
+
+.bento-slot-tile.error {
     border-color: #EF4444 !important;
-    box-shadow: 0 0 18px rgba(239, 68, 68, 0.9) !important;
+    background: rgba(239, 68, 68, 0.18) !important;
+    box-shadow: 0 0 18px rgba(239, 68, 68, 0.55) !important;
 }
 
-.pin-dots-container.shake-error {
+.bento-slot-tile.error .slot-marker {
+    background: #EF4444 !important;
+    box-shadow: 0 0 14px #EF4444 !important;
+}
+
+.bento-slots-row.shake-error {
     animation: pinShake 0.45s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
 }
 
@@ -548,17 +615,17 @@ a {
     40%, 80% { transform: translateX(10px); }
 }
 
-.pin-shield-badge.pulse-glow {
+.bento-icon-box.pulse-glow {
     transform: scale(1.08);
-    box-shadow: 0 0 30px rgba(56, 189, 248, 0.6), inset 0 1px 2px rgba(255, 255, 255, 0.4);
+    box-shadow: 0 0 26px rgba(94, 106, 210, 0.65), inset 0 1px 2px rgba(255, 255, 255, 0.4);
 }
 
-.pin-error-toast {
+.bento-error-toast {
     color: #EF4444;
-    font-size: 0.78rem;
+    font-size: 0.74rem;
     font-weight: 600;
-    background: rgba(239, 68, 68, 0.1);
-    border: 1px solid rgba(239, 68, 68, 0.25);
+    background: rgba(239, 68, 68, 0.12);
+    border: 1px solid rgba(239, 68, 68, 0.28);
     border-radius: 9999px;
     padding: 5px 14px;
     margin-top: 12px;
@@ -568,197 +635,185 @@ a {
     animation: fadeInDown 0.2s ease;
 }
 
-/* Glassmorphic Keypad */
-.modern-keypad-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 14px 22px;
-    width: 100%;
-    max-width: 280px;
-    margin-bottom: 20px;
-    box-sizing: border-box;
+/* Keypad Bento Card */
+.bento-keypad-card {
+    padding: 12px;
 }
 
-.keypad-btn {
-    width: 70px;
-    height: 70px;
-    border-radius: 50%;
-    margin: 0 auto;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(24px);
-    -webkit-backdrop-filter: blur(24px);
+.bento-keypad-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px 10px;
+    width: 100%;
+}
+
+.bento-key-tile {
+    height: 56px;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.035);
+    border: 1px solid rgba(255, 255, 255, 0.07);
     color: #FFFFFF;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.14);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.07), 0 2px 6px rgba(0, 0, 0, 0.2);
     transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1);
     touch-action: manipulation;
     -webkit-tap-highlight-color: transparent;
     padding: 0;
+    position: relative;
+    overflow: hidden;
 }
 
-.keypad-btn .key-digit {
+.bento-key-tile .bento-num {
     font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-    font-size: 1.7rem;
-    font-weight: 500;
+    font-size: 1.45rem;
+    font-weight: 600;
     line-height: 1.1;
+    color: #EDEDEF;
     pointer-events: none;
 }
 
-.keypad-btn .key-letters {
-    font-size: 0.58rem;
-    font-weight: 600;
-    color: rgba(255, 255, 255, 0.42);
-    letter-spacing: 2px;
-    margin-top: 1px;
+.bento-key-tile .bento-sub {
+    font-size: 0.54rem;
+    font-weight: 700;
+    color: #8A8F98;
+    letter-spacing: 1.6px;
+    margin-top: 2px;
     line-height: 1;
     pointer-events: none;
 }
 
-.keypad-btn:hover {
-    background: rgba(255, 255, 255, 0.1);
-    border-color: rgba(255, 255, 255, 0.22);
+.bento-key-tile:hover {
+    background: rgba(255, 255, 255, 0.07);
+    border-color: rgba(255, 255, 255, 0.15);
     transform: translateY(-1px);
 }
 
-.keypad-btn:active, .keypad-btn.pressed, .keypad-btn.key-pressed {
-    background: rgba(255, 255, 255, 0.24) !important;
-    border-color: rgba(255, 255, 255, 0.35) !important;
-    transform: scale(0.92) !important;
-    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3) !important;
+.bento-key-tile:active,
+.bento-key-tile.key-pressed {
+    background: rgba(94, 106, 210, 0.24) !important;
+    border-color: rgba(94, 106, 210, 0.55) !important;
+    box-shadow: 0 0 18px rgba(94, 106, 210, 0.3), inset 0 2px 4px rgba(0, 0, 0, 0.35) !important;
+    transform: scale(0.94) !important;
 }
 
-.keypad-btn.key-action {
-    background: transparent;
-    border-color: transparent;
-    box-shadow: none;
-    font-size: 1.3rem;
-    color: rgba(255, 255, 255, 0.65);
+.bento-key-tile.bento-action-tile {
+    background: rgba(255, 255, 255, 0.02);
+    border-color: rgba(255, 255, 255, 0.05);
+    color: #8A8F98;
 }
 
-.keypad-btn.key-action:hover {
-    color: #38BDF8;
-    background: rgba(56, 189, 248, 0.08);
+.bento-key-tile.bento-action-tile i {
+    font-size: 1.15rem;
+    color: #8A8F98;
+    pointer-events: none;
 }
 
-.keypad-btn.key-action:active, .keypad-btn.key-action.key-pressed {
-    transform: scale(0.88);
-    color: #FFFFFF;
-    background: rgba(56, 189, 248, 0.2) !important;
+.bento-key-tile.bento-action-tile:hover i {
+    color: #5E6AD2;
 }
 
-#btnKeypadBiometric {
-    color: #38BDF8;
+#btnKeypadBiometric i {
+    color: #818CF8;
 }
 
-/* Footer Minimalist Action */
-.pin-footer-section {
+/* Footer Telemetry Row */
+.bento-footer-row {
     display: flex;
-    flex-direction: column;
     align-items: center;
-    gap: 8px;
-    z-index: 10;
+    justify-content: center;
+    gap: 12px;
+    width: 100%;
 }
 
-.pin-forgot-link {
-    background: none;
-    border: none;
-    color: rgba(255, 255, 255, 0.55);
-    font-size: 0.82rem;
+.bento-footer-btn {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: #8A8F98;
+    font-size: 0.76rem;
     font-weight: 500;
-    cursor: pointer;
-    padding: 8px 16px;
+    padding: 7px 16px;
     border-radius: 9999px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
     transition: all 0.2s ease;
     font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
 }
 
-.pin-forgot-link:hover {
-    color: #38BDF8;
-    background: rgba(56, 189, 248, 0.08);
+.bento-footer-btn:hover {
+    color: #EDEDEF;
+    border-color: rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.08);
 }
 
-.pin-preview-bottom-btn {
+.bento-footer-btn.bento-preview-exit {
     background: rgba(245, 158, 11, 0.12);
-    border: 1px solid rgba(245, 158, 11, 0.35);
+    border-color: rgba(245, 158, 11, 0.35);
     color: #FBBF24;
-    font-size: 0.76rem;
-    font-weight: 600;
-    padding: 8px 18px;
-    border-radius: 9999px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
 }
 
-.pin-preview-bottom-btn:hover {
+.bento-footer-btn.bento-preview-exit:hover {
     background: #F59E0B;
-    color: #000000;
+    color: #000;
 }
 
-/* Screen height adaptations for compact phones (e.g. iPhone SE, iPhone Mini) */
+/* Screen height adaptations for compact phones (iPhone SE, etc.) */
 @media (max-height: 720px) {
-    .modern-pin-lock {
-        padding: calc(14px + env(safe-area-inset-top, 0px)) 16px calc(14px + env(safe-area-inset-bottom, 0px)) 16px;
+    .bento-pin-wrapper {
+        gap: 8px;
     }
 
-    .pin-shield-badge {
-        width: 48px;
+    .bento-hero-auth {
+        padding: 12px 14px 14px 14px;
+    }
+
+    .bento-card-header {
+        margin-bottom: 10px;
+    }
+
+    .bento-icon-box {
+        width: 38px;
+        height: 38px;
+        font-size: 1.1rem;
+    }
+
+    .bento-title {
+        font-size: 0.98rem;
+    }
+
+    .bento-subtitle {
+        font-size: 0.70rem;
+    }
+
+    .bento-slot-tile {
+        height: 44px;
+        max-width: 50px;
+    }
+
+    .bento-keypad-card {
+        padding: 8px;
+    }
+
+    .bento-key-tile {
         height: 48px;
+    }
+
+    .bento-key-tile .bento-num {
         font-size: 1.25rem;
-        border-radius: 14px;
     }
 
-    .pin-header-title {
-        font-size: 1.25rem;
-        margin: 10px 0 2px 0;
+    .bento-key-tile .bento-sub {
+        font-size: 0.48rem;
     }
 
-    .pin-header-sub {
-        font-size: 0.76rem;
-    }
-
-    .pin-indicator-wrap {
-        margin: 16px 0 18px 0;
-    }
-
-    .pin-dots-container {
-        gap: 16px;
-    }
-
-    .pin-dot-item {
-        width: 12px;
-        height: 12px;
-    }
-
-    .modern-keypad-grid {
-        gap: 10px 18px;
-        max-width: 250px;
-        margin-bottom: 12px;
-    }
-
-    .keypad-btn {
-        width: 60px;
-        height: 60px;
-    }
-
-    .keypad-btn .key-digit {
-        font-size: 1.45rem;
-    }
-
-    .keypad-btn .key-letters {
-        font-size: 0.50rem;
-    }
-
-    .pin-forgot-link {
-        font-size: 0.78rem;
-        padding: 4px 12px;
+    .bento-footer-btn {
+        font-size: 0.72rem;
+        padding: 5px 12px;
     }
 }
 
