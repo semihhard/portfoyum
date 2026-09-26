@@ -50,6 +50,7 @@ let appState = {
     sortBy: "default",
     theme: "theme-oled-neon",
     layout: "layout-standard",
+    fundLayout: "fund-layout-classic",
     pin: null,
     biometricEnabled: false,
     biometricCredentialId: null,
@@ -86,6 +87,7 @@ function loadData() {
             if (!appState.manualT2Entries) appState.manualT2Entries = [];
             if (!appState.settledSaleIds) appState.settledSaleIds = [];
             if (!appState.sortBy) appState.sortBy = "default";
+            if (!appState.fundLayout) appState.fundLayout = "fund-layout-classic";
         } catch (e) {
             console.error("Storage load error", e);
             loadInitialSampleData();
@@ -97,6 +99,7 @@ function loadData() {
     updateSortButtonUI();
     applyTheme(appState.theme || "theme-oled-neon");
     applyLayout(appState.layout || "layout-standard");
+    applyFundLayout(appState.fundLayout || "fund-layout-classic");
 }
 
 function applyTheme(themeClass) {
@@ -156,9 +159,39 @@ function selectLayout(layoutClass) {
     applyLayout(layoutClass);
 }
 
+function applyFundLayout(layoutClass) {
+    const validFundLayouts = ["fund-layout-classic", "fund-layout-bento"];
+    if (!validFundLayouts.includes(layoutClass)) layoutClass = "fund-layout-classic";
+    
+    const fundArea = document.getElementById("subviewFundAnalytics");
+    if (fundArea) {
+        fundArea.classList.remove("fund-layout-classic", "fund-layout-bento");
+        fundArea.classList.add(layoutClass);
+    }
+    
+    appState.fundLayout = layoutClass;
+
+    const btnClassic = document.getElementById("btnFundLayoutClassic");
+    const btnBento = document.getElementById("btnFundLayoutBento");
+    const btnModalClassic = document.getElementById("btnModalFundLayoutClassic");
+    const btnModalBento = document.getElementById("btnModalFundLayoutBento");
+
+    if (btnClassic) btnClassic.classList.toggle("active", layoutClass === "fund-layout-classic");
+    if (btnBento) btnBento.classList.toggle("active", layoutClass === "fund-layout-bento");
+    if (btnModalClassic) btnModalClassic.classList.toggle("active", layoutClass === "fund-layout-classic");
+    if (btnModalBento) btnModalBento.classList.toggle("active", layoutClass === "fund-layout-bento");
+
+    saveData();
+}
+
+function selectFundLayout(layoutClass) {
+    applyFundLayout(layoutClass);
+}
+
 function openThemeStudioModal() {
     applyTheme(appState.theme || "theme-oled-neon");
     applyLayout(appState.layout || "layout-standard");
+    applyFundLayout(appState.fundLayout || "fund-layout-classic");
     const modal = document.getElementById("themeStudioModal");
     if (modal) modal.classList.add("active");
 }

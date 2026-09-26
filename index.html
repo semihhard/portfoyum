@@ -27,7 +27,7 @@
     <script src="https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js"></script>
     <!-- jsPDF for High-Resolution Multi-Page PDF Export -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <link rel="stylesheet" href="style.css?v=111">    <style>
+    <link rel="stylesheet" href="style.css?v=112">    <style>
         /* Refresh Button Loading Animation */
         .icon-btn.loading i {
             animation: spin 1s linear infinite;
@@ -426,6 +426,21 @@
                         <button class="layout-btn" onclick="selectLayout('layout-minimal')" id="btnLayoutMinimal">
                             <i class="fa-solid fa-grip-lines"></i>
                             <span>Ultra Minimal</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Fund Analysis Layout Style Selector -->
+                <div>
+                    <label style="font-size: 0.78rem; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; display: block;">Fon Analizi Görünüm Düzeni</label>
+                    <div class="layout-selector-row">
+                        <button class="layout-btn active" onclick="selectFundLayout('fund-layout-classic')" id="btnModalFundLayoutClassic">
+                            <i class="fa-solid fa-table-cells-large"></i>
+                            <span>Klasik Fon Görünümü</span>
+                        </button>
+                        <button class="layout-btn" onclick="selectFundLayout('fund-layout-bento')" id="btnModalFundLayoutBento">
+                            <i class="fa-solid fa-cubes-stacked"></i>
+                            <span>Bento Grid & Modüler</span>
                         </button>
                     </div>
                 </div>
@@ -917,15 +932,27 @@
                                 <span class="fund-badge-subnav-cat">64+ Şirket</span>
                             </button>
                         </div>
-                        <div style="display: flex; align-items: center; gap: 8px;">
+                        <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                            <!-- Fund Layout Switcher (Klasik vs Bento Grid) -->
+                            <div class="fund-layout-segmented-switch" id="fundLayoutSegmentedSwitch">
+                                <button type="button" class="fund-layout-seg-btn active" id="btnFundLayoutClassic" onclick="selectFundLayout('fund-layout-classic')" title="Klasik Fon Görünümü">
+                                    <i class="fa-solid fa-table-cells-large"></i>
+                                    <span>Klasik</span>
+                                </button>
+                                <button type="button" class="fund-layout-seg-btn" id="btnFundLayoutBento" onclick="selectFundLayout('fund-layout-bento')" title="Bento Grid & Modüler FinTech Görünümü">
+                                    <i class="fa-solid fa-cubes-stacked"></i>
+                                    <span>Bento Grid</span>
+                                </button>
+                            </div>
+
                             <button type="button" class="btn-slide-export-pill" style="background: linear-gradient(135deg, rgba(56, 189, 248, 0.2) 0%, rgba(37, 99, 235, 0.2) 100%); border-color: rgba(56, 189, 248, 0.4); color: #38BDF8;" onclick="startLiveFundMarketScan({ autoOpenSlide: true })" title="Tüm 2.041 fonu ekranda canlı tara, analiz et ve liderlik slaytlarını hazırla">
                                 <i class="fa-solid fa-satellite-dish"></i>
-                                <span>Canlı Analiz & Slayt</span>
+                                <span>Canlı Analiz</span>
                                 <span class="slide-export-badge" style="background: #38BDF8; color: #020617;">CANLI</span>
                             </button>
                             <button type="button" class="btn-slide-export-pill" onclick="openFundSlideReportModal()" title="Günün TEFAS verilerini PowerPoint (.pptx) ve canlı slayt sunumu olarak dışarı aktar">
                                 <i class="fa-solid fa-file-powerpoint"></i>
-                                <span>Slayt Sunumu</span>
+                                <span>Slayt</span>
                                 <span class="slide-export-badge">PPTX</span>
                             </button>
                         </div>
@@ -3040,6 +3067,6 @@
         </div>
     </div>
 
-    <script src="app.js?v=111"></script>
+    <script src="app.js?v=112"></script>
 </body>
 </html>

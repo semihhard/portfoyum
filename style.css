@@ -9727,6 +9727,280 @@ body.theme-neo-brutalism .sort-option.active {
    TEFAS Fund Flow Leaders & Investor Inflow/Outflow Radar Styles
    ========================================================================== */
 
+/* ==========================================================================
+   Fund Layout Switcher (Klasik vs Bento Grid)
+   ========================================================================== */
+.fund-layout-segmented-switch {
+    display: inline-flex;
+    align-items: center;
+    background: rgba(15, 23, 42, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 9999px;
+    padding: 3px;
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+    gap: 2px;
+}
+
+.fund-layout-seg-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: 9999px;
+    background: transparent;
+    border: none;
+    color: #8A8F98;
+    font-size: 0.76rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
+    white-space: nowrap;
+}
+
+.fund-layout-seg-btn i {
+    font-size: 0.82rem;
+}
+
+.fund-layout-seg-btn:hover {
+    color: #FFFFFF;
+    background: rgba(255, 255, 255, 0.06);
+}
+
+.fund-layout-seg-btn.active {
+    background: linear-gradient(135deg, #5E6AD2 0%, #4338CA 100%);
+    color: #FFFFFF;
+    font-weight: 700;
+    box-shadow: 0 2px 10px rgba(94, 106, 210, 0.45);
+}
+
+/* ==========================================================================
+   Bento Grid & Modular FinTech Layout for Fund Analytics (.fund-layout-bento)
+   ========================================================================== */
+.fund-layout-bento .fund-search-card,
+.fund-layout-bento .fund-hero-card,
+.fund-layout-bento .fund-kpi-card,
+.fund-layout-bento .fund-chart-card,
+.fund-layout-bento .category-card-pro,
+.fund-layout-bento .leader-bento-card,
+.fund-layout-bento .company-card-pro {
+    background: linear-gradient(180deg, rgba(20, 24, 38, 0.82) 0%, rgba(11, 13, 21, 0.92) 100%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border-radius: 20px !important;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12), 0 12px 30px rgba(0, 0, 0, 0.45) !important;
+    backdrop-filter: blur(24px) !important;
+    -webkit-backdrop-filter: blur(24px) !important;
+}
+
+/* Bento Search Card */
+.fund-layout-bento .fund-search-card {
+    position: relative;
+    overflow: hidden;
+}
+
+.fund-layout-bento .fund-search-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(94, 106, 210, 0.6), transparent);
+}
+
+.fund-layout-bento .fund-input-box {
+    background: rgba(0, 0, 0, 0.35) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 14px !important;
+}
+
+.fund-layout-bento .fund-input-box:focus-within {
+    border-color: #5E6AD2 !important;
+    box-shadow: 0 0 16px rgba(94, 106, 210, 0.35) !important;
+}
+
+.fund-layout-bento .fund-search-submit-btn {
+    background: linear-gradient(135deg, #5E6AD2 0%, #4338CA 100%) !important;
+    box-shadow: 0 4px 16px rgba(94, 106, 210, 0.35) !important;
+    border-radius: 14px !important;
+}
+
+.fund-layout-bento .fund-tag-pill {
+    background: rgba(255, 255, 255, 0.04) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border-radius: 10px !important;
+}
+
+.fund-layout-bento .fund-tag-pill.active,
+.fund-layout-bento .fund-tag-pill:hover {
+    background: rgba(94, 106, 210, 0.18) !important;
+    border-color: rgba(94, 106, 210, 0.5) !important;
+    box-shadow: 0 2px 10px rgba(94, 106, 210, 0.25) !important;
+}
+
+/* Bento Hero Identity Card */
+.fund-layout-bento .fund-hero-card {
+    position: relative;
+    overflow: hidden;
+}
+
+.fund-layout-bento .fund-symbol-badge {
+    background: linear-gradient(135deg, #5E6AD2 0%, #4338CA 100%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    color: #FFFFFF !important;
+    border-radius: 16px !important;
+    box-shadow: 0 0 24px rgba(94, 106, 210, 0.5) !important;
+}
+
+.fund-layout-bento .fund-hero-name {
+    font-family: 'Plus Jakarta Sans', -apple-system, sans-serif !important;
+    font-size: 1.2rem !important;
+    font-weight: 700 !important;
+    letter-spacing: -0.01em !important;
+}
+
+.fund-layout-bento .fund-period-pills {
+    background: rgba(0, 0, 0, 0.35) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border-radius: 9999px !important;
+    padding: 3px !important;
+}
+
+.fund-layout-bento .period-btn {
+    border-radius: 9999px !important;
+    font-size: 0.74rem !important;
+    font-weight: 600 !important;
+}
+
+.fund-layout-bento .period-btn.active {
+    background: #5E6AD2 !important;
+    color: #FFFFFF !important;
+    box-shadow: 0 2px 10px rgba(94, 106, 210, 0.5) !important;
+}
+
+.fund-layout-bento .btn-quick-add-fund {
+    background: linear-gradient(135deg, rgba(94, 106, 210, 0.2) 0%, rgba(99, 102, 241, 0.3) 100%) !important;
+    border: 1px solid rgba(94, 106, 210, 0.45) !important;
+    color: #C7D2FE !important;
+    border-radius: 9999px !important;
+}
+
+.fund-layout-bento .btn-quick-add-fund:hover {
+    background: #5E6AD2 !important;
+    color: #FFFFFF !important;
+    box-shadow: 0 4px 18px rgba(94, 106, 210, 0.45) !important;
+}
+
+/* Bento 6 KPI Grid Transformation */
+.fund-layout-bento .fund-kpi-grid {
+    gap: 14px !important;
+}
+
+.fund-layout-bento .fund-kpi-card {
+    border-radius: 18px !important;
+    padding: 16px 18px !important;
+    position: relative;
+    overflow: hidden;
+}
+
+.fund-layout-bento .fund-kpi-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.fund-layout-bento .fund-kpi-card:nth-child(1)::before {
+    background: linear-gradient(90deg, #5E6AD2, #818CF8);
+}
+
+.fund-layout-bento .fund-kpi-card:nth-child(2)::before {
+    background: linear-gradient(90deg, #A855F7, #C084FC);
+}
+
+.fund-layout-bento .fund-kpi-card:nth-child(3)::before {
+    background: linear-gradient(90deg, #10B981, #34D399);
+}
+
+.fund-layout-bento .fund-kpi-card:nth-child(4)::before {
+    background: linear-gradient(90deg, #F43F5E, #FB7185);
+}
+
+.fund-layout-bento .fund-kpi-card:nth-child(5)::before {
+    background: linear-gradient(90deg, #F59E0B, #FBBF24);
+}
+
+.fund-layout-bento .fund-kpi-card:nth-child(6)::before {
+    background: linear-gradient(90deg, #6366F1, #818CF8);
+}
+
+.fund-layout-bento .fund-kpi-card .kpi-title {
+    font-size: 0.76rem !important;
+    font-weight: 600 !important;
+    color: #8A8F98 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.4px !important;
+}
+
+.fund-layout-bento .fund-kpi-card .kpi-main-val {
+    font-family: 'Plus Jakarta Sans', -apple-system, sans-serif !important;
+    font-size: 1.4rem !important;
+    font-weight: 700 !important;
+    color: #EDEDEF !important;
+    letter-spacing: -0.01em !important;
+}
+
+.fund-layout-bento .fund-kpi-card .kpi-badge {
+    border-radius: 9999px !important;
+    font-size: 0.65rem !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.4px !important;
+    padding: 2px 8px !important;
+}
+
+.fund-layout-bento .fund-kpi-card:hover {
+    transform: translateY(-2px) !important;
+    border-color: rgba(94, 106, 210, 0.4) !important;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.18) !important;
+}
+
+/* Bento Charts and Allocation Cards */
+.fund-layout-bento .fund-chart-card {
+    border-radius: 20px !important;
+}
+
+.fund-layout-bento .alloc-donut-center .center-main {
+    font-family: 'Plus Jakarta Sans', -apple-system, sans-serif !important;
+    font-size: 1.35rem !important;
+    font-weight: 800 !important;
+    color: #EDEDEF !important;
+}
+
+.fund-layout-bento .alloc-donut-center .center-sub {
+    font-size: 0.64rem !important;
+    color: #8A8F98 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.5px !important;
+}
+
+.fund-layout-bento .alloc-item-row {
+    background: rgba(255, 255, 255, 0.03) !important;
+    border: 1px solid rgba(255, 255, 255, 0.05) !important;
+    border-radius: 12px !important;
+    transition: all 0.2s ease !important;
+}
+
+.fund-layout-bento .alloc-item-row:hover {
+    background: rgba(94, 106, 210, 0.1) !important;
+    border-color: rgba(94, 106, 210, 0.3) !important;
+    transform: translateX(2px) !important;
+}
+
 /* Subnav Capsule Switcher (Tekil Fon Analizi vs Günün Akış Liderleri) */
 .fund-subnav-container {
     display: flex;
