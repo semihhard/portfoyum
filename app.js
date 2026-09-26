@@ -163,6 +163,15 @@ function applyFundLayout(layoutClass) {
     const validFundLayouts = ["fund-layout-classic", "fund-layout-bento"];
     if (!validFundLayouts.includes(layoutClass)) layoutClass = "fund-layout-classic";
     
+    document.body.classList.remove("fund-layout-classic", "fund-layout-bento");
+    document.body.classList.add(layoutClass);
+
+    const appCont = document.getElementById("appContainer");
+    if (appCont) {
+        appCont.classList.remove("fund-layout-classic", "fund-layout-bento");
+        appCont.classList.add(layoutClass);
+    }
+
     const fundArea = document.getElementById("subviewFundAnalytics");
     if (fundArea) {
         fundArea.classList.remove("fund-layout-classic", "fund-layout-bento");
