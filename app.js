@@ -104,7 +104,8 @@ function loadData() {
 
 function applyTheme(themeClass) {
     if (!THEMES.includes(themeClass)) themeClass = "theme-oled-neon";
-    document.body.className = themeClass;
+    THEMES.forEach(t => document.body.classList.remove(t));
+    document.body.classList.add(themeClass);
     appState.theme = themeClass;
     currentThemeIndex = THEMES.indexOf(themeClass);
     if (currentThemeIndex < 0) currentThemeIndex = 0;
