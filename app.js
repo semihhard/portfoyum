@@ -195,6 +195,9 @@ function applyFundLayout(layoutClass) {
     if (btnModalBento) btnModalBento.classList.toggle("active", layoutClass === "fund-layout-bento");
 
     saveData();
+    setTimeout(() => {
+        window.dispatchEvent(new Event('resize'));
+    }, 60);
 }
 
 function selectFundLayout(layoutClass) {

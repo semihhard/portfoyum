@@ -10194,10 +10194,26 @@ body.theme-neo-brutalism .sort-option.active {
     transform: translateY(-1px);
 }
 
+/* ==========================================================================
+   Master 12-Column Asymmetric Bento Grid System
+   ========================================================================== */
+.fund-layout-bento #fundAnalysisResultArea {
+    display: grid !important;
+    grid-template-columns: repeat(12, 1fr) !important;
+    gap: 22px !important;
+    align-items: stretch !important;
+}
+
+.fund-layout-bento #fundAnalysisResultArea > * {
+    margin-bottom: 0 !important;
+}
+
 /* Bento Hero Identity HUD */
 .fund-layout-bento .fund-hero-card {
+    grid-column: 1 / -1 !important;
+    order: 1 !important;
     padding: 22px 26px !important;
-    margin-bottom: 22px !important;
+    margin-bottom: 0 !important;
     border-top: 4px solid #00FFFF !important;
     box-shadow: 0 16px 40px -10px rgba(0, 0, 0, 0.75), 0 0 28px rgba(0, 255, 255, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.15) !important;
 }
@@ -10280,10 +10296,12 @@ body.theme-neo-brutalism .sort-option.active {
    Row 2: [AUM (Span 1)] [Yatırımcı (Span 1)] [Kişi Başı (Span 1)] [Pay (Span 1)]
    ========================================================================== */
 .fund-layout-bento .fund-kpi-grid {
+    grid-column: 1 / -1 !important;
+    order: 2 !important;
     display: grid !important;
     grid-template-columns: repeat(4, 1fr) !important;
     gap: 18px !important;
-    margin-bottom: 26px !important;
+    margin-bottom: 0 !important;
 }
 
 /* Bento Base Card Settings */
@@ -10509,10 +10527,12 @@ body.theme-neo-brutalism .sort-option.active {
    Bento 3'lü Kare Kartlar: Son 4 Aylık Analiz (Kuantum Veri Küpleri)
    ========================================================================== */
 .fund-layout-bento .fund-four-months-grid {
+    grid-column: 1 / -1 !important;
+    order: 5 !important;
     display: grid !important;
     grid-template-columns: repeat(3, 1fr) !important;
     gap: 20px !important;
-    margin-bottom: 26px !important;
+    margin-bottom: 0 !important;
 }
 
 .fund-layout-bento .fund-four-months-card {
@@ -10574,27 +10594,57 @@ body.theme-neo-brutalism .sort-option.active {
 }
 
 /* ==========================================================================
-   Bento Charts & Asset Allocation Panels (Twin Cyber Pods)
+   Bento Asymmetric Twin Wings (Charts & Asset Allocation Pods)
+   Left Wing (7 Cols): Dual Price & Cashflow Dynamic Charts
+   Right Wing (5 Cols): Asset Allocation Radar & Historical Area Distribution
    ========================================================================== */
-.fund-layout-bento .fund-charts-wrapper {
-    display: grid !important;
-    grid-template-columns: 1fr 1.35fr !important;
-    gap: 20px !important;
-    margin-bottom: 26px !important;
+.fund-layout-bento .fund-charts-wrapper:not(.fund-alloc-wrapper) {
+    grid-column: span 7 !important;
+    order: 3 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 22px !important;
+    margin-bottom: 0 !important;
+}
+
+.fund-layout-bento .fund-charts-wrapper:not(.fund-alloc-wrapper) .fund-chart-card {
+    flex: 1 !important;
+    margin-bottom: 0 !important;
+}
+
+.fund-layout-bento .fund-charts-wrapper:not(.fund-alloc-wrapper) .fund-chart-container {
+    height: 250px !important;
+}
+
+.fund-layout-bento .fund-alloc-wrapper {
+    grid-column: span 5 !important;
+    order: 4 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 22px !important;
+    margin-bottom: 0 !important;
 }
 
 .fund-layout-bento .fund-alloc-latest-card {
+    flex: 1 !important;
     border: 1.5px solid rgba(236, 72, 153, 0.35) !important;
     border-top: 4px solid #EC4899 !important;
     box-shadow: 0 18px 44px -10px rgba(0, 0, 0, 0.75), 0 0 30px rgba(236, 72, 153, 0.2) !important;
     padding: 24px !important;
+    margin-bottom: 0 !important;
 }
 
 .fund-layout-bento .fund-alloc-history-card {
+    flex: 1 !important;
     border: 1.5px solid rgba(168, 85, 247, 0.35) !important;
     border-top: 4px solid #A855F7 !important;
     box-shadow: 0 18px 44px -10px rgba(0, 0, 0, 0.75), 0 0 30px rgba(168, 85, 247, 0.2) !important;
     padding: 24px !important;
+    margin-bottom: 0 !important;
+}
+
+.fund-layout-bento .fund-alloc-wrapper .fund-alloc-chart-container {
+    height: 230px !important;
 }
 
 .fund-layout-bento .chart-title-left h3 {
@@ -10630,11 +10680,13 @@ body.theme-neo-brutalism .sort-option.active {
 
 /* Bento KAP Portfolio Moves Card (Cyber Matrix Console) */
 .fund-layout-bento .fund-portfolio-moves-card {
+    grid-column: 1 / -1 !important;
+    order: 6 !important;
     border: 1.5px solid rgba(0, 255, 255, 0.35) !important;
     border-top: 4px solid #00FFFF !important;
     box-shadow: 0 18px 44px -10px rgba(0, 0, 0, 0.75), 0 0 30px rgba(0, 255, 255, 0.2) !important;
     padding: 24px !important;
-    margin-bottom: 26px !important;
+    margin-bottom: 0 !important;
 }
 
 .fund-layout-bento .moves-asset-chip {
@@ -10652,11 +10704,33 @@ body.theme-neo-brutalism .sort-option.active {
     transform: translateY(-2px);
 }
 
-/* Bento Data Tables (Matrix Data Streams) */
-.fund-layout-bento .fund-table-card {
-    border: 1.5px solid rgba(129, 140, 248, 0.35) !important;
-    border-top: 4px solid #818CF8 !important;
-    box-shadow: 0 18px 44px -10px rgba(0, 0, 0, 0.75), 0 0 30px rgba(129, 140, 248, 0.2) !important;
+/* ==========================================================================
+   Bento Twin Data Tables (Side-by-Side Matrix Data Streams)
+   Left: Günlük Varlık Dağılım Tablosu (Span 6)
+   Right: Tarihsel Veri ve Kişi Başı Akış Dökümü (Span 6)
+   ========================================================================== */
+.fund-layout-bento .fund-alloc-table-card {
+    grid-column: span 6 !important;
+    order: 7 !important;
+    margin-bottom: 0 !important;
+    border: 1.5px solid rgba(168, 85, 247, 0.35) !important;
+    border-top: 4px solid #A855F7 !important;
+    box-shadow: 0 18px 44px -10px rgba(0, 0, 0, 0.75), 0 0 30px rgba(168, 85, 247, 0.2) !important;
+}
+
+.fund-layout-bento .fund-table-card:not(.fund-alloc-table-card) {
+    grid-column: span 6 !important;
+    order: 8 !important;
+    margin-bottom: 0 !important;
+    border: 1.5px solid rgba(56, 189, 248, 0.35) !important;
+    border-top: 4px solid #38BDF8 !important;
+    box-shadow: 0 18px 44px -10px rgba(0, 0, 0, 0.75), 0 0 30px rgba(56, 189, 248, 0.2) !important;
+}
+
+.fund-layout-bento .fund-table-responsive {
+    max-height: 480px !important;
+    overflow-y: auto !important;
+    border-radius: 12px;
 }
 
 .fund-layout-bento .fund-data-table th {
@@ -10679,45 +10753,67 @@ body.theme-neo-brutalism .sort-option.active {
 }
 
 /* ==========================================================================
-   Bento Responsive Adaptations
+   Bento Responsive Adaptations (Fluid Grid Collapse)
    ========================================================================== */
-@media (max-width: 1080px) {
+@media (max-width: 1180px) {
+    .fund-layout-bento .fund-charts-wrapper:not(.fund-alloc-wrapper) {
+        grid-column: span 12 !important;
+        display: grid !important;
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 18px !important;
+    }
+
+    .fund-layout-bento .fund-alloc-wrapper {
+        grid-column: span 12 !important;
+        display: grid !important;
+        grid-template-columns: 1fr 1.35fr !important;
+        gap: 18px !important;
+    }
+
+    .fund-layout-bento .fund-alloc-table-card,
+    .fund-layout-bento .fund-table-card:not(.fund-alloc-table-card) {
+        grid-column: span 12 !important;
+    }
+}
+
+@media (max-width: 980px) {
     .fund-layout-bento .fund-kpi-grid {
         grid-template-columns: repeat(2, 1fr) !important;
         gap: 14px !important;
     }
-    
+
     .fund-layout-bento .fund-kpi-card:nth-child(1) {
         order: 1;
         grid-column: span 2 !important;
     }
-    
+
     .fund-layout-bento .fund-kpi-card:nth-child(3) {
         order: 2;
         grid-column: span 2 !important;
     }
-    
+
     .fund-layout-bento .fund-kpi-card:nth-child(5) {
         order: 3;
         grid-column: span 1 !important;
     }
-    
+
     .fund-layout-bento .fund-kpi-card:nth-child(2) {
         order: 4;
         grid-column: span 1 !important;
     }
-    
+
     .fund-layout-bento .fund-kpi-card:nth-child(4) {
         order: 5;
         grid-column: span 1 !important;
     }
-    
+
     .fund-layout-bento .fund-kpi-card:nth-child(6) {
         order: 6;
         grid-column: span 1 !important;
     }
 
-    .fund-layout-bento .fund-charts-wrapper {
+    .fund-layout-bento .fund-charts-wrapper:not(.fund-alloc-wrapper),
+    .fund-layout-bento .fund-alloc-wrapper {
         grid-template-columns: 1fr !important;
     }
 
@@ -10728,6 +10824,10 @@ body.theme-neo-brutalism .sort-option.active {
 }
 
 @media (max-width: 640px) {
+    .fund-layout-bento #fundAnalysisResultArea {
+        gap: 14px !important;
+    }
+
     .fund-layout-bento .fund-kpi-grid {
         grid-template-columns: 1fr !important;
         gap: 12px !important;
