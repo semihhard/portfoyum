@@ -13479,6 +13479,13 @@ function updateSlideFullscreenScale() {
     const viewport = document.querySelector(".slide-stage-viewport");
     if (!box || !viewport) return;
 
+    // Mobile screens (<=768px) rely on responsive CSS flow rather than affine transform scale
+    if (window.innerWidth <= 768) {
+        box.style.transform = "";
+        box.style.transformOrigin = "";
+        return;
+    }
+
     const isFull = isSlideModalFullscreen();
     if (!isFull) {
         box.style.transform = "";
@@ -16213,6 +16220,9 @@ function goToCompanySlide(index) {
     if (index > TOTAL_COMPANY_SLIDES) index = TOTAL_COMPANY_SLIDES;
     currentCompanySlideIndex = index;
 
+    const stage = document.querySelector('.company-slide-stage');
+    if (stage) stage.scrollTop = 0;
+
     // Toggle pages
     for (let i = 1; i <= TOTAL_COMPANY_SLIDES; i++) {
         const page = document.getElementById(`cslidePage${i}`);
@@ -16277,6 +16287,74 @@ window.printCompanySlideReport = printCompanySlideReport;
 window.goToCompanySlide = goToCompanySlide;
 window.currentCompanySlideIndex = currentCompanySlideIndex;
 window.loadAllFundsForCompanies = loadAllFundsForCompanies;
-window.fetchAllTefasFundsForScan = loadAllFundsForCompanies;
 window.fetchTefasAllFundsForScan = (typeof fetchTefasAllFundsForScan !== 'undefined') ? fetchTefasAllFundsForScan : loadAllFundsForCompanies;
 
+// Mobile Touch Swipe Navigation for Slide Decks
+(function initSlideTouchGestures() {
+    if (typeof document === 'undefined') return;
+
+    // 1. Fund Slide Deck Touch Gestures
+    let fundTouchStartX = 0;
+    let fundTouchStartY = 0;
+    let fundTouchStartTime = 0;
+
+    const fundModal = document.getElementById('fundSlideReportModal');
+    if (fundModal) {
+        fundModal.addEventListener('touchstart', (e) => {
+            if (!e.touches || e.touches.length !== 1) return;
+            fundTouchStartX = e.touches[0].clientX;
+            fundTouchStartY = e.touches[0].clientY;
+            fundTouchStartTime = Date.now();
+        }, { passive: true });
+
+        fundModal.addEventListener('touchend', (e) => {
+            if (typeof isSlideReportModalOpen !== 'undefined' && !isSlideReportModalOpen) return;
+            if (typeof isSlideDetailActive !== 'undefined' && isSlideDetailActive) return;
+            if (!e.changedTouches || e.changedTouches.length !== 1) return;
+
+            const deltaX = e.changedTouches[0].clientX - fundTouchStartX;
+            const deltaY = e.changedTouches[0].clientY - fundTouchStartY;
+            const elapsed = Date.now() - fundTouchStartTime;
+
+            if (elapsed < 600 && Math.abs(deltaX) > 42 && Math.abs(deltaX) > Math.abs(deltaY) * 1.3) {
+                if (deltaX < 0) {
+                    navigateSlide(1);
+                } else {
+                    navigateSlide(-1);
+                }
+            }
+        }, { passive: true });
+    }
+
+    // 2. Company Slide Deck Touch Gestures
+    let compTouchStartX = 0;
+    let compTouchStartY = 0;
+    let compTouchStartTime = 0;
+
+    const compModal = document.getElementById('companySlideReportModal');
+    if (compModal) {
+        compModal.addEventListener('touchstart', (e) => {
+            if (!e.touches || e.touches.length !== 1) return;
+            compTouchStartX = e.touches[0].clientX;
+            compTouchStartY = e.touches[0].clientY;
+            compTouchStartTime = Date.now();
+        }, { passive: true });
+
+        compModal.addEventListener('touchend', (e) => {
+            if (!compModal || compModal.style.display === 'none') return;
+            if (!e.changedTouches || e.changedTouches.length !== 1) return;
+
+            const deltaX = e.changedTouches[0].clientX - compTouchStartX;
+            const deltaY = e.changedTouches[0].clientY - compTouchStartY;
+            const elapsed = Date.now() - compTouchStartTime;
+
+            if (elapsed < 600 && Math.abs(deltaX) > 42 && Math.abs(deltaX) > Math.abs(deltaY) * 1.3) {
+                if (deltaX < 0) {
+                    goToCompanySlide(currentCompanySlideIndex + 1);
+                } else {
+                    goToCompanySlide(currentCompanySlideIndex - 1);
+                }
+            }
+        }, { passive: true });
+    }
+})();

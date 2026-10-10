@@ -22181,12 +22181,826 @@ body.theme-neo-brutalism .sort-option.active {
     }
 }
 
+/* ==========================================================================
+   MOBILE RESPONSIVE STYLES FOR TEFAS & COMPANY SLIDE PRESENTATIONS
+   ========================================================================== */
+@media (max-width: 768px) {
+    /* --- 1. Fund Slide Report Modal Container & Dialog --- */
+    .slide-modal-container {
+        padding: 0 !important;
+        inset: 0 !important;
+        width: 100vw !important;
+        height: 100vh !important;
+        max-width: 100vw !important;
+        max-height: 100vh !important;
+        box-sizing: border-box !important;
+    }
 
+    .slide-modal-backdrop {
+        display: none !important;
+    }
 
+    .slide-modal-dialog {
+        width: 100vw !important;
+        height: 100vh !important;
+        max-width: 100vw !important;
+        max-height: 100vh !important;
+        border-radius: 0 !important;
+        border: none !important;
+        box-shadow: none !important;
+        padding-top: env(safe-area-inset-top, 0px) !important;
+        padding-bottom: env(safe-area-inset-bottom, 0px) !important;
+    }
 
+    /* --- 2. Topbar Toolbar on Mobile --- */
+    .slide-modal-topbar {
+        padding: 8px 12px !important;
+        gap: 6px !important;
+        flex-shrink: 0 !important;
+        background: rgba(9, 14, 28, 0.98) !important;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+    }
 
+    .slide-topbar-left {
+        gap: 8px !important;
+        flex: 1 1 auto !important;
+        min-width: 0 !important;
+    }
 
+    .slide-topbar-icon {
+        width: 32px !important;
+        height: 32px !important;
+        font-size: 0.95rem !important;
+        border-radius: 8px !important;
+        flex-shrink: 0 !important;
+    }
 
+    .slide-topbar-title-row {
+        gap: 6px !important;
+        flex-wrap: nowrap !important;
+    }
 
+    .slide-topbar-title {
+        font-size: 0.88rem !important;
+        line-height: 1.2 !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        max-width: 160px !important;
+    }
 
+    .slide-badge-pill {
+        font-size: 0.62rem !important;
+        padding: 2px 7px !important;
+        white-space: nowrap !important;
+        flex-shrink: 0 !important;
+    }
+
+    .slide-topbar-sub {
+        display: none !important;
+    }
+
+    /* Theme selector: sleek horizontal scrollable bar */
+    .slide-theme-selector-bar {
+        width: 100% !important;
+        margin: 2px 0 0 0 !important;
+        padding: 2px 0 !important;
+        display: flex !important;
+        align-items: center !important;
+        gap: 6px !important;
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+        scrollbar-width: none !important;
+        order: 3 !important;
+    }
+
+    .slide-theme-selector-bar::-webkit-scrollbar {
+        display: none !important;
+    }
+
+    .slide-theme-selector-label {
+        display: none !important;
+    }
+
+    .slide-theme-pills {
+        display: flex !important;
+        gap: 6px !important;
+        flex-wrap: nowrap !important;
+        width: auto !important;
+    }
+
+    .slide-theme-pill-btn {
+        padding: 4px 10px !important;
+        font-size: 0.72rem !important;
+        white-space: nowrap !important;
+        flex-shrink: 0 !important;
+        border-radius: 999px !important;
+        background: rgba(255, 255, 255, 0.06) !important;
+    }
+
+    /* Topbar Actions: compact buttons */
+    .slide-topbar-actions {
+        gap: 6px !important;
+        flex-shrink: 0 !important;
+    }
+
+    .btn-slide-action {
+        padding: 6px 10px !important;
+        font-size: 0.74rem !important;
+        border-radius: 8px !important;
+        gap: 4px !important;
+    }
+
+    .btn-slide-action > span:not(.slide-btn-badge) {
+        display: none !important;
+    }
+
+    .btn-slide-action.refresh span {
+        display: none !important;
+    }
+
+    .btn-slide-action.fullscreen {
+        display: none !important;
+    }
+
+    .btn-slide-close {
+        width: 32px !important;
+        height: 32px !important;
+        font-size: 0.95rem !important;
+        border-radius: 8px !important;
+        flex-shrink: 0 !important;
+    }
+
+    /* --- 3. Presentation Viewport & Stage --- */
+    .slide-stage-viewport {
+        padding: 10px 8px !important;
+        align-items: flex-start !important;
+        justify-content: flex-start !important;
+        overflow-y: auto !important;
+        overflow-x: hidden !important;
+        -webkit-overflow-scrolling: touch !important;
+        flex: 1 1 auto !important;
+        display: flex !important;
+        flex-direction: column !important;
+    }
+
+    .slide-aspect-box {
+        width: 100% !important;
+        max-width: 100% !important;
+        min-height: auto !important;
+        height: auto !important;
+        border-radius: 14px !important;
+        box-shadow: none !important;
+        transform: none !important;
+        margin: 0 !important;
+    }
+
+    .slide-deck-container {
+        width: 100% !important;
+        height: auto !important;
+        display: block !important;
+    }
+
+    .slide-page {
+        padding: 16px 12px !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+        height: auto !important;
+    }
+
+    .slide-page.active {
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: flex-start !important;
+        gap: 12px !important;
+    }
+
+    /* Hide floating arrows on mobile to prevent obstructing content */
+    .slide-arrow-btn {
+        display: none !important;
+    }
+
+    /* Slide Titles & Headers */
+    .slide-header-block {
+        margin-bottom: 8px !important;
+    }
+
+    .slide-header-meta-row {
+        flex-wrap: wrap !important;
+        gap: 6px !important;
+        margin-bottom: 6px !important;
+    }
+
+    .slide-meta-left {
+        flex-wrap: wrap !important;
+        gap: 6px !important;
+    }
+
+    .slide-page-number-capsule {
+        font-size: 0.65rem !important;
+        padding: 2px 8px !important;
+    }
+
+    .slide-category-tag {
+        font-size: 0.65rem !important;
+        padding: 2px 8px !important;
+    }
+
+    .slide-date-pill {
+        font-size: 0.65rem !important;
+        padding: 2px 8px !important;
+    }
+
+    .slide-main-title {
+        font-size: 1.15rem !important;
+        line-height: 1.3 !important;
+        margin-bottom: 4px !important;
+        letter-spacing: -0.01em !important;
+        overflow-wrap: break-word !important;
+    }
+
+    .slide-subtitle {
+        font-size: 0.74rem !important;
+        line-height: 1.35 !important;
+        overflow-wrap: break-word !important;
+    }
+
+    /* --- 4. Slide 1: Macro Overview --- */
+    .slide-macro-grid-top {
+        grid-template-columns: 1fr !important;
+        gap: 10px !important;
+        margin-bottom: 10px !important;
+    }
+
+    .slide-macro-hero-card {
+        padding: 14px 16px !important;
+        border-radius: 14px !important;
+    }
+
+    .slide-macro-big-num {
+        font-size: clamp(1.3rem, 5.5vw, 1.7rem) !important;
+        line-height: 1.2 !important;
+        overflow-wrap: break-word !important;
+    }
+
+    .slide-macro-desc {
+        font-size: 0.72rem !important;
+        margin-top: 4px !important;
+    }
+
+    .slide-cat-leaders-grid {
+        grid-template-columns: 1fr !important;
+        gap: 10px !important;
+        margin-bottom: 10px !important;
+    }
+
+    .slide-cat-leader-card {
+        padding: 12px 14px !important;
+        border-radius: 14px !important;
+    }
+
+    .slide-cat-leader-name {
+        font-size: 0.95rem !important;
+        overflow-wrap: break-word !important;
+    }
+
+    .slide-cat-leader-stats {
+        font-size: 0.74rem !important;
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 4px !important;
+    }
+
+    .slide-macro-grid-bottom {
+        grid-template-columns: 1fr 1fr !important;
+        gap: 8px !important;
+    }
+
+    .slide-mini-stat {
+        padding: 8px 10px !important;
+        gap: 8px !important;
+        border-radius: 10px !important;
+    }
+
+    .slide-mini-stat-lbl {
+        font-size: 0.64rem !important;
+    }
+
+    .slide-mini-stat-val {
+        font-size: 0.8rem !important;
+    }
+
+    /* --- 5. Slides 2, 3, 4, 5: Top 3 Fund Cards (All Themes) --- */
+    .slide-funds-grid-3,
+    .slide-aspect-box.theme-cyber .slide-funds-grid-3,
+    .slide-aspect-box.theme-vintage .slide-funds-grid-3,
+    .slide-aspect-box.theme-bento .slide-funds-grid-3,
+    .slide-aspect-box.theme-sunset .slide-funds-grid-3 {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 12px !important;
+        width: 100% !important;
+        height: auto !important;
+        min-height: auto !important;
+    }
+
+    .slide-fund-card,
+    .slide-aspect-box.theme-vintage .slide-fund-card,
+    .slide-aspect-box.theme-bento .slide-fund-card,
+    .slide-aspect-box.theme-sunset .slide-fund-card {
+        width: 100% !important;
+        height: auto !important;
+        padding: 14px 16px !important;
+        border-radius: 14px !important;
+        box-sizing: border-box !important;
+        grid-column: auto !important;
+        align-self: stretch !important;
+    }
+
+    .slide-fund-card.rank-card-1 { order: 1 !important; }
+    .slide-fund-card.rank-card-2 { order: 2 !important; }
+    .slide-fund-card.rank-card-3 { order: 3 !important; }
+
+    .slide-fund-card-top {
+        gap: 8px !important;
+        margin-bottom: 8px !important;
+    }
+
+    .slide-rank-badge {
+        padding: 3px 8px !important;
+        height: 26px !important;
+        font-size: 0.68rem !important;
+    }
+
+    .slide-code-badge {
+        font-size: 0.86rem !important;
+        padding: 2px 7px !important;
+    }
+
+    .slide-fund-fullname {
+        font-size: 0.82rem !important;
+        line-height: 1.3 !important;
+        min-height: auto !important;
+        -webkit-line-clamp: 2 !important;
+        margin-bottom: 6px !important;
+        overflow-wrap: break-word !important;
+    }
+
+    .slide-fund-hero-capsule {
+        padding: 8px 12px !important;
+        margin-bottom: 8px !important;
+        border-radius: 10px !important;
+    }
+
+    .slide-fund-hero-num {
+        font-size: clamp(1.25rem, 5vw, 1.6rem) !important;
+        line-height: 1.15 !important;
+        overflow-wrap: break-word !important;
+    }
+
+    .slide-fund-hero-lbl {
+        font-size: 0.64rem !important;
+    }
+
+    .slide-fund-hero-sub {
+        font-size: 0.68rem !important;
+        margin-top: 2px !important;
+    }
+
+    .slide-fund-metrics-tiles {
+        grid-template-columns: 1fr 1fr !important;
+        gap: 6px !important;
+        margin-bottom: 6px !important;
+    }
+
+    .slide-metric-tile {
+        padding: 6px 8px !important;
+        border-radius: 8px !important;
+    }
+
+    .slide-fund-click-hint {
+        padding: 5px 8px !important;
+        font-size: 0.67rem !important;
+        margin-top: 6px !important;
+    }
+
+    /* --- 6. Slide 6: Performance Arena --- */
+    .slide-perf-arena {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 12px !important;
+        height: auto !important;
+    }
+
+    .slide-perf-column {
+        padding: 12px 14px !important;
+        border-radius: 14px !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+    }
+
+    .slide-perf-cards-list {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 8px !important;
+    }
+
+    .slide-perf-card {
+        padding: 10px 12px !important;
+        border-radius: 12px !important;
+        gap: 6px !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+    }
+
+    .slide-perf-fund-name {
+        font-size: 0.8rem !important;
+        line-height: 1.3 !important;
+        overflow-wrap: break-word !important;
+    }
+
+    .slide-perf-metrics-row {
+        gap: 6px !important;
+        flex-wrap: wrap !important;
+    }
+
+    .slide-perf-metric {
+        font-size: 0.72rem !important;
+    }
+
+    /* --- 7. Slide 7: Category Table --- */
+    .slide-cat-summary-table-wrap {
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+        width: 100% !important;
+        border-radius: 12px !important;
+        display: block !important;
+    }
+
+    .slide-cat-summary-table {
+        min-width: 580px !important;
+        font-size: 0.72rem !important;
+    }
+
+    .slide-cat-summary-table th,
+    .slide-cat-summary-table td {
+        padding: 7px 9px !important;
+    }
+
+    /* --- 8. Slide 8: Real World Comparison --- */
+    .slide-comparison-arena {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 12px !important;
+        height: auto !important;
+    }
+
+    .slide-power-col {
+        padding: 12px 14px !important;
+        border-radius: 14px !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+    }
+
+    /* --- 9. Fund Detail Slide --- */
+    #slidePage-detail {
+        padding: 12px 10px !important;
+        max-height: none !important;
+        height: auto !important;
+    }
+
+    .slide-detail-header {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 8px !important;
+    }
+
+    .slide-detail-header-left {
+        width: 100% !important;
+        gap: 8px !important;
+    }
+
+    .btn-slide-back {
+        padding: 6px 10px !important;
+        font-size: 0.72rem !important;
+    }
+
+    .slide-detail-metrics-grid {
+        grid-template-columns: 1fr 1fr !important;
+        gap: 6px !important;
+        width: 100% !important;
+    }
+
+    .slide-detail-body-grid {
+        grid-template-columns: 1fr !important;
+        max-height: none !important;
+        height: auto !important;
+        gap: 10px !important;
+    }
+
+    .slide-detail-panel {
+        max-height: none !important;
+        height: auto !important;
+        min-height: 260px !important;
+    }
+
+    /* --- 10. Bottom Navigation Bar --- */
+    .slide-bottom-bar {
+        padding: 8px 12px !important;
+        gap: 8px !important;
+        flex-shrink: 0 !important;
+        justify-content: center !important;
+    }
+
+    .slide-bottom-hint {
+        display: none !important;
+    }
+
+    .slide-nav-controls {
+        width: 100% !important;
+        justify-content: space-between !important;
+        gap: 8px !important;
+    }
+
+    .btn-slide-nav-prev,
+    .btn-slide-nav-next {
+        padding: 6px 12px !important;
+        font-size: 0.76rem !important;
+        border-radius: 8px !important;
+        gap: 4px !important;
+    }
+
+    .slide-dots-group {
+        gap: 5px !important;
+    }
+
+    .slide-dot {
+        width: 7px !important;
+        height: 7px !important;
+    }
+
+    .slide-dot.active {
+        width: 18px !important;
+    }
+
+    /* --- 11. Company Slide Modal --- */
+    .company-slide-modal-container {
+        padding: 0 !important;
+        width: 100vw !important;
+        height: 100vh !important;
+        inset: 0 !important;
+    }
+
+    .company-slide-modal-backdrop {
+        display: none !important;
+    }
+
+    .company-slide-modal-dialog {
+        width: 100vw !important;
+        height: 100vh !important;
+        max-width: 100vw !important;
+        max-height: 100vh !important;
+        border-radius: 0 !important;
+        border: none !important;
+        box-shadow: none !important;
+        padding-top: env(safe-area-inset-top, 0px) !important;
+        padding-bottom: env(safe-area-inset-bottom, 0px) !important;
+    }
+
+    .company-slide-topbar {
+        padding: 8px 12px !important;
+        gap: 8px !important;
+        flex-shrink: 0 !important;
+    }
+
+    .company-slide-topbar-left {
+        gap: 8px !important;
+        flex: 1 1 auto !important;
+        min-width: 0 !important;
+    }
+
+    .company-slide-logo-badge {
+        width: 30px !important;
+        height: 30px !important;
+        font-size: 12px !important;
+        flex-shrink: 0 !important;
+    }
+
+    .company-slide-title {
+        font-size: 13px !important;
+        line-height: 1.2 !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        max-width: 170px !important;
+    }
+
+    .company-slide-subtitle {
+        display: none !important;
+    }
+
+    .company-slide-topbar-center {
+        width: 100% !important;
+        max-width: 100% !important;
+        order: 3 !important;
+        margin-top: 2px !important;
+    }
+
+    .cslide-picker-wrap {
+        padding: 4px 8px !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+    }
+
+    .cslide-company-select {
+        font-size: 11.5px !important;
+        width: 100% !important;
+    }
+
+    .company-slide-topbar-right {
+        gap: 6px !important;
+        flex-shrink: 0 !important;
+    }
+
+    .btn-cslide-tool {
+        width: 28px !important;
+        height: 28px !important;
+        font-size: 11px !important;
+    }
+
+    .btn-cslide-close {
+        width: 28px !important;
+        height: 28px !important;
+        font-size: 12px !important;
+    }
+
+    .company-slide-stage {
+        padding: 10px 8px !important;
+        min-height: auto !important;
+        max-height: none !important;
+        flex: 1 1 auto !important;
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+        display: block !important;
+    }
+
+    .company-slide-deck {
+        width: 100% !important;
+    }
+
+    .company-slide-page {
+        width: 100% !important;
+        box-sizing: border-box !important;
+    }
+
+    .cslide-hero-banner {
+        padding: 12px 14px !important;
+        border-radius: 12px !important;
+        gap: 10px !important;
+        margin-bottom: 14px !important;
+        flex-direction: column !important;
+        align-items: flex-start !important;
+    }
+
+    .cslide-hero-brand-row {
+        gap: 10px !important;
+    }
+
+    .cslide-hero-logo {
+        width: 42px !important;
+        height: 42px !important;
+        font-size: 16px !important;
+        flex-shrink: 0 !important;
+    }
+
+    .cslide-hero-name {
+        font-size: 16px !important;
+        line-height: 1.2 !important;
+        overflow-wrap: break-word !important;
+    }
+
+    .cslide-hero-desc {
+        font-size: 11px !important;
+        overflow-wrap: break-word !important;
+    }
+
+    .cslide-hero-badge-pill {
+        font-size: 10.5px !important;
+        padding: 4px 10px !important;
+    }
+
+    .cslide-grid-6 {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 8px !important;
+        margin-bottom: 14px !important;
+    }
+
+    .cslide-grid-4 {
+        grid-template-columns: 1fr !important;
+        gap: 8px !important;
+        margin-bottom: 14px !important;
+    }
+
+    .cslide-grid-2 {
+        grid-template-columns: 1fr !important;
+        gap: 10px !important;
+        margin-bottom: 14px !important;
+    }
+
+    .cslide-grid-3 {
+        grid-template-columns: 1fr !important;
+        gap: 10px !important;
+        margin-bottom: 14px !important;
+    }
+
+    .cslide-intel-grid {
+        grid-template-columns: 1fr !important;
+        gap: 8px !important;
+        margin-bottom: 14px !important;
+    }
+
+    .cslide-competitor-benchmark {
+        grid-template-columns: 1fr !important;
+        gap: 8px !important;
+        margin-bottom: 14px !important;
+    }
+
+    .cslide-metric-box {
+        padding: 10px 12px !important;
+        border-radius: 10px !important;
+    }
+
+    .cslide-metric-val {
+        font-size: 17px !important;
+    }
+
+    .cslide-mega-card-detailed {
+        padding: 12px 14px !important;
+        border-radius: 12px !important;
+    }
+
+    .cslide-mega-footer {
+        grid-template-columns: 1fr 1fr 1fr !important;
+        gap: 6px !important;
+    }
+
+    .company-slide-footer {
+        padding: 8px 12px !important;
+        gap: 8px !important;
+        flex-shrink: 0 !important;
+    }
+
+    .company-slide-footer-left {
+        display: none !important;
+    }
+
+    .company-slide-nav-pills {
+        gap: 5px !important;
+    }
+
+    .company-slide-footer-right {
+        width: 100% !important;
+        justify-content: space-between !important;
+    }
+
+    .btn-cslide-nav {
+        padding: 6px 12px !important;
+        font-size: 0.74rem !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .slide-macro-grid-bottom {
+        grid-template-columns: 1fr 1fr !important;
+        gap: 6px !important;
+    }
+
+    .slide-detail-metrics-grid {
+        grid-template-columns: 1fr 1fr !important;
+        gap: 6px !important;
+    }
+
+    .cslide-grid-6 {
+        grid-template-columns: 1fr 1fr !important;
+        gap: 6px !important;
+    }
+
+    .cslide-mega-footer {
+        grid-template-columns: 1fr !important;
+        gap: 6px !important;
+        text-align: left !important;
+    }
+
+    .cslide-mega-footer div:last-child {
+        text-align: left !important;
+    }
+
+    .slide-main-title {
+        font-size: 1.05rem !important;
+    }
+
+    .slide-fund-hero-num {
+        font-size: 1.3rem !important;
+    }
+}
 
