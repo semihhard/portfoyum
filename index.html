@@ -2729,85 +2729,27 @@
                         </div>
                     </div>
 
-                    <!-- 2. Gösterilecek Bilgiler (Switch Listesi) -->
+                    <!-- 2. Gösterilecek Bilgiler & Kutu Sıralaması -->
                     <div class="fund-studio-panel-section">
-                        <div class="fund-studio-sec-title">
-                            <i class="fa-solid fa-layer-group" style="color: #38BDF8;"></i>
-                            <span>Kartta Gösterilecek Bilgiler</span>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                            <div class="fund-studio-sec-title" style="margin-bottom: 0;">
+                                <i class="fa-solid fa-cubes-stacked" style="color: #38BDF8;"></i>
+                                <span>Kart Kutuları & Sıralama</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <span id="fStudioActiveBlockCount" class="studio-counter-badge">5 Kutu Aktif</span>
+                                <button type="button" class="btn-reset-layout" onclick="resetStoryBlocksLayout()" title="Kutu Sıralamasını ve Seçimleri Sıfırla">
+                                    <i class="fa-solid fa-rotate-left"></i> Sıfırla
+                                </button>
+                            </div>
                         </div>
+                        <p class="txt-muted" style="margin: 0 0 10px 0; font-size: 0.74rem;">
+                            Kutuları taşımak için <strong>▲ / ▼</strong> butonlarını veya sürükle-bırak yöntemini kullanın. İstediğiniz kutuyu açıp kapatabilirsiniz.
+                        </p>
                         
-                        <div class="fund-studio-toggles-list">
-                            <!-- Toggle: Getiri Karnesi -->
-                            <label class="fund-studio-toggle-row">
-                                <div class="toggle-info">
-                                    <div class="toggle-title"><i class="fa-solid fa-trophy" style="color: #F59E0B;"></i> Dönemlik Getiriler (1H, 1A, 3A, 1Y)</div>
-                                    <div class="toggle-desc">Resmi TEFAS çoklu dönem performans karnesi</div>
-                                </div>
-                                <span class="studio-switch">
-                                    <input type="checkbox" id="chkStoryReturns" checked onchange="updateFundStoryLivePreview()">
-                                    <span class="studio-slider"></span>
-                                </span>
-                            </label>
-
-                            <!-- Toggle: Varlık Dağılımı -->
-                            <label class="fund-studio-toggle-row">
-                                <div class="toggle-info">
-                                    <div class="toggle-title"><i class="fa-solid fa-chart-pie" style="color: #A855F7;"></i> Portföy Varlık Dağılımı</div>
-                                    <div class="toggle-desc">Hisse, Repo, Bono ve diğer varlık yüzdeleri</div>
-                                </div>
-                                <span class="studio-switch">
-                                    <input type="checkbox" id="chkStoryAlloc" checked onchange="updateFundStoryLivePreview()">
-                                    <span class="studio-slider"></span>
-                                </span>
-                            </label>
-
-                            <!-- Toggle: En Çok Taşınan Hisseler -->
-                            <label class="fund-studio-toggle-row" id="rowStoryStocksToggle">
-                                <div class="toggle-info">
-                                    <div class="toggle-title"><i class="fa-solid fa-cubes" style="color: #38BDF8;"></i> En Çok Taşınan Hisseler (KAP)</div>
-                                    <div class="toggle-desc">Portföydeki ağırlıklı BIST hisse senetleri</div>
-                                </div>
-                                <span class="studio-switch">
-                                    <input type="checkbox" id="chkStoryStocks" checked onchange="updateFundStoryLivePreview()">
-                                    <span class="studio-slider"></span>
-                                </span>
-                            </label>
-
-                            <!-- Toggle: Fon Büyüklüğü & Yatırımcı -->
-                            <label class="fund-studio-toggle-row">
-                                <div class="toggle-info">
-                                    <div class="toggle-title"><i class="fa-solid fa-users" style="color: #C084FC;"></i> Fon Büyüklüğü & Yatırımcı Sayısı</div>
-                                    <div class="toggle-desc">Toplam portföy tutarı (AUM) ve ortak sayısı</div>
-                                </div>
-                                <span class="studio-switch">
-                                    <input type="checkbox" id="chkStoryScale" checked onchange="updateFundStoryLivePreview()">
-                                    <span class="studio-slider"></span>
-                                </span>
-                            </label>
-
-                            <!-- Toggle: TEFAS Risk Göstergesi -->
-                            <label class="fund-studio-toggle-row">
-                                <div class="toggle-info">
-                                    <div class="toggle-title"><i class="fa-solid fa-shield-halved" style="color: #10B981;"></i> TEFAS Risk Göstergesi (1-7)</div>
-                                    <div class="toggle-desc">Fonun SPK risk derecesi ve profil skoru</div>
-                                </div>
-                                <span class="studio-switch">
-                                    <input type="checkbox" id="chkStoryRisk" checked onchange="updateFundStoryLivePreview()">
-                                    <span class="studio-slider"></span>
-                                </span>
-                            </label>
-
-                            <!-- Toggle: Portföyüm Durumu (Kullanıcı bu fona sahipse) -->
-                            <label class="fund-studio-toggle-row" id="rowStoryMyHoldingToggle" style="display: none;">
-                                <div class="toggle-info">
-                                    <div class="toggle-title"><i class="fa-solid fa-wallet" style="color: #00F5FF;"></i> Kişisel Portföy Performansım</div>
-                                    <div class="toggle-desc">Kendi kâr/zarar yüzdem ve yatırım değerim</div>
-                                </div>
-                                <span class="studio-switch">
-                                    <input type="checkbox" id="chkStoryMyHolding" onchange="updateFundStoryLivePreview()">
-                                    <span class="studio-slider"></span>
-                                </span>
-                            </label>
+                        <!-- Dinamik Sıralanabilir Blok Listesi -->
+                        <div class="fund-studio-blocks-list" id="fStudioBlocksList">
+                            <!-- Populated via JavaScript renderStudioBlocksControls() -->
                         </div>
                     </div>
 
@@ -2825,6 +2767,17 @@
                                 <button type="button" class="studio-tag-pill" onclick="setStudioQuickNote('Sabır & İstikrar 💎')">Sabır & İstikrar 💎</button>
                                 <button type="button" class="studio-tag-pill" onclick="setStudioQuickNote('Bileşik Getiri ✨')">Bileşik Getiri ✨</button>
                             </div>
+                        </div>
+                    </div>
+
+                    <!-- 4. Paylaşan / Analist İmzası -->
+                    <div class="fund-studio-panel-section">
+                        <div class="fund-studio-sec-title">
+                            <i class="fa-solid fa-signature" style="color: #C084FC;"></i>
+                            <span>Paylaşan / Analist İmzası</span>
+                        </div>
+                        <div class="fund-studio-note-box">
+                            <input type="text" id="inputStoryAuthor" class="fund-studio-note-input" placeholder="Örn: @finansgunlugu veya Yatırım Notları" maxlength="40" oninput="updateFundStoryLivePreview()" />
                         </div>
                     </div>
 
@@ -2863,7 +2816,7 @@
                             <div style="position: relative; z-index: 1; display: flex; flex-direction: column; height: 100%; justify-content: space-between;">
                                 
                                 <!-- 1. Header Bar: Brand + Live Date -->
-                                <div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.08);">
+                                <div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.08); flex-shrink: 0;">
                                     <div style="display: flex; align-items: center; gap: 10px;">
                                         <div style="width: 32px; height: 32px; border-radius: 9px; background: linear-gradient(135deg, #00F5FF, #8B5CF6); display: flex; align-items: center; justify-content: center; box-shadow: 0 0 14px rgba(0,245,255,0.45);">
                                             <i class="fa-solid fa-chart-pie" style="color: #050711; font-size: 1rem;"></i>
@@ -2880,171 +2833,235 @@
                                     </div>
                                 </div>
 
-                                <!-- 2. Fund Identity Card (Hero Banner) -->
-                                <div id="fStoryIdentityCard" style="background: linear-gradient(135deg, rgba(15, 23, 42, 0.85) 0%, rgba(10, 15, 28, 0.95) 100%); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 20px; padding: 18px 20px; position: relative; box-shadow: 0 8px 32px rgba(0,0,0,0.55); overflow: hidden; margin-top: 10px;">
-                                    <div id="fStoryHeroStripe" style="position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, #00F5FF 0%, #8B5CF6 50%, #10B981 100%);"></div>
+                                <!-- MODULAR SORTABLE BLOCKS CONTAINER -->
+                                <div id="fStoryBlocksContainer" class="fstory-blocks-container">
                                     
-                                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                                        <div id="fStoryCode" style="font-size: 2.1rem; font-weight: 900; letter-spacing: 1px; color: #FFFFFF; text-shadow: 0 0 20px rgba(0,245,255,0.45); font-family: 'Space Grotesk', sans-serif;">
-                                            MAC
-                                        </div>
-                                        <div id="fStoryCategory" style="font-size: 0.72rem; font-weight: 800; color: #38BDF8; background: rgba(56,189,248,0.14); border: 1px solid rgba(56,189,248,0.35); padding: 5px 12px; border-radius: 8px; text-transform: uppercase; letter-spacing: 0.6px;">
-                                            HİSSE SENEDİ
-                                        </div>
-                                    </div>
+                                    <!-- BLOCK: identity -->
+                                    <div id="fStoryBlock_identity" class="fstory-block" data-block-id="identity" data-display-type="block">
+                                        <div id="fStoryIdentityCard" style="background: linear-gradient(135deg, rgba(15, 23, 42, 0.85) 0%, rgba(10, 15, 28, 0.95) 100%); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 18px; padding: 14px 18px; position: relative; box-shadow: 0 8px 32px rgba(0,0,0,0.55); overflow: hidden;">
+                                            <div id="fStoryHeroStripe" style="position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, #00F5FF 0%, #8B5CF6 50%, #10B981 100%);"></div>
+                                            
+                                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                                <div id="fStoryCode" style="font-size: 2rem; font-weight: 900; letter-spacing: 1px; color: #FFFFFF; text-shadow: 0 0 20px rgba(0,245,255,0.45); font-family: 'Space Grotesk', sans-serif;">
+                                                    MAC
+                                                </div>
+                                                <div id="fStoryCategory" style="font-size: 0.7rem; font-weight: 800; color: #38BDF8; background: rgba(56,189,248,0.14); border: 1px solid rgba(56,189,248,0.35); padding: 4px 10px; border-radius: 8px; text-transform: uppercase; letter-spacing: 0.6px;">
+                                                    HİSSE SENEDİ
+                                                </div>
+                                            </div>
 
-                                    <div id="fStoryTitle" style="font-size: 1.05rem; font-weight: 700; color: #F1F5F9; line-height: 1.35; margin: 10px 0 14px 0; min-height: 40px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
-                                        MARMARA CAPITAL PORTFÖY HİSSE SENEDİ FONU
-                                    </div>
+                                            <div id="fStoryTitle" style="font-size: 0.96rem; font-weight: 700; color: #F1F5F9; line-height: 1.3; margin: 8px 0 10px 0; min-height: 38px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+                                                MARMARA CAPITAL PORTFÖY HİSSE SENEDİ FONU
+                                            </div>
 
-                                    <div style="display: flex; justify-content: space-between; align-items: flex-end; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.08);">
-                                        <div>
-                                            <div style="font-size: 0.68rem; color: #94A3B8; text-transform: uppercase; letter-spacing: 0.8px; font-weight: 600;">Son Fon Fiyatı</div>
-                                            <div id="fStoryPrice" style="font-size: 1.5rem; font-weight: 900; color: #FFFFFF; letter-spacing: -0.5px;">₺14,2800</div>
-                                        </div>
-                                        <div id="fStoryDailyBadge" style="display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px; border-radius: 10px; background: rgba(16,185,129,0.12); border: 1px solid rgba(16,185,129,0.35); color: #10B981; font-weight: 800; font-size: 0.95rem;">
-                                            <i id="fStoryDailyIcon" class="fa-solid fa-arrow-trend-up"></i>
-                                            <span id="fStoryDailyChange">+%3,12</span>
-                                            <span style="font-size: 0.65rem; opacity: 0.85; font-weight: 700;">(GÜNLÜK)</span>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Kişisel Portföy Pozisyonu (Toggled via checkbox) -->
-                                <div id="fStoryMyHoldingBlock" style="display: none; background: linear-gradient(135deg, rgba(0, 245, 255, 0.12) 0%, rgba(139, 92, 246, 0.12) 100%); border: 1px solid rgba(0, 245, 255, 0.35); border-radius: 16px; padding: 12px 16px; margin-top: 8px; align-items: center; justify-content: space-between;">
-                                    <div style="display: flex; align-items: center; gap: 10px;">
-                                        <i class="fa-solid fa-wallet" style="color: #00F5FF; font-size: 1.15rem;"></i>
-                                        <div>
-                                            <div style="font-size: 0.68rem; color: #94A3B8; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase;">Portföyümdeki Pozisyonum</div>
-                                            <div id="fStoryMyHoldingSummary" style="font-size: 0.88rem; color: #FFFFFF; font-weight: 800;">1.250 Adet • ₺18.450</div>
+                                            <div style="display: flex; justify-content: space-between; align-items: flex-end; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.08);">
+                                                <div>
+                                                    <div style="font-size: 0.65rem; color: #94A3B8; text-transform: uppercase; letter-spacing: 0.8px; font-weight: 600;">Son Fon Fiyatı</div>
+                                                    <div id="fStoryPrice" style="font-size: 1.45rem; font-weight: 900; color: #FFFFFF; letter-spacing: -0.5px;">₺14,2800</div>
+                                                </div>
+                                                <div id="fStoryDailyBadge" style="display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 10px; background: rgba(16,185,129,0.12); border: 1px solid rgba(16,185,129,0.35); color: #10B981; font-weight: 800; font-size: 0.9rem;">
+                                                    <i id="fStoryDailyIcon" class="fa-solid fa-arrow-trend-up"></i>
+                                                    <span id="fStoryDailyChange">+%3,12</span>
+                                                    <span style="font-size: 0.62rem; opacity: 0.85; font-weight: 700;">(GÜNLÜK)</span>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
-                                    <div id="fStoryMyHoldingProfitBadge" style="padding: 5px 12px; border-radius: 8px; font-weight: 800; font-size: 0.86rem; background: rgba(16,185,129,0.15); border: 1px solid rgba(16,185,129,0.4); color: #10B981;">
-                                        +%15,40 Kâr
-                                    </div>
-                                </div>
 
-                                <!-- 3. Getiri Karnesi Header & Matrix -->
-                                <div id="fStorySectionReturnsHeader" style="margin-top: 10px; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center;">
-                                    <div style="font-size: 0.8rem; font-weight: 800; letter-spacing: 1.2px; text-transform: uppercase; color: #CBD5E1; display: flex; align-items: center; gap: 7px;">
-                                        <i class="fa-solid fa-trophy" style="color: #F59E0B;"></i>
-                                        <span>Çoklu Dönem Getiri Karnesi</span>
-                                    </div>
-                                    <span style="font-size: 0.68rem; color: #64748B; font-weight: 700; letter-spacing: 0.5px;">RESMİ TEFAS</span>
-                                </div>
-
-                                <div id="fStorySectionReturns" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                                    <!-- 1 Hafta -->
-                                    <div id="fStoryCard1W" style="background: rgba(15, 23, 42, 0.75); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 14px 16px; position: relative; overflow: hidden;">
-                                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                                            <span style="font-size: 0.72rem; font-weight: 800; color: #94A3B8; letter-spacing: 0.5px;">1 HAFTALIK</span>
-                                            <i id="fStoryIcon1W" class="fa-solid fa-arrow-trend-up" style="color: #10B981; font-size: 0.9rem;"></i>
+                                    <!-- BLOCK: returns -->
+                                    <div id="fStoryBlock_returns" class="fstory-block" data-block-id="returns" data-display-type="block">
+                                        <div style="margin-bottom: 5px; display: flex; justify-content: space-between; align-items: center;">
+                                            <div style="font-size: 0.74rem; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; color: #CBD5E1; display: flex; align-items: center; gap: 6px;">
+                                                <i class="fa-solid fa-trophy" style="color: #F59E0B;"></i>
+                                                <span>Dönemlik Getiriler</span>
+                                            </div>
+                                            <span style="font-size: 0.64rem; color: #64748B; font-weight: 700;">RESMİ TEFAS</span>
                                         </div>
-                                        <div id="fStoryRet1W" style="font-size: 1.6rem; font-weight: 900; color: #10B981; line-height: 1.1;">
-                                            +%2,45
+
+                                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                                            <div id="fStoryCard1W" style="background: rgba(15, 23, 42, 0.75); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; padding: 10px 14px; position: relative;">
+                                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                                                    <span style="font-size: 0.68rem; font-weight: 800; color: #94A3B8; letter-spacing: 0.5px;">1 HAFTALIK</span>
+                                                    <i id="fStoryIcon1W" class="fa-solid fa-arrow-trend-up" style="color: #10B981; font-size: 0.85rem;"></i>
+                                                </div>
+                                                <div id="fStoryRet1W" style="font-size: 1.45rem; font-weight: 900; color: #10B981; line-height: 1.1;">+%2,45</div>
+                                            </div>
+                                            <div id="fStoryCard1M" style="background: rgba(15, 23, 42, 0.75); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; padding: 10px 14px; position: relative;">
+                                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                                                    <span style="font-size: 0.68rem; font-weight: 800; color: #94A3B8; letter-spacing: 0.5px;">1 AYLIK</span>
+                                                    <i id="fStoryIcon1M" class="fa-solid fa-arrow-trend-up" style="color: #10B981; font-size: 0.85rem;"></i>
+                                                </div>
+                                                <div id="fStoryRet1M" style="font-size: 1.45rem; font-weight: 900; color: #10B981; line-height: 1.1;">+%8,15</div>
+                                            </div>
+                                            <div id="fStoryCard3M" style="background: rgba(15, 23, 42, 0.75); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; padding: 10px 14px; position: relative;">
+                                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                                                    <span style="font-size: 0.68rem; font-weight: 800; color: #94A3B8; letter-spacing: 0.5px;">3 AYLIK</span>
+                                                    <i id="fStoryIcon3M" class="fa-solid fa-arrow-trend-up" style="color: #10B981; font-size: 0.85rem;"></i>
+                                                </div>
+                                                <div id="fStoryRet3M" style="font-size: 1.45rem; font-weight: 900; color: #10B981; line-height: 1.1;">+%18,40</div>
+                                            </div>
+                                            <div id="fStoryCard1Y" style="background: rgba(15, 23, 42, 0.75); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; padding: 10px 14px; position: relative;">
+                                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                                                    <span style="font-size: 0.68rem; font-weight: 800; color: #94A3B8; letter-spacing: 0.5px;">1 YILLIK</span>
+                                                    <i id="fStoryIcon1Y" class="fa-solid fa-arrow-trend-up" style="color: #10B981; font-size: 0.85rem;"></i>
+                                                </div>
+                                                <div id="fStoryRet1Y" style="font-size: 1.45rem; font-weight: 900; color: #10B981; line-height: 1.1;">+%74,20</div>
+                                            </div>
                                         </div>
-                                        <div style="font-size: 0.65rem; color: #64748B; margin-top: 4px; font-weight: 500;">Son 7 Günlük Getiri</div>
                                     </div>
 
-                                    <!-- 1 Ay -->
-                                    <div id="fStoryCard1M" style="background: rgba(15, 23, 42, 0.75); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 14px 16px; position: relative; overflow: hidden;">
-                                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                                            <span style="font-size: 0.72rem; font-weight: 800; color: #94A3B8; letter-spacing: 0.5px;">1 AYLIK</span>
-                                            <i id="fStoryIcon1M" class="fa-solid fa-arrow-trend-up" style="color: #10B981; font-size: 0.9rem;"></i>
+                                    <!-- BLOCK: long_returns -->
+                                    <div id="fStoryBlock_long_returns" class="fstory-block" data-block-id="long_returns" data-display-type="block" style="display: none;">
+                                        <div style="margin-bottom: 5px; display: flex; justify-content: space-between; align-items: center;">
+                                            <span style="font-size: 0.74rem; font-weight: 800; letter-spacing: 0.8px; text-transform: uppercase; color: #CBD5E1; display: flex; align-items: center; gap: 6px;">
+                                                <i class="fa-solid fa-chart-line" style="color: #10B981;"></i> Uzun Vadeli & Bileşik Getiriler
+                                            </span>
+                                            <span style="font-size: 0.64rem; color: #64748B; font-weight: 600;">PERFORMANS</span>
                                         </div>
-                                        <div id="fStoryRet1M" style="font-size: 1.6rem; font-weight: 900; color: #10B981; line-height: 1.1;">
-                                            +%8,15
+                                        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px;">
+                                            <div id="fStoryCard6M" style="background: rgba(15, 23, 42, 0.75); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 8px 4px; text-align: center;">
+                                                <div style="font-size: 0.62rem; color: #94A3B8; font-weight: 700;">6 AYLIK</div>
+                                                <div id="fStoryRet6M" style="font-size: 0.96rem; font-weight: 900; color: #10B981; margin-top: 2px;">+%28,4</div>
+                                            </div>
+                                            <div id="fStoryCardYtd" style="background: rgba(15, 23, 42, 0.75); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 8px 4px; text-align: center;">
+                                                <div style="font-size: 0.62rem; color: #94A3B8; font-weight: 700;">YILBAŞI</div>
+                                                <div id="fStoryRetYtd" style="font-size: 0.96rem; font-weight: 900; color: #10B981; margin-top: 2px;">+%42,1</div>
+                                            </div>
+                                            <div id="fStoryCard3Y" style="background: rgba(15, 23, 42, 0.75); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 8px 4px; text-align: center;">
+                                                <div style="font-size: 0.62rem; color: #94A3B8; font-weight: 700;">3 YILLIK</div>
+                                                <div id="fStoryRet3Y" style="font-size: 0.96rem; font-weight: 900; color: #10B981; margin-top: 2px;">+%310</div>
+                                            </div>
+                                            <div id="fStoryCard5Y" style="background: rgba(15, 23, 42, 0.75); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 8px 4px; text-align: center;">
+                                                <div style="font-size: 0.62rem; color: #94A3B8; font-weight: 700;">5 YILLIK</div>
+                                                <div id="fStoryRet5Y" style="font-size: 0.96rem; font-weight: 900; color: #10B981; margin-top: 2px;">+%950</div>
+                                            </div>
                                         </div>
-                                        <div style="font-size: 0.65rem; color: #64748B; margin-top: 4px; font-weight: 500;">Son 30 Günlük Getiri</div>
                                     </div>
 
-                                    <!-- 3 Ay -->
-                                    <div id="fStoryCard3M" style="background: rgba(15, 23, 42, 0.75); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 14px 16px; position: relative; overflow: hidden;">
-                                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                                            <span style="font-size: 0.72rem; font-weight: 800; color: #94A3B8; letter-spacing: 0.5px;">3 AYLIK</span>
-                                            <i id="fStoryIcon3M" class="fa-solid fa-arrow-trend-up" style="color: #10B981; font-size: 0.9rem;"></i>
+                                    <!-- BLOCK: telemetry -->
+                                    <div id="fStoryBlock_telemetry" class="fstory-block" data-block-id="telemetry" data-display-type="grid" style="background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; padding: 10px 12px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px;">
+                                        <div id="fStoryColRisk" style="text-align: center; border-right: 1px solid rgba(255,255,255,0.08); padding: 0 4px;">
+                                            <div style="font-size: 0.65rem; color: #94A3B8; font-weight: 600; margin-bottom: 2px;">Risk Değeri</div>
+                                            <div id="fStoryRiskVal" style="font-size: 1rem; font-weight: 800; color: #F59E0B; display: flex; align-items: center; justify-content: center; gap: 4px;">
+                                                <i class="fa-solid fa-shield-halved" style="font-size: 0.8rem;"></i>
+                                                <span id="fStoryRiskText">6 / 7</span>
+                                            </div>
+                                            <div id="fStoryRiskLabel" style="font-size: 0.58rem; color: #64748B; font-weight: 600;">Yüksek Risk</div>
                                         </div>
-                                        <div id="fStoryRet3M" style="font-size: 1.6rem; font-weight: 900; color: #10B981; line-height: 1.1;">
-                                            +%18,40
+
+                                        <div id="fStoryColAum" style="text-align: center; border-right: 1px solid rgba(255,255,255,0.08); padding: 0 4px;">
+                                            <div style="font-size: 0.65rem; color: #94A3B8; font-weight: 600; margin-bottom: 2px;">Fon Büyüklüğü</div>
+                                            <div id="fStoryAumVal" style="font-size: 1rem; font-weight: 800; color: #38BDF8;">₺18.5 Mr</div>
+                                            <div style="font-size: 0.58rem; color: #64748B; font-weight: 600;">Portföy (AUM)</div>
                                         </div>
-                                        <div style="font-size: 0.65rem; color: #64748B; margin-top: 4px; font-weight: 500;">Çeyreklik Performans</div>
-                                    </div>
 
-                                    <!-- 1 Yıl -->
-                                    <div id="fStoryCard1Y" style="background: rgba(15, 23, 42, 0.75); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 14px 16px; position: relative; overflow: hidden;">
-                                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                                            <span style="font-size: 0.72rem; font-weight: 800; color: #94A3B8; letter-spacing: 0.5px;">1 YILLIK</span>
-                                            <i id="fStoryIcon1Y" class="fa-solid fa-arrow-trend-up" style="color: #10B981; font-size: 0.9rem;"></i>
+                                        <div id="fStoryColInv" style="text-align: center; padding: 0 4px;">
+                                            <div style="font-size: 0.65rem; color: #94A3B8; font-weight: 600; margin-bottom: 2px;">Yatırımcı</div>
+                                            <div id="fStoryInvestorVal" style="font-size: 1rem; font-weight: 800; color: #C084FC;">84.200</div>
+                                            <div style="font-size: 0.58rem; color: #64748B; font-weight: 600;">Aktif Ortak</div>
                                         </div>
-                                        <div id="fStoryRet1Y" style="font-size: 1.6rem; font-weight: 900; color: #10B981; line-height: 1.1;">
-                                            +%74,20
+                                    </div>
+
+                                    <!-- BLOCK: specs -->
+                                    <div id="fStoryBlock_specs" class="fstory-block" data-block-id="specs" data-display-type="grid" style="background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; padding: 10px 12px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px;">
+                                        <div style="text-align: center; border-right: 1px solid rgba(255,255,255,0.06); padding: 0 3px;">
+                                            <div style="font-size: 0.62rem; color: #94A3B8; font-weight: 600;">Kurucu PYŞ</div>
+                                            <div id="fStorySpecCompany" style="font-size: 0.78rem; font-weight: 800; color: #38BDF8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">İş Portföy</div>
+                                            <div style="font-size: 0.56rem; color: #64748B;">Yönetici</div>
                                         </div>
-                                        <div style="font-size: 0.65rem; color: #64748B; margin-top: 4px; font-weight: 500;">Son 365 Günlük Getiri</div>
-                                    </div>
-                                </div>
-
-                                <!-- 4. Telemetri (Risk, AUM, Yatırımcı) -->
-                                <div id="fStorySectionTelemetry" style="background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 12px 14px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-top: 10px;">
-                                    <div id="fStoryColRisk" style="text-align: center; border-right: 1px solid rgba(255,255,255,0.08); padding: 0 4px;">
-                                        <div style="font-size: 0.68rem; color: #94A3B8; font-weight: 600; margin-bottom: 4px;">Risk Değeri</div>
-                                        <div id="fStoryRiskVal" style="font-size: 1.05rem; font-weight: 800; color: #F59E0B; display: flex; align-items: center; justify-content: center; gap: 4px;">
-                                            <i class="fa-solid fa-shield-halved" style="font-size: 0.85rem;"></i>
-                                            <span id="fStoryRiskText">6 / 7</span>
+                                        <div style="text-align: center; border-right: 1px solid rgba(255,255,255,0.06); padding: 0 3px;">
+                                            <div style="font-size: 0.62rem; color: #94A3B8; font-weight: 600;">Valör</div>
+                                            <div id="fStorySpecValor" style="font-size: 0.78rem; font-weight: 800; color: #F1F5F9;">T+1 / T+2</div>
+                                            <div style="font-size: 0.56rem; color: #64748B;">Alış / Satış</div>
                                         </div>
-                                        <div id="fStoryRiskLabel" style="font-size: 0.62rem; color: #64748B; font-weight: 600;">Yüksek Risk</div>
-                                    </div>
-
-                                    <div id="fStoryColAum" style="text-align: center; border-right: 1px solid rgba(255,255,255,0.08); padding: 0 4px;">
-                                        <div style="font-size: 0.68rem; color: #94A3B8; font-weight: 600; margin-bottom: 4px;">Fon Büyüklüğü</div>
-                                        <div id="fStoryAumVal" style="font-size: 1.05rem; font-weight: 800; color: #38BDF8;">₺18.5 Mr</div>
-                                        <div style="font-size: 0.62rem; color: #64748B; font-weight: 600;">Toplam Portföy</div>
-                                    </div>
-
-                                    <div id="fStoryColInv" style="text-align: center; padding: 0 4px;">
-                                        <div style="font-size: 0.68rem; color: #94A3B8; font-weight: 600; margin-bottom: 4px;">Yatırımcı</div>
-                                        <div id="fStoryInvestorVal" style="font-size: 1.05rem; font-weight: 800; color: #C084FC;">84.200</div>
-                                        <div style="font-size: 0.62rem; color: #64748B; font-weight: 600;">Aktif Ortak</div>
-                                    </div>
-                                </div>
-
-                                <!-- 5. Varlık Dağılımı Bölümü -->
-                                <div id="fStorySectionAlloc" style="background: rgba(15, 23, 42, 0.75); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 14px 16px; margin-top: 10px;">
-                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                                        <div style="font-size: 0.76rem; font-weight: 800; color: #CBD5E1; letter-spacing: 0.8px; text-transform: uppercase; display: flex; align-items: center; gap: 6px;">
-                                            <i class="fa-solid fa-chart-pie" style="color: #A855F7;"></i>
-                                            <span>Portföy Varlık Dağılımı</span>
+                                        <div style="text-align: center; border-right: 1px solid rgba(255,255,255,0.06); padding: 0 3px;">
+                                            <div style="font-size: 0.62rem; color: #94A3B8; font-weight: 600;">Yıllık Ücret</div>
+                                            <div id="fStorySpecFee" style="font-size: 0.78rem; font-weight: 800; color: #F59E0B;">%2.40</div>
+                                            <div style="font-size: 0.56rem; color: #64748B;">Yönetim</div>
                                         </div>
-                                        <span id="fStoryAllocDate" style="font-size: 0.66rem; color: #64748B; font-weight: 600;">Son Portföy Raporu</span>
+                                        <div style="text-align: center; padding: 0 3px;">
+                                            <div style="font-size: 0.62rem; color: #94A3B8; font-weight: 600;">Stopaj</div>
+                                            <div id="fStorySpecTax" style="font-size: 0.78rem; font-weight: 800; color: #10B981;">%0 Muaf</div>
+                                            <div style="font-size: 0.56rem; color: #64748B;">Vergi</div>
+                                        </div>
                                     </div>
 
-                                    <!-- Multi-segment Horizontal Bar -->
-                                    <div id="fStoryAllocBar" style="height: 12px; width: 100%; border-radius: 6px; overflow: hidden; display: flex; background: rgba(255,255,255,0.05); margin-bottom: 10px;">
-                                        <div style="width: 75%; background: #38BDF8;"></div>
-                                        <div style="width: 15%; background: #10B981;"></div>
-                                        <div style="width: 10%; background: #94A3B8;"></div>
+                                    <!-- BLOCK: ranking -->
+                                    <div id="fStoryBlock_ranking" class="fstory-block" data-block-id="ranking" data-display-type="flex" style="display: none; background: linear-gradient(135deg, rgba(245, 158, 11, 0.12) 0%, rgba(234, 88, 12, 0.08) 100%); border: 1px solid rgba(245, 158, 11, 0.35); border-radius: 14px; padding: 10px 14px; align-items: center; justify-content: space-between;">
+                                        <div style="display: flex; align-items: center; gap: 10px;">
+                                            <div style="width: 30px; height: 30px; border-radius: 8px; background: rgba(245, 158, 11, 0.2); display: flex; align-items: center; justify-content: center; color: #F59E0B; font-size: 0.95rem;">
+                                                <i class="fa-solid fa-medal"></i>
+                                            </div>
+                                            <div>
+                                                <div id="fStoryRankTitle" style="font-size: 0.8rem; font-weight: 800; color: #FDE68A;">KATEGORİSİNDE LİDER GETİRİ</div>
+                                                <div id="fStoryRankSubtitle" style="font-size: 0.65rem; color: #CBD5E1; font-weight: 500;">Hisse Fonları Arasında İlk Dilimde</div>
+                                            </div>
+                                        </div>
+                                        <div id="fStoryRankBadge" style="padding: 3px 8px; border-radius: 6px; font-weight: 800; font-size: 0.72rem; background: rgba(245, 158, 11, 0.2); color: #F59E0B; border: 1px solid rgba(245, 158, 11, 0.4);">
+                                            TOP 3
+                                        </div>
                                     </div>
 
-                                    <!-- Asset Chips List -->
-                                    <div id="fStoryAllocChips" style="display: flex; flex-wrap: wrap; gap: 8px;">
-                                        <!-- Slices inserted via JS -->
+                                    <!-- BLOCK: allocation -->
+                                    <div id="fStoryBlock_allocation" class="fstory-block" data-block-id="allocation" data-display-type="block">
+                                        <div id="fStorySectionAlloc" style="background: rgba(15, 23, 42, 0.75); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; padding: 12px 14px;">
+                                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 7px;">
+                                                <div style="font-size: 0.74rem; font-weight: 800; color: #CBD5E1; letter-spacing: 0.8px; text-transform: uppercase; display: flex; align-items: center; gap: 6px;">
+                                                    <i class="fa-solid fa-chart-pie" style="color: #A855F7;"></i>
+                                                    <span>Portföy Varlık Dağılımı</span>
+                                                </div>
+                                                <span id="fStoryAllocDate" style="font-size: 0.64rem; color: #64748B; font-weight: 600;">Son TEFAS Raporu</span>
+                                            </div>
+
+                                            <div id="fStoryAllocBar" style="height: 10px; width: 100%; border-radius: 5px; overflow: hidden; display: flex; background: rgba(255,255,255,0.05); margin-bottom: 8px;">
+                                                <div style="width: 75%; background: #38BDF8;"></div>
+                                                <div style="width: 15%; background: #10B981;"></div>
+                                                <div style="width: 10%; background: #94A3B8;"></div>
+                                            </div>
+
+                                            <div id="fStoryAllocChips" style="display: flex; flex-wrap: wrap; gap: 6px;">
+                                                <!-- Slices -->
+                                            </div>
+
+                                            <div id="fStoryTopStocksContainer" style="margin-top: 7px; padding-top: 7px; border-top: 1px solid rgba(255,255,255,0.06); display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
+                                                <span style="font-size: 0.66rem; color: #94A3B8; font-weight: 700;"><i class="fa-solid fa-cubes" style="color: #38BDF8;"></i> En Çok Taşınan:</span>
+                                                <span id="fStoryTopStocksList" style="font-size: 0.7rem; color: #E2E8F0; font-weight: 600;">THYAO • TUPRS • KCHOL • BIMAS</span>
+                                            </div>
+                                        </div>
                                     </div>
 
-                                    <!-- Underlying Stocks Strip -->
-                                    <div id="fStoryTopStocksContainer" style="margin-top: 8px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.06); display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
-                                        <span style="font-size: 0.68rem; color: #94A3B8; font-weight: 700;"><i class="fa-solid fa-cubes" style="color: #38BDF8;"></i> En Çok Taşınan:</span>
-                                        <span id="fStoryTopStocksList" style="font-size: 0.72rem; color: #E2E8F0; font-weight: 600;">THYAO • TUPRS • KCHOL • BIMAS</span>
+                                    <!-- BLOCK: my_holding -->
+                                    <div id="fStoryBlock_my_holding" class="fstory-block" data-block-id="my_holding" data-display-type="flex" style="display: none; background: linear-gradient(135deg, rgba(0, 245, 255, 0.12) 0%, rgba(139, 92, 246, 0.12) 100%); border: 1px solid rgba(0, 245, 255, 0.35); border-radius: 14px; padding: 10px 14px; align-items: center; justify-content: space-between;">
+                                        <div style="display: flex; align-items: center; gap: 10px;">
+                                            <i class="fa-solid fa-wallet" style="color: #00F5FF; font-size: 1.1rem;"></i>
+                                            <div>
+                                                <div style="font-size: 0.65rem; color: #94A3B8; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase;">Portföyümdeki Pozisyonum</div>
+                                                <div id="fStoryMyHoldingSummary" style="font-size: 0.85rem; color: #FFFFFF; font-weight: 800;">1.250 Adet • ₺18.450</div>
+                                            </div>
+                                        </div>
+                                        <div id="fStoryMyHoldingProfitBadge" style="padding: 4px 10px; border-radius: 8px; font-weight: 800; font-size: 0.82rem; background: rgba(16,185,129,0.15); border: 1px solid rgba(16,185,129,0.4); color: #10B981;">
+                                            +%15,40 Kâr
+                                        </div>
                                     </div>
-                                </div>
 
-                                <!-- 6. Kişisel Özel Not Rozeti (Toggled if input filled) -->
-                                <div id="fStoryCustomNoteBlock" style="display: none; background: rgba(255, 255, 255, 0.04); border: 1px dashed rgba(255, 255, 255, 0.2); border-radius: 14px; padding: 10px 16px; margin-top: 10px; align-items: center; justify-content: center; text-align: center; gap: 8px;">
-                                    <i class="fa-solid fa-quote-left" style="color: #00F5FF; font-size: 0.8rem; opacity: 0.7;"></i>
-                                    <span id="fStoryCustomNoteText" style="font-size: 0.88rem; font-weight: 700; color: #F1F5F9; letter-spacing: 0.3px;"></span>
-                                    <i class="fa-solid fa-quote-right" style="color: #00F5FF; font-size: 0.8rem; opacity: 0.7;"></i>
-                                </div>
+                                    <!-- BLOCK: custom_note -->
+                                    <div id="fStoryBlock_custom_note" class="fstory-block" data-block-id="custom_note" data-display-type="flex" style="display: none; background: rgba(255, 255, 255, 0.04); border: 1px dashed rgba(255, 255, 255, 0.2); border-radius: 12px; padding: 8px 14px; align-items: center; justify-content: center; text-align: center; gap: 8px;">
+                                        <i class="fa-solid fa-quote-left" style="color: #00F5FF; font-size: 0.75rem; opacity: 0.7;"></i>
+                                        <span id="fStoryCustomNoteText" style="font-size: 0.84rem; font-weight: 700; color: #F1F5F9; letter-spacing: 0.3px;"></span>
+                                        <i class="fa-solid fa-quote-right" style="color: #00F5FF; font-size: 0.75rem; opacity: 0.7;"></i>
+                                    </div>
 
-                                <!-- 7. Futuristic Cyber Barcode / Badge & Footer -->
-                                <div style="margin-top: 12px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.08); display: flex; justify-content: space-between; align-items: center;">
+                                    <!-- BLOCK: author_tag -->
+                                    <div id="fStoryBlock_author_tag" class="fstory-block" data-block-id="author_tag" data-display-type="flex" style="display: none; background: rgba(0, 245, 255, 0.06); border: 1px solid rgba(0, 245, 255, 0.25); border-radius: 12px; padding: 8px 14px; align-items: center; justify-content: center; gap: 8px; text-align: center;">
+                                        <i class="fa-solid fa-feather-pointed" style="color: #00F5FF; font-size: 0.8rem;"></i>
+                                        <span style="font-size: 0.74rem; color: #CBD5E1; font-weight: 600;">Hazırlayan:</span>
+                                        <span id="fStoryAuthorText" style="font-size: 0.8rem; font-weight: 800; color: #00F5FF;">@semih</span>
+                                    </div>
+
+                                </div> <!-- /fStoryBlocksContainer -->
+
+                                <!-- 3. Futuristic Cyber Barcode / Badge & Footer -->
+                                <div style="padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.08); display: flex; justify-content: space-between; align-items: center; flex-shrink: 0;">
                                     <div style="display: flex; align-items: center; gap: 8px;">
                                         <div style="display: flex; gap: 2px; align-items: center; height: 16px;">
                                             <span style="width: 2px; height: 16px; background: #00F5FF;"></span>
@@ -3057,7 +3074,7 @@
                                         </div>
                                         <span style="font-size: 0.72rem; color: #CBD5E1; font-weight: 700; letter-spacing: 0.5px;">Portföyüm • Akıllı Fon Radarı</span>
                                     </div>
-                                    <div style="font-size: 0.66rem; color: #64748B; font-weight: 600;">
+                                    <div style="font-size: 0.65rem; color: #64748B; font-weight: 600;">
                                         Yatırım tavsiyesi değildir
                                     </div>
                                 </div>

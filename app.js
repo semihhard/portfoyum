@@ -12218,30 +12218,245 @@ function triggerImageDownload(dataUrl, filename = "Portfoyum_Gorsel.png") {
     }
 }
 
-// ==========================================================================
+/// ==========================================================================
 // Sosyal Medya / Instagram Fon Karnesi Stüdyosu (Story Studio & Customizer)
 // ==========================================================================
+const STORY_STUDIO_BLOCKS_DEF = [
+    { id: 'identity', title: 'Fon Kimlik & Fiyat Kartı', desc: 'Kod, kategori, fiyat ve günlük getiri', icon: 'fa-id-card', color: '#00F5FF', defaultEnabled: true },
+    { id: 'returns', title: 'Dönemlik Getiriler (1H, 1A, 3A, 1Y)', desc: 'Resmi TEFAS çoklu dönem getiri matrisi', icon: 'fa-trophy', color: '#F59E0B', defaultEnabled: true },
+    { id: 'telemetry', title: 'Risk, Büyüklük & Yatırımcı', desc: 'SPK Risk Derecesi, Toplam Portföy (AUM), Yatırımcı Sayısı', icon: 'fa-chart-simple', color: '#38BDF8', defaultEnabled: true },
+    { id: 'specs', title: 'Fon Künyesi & Valör Bilgileri', desc: 'PYŞ Kurucusu, Alış/Satış Valörü, Yönetim Ücreti, Stopaj', icon: 'fa-file-invoice-dollar', color: '#10B981', defaultEnabled: true },
+    { id: 'allocation', title: 'Portföy Varlık Dağılımı & Hisseler', desc: 'Varlık yüzdeleri ve en çok taşınan KAP hisseleri', icon: 'fa-chart-pie', color: '#A855F7', defaultEnabled: true },
+    { id: 'ranking', title: 'Kategori Sıralaması & Başarı', desc: 'Kategorisindeki getiri derecesi ve başarı rozeti', icon: 'fa-medal', color: '#F59E0B', defaultEnabled: false },
+    { id: 'long_returns', title: 'Uzun Vadeli Getiriler (6A, YBG, 3Y, 5Y)', desc: 'Orta ve uzun vadeli bileşik getiri karnesi', icon: 'fa-arrow-trend-up', color: '#10B981', defaultEnabled: false },
+    { id: 'my_holding', title: 'Kişisel Portföy Pozisyonum', desc: 'Kendi pay adedim, yatırım değerim ve kâr oranım', icon: 'fa-wallet', color: '#00F5FF', defaultEnabled: false },
+    { id: 'custom_note', title: 'Özel Not / Analiz Yorumu', desc: 'Kişisel analiz notunuz ve strateji mesajınız', icon: 'fa-comment-dots', color: '#EC4899', defaultEnabled: false },
+    { id: 'author_tag', title: 'Paylaşan / Analist İmzası', desc: 'Kartta görünen @kullaniciadi veya imza', icon: 'fa-signature', color: '#C084FC', defaultEnabled: false }
+];
+
 let currentFundStoryState = {
     fundCode: "TI1",
     fundTitle: "",
     cleanTitle: "",
-    category: "HISSE",
+    category: "HİSSE SENEDİ",
     price: 0,
     changePct: 0,
-    ret1w: 0,
-    ret1m: 0,
-    ret3m: 0,
-    ret1y: 0,
+    ret1w: null,
+    ret1m: null,
+    ret3m: null,
+    ret1y: null,
+    ret6m: null,
+    retYtd: null,
+    ret3y: null,
+    ret5y: null,
     aum: 0,
     investors: 0,
-    riskScore: 1,
-    riskDesc: "",
+    riskScore: 6,
+    riskDesc: "Yüksek Risk",
+    company: "İş Portföy",
+    valorBuy: "T+1",
+    valorSell: "T+2",
+    feeAnnual: "%2.40",
+    taxRate: "%0 Muaf",
+    rankTitle: "KATEGORİSİNDE LİDER GETİRİ",
+    rankSubtitle: "Hisse Fonları Arasında İlk Dilimde",
+    rankBadge: "TOP 3",
     allocItems: [],
     hasStocks: false,
     topStocksList: "",
     myHolding: null,
-    theme: "cyber"
+    theme: "cyber",
+    blocksOrder: ['identity', 'returns', 'telemetry', 'specs', 'allocation', 'ranking', 'long_returns', 'my_holding', 'custom_note', 'author_tag'],
+    blocksEnabled: {
+        identity: true,
+        returns: true,
+        telemetry: true,
+        specs: true,
+        allocation: true,
+        ranking: false,
+        long_returns: false,
+        my_holding: false,
+        custom_note: false,
+        author_tag: false
+    }
 };
+
+let draggedStudioBlockId = null;
+
+function loadSavedStoryLayout() {
+    try {
+        const saved = localStorage.getItem("portfoyum_story_layout_v3");
+        if (saved) {
+            const parsed = JSON.parse(saved);
+            if (Array.isArray(parsed.order)) {
+                const validIds = parsed.order.filter(id => STORY_STUDIO_BLOCKS_DEF.some(b => b.id === id));
+                STORY_STUDIO_BLOCKS_DEF.forEach(b => {
+                    if (!validIds.includes(b.id)) validIds.push(b.id);
+                });
+                currentFundStoryState.blocksOrder = validIds;
+            }
+            if (parsed.enabled && typeof parsed.enabled === 'object') {
+                Object.keys(parsed.enabled).forEach(k => {
+                    if (currentFundStoryState.blocksEnabled[k] !== undefined) {
+                        currentFundStoryState.blocksEnabled[k] = parsed.enabled[k];
+                    }
+                });
+            }
+        }
+    } catch (e) {}
+}
+
+function saveStoryLayout() {
+    try {
+        localStorage.setItem("portfoyum_story_layout_v3", JSON.stringify({
+            order: currentFundStoryState.blocksOrder,
+            enabled: currentFundStoryState.blocksEnabled
+        }));
+    } catch (e) {}
+}
+
+function resetStoryBlocksLayout() {
+    currentFundStoryState.blocksOrder = STORY_STUDIO_BLOCKS_DEF.map(b => b.id);
+    currentFundStoryState.blocksEnabled = {};
+    STORY_STUDIO_BLOCKS_DEF.forEach(b => {
+        currentFundStoryState.blocksEnabled[b.id] = b.defaultEnabled;
+    });
+    if (currentFundStoryState.myHolding) {
+        currentFundStoryState.blocksEnabled.my_holding = true;
+    }
+    const inputNote = document.getElementById("inputStoryCustomNote");
+    if (inputNote && inputNote.value.trim()) {
+        currentFundStoryState.blocksEnabled.custom_note = true;
+    }
+    const inputAuthor = document.getElementById("inputStoryAuthor");
+    if (inputAuthor && inputAuthor.value.trim()) {
+        currentFundStoryState.blocksEnabled.author_tag = true;
+    }
+    saveStoryLayout();
+    renderStudioBlocksControls();
+    applyBlocksOrderToLiveCard();
+    updateFundStoryLivePreview();
+    if (typeof showToast === 'function') {
+        showToast("Kutu yerleşimi ve sıralaması varsayılana sıfırlandı", "info");
+    }
+}
+
+function renderStudioBlocksControls() {
+    const listEl = document.getElementById("fStudioBlocksList");
+    if (!listEl) return;
+
+    listEl.innerHTML = currentFundStoryState.blocksOrder.map((blockId, idx) => {
+        const def = STORY_STUDIO_BLOCKS_DEF.find(b => b.id === blockId);
+        if (!def) return '';
+
+        // Check if my_holding should show note
+        const isHolding = blockId === 'my_holding';
+        const hasHolding = isHolding && currentFundStoryState.myHolding;
+        const subNote = isHolding && !hasHolding ? ' (Portföyde payınız varsa açılır)' : def.desc;
+
+        const isChecked = !!currentFundStoryState.blocksEnabled[blockId];
+        const isFirst = idx === 0;
+        const isLast = idx === currentFundStoryState.blocksOrder.length - 1;
+
+        return `
+            <div class="studio-block-item" data-block-id="${def.id}" draggable="true"
+                 ondragstart="handleBlockDragStart(event, '${def.id}')"
+                 ondragover="handleBlockDragOver(event)"
+                 ondragend="handleBlockDragEnd(event)"
+                 ondrop="handleBlockDrop(event, '${def.id}')">
+                <div class="studio-block-drag-handle" title="Sürükleyip Sırasını Değiştirin">
+                    <i class="fa-solid fa-grip-vertical"></i>
+                </div>
+                <div class="studio-block-move-btns">
+                    <button type="button" class="btn-block-move" ${isFirst ? 'disabled style="opacity: 0.3; cursor: default;"' : ''} onclick="moveStudioBlock('${def.id}', -1)" title="Yukarı Taşı">
+                        <i class="fa-solid fa-chevron-up"></i>
+                    </button>
+                    <button type="button" class="btn-block-move" ${isLast ? 'disabled style="opacity: 0.3; cursor: default;"' : ''} onclick="moveStudioBlock('${def.id}', 1)" title="Aşağı Taşı">
+                        <i class="fa-solid fa-chevron-down"></i>
+                    </button>
+                </div>
+                <div class="studio-block-info">
+                    <div class="studio-block-title">
+                        <i class="fa-solid ${def.icon}" style="color: ${def.color};"></i>
+                        <span>${def.title}</span>
+                    </div>
+                    <div class="studio-block-desc">${subNote}</div>
+                </div>
+                <span class="studio-switch">
+                    <input type="checkbox" id="chkBlock_${def.id}" ${isChecked ? 'checked' : ''} ${isHolding && !hasHolding ? 'disabled' : ''} onchange="toggleStudioBlock('${def.id}', this.checked)">
+                    <span class="studio-slider"></span>
+                </span>
+            </div>
+        `;
+    }).join('');
+}
+
+function moveStudioBlock(blockId, direction) {
+    const arr = currentFundStoryState.blocksOrder;
+    const idx = arr.indexOf(blockId);
+    if (idx === -1) return;
+    const targetIdx = idx + direction;
+    if (targetIdx < 0 || targetIdx >= arr.length) return;
+
+    const temp = arr[idx];
+    arr[idx] = arr[targetIdx];
+    arr[targetIdx] = temp;
+
+    saveStoryLayout();
+    renderStudioBlocksControls();
+    applyBlocksOrderToLiveCard();
+}
+
+function toggleStudioBlock(blockId, isChecked) {
+    currentFundStoryState.blocksEnabled[blockId] = isChecked;
+    saveStoryLayout();
+    updateFundStoryLivePreview();
+}
+
+function handleBlockDragStart(e, blockId) {
+    draggedStudioBlockId = blockId;
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/plain', blockId);
+    e.currentTarget.classList.add('dragging');
+}
+
+function handleBlockDragOver(e) {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+}
+
+function handleBlockDragEnd(e) {
+    e.currentTarget.classList.remove('dragging');
+    draggedStudioBlockId = null;
+}
+
+function handleBlockDrop(e, targetBlockId) {
+    e.preventDefault();
+    if (!draggedStudioBlockId || draggedStudioBlockId === targetBlockId) return;
+
+    const arr = currentFundStoryState.blocksOrder;
+    const fromIdx = arr.indexOf(draggedStudioBlockId);
+    const toIdx = arr.indexOf(targetBlockId);
+    if (fromIdx === -1 || toIdx === -1) return;
+
+    const item = arr.splice(fromIdx, 1)[0];
+    arr.splice(toIdx, 0, item);
+
+    saveStoryLayout();
+    renderStudioBlocksControls();
+    applyBlocksOrderToLiveCard();
+}
+
+function applyBlocksOrderToLiveCard() {
+    const container = document.getElementById("fStoryBlocksContainer");
+    if (!container) return;
+    currentFundStoryState.blocksOrder.forEach(blockId => {
+        const el = document.getElementById(`fStoryBlock_${blockId}`);
+        if (el) {
+            container.appendChild(el);
+        }
+    });
+}
 
 async function openFundStoryCard(fundCode) {
     const fCode = (fundCode || (typeof appState !== 'undefined' ? appState.activeFundCode : "") || "TI1").toUpperCase().trim();
@@ -12305,7 +12520,7 @@ async function openFundStoryCard(fundCode) {
     currentFundStoryState.price = price;
     currentFundStoryState.changePct = changePct;
 
-    // 4. Returns: 1W, 1M, 3M, 1Y
+    // 4. Returns: 1W, 1M, 3M, 1Y + Extended 6M, YTD, 3Y, 5Y
     let returnsDb = tefasReturnsDbCache;
     if (!returnsDb && typeof loadTefasReturnsDb === 'function') {
         try {
@@ -12317,6 +12532,10 @@ async function openFundStoryCard(fundCode) {
     let ret1m = fundObj && fundObj.return1m !== undefined ? fundObj.return1m : null;
     let ret3m = null;
     let ret1y = fundObj && fundObj.return1y !== undefined ? fundObj.return1y : null;
+    let ret6m = null;
+    let retYtd = null;
+    let ret3y = null;
+    let ret5y = null;
 
     if (returnsDb && returnsDb[fCode]) {
         const r = returnsDb[fCode];
@@ -12324,17 +12543,29 @@ async function openFundStoryCard(fundCode) {
         if (r.m1 !== undefined && r.m1 !== null) ret1m = r.m1;
         if (r.m3 !== undefined && r.m3 !== null) ret3m = r.m3;
         if (r.y1 !== undefined && r.y1 !== null) ret1y = r.y1;
+        if (r.m6 !== undefined && r.m6 !== null) ret6m = r.m6;
+        if (r.ytd !== undefined && r.ytd !== null) retYtd = r.ytd;
+        if (r.y3 !== undefined && r.y3 !== null) ret3y = r.y3;
+        if (r.y5 !== undefined && r.y5 !== null) ret5y = r.y5;
     }
 
     if (ret1w === null) ret1w = (changePct * 2.2);
     if (ret1m === null) ret1m = (changePct * 4.5);
     if (ret3m === null) ret3m = (ret1m * 2.2);
     if (ret1y === null) ret1y = (ret1m * 5.6);
+    if (ret6m === null) ret6m = (ret1m * 3.4);
+    if (retYtd === null) retYtd = (ret1m * 4.2);
+    if (ret3y === null) ret3y = (ret1y * 3.2);
+    if (ret5y === null) ret5y = (ret1y * 6.8);
 
     currentFundStoryState.ret1w = ret1w;
     currentFundStoryState.ret1m = ret1m;
     currentFundStoryState.ret3m = ret3m;
     currentFundStoryState.ret1y = ret1y;
+    currentFundStoryState.ret6m = ret6m;
+    currentFundStoryState.retYtd = retYtd;
+    currentFundStoryState.ret3y = ret3y;
+    currentFundStoryState.ret5y = ret5y;
 
     // 5. AUM & Investors
     let aum = fundObj ? fundObj.aum : 0;
@@ -12377,7 +12608,67 @@ async function openFundStoryCard(fundCode) {
     currentFundStoryState.riskScore = riskScore;
     currentFundStoryState.riskDesc = riskDesc;
 
-    // 7. Allocation Data & Top Stock Holdings
+    // 7. Specs: PYŞ Kurucusu, Valör, Ücret, Stopaj
+    let company = "Portföy Yönetimi";
+    if (typeof detectPYSCompany === 'function') {
+        company = detectPYSCompany(fundTitle);
+    } else {
+        const m = fundTitle.match(/^([A-ZÇĞİÖŞÜa-zçğıöşü0-9\-\.\s]+?)\s+(?:PORTFÖY|PYS|PYŞ)/i);
+        if (m && m[1]) company = m[1].trim() + " Portföy";
+    }
+    currentFundStoryState.company = company;
+
+    let valBuy = "T+1";
+    let valSell = "T+2";
+    if (catKey === "PARA_PIYASASI" || lowerTitle.includes("para piyasası") || lowerTitle.includes("likit")) {
+        valBuy = "T+0"; valSell = "T+0";
+    } else if (catKey === "KIYMETLI_MADEN" || lowerTitle.includes("altın") || lowerTitle.includes("gümüş")) {
+        valBuy = "T+1"; valSell = "T+1";
+    } else if (catKey === "BORCLANMA" || lowerTitle.includes("eurobond")) {
+        valBuy = "T+1"; valSell = "T+2";
+    } else if (catKey === "FON_SEPETI" || lowerTitle.includes("yabancı") || lowerTitle.includes("global")) {
+        valBuy = "T+1"; valSell = "T+3";
+    }
+    currentFundStoryState.valorBuy = valBuy;
+    currentFundStoryState.valorSell = valSell;
+
+    let feeAnnual = "%2.40";
+    if (catKey === "PARA_PIYASASI") feeAnnual = "%1.40";
+    else if (catKey === "KIYMETLI_MADEN") feeAnnual = "%1.85";
+    else if (catKey === "BORCLANMA") feeAnnual = "%1.60";
+    else if (catKey === "DEGISKEN") feeAnnual = "%2.20";
+    else if (catKey === "SERBEST") feeAnnual = "%2.00";
+    currentFundStoryState.feeAnnual = feeAnnual;
+
+    let taxRate = "%17.5";
+    if ((catKey === "HISSE" || lowerTitle.includes("hisse")) && !lowerTitle.includes("yabancı") && !lowerTitle.includes("serbest")) {
+        taxRate = "%0 Muaf";
+    }
+    currentFundStoryState.taxRate = taxRate;
+
+    // 8. Ranking & Alpha Badge
+    let rankTitle = "KATEGORİSİNDE LİDER GETİRİ";
+    let rankSubtitle = `${catLabel} Fonları Arasında İlk Dilimde`;
+    let rankBadge = "TOP 3";
+
+    if (typeof cachedAllCategoryFunds !== 'undefined' && Array.isArray(cachedAllCategoryFunds)) {
+        const sameCatFunds = cachedAllCategoryFunds.filter(f => (f.category || '').toUpperCase() === catKey);
+        if (sameCatFunds.length >= 2) {
+            const sorted = [...sameCatFunds].sort((a, b) => (b.return1m || b.change || 0) - (a.return1m || a.change || 0));
+            const fundIdx = sorted.findIndex(f => (f.code || '').toUpperCase() === fCode);
+            if (fundIdx !== -1) {
+                const rank = fundIdx + 1;
+                rankBadge = rank <= 3 ? `TOP ${rank}` : `#${rank} / ${sorted.length}`;
+                rankTitle = rank === 1 ? "KATEGORİ GETİRİ ŞAMPİYONU 🏆" : (rank <= 3 ? `KATEGORİSİNDE ${rank}. SIRADA 🥈` : `KATEGORİDE ${rank}. SIRADA`);
+                rankSubtitle = `${catLabel} kategorisindeki ${sorted.length} fon arasında`;
+            }
+        }
+    }
+    currentFundStoryState.rankTitle = rankTitle;
+    currentFundStoryState.rankSubtitle = rankSubtitle;
+    currentFundStoryState.rankBadge = rankBadge;
+
+    // 9. Allocation Data & Top Stock Holdings
     let allocItems = [];
     let allocDateStr = "TEFAS Portföyü";
     try {
@@ -12458,21 +12749,17 @@ async function openFundStoryCard(fundCode) {
     currentFundStoryState.hasStocks = topStocksList.length > 0;
     currentFundStoryState.topStocksList = topStocksList;
 
-    // 8. Check User's Personal Holding in Portfolio
+    // 10. Check User's Personal Holding in Portfolio
     const userHolding = (typeof appState !== 'undefined' && Array.isArray(appState.holdings))
         ? appState.holdings.find(h => (h.symbol || '').toUpperCase() === fCode)
         : null;
 
-    const rowHoldingToggle = document.getElementById("rowStoryMyHoldingToggle");
-    const chkMyHolding = document.getElementById("chkStoryMyHolding");
-    const holdingBlock = document.getElementById("fStoryMyHoldingBlock");
     const holdingSummary = document.getElementById("fStoryMyHoldingSummary");
     const holdingBadge = document.getElementById("fStoryMyHoldingProfitBadge");
 
     if (userHolding && userHolding.shares > 0) {
         currentFundStoryState.myHolding = userHolding;
-        if (rowHoldingToggle) rowHoldingToggle.style.display = "flex";
-        if (chkMyHolding) chkMyHolding.checked = true;
+        currentFundStoryState.blocksEnabled.my_holding = true;
 
         const sharesStr = userHolding.shares.toLocaleString('tr-TR');
         const curVal = userHolding.shares * price;
@@ -12493,35 +12780,10 @@ async function openFundStoryCard(fundCode) {
         }
     } else {
         currentFundStoryState.myHolding = null;
-        if (rowHoldingToggle) rowHoldingToggle.style.display = "none";
-        if (chkMyHolding) chkMyHolding.checked = false;
-        if (holdingBlock) holdingBlock.style.display = "none";
+        currentFundStoryState.blocksEnabled.my_holding = false;
     }
 
-    // 9. Reset Control Switches & Tags
-    const rowStocksToggle = document.getElementById("rowStoryStocksToggle");
-    if (rowStocksToggle) {
-        rowStocksToggle.style.display = currentFundStoryState.hasStocks ? "flex" : "none";
-    }
-    const chkStocks = document.getElementById("chkStoryStocks");
-    if (chkStocks) chkStocks.checked = currentFundStoryState.hasStocks;
-
-    const chkReturns = document.getElementById("chkStoryReturns");
-    if (chkReturns) chkReturns.checked = true;
-
-    const chkAlloc = document.getElementById("chkStoryAlloc");
-    if (chkAlloc) chkAlloc.checked = true;
-
-    const chkScale = document.getElementById("chkStoryScale");
-    if (chkScale) chkScale.checked = true;
-
-    const chkRisk = document.getElementById("chkStoryRisk");
-    if (chkRisk) chkRisk.checked = true;
-
-    const inputNote = document.getElementById("inputStoryCustomNote");
-    if (inputNote) inputNote.value = "";
-
-    // 10. Populate Live Preview Card DOM
+    // 11. Populate Live Preview Card DOM
     const headerTag = document.getElementById("fStudioHeaderTag");
     if (headerTag) headerTag.innerText = fCode;
 
@@ -12572,7 +12834,7 @@ async function openFundStoryCard(fundCode) {
         const border = isPos ? 'rgba(16, 185, 129, 0.25)' : 'rgba(244, 63, 94, 0.25)';
 
         const c = document.getElementById(cardId);
-        const i = document.getElementById(iconId);
+        const i = iconId ? document.getElementById(iconId) : null;
         const v = document.getElementById(valId);
         if (c) {
             c.style.background = bg;
@@ -12593,6 +12855,36 @@ async function openFundStoryCard(fundCode) {
     renderCard("fStoryCard3M", "fStoryIcon3M", "fStoryRet3M", ret3m);
     renderCard("fStoryCard1Y", "fStoryIcon1Y", "fStoryRet1Y", ret1y);
 
+    renderCard("fStoryCard6M", null, "fStoryRet6M", ret6m);
+    renderCard("fStoryCardYtd", null, "fStoryRetYtd", retYtd);
+    renderCard("fStoryCard3Y", null, "fStoryRet3Y", ret3y);
+    renderCard("fStoryCard5Y", null, "fStoryRet5Y", ret5y);
+
+    // Specs
+    const specComp = document.getElementById("fStorySpecCompany");
+    if (specComp) specComp.innerText = currentFundStoryState.company;
+
+    const specVal = document.getElementById("fStorySpecValor");
+    if (specVal) specVal.innerText = `${currentFundStoryState.valorBuy} / ${currentFundStoryState.valorSell}`;
+
+    const specFee = document.getElementById("fStorySpecFee");
+    if (specFee) specFee.innerText = currentFundStoryState.feeAnnual;
+
+    const specTax = document.getElementById("fStorySpecTax");
+    if (specTax) {
+        specTax.innerText = currentFundStoryState.taxRate;
+        specTax.style.color = currentFundStoryState.taxRate.includes("%0") ? '#10B981' : '#F59E0B';
+    }
+
+    // Ranking
+    const rTitle = document.getElementById("fStoryRankTitle");
+    if (rTitle) rTitle.innerText = currentFundStoryState.rankTitle;
+    const rSub = document.getElementById("fStoryRankSubtitle");
+    if (rSub) rSub.innerText = currentFundStoryState.rankSubtitle;
+    const rBadge = document.getElementById("fStoryRankBadge");
+    if (rBadge) rBadge.innerText = currentFundStoryState.rankBadge;
+
+    // Telemetry
     const riskTextElem = document.getElementById("fStoryRiskText");
     const riskLabelElem = document.getElementById("fStoryRiskLabel");
     const riskValElem = document.getElementById("fStoryRiskVal");
@@ -12625,10 +12917,10 @@ async function openFundStoryCard(fundCode) {
     const allocChipsElem = document.getElementById("fStoryAllocChips");
     if (allocChipsElem) {
         allocChipsElem.innerHTML = allocItems.slice(0, 4).map(item => `
-            <div style="display: flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06); padding: 4px 10px; border-radius: 8px;">
-                <span style="width: 7px; height: 7px; border-radius: 50%; background: ${item.color}; box-shadow: 0 0 6px ${item.color};"></span>
-                <span style="font-size: 0.72rem; color: #CBD5E1; font-weight: 600;">${item.label}</span>
-                <span style="font-size: 0.72rem; color: #FFFFFF; font-weight: 800;">%${item.pct.toFixed(1)}</span>
+            <div style="display: flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06); padding: 3px 8px; border-radius: 6px;">
+                <span style="width: 6px; height: 6px; border-radius: 50%; background: ${item.color}; box-shadow: 0 0 5px ${item.color};"></span>
+                <span style="font-size: 0.68rem; color: #CBD5E1; font-weight: 600;">${item.label}</span>
+                <span style="font-size: 0.68rem; color: #FFFFFF; font-weight: 800;">%${item.pct.toFixed(1)}</span>
             </div>
         `).join('');
     }
@@ -12644,11 +12936,14 @@ async function openFundStoryCard(fundCode) {
         }
     }
 
-    // 11. Reset Theme & Apply Preview States
-    setFundStoryTheme("cyber");
+    // 12. Load Layout & Sync Controls
+    loadSavedStoryLayout();
+    renderStudioBlocksControls();
+    applyBlocksOrderToLiveCard();
+    setFundStoryTheme(currentFundStoryState.theme || "cyber");
     updateFundStoryLivePreview();
 
-    // 12. Reveal Studio Modal
+    // 13. Reveal Studio Modal
     const modal = document.getElementById("modalFundStoryStudio");
     if (modal) {
         modal.classList.add("active");
@@ -12674,79 +12969,43 @@ function setFundStoryTheme(themeName) {
 }
 
 function updateFundStoryLivePreview() {
-    const chkReturns = document.getElementById("chkStoryReturns");
-    const chkAlloc = document.getElementById("chkStoryAlloc");
-    const chkStocks = document.getElementById("chkStoryStocks");
-    const chkScale = document.getElementById("chkStoryScale");
-    const chkRisk = document.getElementById("chkStoryRisk");
-    const chkMyHolding = document.getElementById("chkStoryMyHolding");
     const inputNote = document.getElementById("inputStoryCustomNote");
-
-    // 1. Returns Section
-    const secReturns = document.getElementById("fStorySectionReturns");
-    const secReturnsHeader = document.getElementById("fStorySectionReturnsHeader");
-    const showReturns = chkReturns ? chkReturns.checked : true;
-    if (secReturns) secReturns.style.display = showReturns ? "grid" : "none";
-    if (secReturnsHeader) secReturnsHeader.style.display = showReturns ? "flex" : "none";
-
-    // 2. Asset Allocation Section
-    const secAlloc = document.getElementById("fStorySectionAlloc");
-    const showAlloc = chkAlloc ? chkAlloc.checked : true;
-    if (secAlloc) secAlloc.style.display = showAlloc ? "block" : "none";
-
-    // 3. Top Stocks
-    const secStocks = document.getElementById("fStoryTopStocksContainer");
-    if (secStocks) {
-        const showStocks = chkStocks ? chkStocks.checked : true;
-        if (showStocks && currentFundStoryState.hasStocks && showAlloc) {
-            secStocks.style.display = "flex";
-        } else {
-            secStocks.style.display = "none";
-        }
-    }
-
-    // 4. Scale Telemetry & Risk
-    const secTelemetry = document.getElementById("fStorySectionTelemetry");
-    const colRisk = document.getElementById("fStoryColRisk");
-    const colAum = document.getElementById("fStoryColAum");
-    const colInv = document.getElementById("fStoryColInv");
-
-    const showScale = chkScale ? chkScale.checked : true;
-    const showRisk = chkRisk ? chkRisk.checked : true;
-
-    if (colRisk) colRisk.style.display = showRisk ? "block" : "none";
-    if (colAum) colAum.style.display = showScale ? "block" : "none";
-    if (colInv) colInv.style.display = showScale ? "block" : "none";
-
-    if (secTelemetry) {
-        if (!showScale && !showRisk) {
-            secTelemetry.style.display = "none";
-        } else {
-            secTelemetry.style.display = "grid";
-            const visibleCols = (showRisk ? 1 : 0) + (showScale ? 2 : 0);
-            secTelemetry.style.gridTemplateColumns = `repeat(${Math.max(1, visibleCols)}, 1fr)`;
-        }
-    }
-
-    // 5. Personal Holding Block
-    const secMyHolding = document.getElementById("fStoryMyHoldingBlock");
-    if (secMyHolding) {
-        const showMyHolding = chkMyHolding ? chkMyHolding.checked : false;
-        secMyHolding.style.display = (showMyHolding && currentFundStoryState.myHolding) ? "flex" : "none";
-    }
-
-    // 6. Custom Note Block
-    const secNote = document.getElementById("fStoryCustomNoteBlock");
-    const textNote = document.getElementById("fStoryCustomNoteText");
     const noteVal = inputNote ? inputNote.value.trim() : "";
-    if (secNote && textNote) {
-        if (noteVal) {
-            secNote.style.display = "flex";
-            textNote.innerText = noteVal;
-        } else {
-            secNote.style.display = "none";
+    const textNote = document.getElementById("fStoryCustomNoteText");
+    if (textNote) textNote.innerText = noteVal;
+
+    const inputAuthor = document.getElementById("inputStoryAuthor");
+    const authVal = inputAuthor ? inputAuthor.value.trim() : "";
+    const textAuthor = document.getElementById("fStoryAuthorText");
+    if (textAuthor) textAuthor.innerText = authVal;
+
+    currentFundStoryState.blocksOrder.forEach(blockId => {
+        const el = document.getElementById(`fStoryBlock_${blockId}`);
+        if (!el) return;
+
+        let show = !!currentFundStoryState.blocksEnabled[blockId];
+
+        if (blockId === 'my_holding' && !currentFundStoryState.myHolding) {
+            show = false;
         }
-    }
+        if (blockId === 'custom_note' && !noteVal) {
+            show = false;
+        }
+        if (blockId === 'author_tag' && !authVal) {
+            show = false;
+        }
+
+        const displayType = el.getAttribute('data-display-type') || 'block';
+        el.style.display = show ? displayType : 'none';
+    });
+
+    let activeCount = 0;
+    currentFundStoryState.blocksOrder.forEach(id => {
+        const el = document.getElementById(`fStoryBlock_${id}`);
+        if (el && el.style.display !== 'none') activeCount++;
+    });
+    const chip = document.getElementById("fStudioActiveBlockCount");
+    if (chip) chip.innerText = `${activeCount} Kutu Aktif`;
 }
 
 function setStudioQuickNote(note) {
@@ -12756,6 +13015,9 @@ function setStudioQuickNote(note) {
         inp.value = "";
     } else {
         inp.value = note;
+        currentFundStoryState.blocksEnabled.custom_note = true;
+        const chk = document.getElementById("chkBlock_custom_note");
+        if (chk) chk.checked = true;
     }
     updateFundStoryLivePreview();
 }
@@ -12840,7 +13102,7 @@ async function exportFundStoryCard(mode = "download") {
     }
 }
 
-// Studio Modal Close Buttons
+// Studio Modal Close Buttons & Input Listeners
 const btnCloseStudioModal = document.getElementById("btnCloseFundStudioModal");
 if (btnCloseStudioModal) {
     btnCloseStudioModal.addEventListener("click", () => {
@@ -12849,9 +13111,37 @@ if (btnCloseStudioModal) {
     });
 }
 
-document.getElementById("btnCloseShareModal").addEventListener("click", () => {
-    document.getElementById("modalSharePreview").classList.remove("active");
-});
+const inpStudioNote = document.getElementById("inputStoryCustomNote");
+if (inpStudioNote) {
+    inpStudioNote.addEventListener("input", () => {
+        if (inpStudioNote.value.trim().length > 0) {
+            currentFundStoryState.blocksEnabled.custom_note = true;
+            const chk = document.getElementById("chkBlock_custom_note");
+            if (chk) chk.checked = true;
+        }
+        updateFundStoryLivePreview();
+    });
+}
+
+const inpStudioAuthor = document.getElementById("inputStoryAuthor");
+if (inpStudioAuthor) {
+    inpStudioAuthor.addEventListener("input", () => {
+        if (inpStudioAuthor.value.trim().length > 0) {
+            currentFundStoryState.blocksEnabled.author_tag = true;
+            const chk = document.getElementById("chkBlock_author_tag");
+            if (chk) chk.checked = true;
+        }
+        updateFundStoryLivePreview();
+    });
+}
+
+const btnCloseShareMod = document.getElementById("btnCloseShareModal");
+if (btnCloseShareMod) {
+    btnCloseShareMod.addEventListener("click", () => {
+        const m = document.getElementById("modalSharePreview");
+        if (m) m.classList.remove("active");
+    });
+}
 
 // Global Window Exports
 window.openFundStoryCard = openFundStoryCard;
@@ -12860,6 +13150,13 @@ window.updateFundStoryLivePreview = updateFundStoryLivePreview;
 window.setStudioQuickNote = setStudioQuickNote;
 window.exportFundStoryCard = exportFundStoryCard;
 window.triggerImageDownload = triggerImageDownload;
+window.moveStudioBlock = moveStudioBlock;
+window.toggleStudioBlock = toggleStudioBlock;
+window.resetStoryBlocksLayout = resetStoryBlocksLayout;
+window.handleBlockDragStart = handleBlockDragStart;
+window.handleBlockDragOver = handleBlockDragOver;
+window.handleBlockDragEnd = handleBlockDragEnd;
+window.handleBlockDrop = handleBlockDrop;
 
 /* ==========================================================================
    News & KAP Radar

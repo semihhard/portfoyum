@@ -24348,3 +24348,169 @@ body.theme-neo-brutalism .sort-option.active {
     }
 }
 
+/* Story Studio Modular Blocks Reordering & Controls */
+.btn-reset-layout {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: #94A3B8;
+    border-radius: 6px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 3px 8px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-reset-layout:hover {
+    background: rgba(0, 245, 255, 0.15);
+    border-color: #00F5FF;
+    color: #FFFFFF;
+}
+
+.studio-counter-badge {
+    font-size: 0.68rem;
+    font-weight: 800;
+    color: #00F5FF;
+    background: rgba(0, 245, 255, 0.12);
+    border: 1px solid rgba(0, 245, 255, 0.25);
+    padding: 2px 7px;
+    border-radius: 6px;
+}
+
+.fund-studio-blocks-list {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    max-height: 380px;
+    overflow-y: auto;
+    padding-right: 4px;
+}
+
+.studio-block-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(15, 23, 42, 0.65);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 8px 10px;
+    transition: all 0.2s ease;
+    user-select: none;
+}
+
+.studio-block-item:hover {
+    background: rgba(15, 23, 42, 0.9);
+    border-color: rgba(56, 189, 248, 0.3);
+}
+
+.studio-block-item.dragging {
+    opacity: 0.45;
+    transform: scale(0.98);
+    border-color: #00F5FF;
+}
+
+.studio-block-drag-handle {
+    cursor: grab;
+    color: #64748B;
+    font-size: 0.95rem;
+    padding: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.15s ease;
+}
+
+.studio-block-drag-handle:hover {
+    color: #00F5FF;
+}
+
+.studio-block-move-btns {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.btn-block-move {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #94A3B8;
+    border-radius: 4px;
+    width: 20px;
+    height: 16px;
+    font-size: 0.6rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    padding: 0;
+}
+
+.btn-block-move:hover {
+    background: rgba(0, 245, 255, 0.2);
+    border-color: #00F5FF;
+    color: #FFFFFF;
+}
+
+.studio-block-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.studio-block-title {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #F1F5F9;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.studio-block-desc {
+    font-size: 0.68rem;
+    color: #64748B;
+    margin-top: 1px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Card Root Blocks Container */
+.fstory-blocks-container {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    flex: 1;
+    overflow: hidden;
+    margin: 8px 0;
+    justify-content: flex-start;
+}
+
+.fstory-block {
+    transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+/* Theme specifics for new blocks */
+.fund-story-card-root.theme-emerald #fStoryBlock_author_tag {
+    background: rgba(16, 185, 129, 0.08) !important;
+    border-color: rgba(16, 185, 129, 0.3) !important;
+}
+.fund-story-card-root.theme-emerald #fStoryAuthorText {
+    color: #10B981 !important;
+}
+
+.fund-story-card-root.theme-sunset #fStoryBlock_author_tag {
+    background: rgba(244, 63, 94, 0.08) !important;
+    border-color: rgba(244, 63, 94, 0.3) !important;
+}
+.fund-story-card-root.theme-sunset #fStoryAuthorText {
+    color: #FB923C !important;
+}
+
+
