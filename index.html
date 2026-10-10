@@ -27,7 +27,7 @@
     <script src="https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js"></script>
     <!-- jsPDF for High-Resolution Multi-Page PDF Export -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <link rel="stylesheet" href="style.css?v=127">    <style>
+    <link rel="stylesheet" href="style.css?v=128">    <style>
         /* Refresh Button Loading Animation */
         .icon-btn.loading i {
             animation: spin 1s linear infinite;
@@ -2806,7 +2806,37 @@
                         </div>
                     </div>
 
-                    <!-- 6. Gizlilik / Tutar Maskeleme Modu -->
+                    <!-- 6. Dönemlik Değişim Trendleri -->
+                    <div class="fund-studio-panel-section" style="padding-top: 2px;">
+                        <div class="fund-studio-sec-title">
+                            <i class="fa-solid fa-chart-line" style="color: #10B981;"></i>
+                            <span>Dönemlik Değişim Trendleri (Son 1 Ay)</span>
+                        </div>
+                        <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 6px;">
+                            <div class="studio-privacy-row" onclick="toggleStoryInvestorChange()" style="margin-top: 0;">
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <i class="fa-solid fa-users-viewfinder" style="color: #C084FC; font-size: 0.95rem;"></i>
+                                    <span>Yatırımcı Sayısı Değişimi (▲ / ▼)</span>
+                                </div>
+                                <label class="studio-switch" for="chkStoryInvestorChange" onclick="event.stopPropagation();">
+                                    <input type="checkbox" id="chkStoryInvestorChange" checked onchange="toggleStoryInvestorChange(this.checked)">
+                                    <span class="studio-slider"></span>
+                                </label>
+                            </div>
+                            <div class="studio-privacy-row" onclick="toggleStoryAllocChange()" style="margin-top: 0;">
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <i class="fa-solid fa-arrow-right-arrow-left" style="color: #A855F7; font-size: 0.95rem;"></i>
+                                    <span>Varlık Dağılımı Değişimi (Rotasyon)</span>
+                                </div>
+                                <label class="studio-switch" for="chkStoryAllocChange" onclick="event.stopPropagation();">
+                                    <input type="checkbox" id="chkStoryAllocChange" checked onchange="toggleStoryAllocChange(this.checked)">
+                                    <span class="studio-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 7. Gizlilik / Tutar Maskeleme Modu -->
                     <div class="fund-studio-panel-section" style="padding-top: 2px;">
                         <div class="studio-privacy-row" onclick="toggleStoryPrivacyMask()">
                             <div style="display: flex; align-items: center; gap: 8px;">
@@ -3031,7 +3061,11 @@
                                         <div id="fStoryColInv" style="text-align: center; padding: 0 4px;">
                                             <div style="font-size: 0.65rem; color: #94A3B8; font-weight: 600; margin-bottom: 2px;">Yatırımcı</div>
                                             <div id="fStoryInvestorVal" style="font-size: 1rem; font-weight: 800; color: #C084FC;">84.200</div>
-                                            <div style="font-size: 0.58rem; color: #64748B; font-weight: 600;">Aktif Ortak</div>
+                                            <div id="fStoryInvestorDiff" style="font-size: 0.58rem; font-weight: 700; color: #10B981; display: flex; align-items: center; justify-content: center; gap: 3px; margin-top: 1px;">
+                                                <i id="fStoryInvestorDiffIcon" class="fa-solid fa-arrow-trend-up" style="font-size: 0.50rem;"></i>
+                                                <span id="fStoryInvestorDiffText">+1.450 (%+1.8)</span>
+                                            </div>
+                                            <div id="fStoryInvestorLabel" style="font-size: 0.58rem; color: #64748B; font-weight: 600;">Son 1 Ay Değişim</div>
                                         </div>
                                     </div>
 
@@ -3109,6 +3143,14 @@
 
                                             <div id="fStoryAllocChips" style="display: flex; flex-wrap: wrap; gap: 6px;">
                                                 <!-- Slices -->
+                                            </div>
+
+                                            <div id="fStoryAllocShiftBanner" style="margin-top: 7px; padding: 5px 9px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; display: flex; align-items: center; justify-content: space-between; font-size: 0.64rem;">
+                                                <div style="display: flex; align-items: center; gap: 5px; color: #94A3B8; font-weight: 700;">
+                                                    <i class="fa-solid fa-arrow-right-arrow-left" style="color: #A855F7; font-size: 0.65rem;"></i>
+                                                    <span>Aylık Dağılım Değişimi:</span>
+                                                </div>
+                                                <span id="fStoryAllocShiftText" style="color: #E2E8F0; font-weight: 600;">Hisse (+%3.2 ▲) • TPP (-%2.1 ▼)</span>
                                             </div>
 
                                             <div id="fStoryTopStocksContainer" style="margin-top: 7px; padding-top: 7px; border-top: 1px solid rgba(255,255,255,0.06); display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
@@ -3721,6 +3763,6 @@
         </div>
     </div>
 
-    <script src="app.js?v=127"></script>
+    <script src="app.js?v=128"></script>
 </body>
 </html>

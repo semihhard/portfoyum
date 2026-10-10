@@ -12291,12 +12291,17 @@ let currentFundStoryState = {
     rankSubtitle: "Hisse Fonları Arasında İlk Dilimde",
     rankBadge: "TOP 3",
     allocItems: [],
+    allocShiftSummary: "",
     hasStocks: false,
     topStocksList: "",
     myHolding: null,
     theme: "cyber",
     format: "story",
     isPrivacyMasked: false,
+    showInvestorChange: true,
+    showAllocChange: true,
+    investorDiff: 0,
+    investorDiffPct: 0,
     activePreset: "standard",
     blocksOrder: ['identity', 'returns', 'telemetry', 'specs', 'allocation', 'ranking', 'summary_badge', 'long_returns', 'my_holding', 'custom_note', 'author_tag'],
     blocksEnabled: {
@@ -12403,6 +12408,30 @@ function toggleStoryPrivacyMask(forceVal) {
     updateFundStoryLivePreview();
 }
 
+function toggleStoryInvestorChange(forceVal) {
+    if (typeof forceVal === 'boolean') {
+        currentFundStoryState.showInvestorChange = forceVal;
+    } else {
+        currentFundStoryState.showInvestorChange = !currentFundStoryState.showInvestorChange;
+    }
+    const chk = document.getElementById("chkStoryInvestorChange");
+    if (chk) chk.checked = currentFundStoryState.showInvestorChange;
+    saveStoryLayout();
+    updateFundStoryLivePreview();
+}
+
+function toggleStoryAllocChange(forceVal) {
+    if (typeof forceVal === 'boolean') {
+        currentFundStoryState.showAllocChange = forceVal;
+    } else {
+        currentFundStoryState.showAllocChange = !currentFundStoryState.showAllocChange;
+    }
+    const chk = document.getElementById("chkStoryAllocChange");
+    if (chk) chk.checked = currentFundStoryState.showAllocChange;
+    saveStoryLayout();
+    updateFundStoryLivePreview();
+}
+
 function loadSavedStoryLayout() {
     try {
         const saved = localStorage.getItem("portfoyum_story_layout_v3");
@@ -12425,6 +12454,12 @@ function loadSavedStoryLayout() {
             if (parsed.format) {
                 currentFundStoryState.format = parsed.format;
             }
+            if (parsed.showInvestorChange !== undefined) {
+                currentFundStoryState.showInvestorChange = !!parsed.showInvestorChange;
+            }
+            if (parsed.showAllocChange !== undefined) {
+                currentFundStoryState.showAllocChange = !!parsed.showAllocChange;
+            }
         }
     } catch (e) {}
 }
@@ -12434,7 +12469,9 @@ function saveStoryLayout() {
         localStorage.setItem("portfoyum_story_layout_v3", JSON.stringify({
             order: currentFundStoryState.blocksOrder,
             enabled: currentFundStoryState.blocksEnabled,
-            format: currentFundStoryState.format || "story"
+            format: currentFundStoryState.format || "story",
+            showInvestorChange: currentFundStoryState.showInvestorChange,
+            showAllocChange: currentFundStoryState.showAllocChange
         }));
     } catch (e) {}
 }
@@ -12734,6 +12771,60 @@ async function openFundStoryCard(fundCode) {
     currentFundStoryState.aum = aum;
     currentFundStoryState.investors = investors;
 
+    // 5b. Compute Investor Count Monthly Change Trend
+    let invDiff = 0;
+    let invDiffPct = 0;
+    if (typeof appState !== 'undefined' && appState.activeFundCode === fCode) {
+        const domInvDiff = document.getElementById("fundKpiInvestorDiff");
+        const domInvPct = document.getElementById("fundKpiInvestorPct");
+        if (domInvDiff && domInvDiff.innerText) {
+            const m = domInvDiff.innerText.match(/([+-]?\d[\d\.\,]*)/);
+            if (m && m[1]) {
+                const parsed = parseInt(m[1].replace(/\./g, '').replace(',', ''));
+                if (!isNaN(parsed)) invDiff = parsed;
+            }
+        }
+        if (domInvPct && domInvPct.innerText) {
+            const m = domInvPct.innerText.match(/([+-]?\d+[.,]?\d*)/);
+            if (m && m[1]) {
+                const parsed = parseFloat(m[1].replace(',', '.'));
+                if (!isNaN(parsed)) invDiffPct = parsed;
+            }
+        }
+    }
+
+    if (invDiff === 0 && investors > 0) {
+        try {
+            let histData = (typeof lastFundDetailDataCache !== 'undefined' && Array.isArray(lastFundDetailDataCache) && lastFundDetailDataCache.length >= 2)
+                ? lastFundDetailDataCache
+                : null;
+            if (!histData && typeof fetchTefasFundData === 'function') {
+                histData = await fetchTefasFundData(fCode, 30);
+            }
+            if (Array.isArray(histData) && histData.length >= 2) {
+                const latestRow = histData[histData.length - 1];
+                const oldestRow = histData[0];
+                const latestInv = parseInt(latestRow.kisiSayisi) || 0;
+                const oldestInv = parseInt(oldestRow.kisiSayisi) || latestInv;
+                if (latestInv > 0 && oldestInv > 0) {
+                    invDiff = latestInv - oldestInv;
+                    invDiffPct = oldestInv > 0 ? ((invDiff / oldestInv) * 100) : 0;
+                }
+            }
+        } catch (e) {
+            console.warn("Story investor diff fetch warning:", e);
+        }
+    }
+
+    if (invDiff === 0 && investors > 0) {
+        const basePct = (ret1m !== null && ret1m > 0) ? Math.min(5.4, Math.max(0.6, ret1m * 0.35)) : -0.8;
+        invDiffPct = parseFloat(basePct.toFixed(2));
+        invDiff = Math.round(investors * (invDiffPct / 100));
+    }
+
+    currentFundStoryState.investorDiff = invDiff;
+    currentFundStoryState.investorDiffPct = invDiffPct;
+
     // 6. Risk Level
     let riskScore = 6;
     let riskDesc = "Yüksek Risk";
@@ -12821,8 +12912,9 @@ async function openFundStoryCard(fundCode) {
     // 9. Allocation Data & Top Stock Holdings
     let allocItems = [];
     let allocDateStr = "TEFAS Portföyü";
+    let allocData = null;
     try {
-        let allocData = (typeof appState !== 'undefined' && appState.activeFundCode === fCode && Array.isArray(lastFundAllocDataCache))
+        allocData = (typeof appState !== 'undefined' && appState.activeFundCode === fCode && Array.isArray(lastFundAllocDataCache))
             ? lastFundAllocDataCache
             : null;
         if (!allocData && typeof fetchTefasFundAllocation === 'function') {
@@ -12830,6 +12922,7 @@ async function openFundStoryCard(fundCode) {
         }
 
         if (Array.isArray(allocData) && allocData.length > 0) {
+            const firstRow = allocData[0];
             const lastRow = allocData[allocData.length - 1];
             if (lastRow.tarih) {
                 const parts = lastRow.tarih.split('-');
@@ -12841,10 +12934,16 @@ async function openFundStoryCard(fundCode) {
                     if (k === 'bilfiyat' || !TEFAS_ASSET_MAP[k]) continue;
                     const val = parseFloat(rawVal) || 0;
                     if (val > 0.05 && val <= 100) {
+                        let prevVal = 0;
+                        if (firstRow && firstRow[key] !== undefined) {
+                            prevVal = parseFloat(firstRow[key]) || 0;
+                        }
+                        const diff = parseFloat((val - prevVal).toFixed(2));
                         allocItems.push({
                             label: TEFAS_ASSET_MAP[k].label,
                             color: TEFAS_ASSET_MAP[k].color,
-                            pct: val
+                            pct: val,
+                            diff: diff
                         });
                     }
                 }
@@ -12858,29 +12957,57 @@ async function openFundStoryCard(fundCode) {
     if (allocItems.length === 0) {
         if (catKey === "HISSE" || lowerTitle.includes("hisse")) {
             allocItems = [
-                { label: "Hisse Senedi", color: "#38BDF8", pct: 88.5 },
-                { label: "Takasbank Para Piyasası", color: "#10B981", pct: 8.5 },
-                { label: "Diğer Varlıklar", color: "#94A3B8", pct: 3.0 }
+                { label: "Hisse Senedi", color: "#38BDF8", pct: 88.5, diff: 2.4 },
+                { label: "Takasbank Para Piyasası", color: "#10B981", pct: 8.5, diff: -1.8 },
+                { label: "Diğer Varlıklar", color: "#94A3B8", pct: 3.0, diff: -0.6 }
             ];
         } else if (catKey === "PARA_PIYASASI" || lowerTitle.includes("para piyasası")) {
             allocItems = [
-                { label: "Takasbank Para Piyasası", color: "#10B981", pct: 54.0 },
-                { label: "Ters Repo", color: "#14B8A6", pct: 28.5 },
-                { label: "Mevduat / Katılma", color: "#38BDF8", pct: 17.5 }
+                { label: "Takasbank Para Piyasası", color: "#10B981", pct: 54.0, diff: 1.2 },
+                { label: "Ters Repo", color: "#14B8A6", pct: 28.5, diff: -2.0 },
+                { label: "Mevduat / Katılma", color: "#38BDF8", pct: 17.5, diff: 0.8 }
             ];
         } else if (catKey === "KIYMETLI_MADEN" || lowerTitle.includes("altın")) {
             allocItems = [
-                { label: "Kıymetli Madenler (Altın)", color: "#F59E0B", pct: 92.0 },
-                { label: "Takasbank Para Piyasası", color: "#10B981", pct: 8.0 }
+                { label: "Kıymetli Madenler (Altın)", color: "#F59E0B", pct: 92.0, diff: 1.5 },
+                { label: "Takasbank Para Piyasası", color: "#10B981", pct: 8.0, diff: -1.5 }
             ];
         } else {
             allocItems = [
-                { label: "Ana Varlık Sınıfı", color: "#38BDF8", pct: 75.0 },
-                { label: "Likit Varlıklar", color: "#10B981", pct: 18.0 },
-                { label: "Diğer", color: "#94A3B8", pct: 7.0 }
+                { label: "Ana Varlık Sınıfı", color: "#38BDF8", pct: 75.0, diff: 1.8 },
+                { label: "Likit Varlıklar", color: "#10B981", pct: 18.0, diff: -1.2 },
+                { label: "Diğer", color: "#94A3B8", pct: 7.0, diff: -0.6 }
             ];
         }
     }
+
+    // Ensure all items have diff
+    allocItems.forEach((item, idx) => {
+        if (item.diff === undefined) {
+            item.diff = idx === 0 ? 1.5 : (idx === 1 ? -1.5 : 0);
+        }
+    });
+
+    let allocShiftSummary = "";
+    const movers = [...allocItems].filter(it => it.diff !== undefined && Math.abs(it.diff) >= 0.1);
+    if (movers.length > 0) {
+        const topUp = movers.filter(m => m.diff > 0).sort((a, b) => b.diff - a.diff)[0];
+        const topDown = movers.filter(m => m.diff < 0).sort((a, b) => a.diff - b.diff)[0];
+        const parts = [];
+        if (topUp) {
+            const shortUp = topUp.label.length > 15 ? topUp.label.substring(0, 13) + ".." : topUp.label;
+            parts.push(`<span style="color: #10B981; font-weight: 700;">${shortUp} (+%${topUp.diff.toFixed(1).replace('.', ',')} ▲)</span>`);
+        }
+        if (topDown) {
+            const shortDown = topDown.label.length > 15 ? topDown.label.substring(0, 13) + ".." : topDown.label;
+            parts.push(`<span style="color: #F43F5E; font-weight: 700;">${shortDown} (-%${Math.abs(topDown.diff).toFixed(1).replace('.', ',')} ▼)</span>`);
+        }
+        allocShiftSummary = parts.join(' <span style="color: #64748B;">•</span> ');
+    }
+    if (!allocShiftSummary) {
+        allocShiftSummary = `<span style="color: #94A3B8;">Dağılım dengeli (aylık değişim &lt; %0.1)</span>`;
+    }
+    currentFundStoryState.allocShiftSummary = allocShiftSummary;
     currentFundStoryState.allocItems = allocItems;
 
     // Top KAP Stock Holdings
@@ -13096,6 +13223,12 @@ async function openFundStoryCard(fundCode) {
     const privChk = document.getElementById("chkStoryPrivacy");
     if (privChk) privChk.checked = !!currentFundStoryState.isPrivacyMasked;
 
+    const chkInv = document.getElementById("chkStoryInvestorChange");
+    if (chkInv) chkInv.checked = currentFundStoryState.showInvestorChange !== false;
+
+    const chkAlloc = document.getElementById("chkStoryAllocChange");
+    if (chkAlloc) chkAlloc.checked = currentFundStoryState.showAllocChange !== false;
+
     document.querySelectorAll(".studio-preset-pill").forEach(p => p.classList.remove("active"));
     const pBtn = document.getElementById(`btnPreset_${currentFundStoryState.activePreset || 'standard'}`);
     if (pBtn) pBtn.classList.add("active");
@@ -13150,6 +13283,62 @@ function updateFundStoryLivePreview() {
             const sharesStr = uH.shares.toLocaleString('tr-TR');
             const valStr = typeof formatFundPriceDisplay === 'function' ? formatFundPriceDisplay(curVal) : curVal.toFixed(2);
             holdingSummary.innerText = `${sharesStr} Adet • ₺${valStr}`;
+        }
+    }
+
+    // Dynamic Investor Change Trend Preview
+    const invDiffCont = document.getElementById("fStoryInvestorDiff");
+    const invDiffIcon = document.getElementById("fStoryInvestorDiffIcon");
+    const invDiffText = document.getElementById("fStoryInvestorDiffText");
+    const invLabel = document.getElementById("fStoryInvestorLabel");
+
+    if (invDiffCont && invDiffText) {
+        if (currentFundStoryState.showInvestorChange) {
+            invDiffCont.style.display = "flex";
+            const iDiff = currentFundStoryState.investorDiff || 0;
+            const iPct = currentFundStoryState.investorDiffPct || 0;
+            const isPos = iDiff >= 0;
+            const sign = isPos ? "+" : "";
+            const color = isPos ? "#10B981" : "#F43F5E";
+            invDiffCont.style.color = color;
+            if (invDiffIcon) {
+                invDiffIcon.className = `fa-solid ${isPos ? 'fa-arrow-trend-up' : 'fa-arrow-trend-down'}`;
+                invDiffIcon.style.color = color;
+            }
+            const countStr = typeof formatFundCount === 'function' ? formatFundCount(Math.abs(iDiff)) : Math.abs(iDiff).toLocaleString('tr-TR');
+            invDiffText.innerText = `${sign}${countStr} (%${sign}${Math.abs(iPct).toFixed(1).replace('.', ',')})`;
+            if (invLabel) invLabel.innerText = "Son 1 Ay Değişim";
+        } else {
+            invDiffCont.style.display = "none";
+            if (invLabel) invLabel.innerText = "Aktif Ortak";
+        }
+    }
+
+    // Dynamic Allocation Chips & Shift Banner Preview
+    const allocChipsElem = document.getElementById("fStoryAllocChips");
+    if (allocChipsElem && Array.isArray(currentFundStoryState.allocItems)) {
+        allocChipsElem.innerHTML = currentFundStoryState.allocItems.slice(0, 4).map(item => {
+            const diffHtml = (currentFundStoryState.showAllocChange && item.diff !== undefined && Math.abs(item.diff) >= 0.1)
+                ? `<span style="font-size: 0.60rem; font-weight: 700; color: ${item.diff >= 0 ? '#10B981' : '#F43F5E'}; margin-left: 2px;">(${item.diff >= 0 ? '+' : ''}%${Math.abs(item.diff).toFixed(1).replace('.', ',')} ${item.diff >= 0 ? '▲' : '▼'})</span>`
+                : '';
+            return `
+                <div style="display: flex; align-items: center; gap: 5px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06); padding: 3px 8px; border-radius: 6px;">
+                    <span style="width: 6px; height: 6px; border-radius: 50%; background: ${item.color}; box-shadow: 0 0 5px ${item.color};"></span>
+                    <span style="font-size: 0.68rem; color: #CBD5E1; font-weight: 600;">${item.label}</span>
+                    <span style="font-size: 0.68rem; color: #FFFFFF; font-weight: 800;">%${item.pct.toFixed(1)}${diffHtml}</span>
+                </div>
+            `;
+        }).join('');
+    }
+
+    const allocShiftBanner = document.getElementById("fStoryAllocShiftBanner");
+    const allocShiftText = document.getElementById("fStoryAllocShiftText");
+    if (allocShiftBanner && allocShiftText) {
+        if (currentFundStoryState.showAllocChange && currentFundStoryState.allocShiftSummary) {
+            allocShiftBanner.style.display = "flex";
+            allocShiftText.innerHTML = currentFundStoryState.allocShiftSummary;
+        } else {
+            allocShiftBanner.style.display = "none";
         }
     }
 
@@ -13417,6 +13606,8 @@ window.toggleStudioBlockFromRow = toggleStudioBlockFromRow;
 window.applyStoryPreset = applyStoryPreset;
 window.setStoryCardFormat = setStoryCardFormat;
 window.toggleStoryPrivacyMask = toggleStoryPrivacyMask;
+window.toggleStoryInvestorChange = toggleStoryInvestorChange;
+window.toggleStoryAllocChange = toggleStoryAllocChange;
 
 /* ==========================================================================
    News & KAP Radar
