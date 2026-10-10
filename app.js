@@ -16316,7 +16316,10 @@ window.fetchTefasAllFundsForScan = (typeof fetchTefasAllFundsForScan !== 'undefi
             const deltaY = e.changedTouches[0].clientY - fundTouchStartY;
             const elapsed = Date.now() - fundTouchStartTime;
 
-            if (elapsed < 600 && Math.abs(deltaX) > 42 && Math.abs(deltaX) > Math.abs(deltaY) * 1.3) {
+            // Pure horizontal swipe: must be fast (< 500ms), sufficient distance (> 55px),
+            // predominantly horizontal (|deltaX| > |deltaY| * 2), and minimal vertical motion (|deltaY| < 40px)
+            // so vertical scrolling is 100% smooth and never hijacked!
+            if (elapsed < 500 && Math.abs(deltaX) > 55 && Math.abs(deltaX) > Math.abs(deltaY) * 2.0 && Math.abs(deltaY) < 40) {
                 if (deltaX < 0) {
                     navigateSlide(1);
                 } else {
@@ -16348,7 +16351,7 @@ window.fetchTefasAllFundsForScan = (typeof fetchTefasAllFundsForScan !== 'undefi
             const deltaY = e.changedTouches[0].clientY - compTouchStartY;
             const elapsed = Date.now() - compTouchStartTime;
 
-            if (elapsed < 600 && Math.abs(deltaX) > 42 && Math.abs(deltaX) > Math.abs(deltaY) * 1.3) {
+            if (elapsed < 500 && Math.abs(deltaX) > 55 && Math.abs(deltaX) > Math.abs(deltaY) * 2.0 && Math.abs(deltaY) < 40) {
                 if (deltaX < 0) {
                     goToCompanySlide(currentCompanySlideIndex + 1);
                 } else {
