@@ -13753,6 +13753,95 @@ body.theme-neo-brutalism .sort-option.active {
     border-color: #38BDF8;
 }
 
+/* Explorer Return Period Switcher */
+.explorer-period-group {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(15, 23, 42, 0.75);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 3px 6px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+}
+
+.explorer-period-label {
+    font-size: 0.74rem;
+    font-weight: 700;
+    color: var(--text-secondary, #94A3B8);
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding-left: 6px;
+    white-space: nowrap;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.explorer-period-label i {
+    color: #38BDF8;
+    font-size: 0.78rem;
+}
+
+.explorer-period-pills {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.explorer-period-pill {
+    background: transparent;
+    border: 1px solid transparent;
+    color: #94A3B8;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    white-space: nowrap;
+    outline: none;
+}
+
+.explorer-period-pill:hover {
+    color: #FFFFFF;
+    background: rgba(255, 255, 255, 0.06);
+}
+
+.explorer-period-pill.active {
+    background: linear-gradient(135deg, rgba(14, 165, 233, 0.28) 0%, rgba(59, 130, 246, 0.38) 100%);
+    color: #38BDF8;
+    border-color: rgba(56, 189, 248, 0.55);
+    box-shadow: 0 0 14px rgba(56, 189, 248, 0.3);
+    font-weight: 700;
+}
+
+/* Category Funds Table Header & Cells */
+.category-funds-table thead th.sortable-th {
+    cursor: pointer;
+    user-select: none;
+    transition: all 0.18s ease;
+}
+
+.category-funds-table thead th.sortable-th:hover {
+    color: #38BDF8;
+    background: rgba(56, 189, 248, 0.12);
+}
+
+.table-ret-cell {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.table-ret-period-tag {
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: #64748B;
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+}
+
 /* Category Funds Table */
 .explorer-table-wrapper {
     overflow-x: auto;
@@ -13896,6 +13985,21 @@ body.theme-neo-brutalism .sort-option.active {
     .explorer-toolbar {
         flex-direction: column;
         align-items: stretch;
+    }
+    .explorer-period-group {
+        width: 100%;
+        justify-content: space-between;
+        overflow-x: auto;
+    }
+    .explorer-period-pills {
+        flex: 1;
+        justify-content: space-between;
+    }
+    .explorer-period-pill {
+        flex: 1;
+        text-align: center;
+        justify-content: center;
+        padding: 6px 8px;
     }
     .explorer-sort-wrap {
         justify-content: flex-end;

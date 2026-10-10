@@ -1605,13 +1605,25 @@
                                     <i class="fa-solid fa-xmark"></i>
                                 </button>
                             </div>
+                            <div class="explorer-period-group" id="explorerPeriodGroup" title="Getiri Dönemine Göre Filtrele ve Sırala">
+                                <span class="explorer-period-label"><i class="fa-solid fa-clock-rotate-left"></i> Dönem:</span>
+                                <div class="explorer-period-pills">
+                                    <button type="button" class="explorer-period-pill active" id="btnExplorerPeriod1d" onclick="setCategoryReturnPeriod('1d')">Günlük</button>
+                                    <button type="button" class="explorer-period-pill" id="btnExplorerPeriod1w" onclick="setCategoryReturnPeriod('1w')">Haftalık</button>
+                                    <button type="button" class="explorer-period-pill" id="btnExplorerPeriod1m" onclick="setCategoryReturnPeriod('1m')">Aylık</button>
+                                    <button type="button" class="explorer-period-pill" id="btnExplorerPeriod1y" onclick="setCategoryReturnPeriod('1y')">Yıllık</button>
+                                </div>
+                            </div>
                             <div class="explorer-sort-wrap">
                                 <label for="explorerSortSelect"><i class="fa-solid fa-arrow-down-wide-short"></i> Sırala:</label>
                                 <select id="explorerSortSelect" onchange="handleCategoryFundsSort(this.value)">
+                                    <option value="return_1d">En Yüksek Getiri (Günlük)</option>
+                                    <option value="return_1w">En Yüksek Getiri (Haftalık)</option>
+                                    <option value="return_1m">En Yüksek Getiri (Aylık)</option>
+                                    <option value="return_1y">En Yüksek Getiri (Yıllık)</option>
                                     <option value="cashFlow">En Çok Para Giren (Net Giriş)</option>
                                     <option value="investors">En Çok Yatırımcı Çeken</option>
                                     <option value="aum">En Büyük Fonlar (Portföy Değeri)</option>
-                                    <option value="return">En Yüksek Getiri (Fiyat Değişimi)</option>
                                     <option value="name">Fon Adı (A-Z)</option>
                                 </select>
                             </div>
@@ -1625,7 +1637,7 @@
                                         <tr>
                                             <th>Fon Kodu & Adı</th>
                                             <th>Son Fiyat</th>
-                                            <th>Günlük Getiri</th>
+                                            <th id="categoryReturnColHeader" class="sortable-th" onclick="handleCategoryReturnHeaderClick()" title="Getiriye göre sırala (Tıkla: Artan / Azalan)" style="cursor: pointer;">Günlük Getiri <i class="fa-solid fa-arrow-down" style="color: #38BDF8; font-size: 0.72rem;"></i></th>
                                             <th>Portföy Büyüklüğü</th>
                                             <th>Günlük Para Akışı</th>
                                             <th>Yatırımcı Değişimi</th>

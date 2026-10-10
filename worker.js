@@ -1,5 +1,7 @@
 let memoryLeadersCache = null;
 let memoryLeadersTime = 0;
+let memoryReturnsCache = null;
+let memoryReturnsTime = 0;
 
 const KAP_FUND_HOLDINGS_DB = {
   TAU: {
@@ -381,6 +383,136 @@ export default {
             "Cache-Control": "public, max-age=3600"
           }
         });
+      }
+
+      const isReturns = url.searchParams.get("returns") === "1" || url.searchParams.get("getiri") === "1";
+      if (isReturns) {
+        const nowMs = Date.now();
+        const hasNoCache = url.searchParams.has("_t") || url.searchParams.has("nocache");
+        if (memoryReturnsCache && (nowMs - memoryReturnsTime < 1800000) && !hasNoCache) {
+          return new Response(JSON.stringify(memoryReturnsCache), {
+            headers: {
+              "Content-Type": "application/json; charset=utf-8",
+              "Access-Control-Allow-Origin": "*",
+              "Cache-Control": "public, max-age=1800"
+            }
+          });
+        }
+
+        const TEFAS_RET_URL = "https://www.tefas.gov.tr/api/funds/fonGetiriBazliBilgiGetir";
+        const pad = n => String(n).padStart(2, '0');
+        const now = new Date();
+        const weekAgo = new Date(now.getTime() - (7 * 86400000));
+        const dStart = `${weekAgo.getFullYear()}${pad(weekAgo.getMonth()+1)}${pad(weekAgo.getDate())}`;
+        const dEnd = `${now.getFullYear()}${pad(now.getMonth()+1)}${pad(now.getDate())}`;
+
+        async function fetchTefasReturns(fonTipi, calismaTipi, st, en) {
+          const body = {
+            dil: "TR",
+            fonTipi,
+            kurucuKodu: null,
+            sfonTurKod: null,
+            fonTurAciklama: null,
+            islem: null,
+            fonTurKod: null,
+            fonGrubu: null,
+            donemGetiri1a: calismaTipi === 2 ? "1" : "0",
+            donemGetiri3a: calismaTipi === 2 ? "1" : "0",
+            donemGetiri6a: calismaTipi === 2 ? "1" : "0",
+            donemGetiri1y: calismaTipi === 2 ? "1" : "0",
+            donemGetiriyb: calismaTipi === 2 ? "1" : "0",
+            donemGetiri3y: "0",
+            donemGetiri5y: "0",
+            basTarih: st || null,
+            bitTarih: en || null,
+            calismaTipi,
+            getiriOrani: "1"
+          };
+          try {
+            const r = await fetch(TEFAS_RET_URL, {
+              method: "POST",
+              headers: {
+                "Accept": "application/json",
+                "Content-Type": "application/json",
+                "Origin": "https://www.tefas.gov.tr",
+                "Referer": "https://www.tefas.gov.tr/tr/fon-karsilastirma",
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+              },
+              body: JSON.stringify(body)
+            });
+            if (!r.ok) return [];
+            const j = await r.json();
+            return j.resultList || [];
+          } catch (e) {
+            return [];
+          }
+        }
+
+        try {
+          const [yatStd, yatWeek, emkStd, emkWeek] = await Promise.all([
+            fetchTefasReturns('YAT', 2, null, null),
+            fetchTefasReturns('YAT', 1, dStart, dEnd),
+            fetchTefasReturns('EMK', 2, null, null),
+            fetchTefasReturns('EMK', 1, dStart, dEnd)
+          ]);
+
+          const map = {};
+          function mergeStd(list) {
+            for (const item of list) {
+              if (!item.fonKodu) continue;
+              const code = item.fonKodu.toUpperCase().trim();
+              if (!map[code]) map[code] = {};
+              if (typeof item.getiri1a === 'number') map[code].m1 = Number(item.getiri1a.toFixed(2));
+              if (typeof item.getiri3a === 'number') map[code].m3 = Number(item.getiri3a.toFixed(2));
+              if (typeof item.getiri6a === 'number') map[code].m6 = Number(item.getiri6a.toFixed(2));
+              if (typeof item.getiri1y === 'number') map[code].y1 = Number(item.getiri1y.toFixed(2));
+              if (typeof item.getiriyb === 'number') map[code].ytd = Number(item.getiriyb.toFixed(2));
+            }
+          }
+          function mergeWeek(list) {
+            for (const item of list) {
+              if (!item.fonKodu) continue;
+              const code = item.fonKodu.toUpperCase().trim();
+              if (!map[code]) map[code] = {};
+              if (typeof item.getiriOrani === 'number') map[code].w1 = Number(item.getiriOrani.toFixed(2));
+            }
+          }
+
+          mergeStd(yatStd);
+          mergeStd(emkStd);
+          mergeWeek(yatWeek);
+          mergeWeek(emkWeek);
+
+          const payload = {
+            ok: true,
+            date: `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}`,
+            totalFunds: Object.keys(map).length,
+            returns: map
+          };
+
+          if (payload.totalFunds > 0) {
+            memoryReturnsCache = payload;
+            memoryReturnsTime = Date.now();
+          }
+
+          return new Response(JSON.stringify(payload), {
+            headers: {
+              "Content-Type": "application/json; charset=utf-8",
+              "Access-Control-Allow-Origin": "*",
+              "Cache-Control": hasNoCache ? "no-cache" : "public, max-age=1800"
+            }
+          });
+        } catch (e) {
+          if (memoryReturnsCache) {
+            return new Response(JSON.stringify({ ...memoryReturnsCache, isStale: true }), {
+              headers: { "Content-Type": "application/json; charset=utf-8", "Access-Control-Allow-Origin": "*" }
+            });
+          }
+          return new Response(JSON.stringify({ ok: false, error: "Failed to fetch TEFAS returns", details: String(e) }), {
+            status: 502,
+            headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" }
+          });
+        }
       }
 
       const isLeaders = url.searchParams.get("leaders") === "1" || url.searchParams.get("liderler") === "1" || fonCode === "LEADERS";

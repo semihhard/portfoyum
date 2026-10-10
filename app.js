@@ -4695,69 +4695,109 @@ function detectFundCategoryKey(name = '', code = '') {
 
 const BASE_CURATED_CATEGORY_FUNDS = [
     // Hisse Senedi
-    { code: "THF", name: "TERA PORTFÖY HİSSE SENEDİ FONU", category: "HISSE", price: 2.3056, change: 2.85, aum: 48946000000, cashFlow: 1450000000, deltaInvestors: 2574, investors: 214299 },
-    { code: "TI1", name: "İŞ PORTFÖY BIST 100 DIŞI HİSSE SENEDİ FONU", category: "HISSE", price: 4.8250, change: 1.95, aum: 42150000000, cashFlow: 980000000, deltaInvestors: 1850, investors: 165400 },
-    { code: "MAC", name: "MARMARA CAPITAL PORTFÖY HİSSE SENEDİ FONU", category: "HISSE", price: 14.280, change: 3.12, aum: 18500000000, cashFlow: 620000000, deltaInvestors: 940, investors: 84200 },
-    { code: "IIH", name: "İSTANBUL PORTFÖY BİRİNCİ HİSSE SENEDİ FONU", category: "HISSE", price: 8.9450, change: 2.40, aum: 24600000000, cashFlow: 740000000, deltaInvestors: 1120, investors: 98500 },
-    { code: "BIO", name: "TEB PORTFÖY BIST BANKA DIŞI LİKİT HİSSE SENEDİ", category: "HISSE", price: 3.4200, change: 1.65, aum: 12400000000, cashFlow: 310000000, deltaInvestors: 480, investors: 46200 },
-    { code: "GMR", name: "İNVEO PORTFÖY BİRİNCİ HİSSE SENEDİ FONU", category: "HISSE", price: 6.7800, change: 2.15, aum: 15200000000, cashFlow: 450000000, deltaInvestors: 650, investors: 52100 },
-    { code: "TAU", name: "İŞ PORTFÖY BIST BANKA ENDEKSİ HİSSE SENEDİ FONU", category: "HISSE", price: 28.540, change: -0.85, aum: 19800000000, cashFlow: -180000000, deltaInvestors: -240, investors: 61400 },
+    { code: "THF", name: "TERA PORTFÖY HİSSE SENEDİ FONU", category: "HISSE", price: 2.3056, change: 2.85, return1w: 4.50, return1m: 8.20, return1y: 42.10, aum: 48946000000, cashFlow: 1450000000, deltaInvestors: 2574, investors: 214299 },
+    { code: "TI1", name: "İŞ PORTFÖY BIST 100 DIŞI HİSSE SENEDİ FONU", category: "HISSE", price: 4.8250, change: 1.95, return1w: 0.39, return1m: 2.94, return1y: 45.53, aum: 42150000000, cashFlow: 980000000, deltaInvestors: 1850, investors: 165400 },
+    { code: "MAC", name: "MARMARA CAPITAL PORTFÖY HİSSE SENEDİ FONU", category: "HISSE", price: 14.280, change: 3.12, return1w: -0.02, return1m: -9.16, return1y: 7.17, aum: 18500000000, cashFlow: 620000000, deltaInvestors: 940, investors: 84200 },
+    { code: "IIH", name: "İSTANBUL PORTFÖY BİRİNCİ HİSSE SENEDİ FONU", category: "HISSE", price: 8.9450, change: 2.40, return1w: -0.56, return1m: -7.52, return1y: 20.78, aum: 24600000000, cashFlow: 740000000, deltaInvestors: 1120, investors: 98500 },
+    { code: "BIO", name: "TEB PORTFÖY BIST BANKA DIŞI LİKİT HİSSE SENEDİ", category: "HISSE", price: 3.4200, change: 1.65, return1w: -0.02, return1m: -8.78, return1y: 13.02, aum: 12400000000, cashFlow: 310000000, deltaInvestors: 480, investors: 46200 },
+    { code: "GMR", name: "İNVEO PORTFÖY BİRİNCİ HİSSE SENEDİ FONU", category: "HISSE", price: 6.7800, change: 2.15, return1w: -0.47, return1m: -12.50, return1y: 3.64, aum: 15200000000, cashFlow: 450000000, deltaInvestors: 650, investors: 52100 },
+    { code: "TAU", name: "İŞ PORTFÖY BIST BANKA ENDEKSİ HİSSE SENEDİ FONU", category: "HISSE", price: 28.540, change: -0.85, return1w: 1.73, return1m: -8.99, return1y: 11.84, aum: 19800000000, cashFlow: -180000000, deltaInvestors: -240, investors: 61400 },
 
     // Para Piyasası
-    { code: "PPZ", name: "AZİMUT PORTFÖY PARA PİYASASI FONU", category: "PARA_PIYASASI", price: 5.1240, change: 0.14, aum: 165400000000, cashFlow: 3850000000, deltaInvestors: 3450, investors: 285400 },
-    { code: "NVB", name: "NEO PORTFÖY BİRİNCİ PARA PİYASASI FONU", category: "PARA_PIYASASI", price: 3.8420, change: 0.13, aum: 142000000000, cashFlow: 2980000000, deltaInvestors: 2680, investors: 241000 },
-    { code: "HYV", name: "HEDEF PORTFÖY BİRİNCİ PARA PİYASASI FONU", category: "PARA_PIYASASI", price: 4.1950, change: 0.14, aum: 128500000000, cashFlow: 2450000000, deltaInvestors: 2120, investors: 198400 },
-    { code: "PJL", name: "PHİLLİP PORTFÖY PARA PİYASASI FONU", category: "PARA_PIYASASI", price: 2.4580, change: 0.13, aum: 18200000000, cashFlow: 410000000, deltaInvestors: 941, investors: 64500 },
-    { code: "TP2", name: "TERA PORTFÖY PARA PİYASASI (TL) FONU", category: "PARA_PIYASASI", price: 1.8420, change: 0.14, aum: 24500000000, cashFlow: 650000000, deltaInvestors: 2230, investors: 89400 },
-    { code: "AAL", name: "ATA PORTFÖY PARA PİYASASI FONU", category: "PARA_PIYASASI", price: 6.7200, change: 0.13, aum: 98400000000, cashFlow: 1840000000, deltaInvestors: 1620, investors: 145000 },
+    { code: "PPZ", name: "AZİMUT PORTFÖY PARA PİYASASI FONU", category: "PARA_PIYASASI", price: 5.1240, change: 0.14, return1w: 0.40, return1m: 2.79, return1y: 45.88, aum: 165400000000, cashFlow: 3850000000, deltaInvestors: 3450, investors: 285400 },
+    { code: "NVB", name: "NEO PORTFÖY BİRİNCİ PARA PİYASASI FONU", category: "PARA_PIYASASI", price: 3.8420, change: 0.13, return1w: 0.42, return1m: 3.02, return1y: 46.50, aum: 142000000000, cashFlow: 2980000000, deltaInvestors: 2680, investors: 241000 },
+    { code: "HYV", name: "HEDEF PORTFÖY BİRİNCİ PARA PİYASASI FONU", category: "PARA_PIYASASI", price: 4.1950, change: 0.14, return1w: 0.71, return1m: 2.45, return1y: 45.75, aum: 128500000000, cashFlow: 2450000000, deltaInvestors: 2120, investors: 198400 },
+    { code: "PJL", name: "PHİLLİP PORTFÖY PARA PİYASASI FONU", category: "PARA_PIYASASI", price: 2.4580, change: 0.13, return1w: 0.41, return1m: 2.93, return1y: 45.52, aum: 18200000000, cashFlow: 410000000, deltaInvestors: 941, investors: 64500 },
+    { code: "TP2", name: "TERA PORTFÖY PARA PİYASASI (TL) FONU", category: "PARA_PIYASASI", price: 1.8420, change: 0.14, return1w: 0.40, return1m: 2.80, return1y: 45.60, aum: 24500000000, cashFlow: 650000000, deltaInvestors: 2230, investors: 89400 },
+    { code: "AAL", name: "ATA PORTFÖY PARA PİYASASI FONU", category: "PARA_PIYASASI", price: 6.7200, change: 0.13, return1w: 0.41, return1m: 3.00, return1y: 42.25, aum: 98400000000, cashFlow: 1840000000, deltaInvestors: 1620, investors: 145000 },
 
     // Borçlanma Araçları
-    { code: "DBH", name: "DENİZ PORTFÖY EUROBOND BORÇLANMA ARAÇLARI FONU", category: "BORCLANMA", price: 1.8450, change: 0.42, aum: 38400000000, cashFlow: 890000000, deltaInvestors: 620, investors: 78500 },
-    { code: "TZV", name: "ZİRAAT PORTFÖY KISA VADELİ BORÇLANMA ARAÇLARI FONU", category: "BORCLANMA", price: 972.67, change: 0.11, aum: 32180000000, cashFlow: -1959000000, deltaInvestors: -365, investors: 42100 },
-    { code: "OJT", name: "QNB FİNANS PORTFÖY EUROBOND BORÇLANMA ARAÇLARI", category: "BORCLANMA", price: 0.9450, change: 0.38, aum: 29500000000, cashFlow: 450000000, deltaInvestors: 380, investors: 54200 },
-    { code: "FBA", name: "FİBA PORTFÖY BORÇLANMA ARAÇLARI FONU", category: "BORCLANMA", price: 4.1200, change: 0.16, aum: 18400000000, cashFlow: 280000000, deltaInvestors: 210, investors: 36500 },
-    { code: "IPB", name: "İSTANBUL PORTFÖY BİRİNCİ BORÇLANMA ARAÇLARI", category: "BORCLANMA", price: 7.8500, change: 0.18, aum: 22100000000, cashFlow: 390000000, deltaInvestors: 310, investors: 41200 },
+    { code: "DBH", name: "DENİZ PORTFÖY EUROBOND BORÇLANMA ARAÇLARI FONU", category: "BORCLANMA", price: 1.8450, change: 0.42, return1w: 0.55, return1m: -0.33, return1y: 21.99, aum: 38400000000, cashFlow: 890000000, deltaInvestors: 620, investors: 78500 },
+    { code: "TZV", name: "ZİRAAT PORTFÖY KISA VADELİ BORÇLANMA ARAÇLARI FONU", category: "BORCLANMA", price: 972.67, change: 0.11, return1w: 0.44, return1m: 2.78, return1y: 43.69, aum: 32180000000, cashFlow: -1959000000, deltaInvestors: -365, investors: 42100 },
+    { code: "OJT", name: "QNB FİNANS PORTFÖY EUROBOND BORÇLANMA ARAÇLARI", category: "BORCLANMA", price: 0.9450, change: 0.38, return1w: -0.75, return1m: 3.27, return1y: 50.56, aum: 29500000000, cashFlow: 450000000, deltaInvestors: 380, investors: 54200 },
+    { code: "FBA", name: "FİBA PORTFÖY BORÇLANMA ARAÇLARI FONU", category: "BORCLANMA", price: 4.1200, change: 0.16, return1w: 0.42, return1m: 2.85, return1y: 44.10, aum: 18400000000, cashFlow: 280000000, deltaInvestors: 210, investors: 36500 },
+    { code: "IPB", name: "İSTANBUL PORTFÖY BİRİNCİ BORÇLANMA ARAÇLARI", category: "BORCLANMA", price: 7.8500, change: 0.18, return1w: 0.29, return1m: -16.40, return1y: 8.81, aum: 22100000000, cashFlow: 390000000, deltaInvestors: 310, investors: 41200 },
 
     // Kıymetli Madenler
-    { code: "TTA", name: "İŞ PORTFÖY ALTIN FONU", category: "KIYMETLI_MADEN", price: 0.6209, change: 1.15, aum: 86400000000, cashFlow: 1850000000, deltaInvestors: 3120, investors: 425000 },
-    { code: "KZL", name: "KUVEYT TÜRK PORTFÖY ALTIN KATILIM FONU", category: "KIYMETLI_MADEN", price: 0.5840, change: 1.12, aum: 72100000000, cashFlow: 1420000000, deltaInvestors: 2650, investors: 362000 },
-    { code: "GGK", name: "GARANTİ BBVA PORTFÖY GÜMÜŞ FON SEPETİ FONU", category: "KIYMETLI_MADEN", price: 0.3420, change: 2.45, aum: 28500000000, cashFlow: 780000000, deltaInvestors: 1480, investors: 184000 },
-    { code: "OTJ", name: "QNB FİNANS PORTFÖY GÜMÜŞ FON SEPETİ FONU", category: "KIYMETLI_MADEN", price: 0.4120, change: 2.38, aum: 21400000000, cashFlow: 540000000, deltaInvestors: 980, investors: 128500 },
+    { code: "TTA", name: "İŞ PORTFÖY ALTIN FONU", category: "KIYMETLI_MADEN", price: 0.6209, change: 1.15, return1w: -1.14, return1m: -3.88, return1y: 7.33, aum: 86400000000, cashFlow: 1850000000, deltaInvestors: 3120, investors: 425000 },
+    { code: "KZL", name: "KUVEYT TÜRK PORTFÖY ALTIN KATILIM FONU", category: "KIYMETLI_MADEN", price: 0.5840, change: 1.12, return1w: -1.45, return1m: -4.49, return1y: 15.78, aum: 72100000000, cashFlow: 1420000000, deltaInvestors: 2650, investors: 362000 },
+    { code: "GGK", name: "GARANTİ BBVA PORTFÖY GÜMÜŞ FON SEPETİ FONU", category: "KIYMETLI_MADEN", price: 0.3420, change: 2.45, return1w: -1.32, return1m: -4.09, return1y: 12.67, aum: 28500000000, cashFlow: 780000000, deltaInvestors: 1480, investors: 184000 },
+    { code: "OTJ", name: "QNB FİNANS PORTFÖY GÜMÜŞ FON SEPETİ FONU", category: "KIYMETLI_MADEN", price: 0.4120, change: 2.38, return1w: -2.44, return1m: -7.57, return1y: 24.41, aum: 21400000000, cashFlow: 540000000, deltaInvestors: 980, investors: 128500 },
 
     // Fon Sepeti
-    { code: "AFT", name: "AK PORTFÖY YENİ TEKNOLOJİLER YABANCI HİSSE FONU", category: "FON_SEPETI", price: 0.4285, change: 1.84, aum: 68500000000, cashFlow: 1420000000, deltaInvestors: 2850, investors: 342000 },
-    { code: "YAY", name: "YAPI KREDİ PORTFÖY YABANCI TEKNOLOJİ FON SEPETİ", category: "FON_SEPETI", price: 0.3840, change: 1.76, aum: 48200000000, cashFlow: 940000000, deltaInvestors: 1920, investors: 228000 },
-    { code: "AES", name: "AK PORTFÖY PETROL YABANCI BYF FON SEPETİ FONU", category: "FON_SEPETI", price: 0.2850, change: -0.65, aum: 16500000000, cashFlow: 85000000, deltaInvestors: 292, investors: 84500 },
-    { code: "TFF", name: "TEB PORTFÖY AMERİKA TEKNOLOJİ YABANCI BYF FONU", category: "FON_SEPETI", price: 0.5120, change: 1.92, aum: 24100000000, cashFlow: 580000000, deltaInvestors: 1140, investors: 115000 },
+    { code: "AFT", name: "AK PORTFÖY YENİ TEKNOLOJİLER YABANCI HİSSE FONU", category: "FON_SEPETI", price: 0.4285, change: 1.84, return1w: -1.49, return1m: 4.25, return1y: 31.99, aum: 68500000000, cashFlow: 1420000000, deltaInvestors: 2850, investors: 342000 },
+    { code: "YAY", name: "YAPI KREDİ PORTFÖY YABANCI TEKNOLOJİ FON SEPETİ", category: "FON_SEPETI", price: 0.3840, change: 1.76, return1w: -0.70, return1m: 5.91, return1y: 65.63, aum: 48200000000, cashFlow: 940000000, deltaInvestors: 1920, investors: 228000 },
+    { code: "AES", name: "AK PORTFÖY PETROL YABANCI BYF FON SEPETİ FONU", category: "FON_SEPETI", price: 0.2850, change: -0.65, return1w: 4.75, return1m: 7.51, return1y: 112.99, aum: 16500000000, cashFlow: 85000000, deltaInvestors: 292, investors: 84500 },
+    { code: "TFF", name: "TEB PORTFÖY AMERİKA TEKNOLOJİ YABANCI BYF FONU", category: "FON_SEPETI", price: 0.5120, change: 1.92, return1w: 0.08, return1m: 7.51, return1y: 53.73, aum: 24100000000, cashFlow: 580000000, deltaInvestors: 1140, investors: 115000 },
 
     // Değişken
-    { code: "TCD", name: "TACİRLER PORTFÖY DEĞİŞKEN FON", category: "DEGISKEN", price: 12.840, change: 2.45, aum: 45200000000, cashFlow: 1120000000, deltaInvestors: 1840, investors: 148500 },
-    { code: "NRC", name: "NEO PORTFÖY BİRİNCİ DEĞİŞKEN FON", category: "DEGISKEN", price: 4.6500, change: 1.35, aum: 32400000000, cashFlow: 680000000, deltaInvestors: 1150, investors: 94200 },
-    { code: "EID", name: "HEDEF PORTFÖY EID DEĞİŞKEN FON", category: "DEGISKEN", price: 3.1200, change: 1.80, aum: 28500000000, cashFlow: 590000000, deltaInvestors: 890, investors: 78500 },
-    { code: "GTA", name: "GARANTİ BBVA PORTFÖY BİRİNCİ DEĞİŞKEN FON", category: "DEGISKEN", price: 5.4800, change: 0.95, aum: 36200000000, cashFlow: 740000000, deltaInvestors: 920, investors: 112000 },
+    { code: "TCD", name: "TACİRLER PORTFÖY DEĞİŞKEN FON", category: "DEGISKEN", price: 12.840, change: 2.45, return1w: -1.22, return1m: -6.12, return1y: 31.78, aum: 45200000000, cashFlow: 1120000000, deltaInvestors: 1840, investors: 148500 },
+    { code: "NRC", name: "NEO PORTFÖY BİRİNCİ DEĞİŞKEN FON", category: "DEGISKEN", price: 4.6500, change: 1.35, return1w: 0.53, return1m: -13.94, return1y: 7.40, aum: 32400000000, cashFlow: 680000000, deltaInvestors: 1150, investors: 94200 },
+    { code: "EID", name: "HEDEF PORTFÖY EID DEĞİŞKEN FON", category: "DEGISKEN", price: 3.1200, change: 1.80, return1w: 0.55, return1m: -11.52, return1y: 19.15, aum: 28500000000, cashFlow: 590000000, deltaInvestors: 890, investors: 78500 },
+    { code: "GTA", name: "GARANTİ BBVA PORTFÖY BİRİNCİ DEĞİŞKEN FON", category: "DEGISKEN", price: 5.4800, change: 0.95, return1w: -1.41, return1m: -4.58, return1y: 13.81, aum: 36200000000, cashFlow: 740000000, deltaInvestors: 920, investors: 112000 },
 
     // Katılım
-    { code: "KDV", name: "KUVEYT TÜRK PORTFÖY DOKUZUNCU KATILIM SERBEST FON", category: "KATILIM", price: 49.697, change: 0.22, aum: 21800000000, cashFlow: -1838000000, deltaInvestors: 0, investors: 1420 },
-    { code: "PVK", name: "ALBARAKA PORTFÖY KISA VADELİ KATILIM SERBEST FON", category: "KATILIM", price: 5.9248, change: 0.15, aum: 40330000000, cashFlow: -1772000000, deltaInvestors: -13, investors: 2840 },
-    { code: "KPC", name: "KUVEYT TÜRK PORTFÖY KATILIM HİSSE SENEDİ FONU", category: "KATILIM", price: 8.4200, change: 2.10, aum: 34500000000, cashFlow: 890000000, deltaInvestors: 1650, investors: 142000 },
-    { code: "RBK", name: "ALBARAKA PORTFÖY KATILIM HİSSE SENEDİ FONU", category: "KATILIM", price: 6.1800, change: 1.95, aum: 22800000000, cashFlow: 540000000, deltaInvestors: 1120, investors: 96500 },
+    { code: "KDV", name: "KUVEYT TÜRK PORTFÖY DOKUZUNCU KATILIM SERBEST FON", category: "KATILIM", price: 49.697, change: 0.22, return1w: 0.37, return1m: 1.90, return1y: 22.78, aum: 21800000000, cashFlow: -1838000000, deltaInvestors: 0, investors: 1420 },
+    { code: "PVK", name: "ALBARAKA PORTFÖY KISA VADELİ KATILIM SERBEST FON", category: "KATILIM", price: 5.9248, change: 0.15, return1w: 0.38, return1m: 2.90, return1y: 43.26, aum: 40330000000, cashFlow: -1772000000, deltaInvestors: -13, investors: 2840 },
+    { code: "KPC", name: "KUVEYT TÜRK PORTFÖY KATILIM HİSSE SENEDİ FONU", category: "KATILIM", price: 8.4200, change: 2.10, return1w: -1.07, return1m: -7.27, return1y: 40.81, aum: 34500000000, cashFlow: 890000000, deltaInvestors: 1650, investors: 142000 },
+    { code: "RBK", name: "ALBARAKA PORTFÖY KATILIM HİSSE SENEDİ FONU", category: "KATILIM", price: 6.1800, change: 1.95, return1w: 0.65, return1m: 1.51, return1y: 26.62, aum: 22800000000, cashFlow: 540000000, deltaInvestors: 1120, investors: 96500 },
 
     // Serbest
-    { code: "DOH", name: "TERA PORTFÖY DÖRDÜNCÜ HİSSE SENEDİ SERBEST FON", category: "SERBEST", price: 2.3717, change: 3.45, aum: 40795000000, cashFlow: -1032000000, deltaInvestors: 1575, investors: 18450 },
-    { code: "TLY", name: "TERA PORTFÖY BİRİNCİ SERBEST FON", category: "SERBEST", price: 4.8500, change: 0.18, aum: 38400000000, cashFlow: 850000000, deltaInvestors: 1141, investors: 12400 },
-    { code: "GL1", name: "GARDENIA PORTFÖY BİRİNCİ SERBEST FON", category: "SERBEST", price: 18.420, change: 2.80, aum: 29500000000, cashFlow: 740000000, deltaInvestors: 680, investors: 8450 },
-    { code: "FS1", name: "FİBA PORTFÖY BİRİNCİ SERBEST (TL) FON", category: "SERBEST", price: 12.650, change: 0.25, aum: 34200000000, cashFlow: 620000000, deltaInvestors: 420, investors: 6120 },
+    { code: "DOH", name: "TERA PORTFÖY DÖRDÜNCÜ HİSSE SENEDİ SERBEST FON", category: "SERBEST", price: 2.3717, change: 3.45, return1w: 2.10, return1m: 7.80, return1y: 48.20, aum: 40795000000, cashFlow: -1032000000, deltaInvestors: 1575, investors: 18450 },
+    { code: "TLY", name: "TERA PORTFÖY BİRİNCİ SERBEST FON", category: "SERBEST", price: 4.8500, change: 0.18, return1w: 0.40, return1m: 2.85, return1y: 46.10, aum: 38400000000, cashFlow: 850000000, deltaInvestors: 1141, investors: 12400 },
+    { code: "GL1", name: "GARDENIA PORTFÖY BİRİNCİ SERBEST FON", category: "SERBEST", price: 18.420, change: 2.80, return1w: -1.32, return1m: -9.34, return1y: 28.58, aum: 29500000000, cashFlow: 740000000, deltaInvestors: 680, investors: 8450 },
+    { code: "FS1", name: "FİBA PORTFÖY BİRİNCİ SERBEST (TL) FON", category: "SERBEST", price: 12.650, change: 0.25, return1w: -0.42, return1m: -22.30, return1y: -19.30, aum: 34200000000, cashFlow: 620000000, deltaInvestors: 420, investors: 6120 },
 
     // Karma
-    { code: "TKF", name: "TACİRLER PORTFÖY KARMA FON", category: "KARMA", price: 9.4500, change: 1.45, aum: 18400000000, cashFlow: 380000000, deltaInvestors: 540, investors: 48500 },
-    { code: "OKT", name: "OYAK PORTFÖY BİRİNCİ KARMA FON", category: "KARMA", price: 6.1200, change: 1.15, aum: 14200000000, cashFlow: 290000000, deltaInvestors: 380, investors: 39400 },
-    { code: "AHK", name: "ANADOLU HAYAT EMEKLİLİK KARMA FON", category: "KARMA", price: 4.8500, change: 0.98, aum: 11800000000, cashFlow: 210000000, deltaInvestors: 290, investors: 31200 }
+    { code: "TKF", name: "TACİRLER PORTFÖY KARMA FON", category: "KARMA", price: 9.4500, change: 1.45, return1w: -1.15, return1m: -7.78, return1y: 28.21, aum: 18400000000, cashFlow: 380000000, deltaInvestors: 540, investors: 48500 },
+    { code: "OKT", name: "OYAK PORTFÖY BİRİNCİ KARMA FON", category: "KARMA", price: 6.1200, change: 1.15, return1w: 0.39, return1m: 3.00, return1y: 45.35, aum: 14200000000, cashFlow: 290000000, deltaInvestors: 380, investors: 39400 },
+    { code: "AHK", name: "ANADOLU HAYAT EMEKLİLİK KARMA FON", category: "KARMA", price: 4.8500, change: 0.98, return1w: 0.45, return1m: 2.90, return1y: 41.50, aum: 11800000000, cashFlow: 210000000, deltaInvestors: 290, investors: 31200 }
 ];
 
 let cachedAllCategoryFunds = [];
 let currentActiveCategoryKey = "HISSE";
 let currentCategorySearchQuery = "";
-let currentCategorySortBy = "cashFlow";
+let currentCategorySortBy = "return_1d";
+let currentCategoryReturnPeriod = "1d";
+let categorySortDirection = "desc";
+let tefasReturnsDbCache = null;
+
+async function loadTefasReturnsDb() {
+    if (tefasReturnsDbCache && typeof tefasReturnsDbCache === 'object' && Object.keys(tefasReturnsDbCache).length > 100) {
+        return tefasReturnsDbCache;
+    }
+    // 1. Try local official dataset (instant, 0 CORS, offline ready)
+    try {
+        const res = await fetch("tefas_returns.json?v=" + Date.now());
+        if (res.ok) {
+            const json = await res.json();
+            if (json && json.returns && Object.keys(json.returns).length > 50) {
+                tefasReturnsDbCache = json.returns;
+                return tefasReturnsDbCache;
+            }
+        }
+    } catch (e) {
+        console.warn("Local tefas_returns.json fetch failed, trying worker:", e);
+    }
+    // 2. Try Cloudflare Worker proxy (?returns=1)
+    try {
+        const workerUrl = `${IS_YATIRIM_WORKER_URL}?returns=1&_t=${Date.now()}`;
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 6000);
+        const res = await fetch(workerUrl, { signal: controller.signal });
+        clearTimeout(timeoutId);
+        if (res.ok) {
+            const json = await res.json();
+            if (json && json.returns && Object.keys(json.returns).length > 50) {
+                tefasReturnsDbCache = json.returns;
+                return tefasReturnsDbCache;
+            }
+        }
+    } catch (e) {
+        console.warn("Worker returns fetch failed:", e);
+    }
+    return null;
+}
 
 async function loadAndRenderFundCategories(forceRefresh = false) {
     const loadingElem = document.getElementById("fundCategoriesLoading");
@@ -4777,9 +4817,77 @@ async function loadAndRenderFundCategories(forceRefresh = false) {
         dateElem.innerText = `${day}.${month}.${year} TEFAS`;
     }
 
+    // Load returns database in parallel/first
+    let returnsDb = tefasReturnsDbCache;
+    if (!returnsDb || forceRefresh) {
+        try {
+            returnsDb = await loadTefasReturnsDb();
+        } catch(e) {}
+    }
+
     // Initialize with curated funds first
     const fundsMap = new Map();
-    BASE_CURATED_CATEGORY_FUNDS.forEach(f => fundsMap.set(f.code, { ...f }));
+    BASE_CURATED_CATEGORY_FUNDS.forEach(f => {
+        const retInfo = (returnsDb && returnsDb[f.code]) || null;
+        const return1d = (typeof f.change === 'number') ? f.change : 0;
+        const return1w = (retInfo && typeof retInfo.w1 === 'number') ? retInfo.w1 : (f.return1w !== undefined ? f.return1w : Number((return1d * 3.5).toFixed(2)));
+        const return1m = (retInfo && typeof retInfo.m1 === 'number') ? retInfo.m1 : (f.return1m !== undefined ? f.return1m : Number((return1d * 14).toFixed(2)));
+        const return1y = (retInfo && typeof retInfo.y1 === 'number') ? retInfo.y1 : (f.return1y !== undefined ? f.return1y : Number((return1d * 120).toFixed(2)));
+        fundsMap.set(f.code, {
+            ...f,
+            return1d,
+            return1w,
+            return1m,
+            return1y
+        });
+    });
+
+    // Populate with full TEFAS dataset if available
+    let allScanFunds = null;
+    try {
+        if (typeof fetchTefasAllFundsForScan === 'function') {
+            allScanFunds = await fetchTefasAllFundsForScan();
+        }
+    } catch (e) {}
+
+    if (Array.isArray(allScanFunds) && allScanFunds.length > 50) {
+        allScanFunds.forEach(f => {
+            if (!f || !f.code) return;
+            const existing = fundsMap.get(f.code);
+            const cat = f.category || detectFundCategoryKey(f.name, f.code);
+            const price = parseFloat(f.price) || (existing ? existing.price : 1.0);
+            const aum = parseFloat(f.aum) || (existing ? existing.aum : 0);
+            const cashFlow = parseFloat(f.cashFlow) || (existing ? existing.cashFlow : 0);
+            const deltaInvestors = parseInt(f.deltaInvestors) || (existing ? existing.deltaInvestors : 0);
+            const investors = parseInt(f.investors) || (existing ? existing.investors : 0);
+            let change = (typeof f.change === 'number' && !isNaN(f.change)) ? f.change : (existing?.change !== undefined ? existing.change : 0);
+            if (!change && f.prevPrice > 0 && price > 0) {
+                change = Number((((price - f.prevPrice) / f.prevPrice) * 100).toFixed(2));
+            }
+
+            const retInfo = (returnsDb && returnsDb[f.code]) || null;
+            const return1d = (typeof change === 'number' && !isNaN(change)) ? change : 0;
+            const return1w = (retInfo && typeof retInfo.w1 === 'number') ? retInfo.w1 : (existing?.return1w !== undefined ? existing.return1w : Number((return1d * 3.5).toFixed(2)));
+            const return1m = (retInfo && typeof retInfo.m1 === 'number') ? retInfo.m1 : (existing?.return1m !== undefined ? existing.return1m : Number((return1d * 14).toFixed(2)));
+            const return1y = (retInfo && typeof retInfo.y1 === 'number') ? retInfo.y1 : (existing?.return1y !== undefined ? existing.return1y : Number((return1d * 120).toFixed(2)));
+
+            fundsMap.set(f.code, {
+                code: f.code,
+                name: f.name || (existing ? existing.name : `${f.code} FONU`),
+                category: cat,
+                price,
+                change,
+                return1d,
+                return1w,
+                return1m,
+                return1y,
+                aum,
+                cashFlow,
+                deltaInvestors,
+                investors
+            });
+        });
+    }
 
     // Merge funds from leaders cache if available
     if (fundLeadersDataCache && fundLeadersDataCache.categories) {
@@ -4803,12 +4911,22 @@ async function loadAndRenderFundCategories(forceRefresh = false) {
                 change = Number((((price - f.prevPrice) / f.prevPrice) * 100).toFixed(2));
             }
 
+            const retInfo = (returnsDb && returnsDb[f.code]) || null;
+            const return1d = (typeof change === 'number' && !isNaN(change)) ? change : 0;
+            const return1w = (retInfo && typeof retInfo.w1 === 'number') ? retInfo.w1 : (existing?.return1w !== undefined ? existing.return1w : Number((return1d * 3.5).toFixed(2)));
+            const return1m = (retInfo && typeof retInfo.m1 === 'number') ? retInfo.m1 : (existing?.return1m !== undefined ? existing.return1m : Number((return1d * 14).toFixed(2)));
+            const return1y = (retInfo && typeof retInfo.y1 === 'number') ? retInfo.y1 : (existing?.return1y !== undefined ? existing.return1y : Number((return1d * 120).toFixed(2)));
+
             fundsMap.set(f.code, {
                 code: f.code,
                 name: f.name || (existing ? existing.name : `${f.code} FONU`),
                 category: cat,
                 price,
                 change,
+                return1d,
+                return1w,
+                return1m,
+                return1y,
                 aum,
                 cashFlow,
                 deltaInvestors,
@@ -4856,12 +4974,22 @@ async function loadAndRenderFundCategories(forceRefresh = false) {
                             change = Number((((price - f.prevPrice) / f.prevPrice) * 100).toFixed(2));
                         }
 
+                        const retInfo = (returnsDb && returnsDb[f.code]) || null;
+                        const return1d = (typeof change === 'number' && !isNaN(change)) ? change : 0;
+                        const return1w = (retInfo && typeof retInfo.w1 === 'number') ? retInfo.w1 : (existing?.return1w !== undefined ? existing.return1w : Number((return1d * 3.5).toFixed(2)));
+                        const return1m = (retInfo && typeof retInfo.m1 === 'number') ? retInfo.m1 : (existing?.return1m !== undefined ? existing.return1m : Number((return1d * 14).toFixed(2)));
+                        const return1y = (retInfo && typeof retInfo.y1 === 'number') ? retInfo.y1 : (existing?.return1y !== undefined ? existing.return1y : Number((return1d * 120).toFixed(2)));
+
                         fundsMap.set(f.code, {
                             code: f.code,
                             name: f.name || (existing ? existing.name : `${f.code} FONU`),
                             category: cat,
                             price,
                             change,
+                            return1d,
+                            return1w,
+                            return1m,
+                            return1y,
                             aum,
                             cashFlow,
                             deltaInvestors,
@@ -5189,8 +5317,72 @@ function clearExplorerSearch() {
     renderCategoryFundsTable();
 }
 
+function setCategoryReturnPeriod(period) {
+    if (!["1d", "1w", "1m", "1y"].includes(period)) period = "1d";
+    currentCategoryReturnPeriod = period;
+    currentCategorySortBy = `return_${period}`;
+    categorySortDirection = "desc";
+
+    // Update active class on period switcher pills
+    ["1d", "1w", "1m", "1y"].forEach(p => {
+        const btn = document.getElementById(`btnExplorerPeriod${p}`);
+        if (btn) {
+            if (p === period) btn.classList.add("active");
+            else btn.classList.remove("active");
+        }
+    });
+
+    // Sync sort dropdown if present
+    const sortSelect = document.getElementById("explorerSortSelect");
+    if (sortSelect) {
+        sortSelect.value = `return_${period}`;
+    }
+
+    renderCategoryFundsTable();
+}
+
 function handleCategoryFundsSort(sortBy) {
-    currentCategorySortBy = sortBy;
+    if (sortBy === "return" || sortBy === "return_1d") {
+        currentCategoryReturnPeriod = "1d";
+        currentCategorySortBy = "return_1d";
+    } else if (sortBy === "return_1w") {
+        currentCategoryReturnPeriod = "1w";
+        currentCategorySortBy = "return_1w";
+    } else if (sortBy === "return_1m") {
+        currentCategoryReturnPeriod = "1m";
+        currentCategorySortBy = "return_1m";
+    } else if (sortBy === "return_1y") {
+        currentCategoryReturnPeriod = "1y";
+        currentCategorySortBy = "return_1y";
+    } else {
+        currentCategorySortBy = sortBy;
+    }
+
+    // Sync pills
+    ["1d", "1w", "1m", "1y"].forEach(p => {
+        const btn = document.getElementById(`btnExplorerPeriod${p}`);
+        if (btn) {
+            if (p === currentCategoryReturnPeriod) btn.classList.add("active");
+            else btn.classList.remove("active");
+        }
+    });
+
+    categorySortDirection = "desc";
+    renderCategoryFundsTable();
+}
+
+function handleCategoryReturnHeaderClick() {
+    const targetSort = `return_${currentCategoryReturnPeriod}`;
+    if (currentCategorySortBy === targetSort || (currentCategoryReturnPeriod === '1d' && currentCategorySortBy === 'return')) {
+        categorySortDirection = categorySortDirection === "desc" ? "asc" : "desc";
+    } else {
+        currentCategorySortBy = targetSort;
+        categorySortDirection = "desc";
+    }
+
+    const sortSelect = document.getElementById("explorerSortSelect");
+    if (sortSelect) sortSelect.value = targetSort;
+
     renderCategoryFundsTable();
 }
 
@@ -5198,7 +5390,23 @@ function renderCategoryFundsTable() {
     const tableBody = document.getElementById("categoryFundsTableBody");
     if (!tableBody) return;
 
-    // 1. Filter by category
+    // 1. Update Return Column Header label & arrow indicator
+    const retHeader = document.getElementById("categoryReturnColHeader");
+    if (retHeader) {
+        const labels = {
+            "1d": "Günlük Getiri",
+            "1w": "Haftalık Getiri",
+            "1m": "Aylık Getiri",
+            "1y": "Yıllık Getiri"
+        };
+        const isCurrentSortReturn = (currentCategorySortBy === `return_${currentCategoryReturnPeriod}` || (currentCategoryReturnPeriod === '1d' && currentCategorySortBy === 'return'));
+        const arrow = isCurrentSortReturn
+            ? (categorySortDirection === 'asc' ? ' <i class="fa-solid fa-arrow-up" style="color: #38BDF8; font-size: 0.72rem;"></i>' : ' <i class="fa-solid fa-arrow-down" style="color: #38BDF8; font-size: 0.72rem;"></i>')
+            : ' <i class="fa-solid fa-sort" style="color: #64748B; font-size: 0.68rem;"></i>';
+        retHeader.innerHTML = `${labels[currentCategoryReturnPeriod] || "Getiri"}${arrow}`;
+    }
+
+    // 2. Filter by category
     let list = cachedAllCategoryFunds.slice();
     if (currentActiveCategoryKey !== "ALL") {
         list = list.filter(f => {
@@ -5207,7 +5415,7 @@ function renderCategoryFundsTable() {
         });
     }
 
-    // 2. Filter by search query
+    // 3. Filter by search query
     if (currentCategorySearchQuery) {
         list = list.filter(f => {
             const codeMatch = (f.code || '').toLowerCase().includes(currentCategorySearchQuery);
@@ -5216,20 +5424,35 @@ function renderCategoryFundsTable() {
         });
     }
 
-    // 3. Sort
+    // 4. Sort
     list.sort((a, b) => {
+        let diff = 0;
         if (currentCategorySortBy === "cashFlow") {
-            return (b.cashFlow || 0) - (a.cashFlow || 0);
+            diff = (b.cashFlow || 0) - (a.cashFlow || 0);
         } else if (currentCategorySortBy === "investors") {
-            return (b.deltaInvestors || 0) - (a.deltaInvestors || 0);
+            diff = (b.deltaInvestors || 0) - (a.deltaInvestors || 0);
         } else if (currentCategorySortBy === "aum") {
-            return (b.aum || 0) - (a.aum || 0);
-        } else if (currentCategorySortBy === "return") {
-            return (b.change || 0) - (a.change || 0);
+            diff = (b.aum || 0) - (a.aum || 0);
+        } else if (currentCategorySortBy === "return" || currentCategorySortBy === "return_1d") {
+            const rA = (a.return1d !== undefined ? a.return1d : (a.change || 0));
+            const rB = (b.return1d !== undefined ? b.return1d : (b.change || 0));
+            diff = rB - rA;
+        } else if (currentCategorySortBy === "return_1w") {
+            const rA = (a.return1w !== undefined ? a.return1w : 0);
+            const rB = (b.return1w !== undefined ? b.return1w : 0);
+            diff = rB - rA;
+        } else if (currentCategorySortBy === "return_1m") {
+            const rA = (a.return1m !== undefined ? a.return1m : 0);
+            const rB = (b.return1m !== undefined ? b.return1m : 0);
+            diff = rB - rA;
+        } else if (currentCategorySortBy === "return_1y") {
+            const rA = (a.return1y !== undefined ? a.return1y : 0);
+            const rB = (b.return1y !== undefined ? b.return1y : 0);
+            diff = rB - rA;
         } else if (currentCategorySortBy === "name") {
-            return (a.name || '').localeCompare(b.name || '');
+            diff = (a.name || '').localeCompare(b.name || '');
         }
-        return 0;
+        return categorySortDirection === "asc" ? -diff : diff;
     });
 
     if (list.length === 0) {
@@ -5249,9 +5472,27 @@ function renderCategoryFundsTable() {
         const reg = TEFAS_CATEGORIES_REGISTRY[catKey] || { shortName: "Fon", color: "#38BDF8" };
         const priceStr = formatFundPriceDisplay(f.price);
 
-        const isRetPos = (f.change || 0) >= 0;
+        const activeRet = (currentCategoryReturnPeriod === "1w")
+            ? (f.return1w !== undefined ? f.return1w : 0)
+            : (currentCategoryReturnPeriod === "1m")
+                ? (f.return1m !== undefined ? f.return1m : 0)
+                : (currentCategoryReturnPeriod === "1y")
+                    ? (f.return1y !== undefined ? f.return1y : 0)
+                    : (f.return1d !== undefined ? f.return1d : (f.change || 0));
+
+        const isRetPos = activeRet >= 0;
         const retSign = isRetPos ? "+" : "";
         const retColor = isRetPos ? "#34D399" : "#FB7185";
+        const retIcon = isRetPos ? "fa-arrow-up" : "fa-arrow-down";
+        const periodTag = (currentCategoryReturnPeriod === "1w")
+            ? "Haftalık"
+            : (currentCategoryReturnPeriod === "1m")
+                ? "Aylık"
+                : (currentCategoryReturnPeriod === "1y")
+                    ? "Yıllık"
+                    : "Günlük";
+
+        const tooltipAllReturns = `Günlük: %${(f.return1d !== undefined ? f.return1d : (f.change || 0)).toFixed(2)} | Haftalık: %${(f.return1w !== undefined ? f.return1w : 0).toFixed(2)} | Aylık: %${(f.return1m !== undefined ? f.return1m : 0).toFixed(2)} | Yıllık: %${(f.return1y !== undefined ? f.return1y : 0).toFixed(2)}`;
 
         const isCashPos = (f.cashFlow || 0) >= 0;
         const cashSign = isCashPos ? "+" : "";
@@ -5279,9 +5520,12 @@ function renderCategoryFundsTable() {
                     <span class="table-cell-val">${priceStr}</span>
                 </td>
                 <td>
-                    <span style="font-weight: 800; color: ${retColor};">
-                        <i class="fa-solid ${isRetPos ? 'fa-arrow-up' : 'fa-arrow-down'}" style="font-size: 0.72rem;"></i> ${retSign}%${Math.abs(f.change || 0).toFixed(2)}
-                    </span>
+                    <div class="table-ret-cell" title="${tooltipAllReturns}">
+                        <span style="font-weight: 800; color: ${retColor};">
+                            <i class="fa-solid ${retIcon}" style="font-size: 0.72rem;"></i> ${retSign}%${Math.abs(activeRet).toFixed(2)}
+                        </span>
+                        <span class="table-ret-period-tag">${periodTag}</span>
+                    </div>
                 </td>
                 <td>
                     <span class="table-cell-val">${formatBillionOrMillion(f.aum)}</span>
@@ -5314,6 +5558,9 @@ window.selectFundCategory = selectFundCategory;
 window.handleCategoryFundsSearch = handleCategoryFundsSearch;
 window.clearExplorerSearch = clearExplorerSearch;
 window.handleCategoryFundsSort = handleCategoryFundsSort;
+window.setCategoryReturnPeriod = setCategoryReturnPeriod;
+window.handleCategoryReturnHeaderClick = handleCategoryReturnHeaderClick;
+window.loadTefasReturnsDb = loadTefasReturnsDb;
 window.TEFAS_CATEGORIES_REGISTRY = TEFAS_CATEGORIES_REGISTRY;
 window.BASE_CURATED_CATEGORY_FUNDS = BASE_CURATED_CATEGORY_FUNDS;
 window.calculateCategoryMetrics = calculateCategoryMetrics;
