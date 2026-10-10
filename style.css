@@ -9870,21 +9870,23 @@ body.theme-neo-brutalism .sort-option.active {
 
 /* ==========================================================================
    Bento Grid & Futuristic Cyber HUD Layout for Fund Analytics (.fund-layout-bento)
-   Sci-Fi / Quantum HUD FinTech Architecture - High-Contrast Cyber Command Center
+   UI UX Pro Max Design System: Quantum-FinTech Holographic Command Center
+   Typography: Space Grotesk (Hero & Numerals) + JetBrains Mono (Telemetry) + Plus Jakarta Sans
    ========================================================================== */
+
+/* Subview Background & Ambient Void Atmosphere */
 .fund-layout-bento #subviewFundAnalytics,
 #subviewFundAnalytics.fund-layout-bento {
     position: relative;
     background:
-        radial-gradient(circle at 10% 6%, rgba(0, 255, 255, 0.14) 0%, transparent 42%),
-        radial-gradient(circle at 90% 12%, rgba(168, 85, 247, 0.14) 0%, transparent 46%),
-        radial-gradient(circle at 50% 50%, rgba(16, 185, 129, 0.05) 0%, transparent 60%),
-        linear-gradient(rgba(0, 255, 255, 0.06) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(0, 255, 255, 0.06) 1px, transparent 1px),
-        #02050e;
-    background-size: 100% 100%, 100% 100%, 100% 100%, 32px 32px, 32px 32px, auto;
+        radial-gradient(ellipse 65% 45% at 15% 0%, rgba(6, 182, 212, 0.16) 0%, transparent 70%),
+        radial-gradient(ellipse 60% 45% at 85% 5%, rgba(139, 92, 246, 0.16) 0%, transparent 70%),
+        radial-gradient(ellipse 50% 40% at 50% 55%, rgba(16, 185, 129, 0.08) 0%, transparent 70%),
+        radial-gradient(circle, rgba(255, 255, 255, 0.07) 1px, transparent 1px),
+        #030712;
+    background-size: 100% 100%, 100% 100%, 100% 100%, 32px 32px, auto;
     transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-    padding-bottom: 28px;
+    padding-bottom: 32px;
     border-radius: 24px;
 }
 
@@ -9900,23 +9902,36 @@ body.theme-neo-brutalism .sort-option.active {
     align-items: center;
     justify-content: space-between;
     flex-wrap: wrap;
-    gap: 12px;
-    background: linear-gradient(90deg, rgba(8, 14, 28, 0.95) 0%, rgba(3, 18, 38, 0.98) 50%, rgba(8, 14, 28, 0.95) 100%) !important;
-    border: 1.5px solid rgba(0, 255, 255, 0.4) !important;
-    border-left: 4.5px solid #00FFFF !important;
-    border-right: 4.5px solid #00FF88 !important;
-    border-radius: 14px !important;
-    padding: 12px 20px !important;
-    margin-bottom: 20px !important;
-    box-shadow: 0 10px 32px -4px rgba(0, 0, 0, 0.8), 0 0 25px rgba(0, 255, 255, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.15) !important;
-    backdrop-filter: blur(28px) !important;
-    -webkit-backdrop-filter: blur(28px) !important;
-    animation: hudStripGlow 4s infinite alternate ease-in-out;
+    gap: 14px;
+    background: linear-gradient(90deg, rgba(8, 14, 30, 0.95) 0%, rgba(4, 18, 42, 0.98) 50%, rgba(8, 14, 30, 0.95) 100%) !important;
+    border: 1px solid rgba(0, 255, 255, 0.35) !important;
+    border-left: 5px solid #00FFFF !important;
+    border-right: 5px solid #00FF88 !important;
+    border-radius: 16px !important;
+    padding: 12px 24px !important;
+    margin-bottom: 22px !important;
+    box-shadow: 0 12px 36px -6px rgba(0, 0, 0, 0.85), 0 0 30px rgba(0, 255, 255, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.18) !important;
+    backdrop-filter: blur(28px) saturate(180%) !important;
+    -webkit-backdrop-filter: blur(28px) saturate(180%) !important;
+    position: relative;
+    overflow: hidden;
 }
 
-@keyframes hudStripGlow {
-    0% { border-color: rgba(0, 255, 255, 0.35); box-shadow: 0 10px 30px -4px rgba(0, 0, 0, 0.8), 0 0 18px rgba(0, 255, 255, 0.15); }
-    100% { border-color: rgba(0, 255, 255, 0.6); box-shadow: 0 12px 34px -4px rgba(0, 0, 0, 0.85), 0 0 32px rgba(0, 255, 255, 0.32); }
+.fund-layout-bento .fund-bento-hud-strip::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 60%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(0, 255, 255, 0.12), transparent);
+    animation: hudScanline 6s infinite linear;
+    pointer-events: none;
+}
+
+@keyframes hudScanline {
+    0% { left: -100%; }
+    100% { left: 200%; }
 }
 
 .fund-layout-bento .hud-strip-left {
@@ -9930,7 +9945,7 @@ body.theme-neo-brutalism .sort-option.active {
     height: 10px;
     background: #00FF88;
     border-radius: 50%;
-    box-shadow: 0 0 12px #00FF88;
+    box-shadow: 0 0 14px #00FF88;
     position: relative;
     display: inline-block;
     animation: hudPulse 2s infinite ease-in-out;
@@ -9938,32 +9953,33 @@ body.theme-neo-brutalism .sort-option.active {
 
 @keyframes hudPulse {
     0%, 100% { transform: scale(1); opacity: 1; box-shadow: 0 0 10px #00FF88; }
-    50% { transform: scale(1.45); opacity: 0.75; box-shadow: 0 0 20px #00FF88, 0 0 30px rgba(0, 255, 136, 0.5); }
+    50% { transform: scale(1.4); opacity: 0.7; box-shadow: 0 0 22px #00FF88, 0 0 32px rgba(0, 255, 136, 0.5); }
 }
 
 .fund-layout-bento .hud-status-badge {
-    font-family: var(--font-mono, 'JetBrains Mono', monospace);
-    font-size: 0.78rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem;
     font-weight: 800;
     color: #00FFFF;
-    letter-spacing: 1px;
+    letter-spacing: 1.2px;
     text-transform: uppercase;
-    text-shadow: 0 0 12px rgba(0, 255, 255, 0.6);
+    text-shadow: 0 0 14px rgba(0, 255, 255, 0.65);
 }
 
 .fund-layout-bento .hud-divider {
-    color: rgba(0, 255, 255, 0.4);
-    font-family: var(--font-mono);
+    color: rgba(0, 255, 255, 0.45);
+    font-family: 'JetBrains Mono', monospace;
     font-weight: 700;
     font-size: 0.85rem;
 }
 
 .fund-layout-bento .hud-node-label {
-    font-size: 0.76rem;
+    font-size: 0.78rem;
     color: #94A3B8;
     font-weight: 700;
-    letter-spacing: 0.6px;
+    letter-spacing: 0.8px;
     text-transform: uppercase;
+    font-family: 'Space Grotesk', sans-serif;
 }
 
 .fund-layout-bento .hud-strip-right {
@@ -9974,32 +9990,33 @@ body.theme-neo-brutalism .sort-option.active {
 }
 
 .fund-layout-bento .hud-chip {
-    font-family: var(--font-mono, monospace);
-    font-size: 0.7rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
     font-weight: 700;
     color: #CBD5E1;
     background: rgba(255, 255, 255, 0.05);
     border: 1px solid rgba(0, 255, 255, 0.2);
     border-radius: 8px;
-    padding: 4px 10px;
+    padding: 5px 12px;
     display: inline-flex;
     align-items: center;
-    gap: 5px;
+    gap: 6px;
+    backdrop-filter: blur(8px);
 }
 
 .fund-layout-bento .hud-chip-highlight {
-    font-family: var(--font-mono, monospace);
-    font-size: 0.7rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
     font-weight: 800;
     color: #00FF88;
     background: rgba(0, 255, 136, 0.14);
-    border: 1px solid rgba(0, 255, 136, 0.4);
+    border: 1px solid rgba(0, 255, 136, 0.45);
     border-radius: 8px;
-    padding: 4px 10px;
+    padding: 5px 12px;
     display: inline-flex;
     align-items: center;
-    gap: 5px;
-    box-shadow: 0 0 14px rgba(0, 255, 136, 0.25);
+    gap: 6px;
+    box-shadow: 0 0 16px rgba(0, 255, 136, 0.3);
 }
 
 /* Base Bento Futuristic Modular Surfaces */
@@ -10007,18 +10024,19 @@ body.theme-neo-brutalism .sort-option.active {
 .fund-layout-bento .fund-hero-card,
 .fund-layout-bento .fund-search-card,
 .fund-layout-bento .fund-kpi-card {
-    background: linear-gradient(150deg, rgba(8, 15, 30, 0.94) 0%, rgba(3, 8, 18, 0.98) 100%) !important;
-    border: 1.5px solid rgba(0, 255, 255, 0.2) !important;
-    border-radius: 20px !important;
-    box-shadow: 0 16px 40px -10px rgba(0, 0, 0, 0.75), 0 0 20px rgba(0, 255, 255, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
-    backdrop-filter: blur(28px) !important;
-    -webkit-backdrop-filter: blur(28px) !important;
+    background: linear-gradient(145deg, rgba(13, 22, 44, 0.85) 0%, rgba(6, 11, 26, 0.94) 100%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.09) !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.22) !important;
+    border-radius: 22px !important;
+    box-shadow: 0 20px 48px -12px rgba(0, 0, 0, 0.85), 0 0 25px rgba(0, 255, 255, 0.04), inset 0 1px 0 rgba(255, 255, 255, 0.15) !important;
+    backdrop-filter: blur(28px) saturate(180%) !important;
+    -webkit-backdrop-filter: blur(28px) saturate(180%) !important;
     position: relative !important;
     overflow: hidden !important;
     transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1) !important;
 }
 
-/* Prominent Glowing Top-Right Corner Tech Bracket */
+/* Subtle Laser Crosshairs on Bento Cards */
 .fund-layout-bento .analytics-card::after,
 .fund-layout-bento .fund-hero-card::after,
 .fund-layout-bento .fund-kpi-card::after {
@@ -10028,16 +10046,15 @@ body.theme-neo-brutalism .sort-option.active {
     right: 0;
     width: 14px;
     height: 14px;
-    border-top: 3px solid #00FFFF;
-    border-right: 3px solid #00FFFF;
-    border-top-right-radius: 18px;
+    border-top: 2.5px solid #00FFFF;
+    border-right: 2.5px solid #00FFFF;
+    border-top-right-radius: 20px;
     pointer-events: none;
     box-shadow: 0 0 10px #00FFFF;
     transition: all 0.25s ease;
     z-index: 2;
 }
 
-/* Prominent Bottom-Left Corner Tech Bracket */
 .fund-layout-bento .analytics-card::before,
 .fund-layout-bento .fund-hero-card::before,
 .fund-layout-bento .fund-kpi-card::before {
@@ -10047,10 +10064,11 @@ body.theme-neo-brutalism .sort-option.active {
     left: 0;
     width: 14px;
     height: 14px;
-    border-bottom: 3px solid rgba(0, 255, 255, 0.6);
-    border-left: 3px solid rgba(0, 255, 255, 0.6);
-    border-bottom-left-radius: 18px;
+    border-bottom: 2.5px solid rgba(0, 255, 136, 0.7);
+    border-left: 2.5px solid rgba(0, 255, 136, 0.7);
+    border-bottom-left-radius: 20px;
     pointer-events: none;
+    box-shadow: 0 0 10px rgba(0, 255, 136, 0.4);
     transition: all 0.25s ease;
     z-index: 2;
 }
@@ -10060,27 +10078,27 @@ body.theme-neo-brutalism .sort-option.active {
 .fund-layout-bento .fund-kpi-card:hover,
 .fund-layout-bento .fund-hero-card:hover,
 .fund-layout-bento .fund-search-card:hover {
-    transform: translateY(-5px) !important;
-    border-color: rgba(0, 255, 255, 0.55) !important;
-    box-shadow: 0 24px 50px -10px rgba(0, 0, 0, 0.85), 0 0 35px rgba(0, 255, 255, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
+    transform: translateY(-4px) scale(1.006) !important;
+    border-color: rgba(0, 255, 255, 0.45) !important;
+    box-shadow: 0 28px 56px -12px rgba(0, 0, 0, 0.9), 0 0 35px rgba(0, 255, 255, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.25) !important;
 }
 
 .fund-layout-bento .analytics-card:hover::after,
 .fund-layout-bento .fund-hero-card:hover::after,
 .fund-layout-bento .fund-kpi-card:hover::after {
-    width: 20px;
-    height: 20px;
+    width: 22px;
+    height: 22px;
     border-color: #00FFFF;
-    box-shadow: 0 0 16px #00FFFF;
+    box-shadow: 0 0 18px #00FFFF;
 }
 
 .fund-layout-bento .analytics-card:hover::before,
 .fund-layout-bento .fund-hero-card:hover::before,
 .fund-layout-bento .fund-kpi-card:hover::before {
-    width: 20px;
-    height: 20px;
+    width: 22px;
+    height: 22px;
     border-color: #00FF88;
-    box-shadow: 0 0 16px #00FF88;
+    box-shadow: 0 0 18px #00FF88;
 }
 
 .fund-layout-bento .analytics-card > *,
@@ -10093,10 +10111,10 @@ body.theme-neo-brutalism .sort-option.active {
 
 /* Bento Search Card - Modern HUD Search Console */
 .fund-layout-bento .fund-search-card {
-    padding: 22px 26px !important;
+    padding: 22px 28px !important;
     margin-bottom: 22px !important;
-    border-top: 4px solid #6366F1 !important;
-    box-shadow: 0 16px 40px -10px rgba(0, 0, 0, 0.75), 0 0 26px rgba(99, 102, 241, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
+    border-top: 3.5px solid #6366F1 !important;
+    box-shadow: 0 20px 48px -12px rgba(0, 0, 0, 0.8), 0 0 30px rgba(99, 102, 241, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.15) !important;
 }
 
 .fund-layout-bento .fund-search-header {
@@ -10107,8 +10125,8 @@ body.theme-neo-brutalism .sort-option.active {
 }
 
 .fund-layout-bento .fund-search-title {
-    font-family: 'Plus Jakarta Sans', -apple-system, sans-serif !important;
-    font-size: 1.15rem !important;
+    font-family: 'Space Grotesk', sans-serif !important;
+    font-size: 1.25rem !important;
     font-weight: 800 !important;
     letter-spacing: -0.3px !important;
     color: #FFFFFF !important;
@@ -10119,7 +10137,7 @@ body.theme-neo-brutalism .sort-option.active {
 
 .fund-layout-bento .fund-search-desc {
     color: #94A3B8 !important;
-    font-size: 0.82rem !important;
+    font-size: 0.84rem !important;
     margin-bottom: 14px !important;
     line-height: 1.5;
 }
@@ -10130,24 +10148,25 @@ body.theme-neo-brutalism .sort-option.active {
 }
 
 .fund-layout-bento .fund-input-box {
-    background: rgba(3, 7, 18, 0.9) !important;
+    background: rgba(3, 7, 18, 0.92) !important;
     border: 1px solid rgba(0, 255, 255, 0.3) !important;
     border-radius: 14px !important;
-    padding: 6px 16px !important;
+    padding: 6px 18px !important;
     height: 48px;
     box-sizing: border-box;
     transition: all 0.25s ease;
 }
 
 .fund-layout-bento .fund-input-box input {
-    font-size: 0.92rem !important;
+    font-size: 0.94rem !important;
     font-weight: 600 !important;
     color: #FFFFFF !important;
+    font-family: 'Space Grotesk', sans-serif !important;
 }
 
 .fund-layout-bento .fund-input-box:focus-within {
     border-color: #00FFFF !important;
-    box-shadow: 0 0 0 3px rgba(0, 255, 255, 0.35), 0 0 26px rgba(0, 255, 255, 0.35) !important;
+    box-shadow: 0 0 0 3px rgba(0, 255, 255, 0.35), 0 0 28px rgba(0, 255, 255, 0.35) !important;
     background: rgba(3, 7, 18, 0.98) !important;
 }
 
@@ -10177,20 +10196,21 @@ body.theme-neo-brutalism .sort-option.active {
 
 .fund-layout-bento .fund-tag-pill {
     background: rgba(255, 255, 255, 0.05) !important;
-    border: 1px solid rgba(0, 255, 255, 0.15) !important;
+    border: 1px solid rgba(0, 255, 255, 0.18) !important;
     border-radius: 10px !important;
     padding: 5px 12px !important;
     font-size: 0.78rem !important;
     color: #CBD5E1 !important;
     transition: all 0.2s ease !important;
+    font-family: 'JetBrains Mono', monospace !important;
 }
 
 .fund-layout-bento .fund-tag-pill:hover,
 .fund-layout-bento .fund-tag-pill.active {
-    background: rgba(0, 255, 255, 0.2) !important;
+    background: rgba(0, 255, 255, 0.22) !important;
     border-color: #00FFFF !important;
     color: #FFFFFF !important;
-    box-shadow: 0 4px 16px rgba(0, 255, 255, 0.4) !important;
+    box-shadow: 0 4px 18px rgba(0, 255, 255, 0.45) !important;
     transform: translateY(-1px);
 }
 
@@ -10212,87 +10232,97 @@ body.theme-neo-brutalism .sort-option.active {
 .fund-layout-bento .fund-hero-card {
     grid-column: 1 / -1 !important;
     order: 1 !important;
-    padding: 22px 26px !important;
+    padding: 24px 28px !important;
     margin-bottom: 0 !important;
-    border-top: 4px solid #00FFFF !important;
-    box-shadow: 0 16px 40px -10px rgba(0, 0, 0, 0.75), 0 0 28px rgba(0, 255, 255, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.15) !important;
+    border-top: 3.5px solid #00FFFF !important;
+    box-shadow: 0 20px 48px -12px rgba(0, 0, 0, 0.85), 0 0 32px rgba(0, 255, 255, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.18) !important;
 }
 
 .fund-layout-bento .fund-symbol-badge {
-    background: linear-gradient(135deg, #0284C7 0%, #0369A1 100%) !important;
-    border: 1.5px solid #00FFFF !important;
+    background: linear-gradient(135deg, #0284C7 0%, #2563EB 50%, #4F46E5 100%) !important;
+    border: 2px solid #00FFFF !important;
     color: #FFFFFF !important;
-    border-radius: 16px !important;
-    box-shadow: 0 6px 20px rgba(2, 132, 199, 0.45), 0 0 20px rgba(0, 255, 255, 0.45) !important;
-    font-size: 1.3rem !important;
-    font-weight: 800 !important;
-    padding: 10px 20px !important;
-    letter-spacing: 0.6px;
-    font-family: var(--font-mono) !important;
+    border-radius: 18px !important;
+    box-shadow: 0 0 28px rgba(0, 255, 255, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.4) !important;
+    font-size: 1.45rem !important;
+    font-weight: 900 !important;
+    padding: 12px 24px !important;
+    letter-spacing: 1px !important;
+    font-family: 'Space Grotesk', 'JetBrains Mono', monospace !important;
 }
 
 .fund-layout-bento .fund-hero-name {
-    font-family: 'Plus Jakarta Sans', -apple-system, sans-serif !important;
-    font-size: 1.25rem !important;
+    font-family: 'Space Grotesk', -apple-system, sans-serif !important;
+    font-size: 1.55rem !important;
     font-weight: 800 !important;
     color: #FFFFFF !important;
-    letter-spacing: -0.02em !important;
+    letter-spacing: -0.03em !important;
     line-height: 1.35;
+    background: linear-gradient(180deg, #FFFFFF 20%, #E2E8F0 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 2px 20px rgba(255, 255, 255, 0.15);
 }
 
 .fund-layout-bento .fund-meta-pill {
     background: rgba(255, 255, 255, 0.06) !important;
     border: 1px solid rgba(0, 255, 255, 0.25) !important;
-    border-radius: 8px !important;
-    font-size: 0.74rem !important;
-    font-weight: 600 !important;
+    border-radius: 10px !important;
+    font-size: 0.76rem !important;
+    font-weight: 700 !important;
+    padding: 5px 12px !important;
+    font-family: 'Space Grotesk', sans-serif !important;
 }
 
 .fund-layout-bento .fund-period-pills {
     background: rgba(3, 7, 18, 0.9) !important;
-    border: 1px solid rgba(0, 255, 255, 0.25) !important;
+    border: 1px solid rgba(0, 255, 255, 0.3) !important;
     border-radius: 9999px !important;
     padding: 4px !important;
+    box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.6);
 }
 
 .fund-layout-bento .period-btn {
     border-radius: 9999px !important;
-    font-size: 0.76rem !important;
+    font-size: 0.78rem !important;
     font-weight: 700 !important;
-    padding: 6px 14px !important;
+    padding: 7px 16px !important;
     color: #94A3B8 !important;
-    transition: all 0.2s ease !important;
+    transition: all 0.22s ease !important;
+    font-family: 'JetBrains Mono', monospace !important;
 }
 
 .fund-layout-bento .period-btn.active {
-    background: linear-gradient(135deg, #0284C7 0%, #0369A1 100%) !important;
+    background: linear-gradient(135deg, #06B6D4 0%, #3B82F6 100%) !important;
     color: #FFFFFF !important;
     border: 1px solid #00FFFF !important;
-    box-shadow: 0 0 16px rgba(0, 255, 255, 0.65) !important;
+    box-shadow: 0 0 18px rgba(6, 182, 212, 0.65) !important;
+    transform: scale(1.04);
 }
 
 .fund-layout-bento .btn-quick-add-fund {
-    background: linear-gradient(135deg, rgba(16, 185, 129, 0.2) 0%, rgba(5, 150, 105, 0.25) 100%) !important;
-    border: 1px solid rgba(0, 255, 136, 0.5) !important;
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.25) 0%, rgba(5, 150, 105, 0.35) 100%) !important;
+    border: 1.5px solid rgba(0, 255, 136, 0.55) !important;
     color: #6EE7B7 !important;
     border-radius: 9999px !important;
-    padding: 8px 18px !important;
-    font-size: 0.82rem !important;
-    font-weight: 700 !important;
-    box-shadow: 0 4px 16px rgba(0, 255, 136, 0.25) !important;
+    padding: 9px 20px !important;
+    font-size: 0.84rem !important;
+    font-weight: 800 !important;
+    box-shadow: 0 4px 18px rgba(0, 255, 136, 0.3) !important;
     transition: all 0.25s ease !important;
+    font-family: 'Space Grotesk', sans-serif !important;
 }
 
 .fund-layout-bento .btn-quick-add-fund:hover {
     background: #10B981 !important;
     color: #022C22 !important;
-    box-shadow: 0 6px 24px rgba(0, 255, 136, 0.6) !important;
+    box-shadow: 0 6px 26px rgba(0, 255, 136, 0.7) !important;
     transform: translateY(-2px);
 }
 
 /* ==========================================================================
    Bento 6 KPI Modular Grid - Asymmetric High-Impact FinTech Architecture
-   Row 1: [Hero Fiyat Vitrini (Span 2)] [Net Nakit Akışı (Span 2)]
+   Row 1: [Hero Fiyat Vitrini (Span 2)] [Net Nakit Akışı Turbine (Span 2)]
    Row 2: [AUM (Span 1)] [Yatırımcı (Span 1)] [Kişi Başı (Span 1)] [Pay (Span 1)]
    ========================================================================== */
 .fund-layout-bento .fund-kpi-grid {
@@ -10304,14 +10334,13 @@ body.theme-neo-brutalism .sort-option.active {
     margin-bottom: 0 !important;
 }
 
-/* Bento Base Card Settings */
 .fund-layout-bento .fund-kpi-card {
-    border-radius: 20px !important;
-    padding: 22px 24px !important;
+    border-radius: 22px !important;
+    padding: 24px 26px !important;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    min-height: 130px;
+    min-height: 135px;
     box-sizing: border-box;
 }
 
@@ -10323,20 +10352,21 @@ body.theme-neo-brutalism .sort-option.active {
 }
 
 .fund-layout-bento .fund-kpi-card .kpi-title {
-    font-size: 0.74rem !important;
-    font-weight: 700 !important;
+    font-size: 0.76rem !important;
+    font-weight: 800 !important;
     color: #94A3B8 !important;
     text-transform: uppercase !important;
-    letter-spacing: 0.6px !important;
+    letter-spacing: 0.8px !important;
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 8px;
+    font-family: 'Space Grotesk', sans-serif !important;
 }
 
 .fund-layout-bento .fund-kpi-card .kpi-main-val {
-    font-family: var(--font-mono) !important;
-    font-weight: 800 !important;
-    letter-spacing: -0.02em !important;
+    font-family: 'Space Grotesk', monospace !important;
+    font-weight: 900 !important;
+    letter-spacing: -0.03em !important;
     line-height: 1.15;
     margin: 6px 0 10px 0;
 }
@@ -10345,181 +10375,194 @@ body.theme-neo-brutalism .sort-option.active {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-size: 0.74rem;
+    font-size: 0.76rem;
     color: #8A92A6;
+    font-family: 'JetBrains Mono', monospace;
 }
 
 .fund-layout-bento .fund-kpi-card .kpi-badge {
     border-radius: 9999px !important;
-    font-size: 0.64rem !important;
+    font-size: 0.66rem !important;
     font-weight: 800 !important;
-    letter-spacing: 0.4px !important;
-    padding: 3px 8px !important;
+    letter-spacing: 0.5px !important;
+    padding: 4px 10px !important;
     background: rgba(255, 255, 255, 0.08) !important;
-    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    border: 1px solid rgba(255, 255, 255, 0.14) !important;
     color: #CBD5E1 !important;
     text-transform: uppercase;
+    font-family: 'JetBrains Mono', monospace !important;
 }
 
 .fund-layout-bento .fund-kpi-card .kpi-pct-badge {
-    border-radius: 8px !important;
-    font-size: 0.78rem !important;
+    border-radius: 10px !important;
+    font-size: 0.82rem !important;
     font-weight: 800 !important;
-    padding: 3px 9px !important;
+    padding: 4px 10px !important;
     letter-spacing: 0.2px;
+    font-family: 'JetBrains Mono', monospace !important;
 }
 
 .fund-layout-bento .fund-kpi-card .kpi-pct-badge.pos,
 .fund-layout-bento .fund-kpi-card .kpi-pct-badge.green {
-    background: rgba(16, 185, 129, 0.18) !important;
+    background: rgba(16, 185, 129, 0.2) !important;
     color: #34D399 !important;
-    border: 1px solid rgba(16, 185, 129, 0.35) !important;
-    box-shadow: 0 0 12px rgba(16, 185, 129, 0.25) !important;
+    border: 1px solid rgba(16, 185, 129, 0.45) !important;
+    box-shadow: 0 0 16px rgba(16, 185, 129, 0.3) !important;
 }
 
 .fund-layout-bento .fund-kpi-card .kpi-pct-badge.neg,
 .fund-layout-bento .fund-kpi-card .kpi-pct-badge.red {
-    background: rgba(239, 68, 68, 0.18) !important;
+    background: rgba(239, 68, 68, 0.2) !important;
     color: #F87171 !important;
-    border: 1px solid rgba(239, 68, 68, 0.35) !important;
-    box-shadow: 0 0 12px rgba(239, 68, 68, 0.25) !important;
+    border: 1px solid rgba(239, 68, 68, 0.45) !important;
+    box-shadow: 0 0 16px rgba(239, 68, 68, 0.3) !important;
 }
-
-/* -------------------------------------------------------------
-   BENTO INDIVIDUAL TILE ARCHITECTURE (4-Column Bento System)
-   ------------------------------------------------------------- */
 
 /* TILE 1: Son Fon Fiyatı & Getiri (Top Left 2-Column Hero Bento Module) */
 .fund-layout-bento .fund-kpi-card:nth-child(1) {
     order: 1;
     grid-column: span 2 !important;
-    min-height: 155px !important;
-    background: linear-gradient(145deg, rgba(14, 23, 42, 0.96) 0%, rgba(8, 30, 58, 0.94) 100%) !important;
-    border: 1.5px solid rgba(0, 255, 255, 0.4) !important;
+    min-height: 165px !important;
+    background:
+        radial-gradient(circle at 85% 20%, rgba(6, 182, 212, 0.18) 0%, transparent 60%),
+        linear-gradient(145deg, rgba(14, 23, 44, 0.96) 0%, rgba(8, 30, 58, 0.94) 100%) !important;
+    border: 1.5px solid rgba(0, 255, 255, 0.45) !important;
     border-top: 4px solid #00FFFF !important;
-    box-shadow: 0 16px 40px -10px rgba(0, 0, 0, 0.75), 0 0 30px rgba(0, 255, 255, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.15) !important;
+    box-shadow: 0 20px 50px -10px rgba(0, 0, 0, 0.85), 0 0 35px rgba(0, 255, 255, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
 }
 
 .fund-layout-bento .fund-kpi-card:nth-child(1) .kpi-main-val {
-    font-size: 2.35rem !important;
-    color: #FFFFFF !important;
-    text-shadow: 0 0 25px rgba(0, 255, 255, 0.6) !important;
+    font-size: 3.2rem !important;
+    font-weight: 900 !important;
+    background: linear-gradient(180deg, #FFFFFF 30%, #38BDF8 100%) !important;
+    -webkit-background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+    filter: drop-shadow(0 0 25px rgba(56, 189, 248, 0.5));
 }
 
 .fund-layout-bento .fund-kpi-card:nth-child(1) .kpi-pct-badge {
-    font-size: 0.88rem !important;
-    padding: 4px 12px !important;
-    border-radius: 9999px !important;
+    font-size: 1.12rem !important;
+    padding: 6px 16px !important;
+    border-radius: 12px !important;
 }
 
-/* TILE 3: Net Nakit Akışı (Top Right 2-Column Wide Bento Module) */
+/* TILE 3: Net Nakit Akışı (Top Right 2-Column Wide Turbine Module) */
 .fund-layout-bento .fund-kpi-card:nth-child(3) {
     order: 2;
     grid-column: span 2 !important;
-    min-height: 155px !important;
-    background: linear-gradient(145deg, rgba(14, 23, 42, 0.96) 0%, rgba(6, 40, 32, 0.94) 100%) !important;
-    border: 1.5px solid rgba(0, 255, 136, 0.4) !important;
+    min-height: 165px !important;
+    background:
+        radial-gradient(circle at 85% 20%, rgba(16, 185, 129, 0.18) 0%, transparent 60%),
+        linear-gradient(145deg, rgba(14, 23, 44, 0.96) 0%, rgba(6, 40, 32, 0.94) 100%) !important;
+    border: 1.5px solid rgba(0, 255, 136, 0.45) !important;
     border-top: 4px solid #00FF88 !important;
-    box-shadow: 0 16px 40px -10px rgba(0, 0, 0, 0.75), 0 0 30px rgba(0, 255, 136, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.15) !important;
+    box-shadow: 0 20px 50px -10px rgba(0, 0, 0, 0.85), 0 0 35px rgba(0, 255, 136, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
 }
 
 .fund-layout-bento .fund-kpi-card:nth-child(3) .kpi-main-val {
-    font-size: 2.15rem !important;
+    font-size: 2.75rem !important;
+    font-weight: 900 !important;
     color: #FFFFFF !important;
-    text-shadow: 0 0 25px rgba(0, 255, 136, 0.6) !important;
+    text-shadow: 0 0 28px rgba(0, 255, 136, 0.6) !important;
 }
 
 .fund-layout-bento .fund-kpi-card:nth-child(3) .kpi-badge {
-    background: rgba(16, 185, 129, 0.15) !important;
-    border-color: rgba(16, 185, 129, 0.35) !important;
+    background: rgba(16, 185, 129, 0.2) !important;
+    border-color: rgba(16, 185, 129, 0.45) !important;
     color: #34D399 !important;
 }
 
-/* TILE 5: Fon Portföy Büyüklüğü / AUM (Bottom Row 1-Column Bento Tile) */
+.fund-layout-bento .fund-kpi-card:nth-child(3) .kpi-pct-badge {
+    font-size: 1.05rem !important;
+    padding: 6px 14px !important;
+    border-radius: 12px !important;
+}
+
+/* TILE 5: Fon Portföy Büyüklüğü / AUM */
 .fund-layout-bento .fund-kpi-card:nth-child(5) {
     order: 3;
     grid-column: span 1 !important;
     background: linear-gradient(160deg, rgba(17, 24, 39, 0.94) 0%, rgba(14, 19, 32, 0.98) 100%) !important;
-    border: 1.5px solid rgba(245, 158, 11, 0.35) !important;
+    border: 1.5px solid rgba(245, 158, 11, 0.4) !important;
     border-top: 3.5px solid #F59E0B !important;
-    box-shadow: 0 12px 30px -8px rgba(0, 0, 0, 0.6), 0 0 20px rgba(245, 158, 11, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
+    box-shadow: 0 14px 34px -8px rgba(0, 0, 0, 0.65), 0 0 24px rgba(245, 158, 11, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
 }
 
 .fund-layout-bento .fund-kpi-card:nth-child(5) .kpi-main-val {
-    font-size: 1.5rem !important;
+    font-size: 1.7rem !important;
     color: #FDE68A !important;
-    text-shadow: 0 0 18px rgba(245, 158, 11, 0.4) !important;
+    text-shadow: 0 0 20px rgba(245, 158, 11, 0.45) !important;
 }
 
 .fund-layout-bento .fund-kpi-card:nth-child(5) .kpi-badge {
-    background: rgba(245, 158, 11, 0.15) !important;
-    border-color: rgba(245, 158, 11, 0.35) !important;
+    background: rgba(245, 158, 11, 0.18) !important;
+    border-color: rgba(245, 158, 11, 0.4) !important;
     color: #FBBF24 !important;
 }
 
-/* TILE 2: Yatırımcı Sayısı (Bottom Row 1-Column Bento Tile) */
+/* TILE 2: Yatırımcı Sayısı */
 .fund-layout-bento .fund-kpi-card:nth-child(2) {
     order: 4;
     grid-column: span 1 !important;
     background: linear-gradient(160deg, rgba(17, 24, 39, 0.94) 0%, rgba(14, 19, 32, 0.98) 100%) !important;
-    border: 1.5px solid rgba(192, 132, 252, 0.35) !important;
+    border: 1.5px solid rgba(192, 132, 252, 0.4) !important;
     border-top: 3.5px solid #C084FC !important;
-    box-shadow: 0 12px 30px -8px rgba(0, 0, 0, 0.6), 0 0 20px rgba(192, 132, 252, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
+    box-shadow: 0 14px 34px -8px rgba(0, 0, 0, 0.65), 0 0 24px rgba(192, 132, 252, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
 }
 
 .fund-layout-bento .fund-kpi-card:nth-child(2) .kpi-main-val {
-    font-size: 1.5rem !important;
+    font-size: 1.7rem !important;
     color: #E9D5FF !important;
-    text-shadow: 0 0 18px rgba(192, 132, 252, 0.4) !important;
+    text-shadow: 0 0 20px rgba(192, 132, 252, 0.45) !important;
 }
 
 .fund-layout-bento .fund-kpi-card:nth-child(2) .kpi-badge {
-    background: rgba(192, 132, 252, 0.15) !important;
-    border-color: rgba(192, 132, 252, 0.35) !important;
+    background: rgba(192, 132, 252, 0.18) !important;
+    border-color: rgba(192, 132, 252, 0.4) !important;
     color: #D8B4FE !important;
 }
 
-/* TILE 4: Kişi Başı Ortalama Akış (Bottom Row 1-Column Bento Tile) */
+/* TILE 4: Kişi Başı Ortalama Akış */
 .fund-layout-bento .fund-kpi-card:nth-child(4) {
     order: 5;
     grid-column: span 1 !important;
     background: linear-gradient(160deg, rgba(17, 24, 39, 0.94) 0%, rgba(14, 19, 32, 0.98) 100%) !important;
-    border: 1.5px solid rgba(244, 63, 94, 0.35) !important;
+    border: 1.5px solid rgba(244, 63, 94, 0.4) !important;
     border-top: 3.5px solid #F43F5E !important;
-    box-shadow: 0 12px 30px -8px rgba(0, 0, 0, 0.6), 0 0 20px rgba(244, 63, 94, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
+    box-shadow: 0 14px 34px -8px rgba(0, 0, 0, 0.65), 0 0 24px rgba(244, 63, 94, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
 }
 
 .fund-layout-bento .fund-kpi-card:nth-child(4) .kpi-main-val {
-    font-size: 1.5rem !important;
+    font-size: 1.7rem !important;
     color: #FECDD3 !important;
-    text-shadow: 0 0 18px rgba(244, 63, 94, 0.4) !important;
+    text-shadow: 0 0 20px rgba(244, 63, 94, 0.45) !important;
 }
 
 .fund-layout-bento .fund-kpi-card:nth-child(4) .kpi-badge {
-    background: rgba(244, 63, 94, 0.15) !important;
-    border-color: rgba(244, 63, 94, 0.35) !important;
+    background: rgba(244, 63, 94, 0.18) !important;
+    border-color: rgba(244, 63, 94, 0.4) !important;
     color: #FB7185 !important;
 }
 
-/* TILE 6: Tedavüldeki Pay (Bottom Row 1-Column Bento Tile) */
+/* TILE 6: Tedavüldeki Pay */
 .fund-layout-bento .fund-kpi-card:nth-child(6) {
     order: 6;
     grid-column: span 1 !important;
     background: linear-gradient(160deg, rgba(17, 24, 39, 0.94) 0%, rgba(14, 19, 32, 0.98) 100%) !important;
-    border: 1.5px solid rgba(129, 140, 248, 0.35) !important;
+    border: 1.5px solid rgba(129, 140, 248, 0.4) !important;
     border-top: 3.5px solid #818CF8 !important;
-    box-shadow: 0 12px 30px -8px rgba(0, 0, 0, 0.6), 0 0 20px rgba(129, 140, 248, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
+    box-shadow: 0 14px 34px -8px rgba(0, 0, 0, 0.65), 0 0 24px rgba(129, 140, 248, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
 }
 
 .fund-layout-bento .fund-kpi-card:nth-child(6) .kpi-main-val {
-    font-size: 1.5rem !important;
+    font-size: 1.7rem !important;
     color: #E0E7FF !important;
-    text-shadow: 0 0 18px rgba(129, 140, 248, 0.4) !important;
+    text-shadow: 0 0 20px rgba(129, 140, 248, 0.45) !important;
 }
 
 .fund-layout-bento .fund-kpi-card:nth-child(6) .kpi-badge {
-    background: rgba(99, 102, 241, 0.15) !important;
-    border-color: rgba(99, 102, 241, 0.35) !important;
+    background: rgba(99, 102, 241, 0.18) !important;
+    border-color: rgba(99, 102, 241, 0.4) !important;
     color: #A5B4FC !important;
 }
 
@@ -10542,55 +10585,64 @@ body.theme-neo-brutalism .sort-option.active {
     justify-content: space-between !important;
     position: relative !important;
     overflow: hidden !important;
-    padding: 22px 24px !important;
-    border-radius: 20px !important;
+    padding: 24px 26px !important;
+    border-radius: 22px !important;
 }
 
 /* Küp 1: Yatırımcı Sayısı Trendi */
 .fund-layout-bento .fund-four-months-card:nth-child(1) {
+    background:
+        radial-gradient(circle at 85% 15%, rgba(192, 132, 252, 0.16) 0%, transparent 60%),
+        linear-gradient(145deg, rgba(13, 22, 44, 0.85) 0%, rgba(6, 11, 26, 0.94) 100%) !important;
     border: 1.5px solid rgba(192, 132, 252, 0.45) !important;
     border-top: 4px solid #C084FC !important;
-    box-shadow: 0 18px 42px -10px rgba(0, 0, 0, 0.75), 0 0 30px rgba(192, 132, 252, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
+    box-shadow: 0 20px 48px -10px rgba(0, 0, 0, 0.8), 0 0 35px rgba(192, 132, 252, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.15) !important;
 }
 
 .fund-layout-bento .fund-four-months-card:nth-child(1):hover {
     border-color: #C084FC !important;
-    box-shadow: 0 24px 50px -10px rgba(0, 0, 0, 0.8), 0 0 40px rgba(192, 132, 252, 0.45) !important;
-    transform: translateY(-5px) !important;
+    box-shadow: 0 26px 56px -10px rgba(0, 0, 0, 0.85), 0 0 45px rgba(192, 132, 252, 0.45) !important;
+    transform: translateY(-5px) scale(1.01) !important;
 }
 
 /* Küp 2: Para Giriş / Çıkış Akışı */
 .fund-layout-bento .fund-four-months-card:nth-child(2) {
+    background:
+        radial-gradient(circle at 85% 15%, rgba(0, 255, 136, 0.16) 0%, transparent 60%),
+        linear-gradient(145deg, rgba(13, 22, 44, 0.85) 0%, rgba(6, 11, 26, 0.94) 100%) !important;
     border: 1.5px solid rgba(0, 255, 136, 0.45) !important;
     border-top: 4px solid #00FF88 !important;
-    box-shadow: 0 18px 42px -10px rgba(0, 0, 0, 0.75), 0 0 30px rgba(0, 255, 136, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
+    box-shadow: 0 20px 48px -10px rgba(0, 0, 0, 0.8), 0 0 35px rgba(0, 255, 136, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.15) !important;
 }
 
 .fund-layout-bento .fund-four-months-card:nth-child(2):hover {
     border-color: #00FF88 !important;
-    box-shadow: 0 24px 50px -10px rgba(0, 0, 0, 0.8), 0 0 40px rgba(0, 255, 136, 0.45) !important;
-    transform: translateY(-5px) !important;
+    box-shadow: 0 26px 56px -10px rgba(0, 0, 0, 0.85), 0 0 45px rgba(0, 255, 136, 0.45) !important;
+    transform: translateY(-5px) scale(1.01) !important;
 }
 
 /* Küp 3: Fon Toplam Büyüklüğü (AUM) */
 .fund-layout-bento .fund-four-months-card:nth-child(3) {
+    background:
+        radial-gradient(circle at 85% 15%, rgba(0, 255, 255, 0.16) 0%, transparent 60%),
+        linear-gradient(145deg, rgba(13, 22, 44, 0.85) 0%, rgba(6, 11, 26, 0.94) 100%) !important;
     border: 1.5px solid rgba(0, 255, 255, 0.45) !important;
     border-top: 4px solid #00FFFF !important;
-    box-shadow: 0 18px 42px -10px rgba(0, 0, 0, 0.75), 0 0 30px rgba(0, 255, 255, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
+    box-shadow: 0 20px 48px -10px rgba(0, 0, 0, 0.8), 0 0 35px rgba(0, 255, 255, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.15) !important;
 }
 
 .fund-layout-bento .fund-four-months-card:nth-child(3):hover {
     border-color: #00FFFF !important;
-    box-shadow: 0 24px 50px -10px rgba(0, 0, 0, 0.8), 0 0 40px rgba(0, 255, 255, 0.45) !important;
-    transform: translateY(-5px) !important;
+    box-shadow: 0 26px 56px -10px rgba(0, 0, 0, 0.85), 0 0 45px rgba(0, 255, 255, 0.45) !important;
+    transform: translateY(-5px) scale(1.01) !important;
 }
 
 .fund-layout-bento .four-months-kpi-val {
-    font-family: var(--font-mono, 'JetBrains Mono', monospace) !important;
-    font-weight: 800 !important;
-    font-size: 1.35rem !important;
+    font-family: 'Space Grotesk', 'JetBrains Mono', monospace !important;
+    font-weight: 900 !important;
+    font-size: 1.5rem !important;
     letter-spacing: -0.02em;
-    text-shadow: 0 0 16px rgba(255, 255, 255, 0.3) !important;
+    text-shadow: 0 0 18px rgba(255, 255, 255, 0.35) !important;
 }
 
 /* ==========================================================================
@@ -10610,10 +10662,11 @@ body.theme-neo-brutalism .sort-option.active {
 .fund-layout-bento .fund-charts-wrapper:not(.fund-alloc-wrapper) .fund-chart-card {
     flex: 1 !important;
     margin-bottom: 0 !important;
+    padding: 24px 26px !important;
 }
 
 .fund-layout-bento .fund-charts-wrapper:not(.fund-alloc-wrapper) .fund-chart-container {
-    height: 250px !important;
+    height: 260px !important;
 }
 
 .fund-layout-bento .fund-alloc-wrapper {
@@ -10627,81 +10680,137 @@ body.theme-neo-brutalism .sort-option.active {
 
 .fund-layout-bento .fund-alloc-latest-card {
     flex: 1 !important;
-    border: 1.5px solid rgba(236, 72, 153, 0.35) !important;
+    border: 1.5px solid rgba(236, 72, 153, 0.4) !important;
     border-top: 4px solid #EC4899 !important;
-    box-shadow: 0 18px 44px -10px rgba(0, 0, 0, 0.75), 0 0 30px rgba(236, 72, 153, 0.2) !important;
-    padding: 24px !important;
+    box-shadow: 0 20px 48px -10px rgba(0, 0, 0, 0.8), 0 0 35px rgba(236, 72, 153, 0.25) !important;
+    padding: 24px 26px !important;
     margin-bottom: 0 !important;
 }
 
 .fund-layout-bento .fund-alloc-history-card {
     flex: 1 !important;
-    border: 1.5px solid rgba(168, 85, 247, 0.35) !important;
+    border: 1.5px solid rgba(168, 85, 247, 0.4) !important;
     border-top: 4px solid #A855F7 !important;
-    box-shadow: 0 18px 44px -10px rgba(0, 0, 0, 0.75), 0 0 30px rgba(168, 85, 247, 0.2) !important;
-    padding: 24px !important;
+    box-shadow: 0 20px 48px -10px rgba(0, 0, 0, 0.8), 0 0 35px rgba(168, 85, 247, 0.25) !important;
+    padding: 24px 26px !important;
     margin-bottom: 0 !important;
 }
 
 .fund-layout-bento .fund-alloc-wrapper .fund-alloc-chart-container {
-    height: 230px !important;
+    height: 240px !important;
 }
 
 .fund-layout-bento .chart-title-left h3 {
-    font-family: 'Plus Jakarta Sans', -apple-system, sans-serif !important;
-    font-size: 1.08rem !important;
+    font-family: 'Space Grotesk', -apple-system, sans-serif !important;
+    font-size: 1.15rem !important;
     font-weight: 800 !important;
     color: #FFFFFF !important;
     letter-spacing: -0.2px;
 }
 
+/* Orbital Quantum Core Inside Donut Chart */
+.fund-layout-bento .alloc-donut-center {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    width: 124px;
+    height: 124px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(15, 23, 42, 0.95) 0%, rgba(3, 7, 18, 0.98) 100%);
+    border: 1.5px dashed rgba(236, 72, 153, 0.45);
+    box-shadow: 0 0 28px rgba(236, 72, 153, 0.3);
+}
+
+.fund-layout-bento .alloc-donut-center .center-sub {
+    font-size: 0.62rem;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    color: #94A3B8;
+    font-weight: 700;
+    font-family: 'Space Grotesk', sans-serif;
+}
+
 .fund-layout-bento .alloc-donut-center .center-main {
-    font-family: var(--font-mono) !important;
-    font-size: 1.7rem !important;
-    font-weight: 800 !important;
+    font-family: 'Space Grotesk', 'JetBrains Mono', monospace !important;
+    font-size: 1.95rem !important;
+    font-weight: 900 !important;
     color: #FFFFFF !important;
-    text-shadow: 0 0 20px rgba(236, 72, 153, 0.55);
+    text-shadow: 0 0 24px rgba(236, 72, 153, 0.75);
+    line-height: 1.1;
+}
+
+.fund-layout-bento .alloc-donut-center .center-lbl {
+    font-size: 0.68rem;
+    font-weight: 800;
+    color: #F472B6;
+    max-width: 95px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-family: 'Space Grotesk', sans-serif;
 }
 
 .fund-layout-bento .alloc-item-row {
     background: rgba(255, 255, 255, 0.04) !important;
     border: 1px solid rgba(255, 255, 255, 0.08) !important;
     border-radius: 12px !important;
-    padding: 10px 14px !important;
+    padding: 11px 16px !important;
     margin-bottom: 8px !important;
     transition: all 0.22s ease !important;
 }
 
 .fund-layout-bento .alloc-item-row:hover {
-    background: rgba(236, 72, 153, 0.16) !important;
+    background: rgba(236, 72, 153, 0.14) !important;
     border-color: rgba(236, 72, 153, 0.5) !important;
     transform: translateX(4px);
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.45);
+}
+
+.fund-layout-bento .alloc-bar-track {
+    height: 5px !important;
+    background: rgba(255, 255, 255, 0.08) !important;
+    border-radius: 9999px !important;
+    overflow: hidden !important;
+    margin-top: 6px !important;
+}
+
+.fund-layout-bento .alloc-bar-fill {
+    border-radius: 9999px !important;
+    box-shadow: 0 0 8px currentColor !important;
 }
 
 /* Bento KAP Portfolio Moves Card (Cyber Matrix Console) */
 .fund-layout-bento .fund-portfolio-moves-card {
     grid-column: 1 / -1 !important;
     order: 6 !important;
-    border: 1.5px solid rgba(0, 255, 255, 0.35) !important;
+    border: 1.5px solid rgba(0, 255, 255, 0.4) !important;
     border-top: 4px solid #00FFFF !important;
-    box-shadow: 0 18px 44px -10px rgba(0, 0, 0, 0.75), 0 0 30px rgba(0, 255, 255, 0.2) !important;
-    padding: 24px !important;
+    box-shadow: 0 20px 48px -10px rgba(0, 0, 0, 0.8), 0 0 35px rgba(0, 255, 255, 0.25) !important;
+    padding: 26px 28px !important;
     margin-bottom: 0 !important;
 }
 
 .fund-layout-bento .moves-asset-chip {
-    background: rgba(8, 20, 38, 0.85) !important;
-    border: 1px solid rgba(0, 255, 255, 0.3) !important;
-    border-radius: 12px !important;
-    box-shadow: 0 0 12px rgba(0, 255, 255, 0.08) !important;
+    background: rgba(8, 20, 38, 0.88) !important;
+    border: 1px solid rgba(0, 255, 255, 0.35) !important;
+    border-radius: 14px !important;
+    box-shadow: 0 0 14px rgba(0, 255, 255, 0.1) !important;
     transition: all 0.2s ease !important;
 }
 
 .fund-layout-bento .moves-asset-chip:hover {
-    background: rgba(0, 255, 255, 0.15) !important;
+    background: rgba(0, 255, 255, 0.18) !important;
     border-color: #00FFFF !important;
-    box-shadow: 0 0 20px rgba(0, 255, 255, 0.35) !important;
-    transform: translateY(-2px);
+    box-shadow: 0 0 24px rgba(0, 255, 255, 0.4) !important;
+    transform: translateY(-2px) scale(1.02);
 }
 
 /* ==========================================================================
@@ -10713,43 +10822,64 @@ body.theme-neo-brutalism .sort-option.active {
     grid-column: span 6 !important;
     order: 7 !important;
     margin-bottom: 0 !important;
-    border: 1.5px solid rgba(168, 85, 247, 0.35) !important;
+    border: 1.5px solid rgba(168, 85, 247, 0.4) !important;
     border-top: 4px solid #A855F7 !important;
-    box-shadow: 0 18px 44px -10px rgba(0, 0, 0, 0.75), 0 0 30px rgba(168, 85, 247, 0.2) !important;
+    box-shadow: 0 20px 48px -10px rgba(0, 0, 0, 0.8), 0 0 35px rgba(168, 85, 247, 0.25) !important;
 }
 
 .fund-layout-bento .fund-table-card:not(.fund-alloc-table-card) {
     grid-column: span 6 !important;
     order: 8 !important;
     margin-bottom: 0 !important;
-    border: 1.5px solid rgba(56, 189, 248, 0.35) !important;
+    border: 1.5px solid rgba(56, 189, 248, 0.4) !important;
     border-top: 4px solid #38BDF8 !important;
-    box-shadow: 0 18px 44px -10px rgba(0, 0, 0, 0.75), 0 0 30px rgba(56, 189, 248, 0.2) !important;
+    box-shadow: 0 20px 48px -10px rgba(0, 0, 0, 0.8), 0 0 35px rgba(56, 189, 248, 0.25) !important;
 }
 
 .fund-layout-bento .fund-table-responsive {
     max-height: 480px !important;
     overflow-y: auto !important;
-    border-radius: 12px;
+    border-radius: 14px;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0, 255, 255, 0.4) rgba(10, 15, 30, 0.8);
+}
+
+.fund-layout-bento .fund-table-responsive::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+.fund-layout-bento .fund-table-responsive::-webkit-scrollbar-thumb {
+    background: rgba(0, 255, 255, 0.45);
+    border-radius: 9999px;
+    box-shadow: 0 0 8px #00FFFF;
 }
 
 .fund-layout-bento .fund-data-table th {
-    background: rgba(10, 18, 36, 0.95) !important;
+    background: rgba(8, 14, 30, 0.96) !important;
     color: #00FFFF !important;
-    font-family: var(--font-mono) !important;
-    font-size: 0.74rem !important;
-    letter-spacing: 0.8px !important;
+    font-family: 'JetBrains Mono', monospace !important;
+    font-size: 0.76rem !important;
+    font-weight: 800 !important;
+    letter-spacing: 0.9px !important;
     text-transform: uppercase !important;
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 10 !important;
+    backdrop-filter: blur(14px) !important;
+    border-bottom: 1.5px solid rgba(0, 255, 255, 0.25) !important;
 }
 
 .fund-layout-bento .fund-data-table td {
-    font-family: var(--font-mono) !important;
-    font-size: 0.84rem !important;
+    font-family: 'JetBrains Mono', monospace !important;
+    font-size: 0.85rem !important;
+    font-variant-numeric: tabular-nums !important;
     border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
+    transition: background 0.15s ease !important;
 }
 
 .fund-layout-bento .fund-data-table tr:hover td {
-    background: rgba(0, 255, 255, 0.06) !important;
+    background: rgba(0, 255, 255, 0.08) !important;
 }
 
 /* ==========================================================================
@@ -10845,13 +10975,13 @@ body.theme-neo-brutalism .sort-option.active {
     }
 
     .fund-layout-bento .fund-kpi-card:nth-child(1) .kpi-main-val {
-        font-size: 1.85rem !important;
+        font-size: 2.1rem !important;
     }
 
     .fund-layout-bento .fund-kpi-card:nth-child(3) .kpi-main-val {
-        font-size: 1.75rem !important;
+        font-size: 1.9rem !important;
     }
-    
+
     .fund-layout-bento .fund-hero-card,
     .fund-layout-bento .fund-search-card {
         padding: 16px !important;
