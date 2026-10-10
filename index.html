@@ -27,7 +27,7 @@
     <script src="https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js"></script>
     <!-- jsPDF for High-Resolution Multi-Page PDF Export -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <link rel="stylesheet" href="style.css?v=120">    <style>
+    <link rel="stylesheet" href="style.css?v=121">    <style>
         /* Refresh Button Loading Animation */
         .icon-btn.loading i {
             animation: spin 1s linear infinite;
@@ -434,11 +434,11 @@
                 <div>
                     <label style="font-size: 0.78rem; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; display: block;">Fon Analizi Görünüm Düzeni</label>
                     <div class="layout-selector-row">
-                        <button class="layout-btn active" onclick="selectFundLayout('fund-layout-classic')" id="btnModalFundLayoutClassic">
+                        <button class="layout-btn" onclick="selectFundLayout('fund-layout-classic')" id="btnModalFundLayoutClassic">
                             <i class="fa-solid fa-table-cells-large"></i>
                             <span>Klasik Fon Görünümü</span>
                         </button>
-                        <button class="layout-btn" onclick="selectFundLayout('fund-layout-bento')" id="btnModalFundLayoutBento">
+                        <button class="layout-btn active" onclick="selectFundLayout('fund-layout-bento')" id="btnModalFundLayoutBento">
                             <i class="fa-solid fa-cubes-stacked"></i>
                             <span>Bento Grid & Modüler</span>
                         </button>
@@ -908,7 +908,7 @@
                 </div>
 
                 <!-- SUBVIEW 2: TEFAS FUND ANALYSIS LABORATORY -->
-                <div id="subviewFundAnalytics" style="display: none;">
+                <div id="subviewFundAnalytics" class="fund-layout-bento" style="display: none;">
                     <!-- Fund Navigation Sub-Segments: Tekil Fon Analizi vs Günün Akış Liderleri -->
                     <div class="fund-subnav-container">
                         <div class="fund-subnav-pills">
@@ -935,11 +935,11 @@
                         <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
                             <!-- Fund Layout Switcher (Klasik vs Bento Grid) -->
                             <div class="fund-layout-segmented-switch" id="fundLayoutSegmentedSwitch">
-                                <button type="button" class="fund-layout-seg-btn active" id="btnFundLayoutClassic" onclick="selectFundLayout('fund-layout-classic')" title="Klasik Fon Görünümü">
+                                <button type="button" class="fund-layout-seg-btn" id="btnFundLayoutClassic" onclick="selectFundLayout('fund-layout-classic')" title="Klasik Fon Görünümü">
                                     <i class="fa-solid fa-table-cells-large"></i>
                                     <span>Klasik</span>
                                 </button>
-                                <button type="button" class="fund-layout-seg-btn" id="btnFundLayoutBento" onclick="selectFundLayout('fund-layout-bento')" title="Bento Grid & Modüler FinTech Görünümü">
+                                <button type="button" class="fund-layout-seg-btn active" id="btnFundLayoutBento" onclick="selectFundLayout('fund-layout-bento')" title="Bento Grid & Modüler FinTech Görünümü">
                                     <i class="fa-solid fa-cubes-stacked"></i>
                                     <span>Bento Grid</span>
                                 </button>
@@ -960,6 +960,21 @@
 
                     <!-- SUBVIEW 2-A: TEKİL FON ANALİZİ (MEVCUT) -->
                     <div id="fundViewSingleArea">
+                        <!-- Futuristic Cyber HUD Telemetry Strip (Active in Bento Mode) -->
+                        <div class="fund-bento-hud-strip">
+                            <div class="hud-strip-left">
+                                <span class="hud-pulse-ring"></span>
+                                <span class="hud-status-badge"><i class="fa-solid fa-satellite-dish"></i> TEFAS QUANTUM HUD v2.5</span>
+                                <span class="hud-divider">//</span>
+                                <span class="hud-node-label"><i class="fa-solid fa-network-wired"></i> CANLI FON TERMINALİ</span>
+                            </div>
+                            <div class="hud-strip-right">
+                                <span class="hud-chip"><i class="fa-solid fa-microchip"></i> LATENCY: 28ms</span>
+                                <span class="hud-chip"><i class="fa-solid fa-shield-halved"></i> 2041 FON AKTİF</span>
+                                <span class="hud-chip-highlight"><i class="fa-solid fa-bolt"></i> GERÇEK ZAMANLI</span>
+                            </div>
+                        </div>
+
                         <!-- Fund Search & Quick Tags Card -->
                         <div class="fund-search-card ultra-glass-card">
                         <div class="fund-search-header">
@@ -3148,6 +3163,6 @@
         </div>
     </div>
 
-    <script src="app.js?v=120"></script>
+    <script src="app.js?v=121"></script>
 </body>
 </html>

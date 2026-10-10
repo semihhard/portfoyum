@@ -50,7 +50,7 @@ let appState = {
     sortBy: "default",
     theme: "theme-oled-neon",
     layout: "layout-standard",
-    fundLayout: "fund-layout-classic",
+    fundLayout: "fund-layout-bento",
     pin: null,
     biometricEnabled: false,
     biometricCredentialId: null,
@@ -87,7 +87,7 @@ function loadData() {
             if (!appState.manualT2Entries) appState.manualT2Entries = [];
             if (!appState.settledSaleIds) appState.settledSaleIds = [];
             if (!appState.sortBy) appState.sortBy = "default";
-            if (!appState.fundLayout) appState.fundLayout = "fund-layout-classic";
+            if (!appState.fundLayout) appState.fundLayout = "fund-layout-bento";
         } catch (e) {
             console.error("Storage load error", e);
             loadInitialSampleData();
@@ -99,7 +99,7 @@ function loadData() {
     updateSortButtonUI();
     applyTheme(appState.theme || "theme-oled-neon");
     applyLayout(appState.layout || "layout-standard");
-    applyFundLayout(appState.fundLayout || "fund-layout-classic");
+    applyFundLayout(appState.fundLayout || "fund-layout-bento");
 }
 
 function applyTheme(themeClass) {
@@ -162,7 +162,7 @@ function selectLayout(layoutClass) {
 
 function applyFundLayout(layoutClass) {
     const validFundLayouts = ["fund-layout-classic", "fund-layout-bento"];
-    if (!validFundLayouts.includes(layoutClass)) layoutClass = "fund-layout-classic";
+    if (!validFundLayouts.includes(layoutClass)) layoutClass = "fund-layout-bento";
     
     document.body.classList.remove("fund-layout-classic", "fund-layout-bento");
     document.body.classList.add(layoutClass);
@@ -201,7 +201,7 @@ function selectFundLayout(layoutClass) {
 function openThemeStudioModal() {
     applyTheme(appState.theme || "theme-oled-neon");
     applyLayout(appState.layout || "layout-standard");
-    applyFundLayout(appState.fundLayout || "fund-layout-classic");
+    applyFundLayout(appState.fundLayout || "fund-layout-bento");
     const modal = document.getElementById("themeStudioModal");
     if (modal) modal.classList.add("active");
 }
