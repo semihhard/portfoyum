@@ -87,7 +87,10 @@ function loadData() {
             if (!appState.manualT2Entries) appState.manualT2Entries = [];
             if (!appState.settledSaleIds) appState.settledSaleIds = [];
             if (!appState.sortBy) appState.sortBy = "default";
-            if (!appState.fundLayout) appState.fundLayout = "fund-layout-bento";
+            if (!appState.fundBentoForcedV2) {
+                appState.fundLayout = "fund-layout-bento";
+                appState.fundBentoForcedV2 = true;
+            }
         } catch (e) {
             console.error("Storage load error", e);
             loadInitialSampleData();
