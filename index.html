@@ -27,7 +27,7 @@
     <script src="https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js"></script>
     <!-- jsPDF for High-Resolution Multi-Page PDF Export -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <link rel="stylesheet" href="style.css?v=119">    <style>
+    <link rel="stylesheet" href="style.css?v=120">    <style>
         /* Refresh Button Loading Animation */
         .icon-btn.loading i {
             animation: spin 1s linear infinite;
@@ -1174,6 +1174,87 @@
                                 </div>
                                 <div class="chart-container fund-chart-container fund-alloc-chart-container" style="position: relative;">
                                     <canvas id="fundHistoryAllocChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 3'lü Kare Kartlar: Son 4 Aylık Yatırımcı, Para Giriş/Çıkış, Fon Toplam Değeri -->
+                        <div class="fund-four-months-grid" id="fundFourMonthsGrid">
+                            <!-- Kart 1: Son 4 Aylık Yatırımcı Sayısı -->
+                            <div class="analytics-card ultra-glass-card fund-four-months-card">
+                                <div class="chart-header-row">
+                                    <div class="chart-title-left">
+                                        <h3><i class="fa-solid fa-users" style="color: #C084FC;"></i> Son 4 Aylık Yatırımcı</h3>
+                                        <p class="chart-subtitle">Aylık bazda fon yatırımcı sayısı trendi</p>
+                                    </div>
+                                    <div class="chart-legend-custom">
+                                        <span class="badge-count purple" id="fundFourMonthsInvBadge"><i class="fa-solid fa-user-group"></i> Yatırımcı</span>
+                                    </div>
+                                </div>
+                                <div class="four-months-kpi-row">
+                                    <div>
+                                        <span class="four-months-kpi-sub">Güncel Yatırımcı</span>
+                                        <div class="four-months-kpi-val" id="fundFourMonthsInvCurrent">0 kişi</div>
+                                    </div>
+                                    <div style="text-align: right;">
+                                        <span class="four-months-kpi-sub">4 Aylık Net Değişim</span>
+                                        <div class="four-months-kpi-diff neut" id="fundFourMonthsInvDiff">0 kişi</div>
+                                    </div>
+                                </div>
+                                <div class="chart-container four-months-chart-container">
+                                    <canvas id="fundFourMonthsInvChart"></canvas>
+                                </div>
+                            </div>
+
+                            <!-- Kart 2: Son 4 Aylık Para Girişi / Çıkışı -->
+                            <div class="analytics-card ultra-glass-card fund-four-months-card">
+                                <div class="chart-header-row">
+                                    <div class="chart-title-left">
+                                        <h3><i class="fa-solid fa-money-bill-transfer" style="color: #10B981;"></i> Son 4 Aylık Para Giriş / Çıkış</h3>
+                                        <p class="chart-subtitle">İhraç ve itfa kaynaklı aylık net nakit akışı</p>
+                                    </div>
+                                    <div class="chart-legend-custom">
+                                        <span class="badge-count emerald" id="fundFourMonthsFlowBadge"><i class="fa-solid fa-arrow-trend-up"></i> Net Akış</span>
+                                    </div>
+                                </div>
+                                <div class="four-months-kpi-row">
+                                    <div>
+                                        <span class="four-months-kpi-sub">4 Aylık Toplam Akış</span>
+                                        <div class="four-months-kpi-val" id="fundFourMonthsFlowTotal">₺0,00</div>
+                                    </div>
+                                    <div style="text-align: right;">
+                                        <span class="four-months-kpi-sub">Son Ayın Akışı</span>
+                                        <div class="four-months-kpi-diff neut" id="fundFourMonthsFlowLastMonth">₺0,00</div>
+                                    </div>
+                                </div>
+                                <div class="chart-container four-months-chart-container">
+                                    <canvas id="fundFourMonthsFlowChart"></canvas>
+                                </div>
+                            </div>
+
+                            <!-- Kart 3: Son 4 Aylık Fon Toplam Değeri -->
+                            <div class="analytics-card ultra-glass-card fund-four-months-card">
+                                <div class="chart-header-row">
+                                    <div class="chart-title-left">
+                                        <h3><i class="fa-solid fa-vault" style="color: #38BDF8;"></i> Son 4 Aylık Fon Büyüklüğü</h3>
+                                        <p class="chart-subtitle">Fon portföyünün ay sonu toplam değeri (AUM)</p>
+                                    </div>
+                                    <div class="chart-legend-custom">
+                                        <span class="badge-count cyan" id="fundFourMonthsAumBadge"><i class="fa-solid fa-sack-dollar"></i> AUM</span>
+                                    </div>
+                                </div>
+                                <div class="four-months-kpi-row">
+                                    <div>
+                                        <span class="four-months-kpi-sub">Güncel Büyüklük</span>
+                                        <div class="four-months-kpi-val" id="fundFourMonthsAumCurrent">₺0,00</div>
+                                    </div>
+                                    <div style="text-align: right;">
+                                        <span class="four-months-kpi-sub">4 Aylık Büyüme</span>
+                                        <div class="four-months-kpi-diff neut" id="fundFourMonthsAumDiff">%0.00</div>
+                                    </div>
+                                </div>
+                                <div class="chart-container four-months-chart-container">
+                                    <canvas id="fundFourMonthsAumChart"></canvas>
                                 </div>
                             </div>
                         </div>
@@ -3067,6 +3148,6 @@
         </div>
     </div>
 
-    <script src="app.js?v=119"></script>
+    <script src="app.js?v=120"></script>
 </body>
 </html>

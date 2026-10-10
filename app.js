@@ -1148,6 +1148,9 @@ let fundPriceInvestorChartInstance = null;
 let fundCashFlowChartInstance = null;
 let fundLatestAllocDonutChartInstance = null;
 let fundHistoryAllocChartInstance = null;
+let fundFourMonthsInvChartInstance = null;
+let fundFourMonthsFlowChartInstance = null;
+let fundFourMonthsAumChartInstance = null;
 const fundHistoryDataCache = {};
 const fundAllocationDataCache = {};
 let currentFundTableLimit = 15;
@@ -3643,7 +3646,10 @@ async function loadAndRenderFundAnalysis(fundCode, days = 30) {
         renderFundCharts(data);
         renderFundHistoryTable(data);
 
-        // 9. Initial render of Stock Moves immediately (0ms KAP data)
+        // 9. Render 3 Square Cards (4-Month Analysis: Investors, Cash Flow, AUM)
+        renderFundFourMonthsAnalysis(fCode, data);
+
+        // 10. Initial render of Stock Moves immediately (0ms KAP data)
         renderFundPortfolioMoves(null, totalAUM);
 
         // 10. Fetch & Render Asset Allocation (Latest Donut Breakdown, Daily Trend, & Table)
@@ -3895,7 +3901,31 @@ function renderFundCharts(data) {
         if (fundCashFlowChartInstance) fundCashFlowChartInstance.resize();
         if (fundLatestAllocDonutChartInstance) fundLatestAllocDonutChartInstance.resize();
         if (fundHistoryAllocChartInstance) fundHistoryAllocChartInstance.resize();
+        if (fundFourMonthsInvChartInstance) fundFourMonthsInvChartInstance.resize();
+        if (fundFourMonthsFlowChartInstance) fundFourMonthsFlowChartInstance.resize();
+        if (fundFourMonthsAumChartInstance) fundFourMonthsAumChartInstance.resize();
     });
+}
+
+function destroyFourMonthsCharts() {
+    if (fundFourMonthsInvChartInstance) {
+        fundFourMonthsInvChartInstance.destroy();
+        fundFourMonthsInvChartInstance = null;
+    }
+    if (fundFourMonthsFlowChartInstance) {
+        fundFourMonthsFlowChartInstance.destroy();
+        fundFourMonthsFlowChartInstance = null;
+    }
+    if (fundFourMonthsAumChartInstance) {
+        fundFourMonthsAumChartInstance.destroy();
+        fundFourMonthsAumChartInstance = null;
+    }
+    const c5 = document.getElementById("fundFourMonthsInvChart");
+    if (c5) { c5.removeAttribute("width"); c5.removeAttribute("height"); c5.removeAttribute("style"); }
+    const c6 = document.getElementById("fundFourMonthsFlowChart");
+    if (c6) { c6.removeAttribute("width"); c6.removeAttribute("height"); c6.removeAttribute("style"); }
+    const c7 = document.getElementById("fundFourMonthsAumChart");
+    if (c7) { c7.removeAttribute("width"); c7.removeAttribute("height"); c7.removeAttribute("style"); }
 }
 
 function destroyFundCharts() {
@@ -3915,6 +3945,8 @@ function destroyFundCharts() {
         fundHistoryAllocChartInstance.destroy();
         fundHistoryAllocChartInstance = null;
     }
+
+    destroyFourMonthsCharts();
 
     // Clean canvas attributes so Chart.js recalculates fresh dimensions on mobile
     const c1 = document.getElementById("fundPriceInvestorChart");
@@ -3942,6 +3974,348 @@ function destroyFundCharts() {
         c4.removeAttribute("style");
     }
 }
+
+// Master Function: Render 3 Square Cards for 4-Month Analysis (Investors, Cash Flow, Total AUM)
+async function renderFundFourMonthsAnalysis(fundCode, currentPeriodData = null) {
+    const fCode = (fundCode || (typeof appState !== 'undefined' ? appState.activeFundCode : "") || "TI1").toUpperCase().trim();
+
+    let rawData = null;
+    // 1. If currentPeriodData has at least 80 days, reuse it immediately
+    if (currentPeriodData && Array.isArray(currentPeriodData) && currentPeriodData.length >= 80) {
+        rawData = currentPeriodData;
+    } else {
+        // 2. Otherwise fetch 120 days (~4 months) from TEFAS/cache
+        try {
+            rawData = await fetchTefasFundData(fCode, 120);
+        } catch (e) {
+            console.warn("Could not fetch 120-day fund data for four-month analysis:", e);
+        }
+    }
+
+    // 3. Fallback to currentFundFullData if available
+    if (!rawData || !Array.isArray(rawData) || rawData.length === 0) {
+        if (typeof currentFundFullData !== 'undefined' && Array.isArray(currentFundFullData) && currentFundFullData.length > 0) {
+            rawData = currentFundFullData;
+        }
+    }
+
+    if (!rawData || !Array.isArray(rawData) || rawData.length < 5) {
+        return;
+    }
+
+    // Sort ascending by date
+    const data = [...rawData].sort((a, b) => (a.tarih || '').localeCompare(b.tarih || ''));
+
+    // Compute daily cash flows
+    for (let i = 0; i < data.length; i++) {
+        const curP = parseFloat(data[i].fiyat) || 0;
+        const curShares = parseFloat(data[i].tedPaySayisi) || 0;
+        const prevShares = i > 0 ? (parseFloat(data[i - 1].tedPaySayisi) || curShares) : curShares;
+        data[i].cashFlow = (curShares - prevShares) * curP;
+    }
+
+    function getYM(d) {
+        if (!d || !d.tarih) return "";
+        if (typeof d.tarih === "string" && d.tarih.includes("-")) {
+            const parts = d.tarih.split("-");
+            if (parts.length >= 2) return `${parts[0]}-${parts[1]}`;
+        }
+        const dt = new Date(d.tarih);
+        if (!isNaN(dt.getTime())) {
+            return `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, '0')}`;
+        }
+        return "";
+    }
+
+    const monthGroups = {};
+    for (let i = 0; i < data.length; i++) {
+        const ym = getYM(data[i]);
+        if (!ym) continue;
+        if (!monthGroups[ym]) monthGroups[ym] = [];
+        monthGroups[ym].push(data[i]);
+    }
+
+    const allYMs = Object.keys(monthGroups).sort();
+    const last4YMs = allYMs.slice(-4);
+    if (last4YMs.length === 0) return;
+
+    const monthNamesTR = {
+        "01": "Ocak", "02": "Şubat", "03": "Mart", "04": "Nisan",
+        "05": "Mayıs", "06": "Haziran", "07": "Temmuz", "08": "Ağustos",
+        "09": "Eylül", "10": "Ekim", "11": "Kasım", "12": "Aralık"
+    };
+
+    const analysis = last4YMs.map((ym) => {
+        const days = monthGroups[ym];
+        const firstDay = days[0];
+        const lastDay = days[days.length - 1];
+
+        const [year, month] = ym.split("-");
+        const monthLabel = monthNamesTR[month] || ym;
+
+        // Investor count
+        const lastInv = parseInt(lastDay.kisiSayisi, 10) || 0;
+        const firstInv = parseInt(firstDay.kisiSayisi, 10) || lastInv;
+        const invDiff = lastInv - firstInv;
+
+        // Cash flow
+        let monthFlow = 0;
+        for (const d of days) {
+            monthFlow += (d.cashFlow || 0);
+        }
+
+        // AUM
+        const endPrice = parseFloat(lastDay.fiyat) || 0;
+        const endShares = parseFloat(lastDay.tedPaySayisi) || 0;
+        const endAUM = parseFloat(lastDay.portfoyBuyukluk) || (endPrice * endShares);
+
+        const startPrice = parseFloat(firstDay.fiyat) || endPrice;
+        const startShares = parseFloat(firstDay.tedPaySayisi) || endShares;
+        const startAUM = parseFloat(firstDay.portfoyBuyukluk) || (startPrice * startShares);
+        const aumDiffPct = startAUM > 0 ? ((endAUM - startAUM) / startAUM) * 100 : 0;
+
+        return {
+            ym,
+            label: monthLabel,
+            year,
+            investorCount: lastInv,
+            investorDiff: invDiff,
+            cashFlow: monthFlow,
+            aum: endAUM,
+            aumDiffPct
+        };
+    });
+
+    const latestMonth = analysis[analysis.length - 1];
+    const oldestMonth = analysis[0];
+
+    // 1. Update KPI Header Elements
+    const invCurrentElem = document.getElementById("fundFourMonthsInvCurrent");
+    const invDiffElem = document.getElementById("fundFourMonthsInvDiff");
+    const invBadgeElem = document.getElementById("fundFourMonthsInvBadge");
+    if (invCurrentElem) invCurrentElem.innerText = `${formatFundCount(latestMonth.investorCount)} kişi`;
+    if (invBadgeElem) invBadgeElem.innerHTML = `<i class="fa-solid fa-user-group"></i> ${latestMonth.label}`;
+    if (invDiffElem) {
+        const fourMonthInvDiff = latestMonth.investorCount - oldestMonth.investorCount;
+        const isPos = fourMonthInvDiff >= 0;
+        const sign = isPos ? "+" : "";
+        const pct = oldestMonth.investorCount > 0 ? ((fourMonthInvDiff / oldestMonth.investorCount) * 100).toFixed(1) : "0.0";
+        invDiffElem.className = `four-months-kpi-diff ${isPos ? 'pos' : 'neg'}`;
+        invDiffElem.innerText = `${sign}${formatFundCount(fourMonthInvDiff)} (%${pct})`;
+    }
+
+    const flowTotalElem = document.getElementById("fundFourMonthsFlowTotal");
+    const flowLastMonthElem = document.getElementById("fundFourMonthsFlowLastMonth");
+    const flowBadgeElem = document.getElementById("fundFourMonthsFlowBadge");
+    const total4MFlow = analysis.reduce((acc, m) => acc + m.cashFlow, 0);
+    if (flowTotalElem) flowTotalElem.innerText = `${total4MFlow >= 0 ? '+' : ''}${formatBillionOrMillion(total4MFlow)}`;
+    if (flowBadgeElem) flowBadgeElem.innerHTML = total4MFlow >= 0 ? `<i class="fa-solid fa-arrow-trend-up"></i> Net Giriş` : `<i class="fa-solid fa-arrow-trend-down"></i> Net Çıkış`;
+    if (flowLastMonthElem) {
+        const isPos = latestMonth.cashFlow >= 0;
+        const sign = isPos ? "+" : "";
+        flowLastMonthElem.className = `four-months-kpi-diff ${isPos ? 'pos' : 'neg'}`;
+        flowLastMonthElem.innerText = `${latestMonth.label}: ${sign}${formatBillionOrMillion(latestMonth.cashFlow)}`;
+    }
+
+    const aumCurrentElem = document.getElementById("fundFourMonthsAumCurrent");
+    const aumDiffElem = document.getElementById("fundFourMonthsAumDiff");
+    const aumBadgeElem = document.getElementById("fundFourMonthsAumBadge");
+    if (aumCurrentElem) aumCurrentElem.innerText = formatBillionOrMillion(latestMonth.aum);
+    if (aumBadgeElem) aumBadgeElem.innerHTML = `<i class="fa-solid fa-sack-dollar"></i> ${latestMonth.label}`;
+    if (aumDiffElem) {
+        const aumGrowth = oldestMonth.aum > 0 ? ((latestMonth.aum - oldestMonth.aum) / oldestMonth.aum) * 100 : 0;
+        const isPos = aumGrowth >= 0;
+        const sign = isPos ? "+" : "";
+        aumDiffElem.className = `four-months-kpi-diff ${isPos ? 'pos' : 'neg'}`;
+        aumDiffElem.innerText = `${sign}%${aumGrowth.toFixed(2)}`;
+    }
+
+    // Destroy existing instances before recreating
+    destroyFourMonthsCharts();
+
+    const isMobile = window.innerWidth <= 768;
+
+    // 2. Render Chart 1: Investor Count Bar Chart
+    const ctxInv = document.getElementById("fundFourMonthsInvChart")?.getContext("2d");
+    if (ctxInv) {
+        fundFourMonthsInvChartInstance = new Chart(ctxInv, {
+            type: "bar",
+            data: {
+                labels: analysis.map(m => m.label),
+                datasets: [{
+                    label: "Yatırımcı Sayısı",
+                    data: analysis.map(m => m.investorCount),
+                    backgroundColor: "rgba(192, 132, 252, 0.35)",
+                    borderColor: "#C084FC",
+                    borderWidth: 1.5,
+                    borderRadius: 6,
+                    borderSkipped: false,
+                    hoverBackgroundColor: "rgba(192, 132, 252, 0.85)"
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: "rgba(10, 15, 26, 0.95)",
+                        titleColor: "#FFFFFF",
+                        borderColor: "rgba(192, 132, 252, 0.4)",
+                        borderWidth: 1,
+                        padding: 10,
+                        callbacks: {
+                            label: (ctx) => {
+                                const item = analysis[ctx.dataIndex];
+                                const countStr = Number(ctx.parsed.y).toLocaleString('tr-TR');
+                                const sign = item.investorDiff >= 0 ? '+' : '';
+                                return [
+                                    `Yatırımcı: ${countStr} kişi`,
+                                    `Ay İçi Değişim: ${sign}${Number(item.investorDiff).toLocaleString('tr-TR')} kişi`
+                                ];
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: { display: false },
+                        ticks: { color: "#94A3B8", font: { family: "Outfit", size: isMobile ? 10 : 11, weight: '600' } }
+                    },
+                    y: {
+                        grid: { color: "rgba(255, 255, 255, 0.04)" },
+                        ticks: {
+                            color: "#64748B",
+                            font: { family: "Outfit", size: isMobile ? 9 : 10 },
+                            maxTicksLimit: 4,
+                            callback: (val) => val >= 1000000 ? `${(val/1000000).toFixed(1)}M` : (val >= 1000 ? `${(val/1000).toFixed(0)}B` : val)
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    // 3. Render Chart 2: Net Cash Flow Bar Chart
+    const ctxFlow = document.getElementById("fundFourMonthsFlowChart")?.getContext("2d");
+    if (ctxFlow) {
+        const flowValues = analysis.map(m => m.cashFlow);
+        fundFourMonthsFlowChartInstance = new Chart(ctxFlow, {
+            type: "bar",
+            data: {
+                labels: analysis.map(m => m.label),
+                datasets: [{
+                    label: "Net Nakit Akışı",
+                    data: flowValues,
+                    backgroundColor: flowValues.map(v => v >= 0 ? "rgba(16, 185, 129, 0.45)" : "rgba(244, 63, 94, 0.45)"),
+                    borderColor: flowValues.map(v => v >= 0 ? "#10B981" : "#F43F5E"),
+                    borderWidth: 1.5,
+                    borderRadius: 6,
+                    borderSkipped: false,
+                    hoverBackgroundColor: flowValues.map(v => v >= 0 ? "#10B981" : "#F43F5E")
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: "rgba(10, 15, 26, 0.95)",
+                        titleColor: "#FFFFFF",
+                        borderColor: "rgba(16, 185, 129, 0.4)",
+                        borderWidth: 1,
+                        padding: 10,
+                        callbacks: {
+                            label: (ctx) => {
+                                const v = ctx.parsed.y;
+                                const sign = v >= 0 ? '+' : '';
+                                return `Net Akış: ${sign}${formatBillionOrMillion(v)}`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: { display: false },
+                        ticks: { color: "#94A3B8", font: { family: "Outfit", size: isMobile ? 10 : 11, weight: '600' } }
+                    },
+                    y: {
+                        grid: { color: "rgba(255, 255, 255, 0.04)" },
+                        ticks: {
+                            color: "#64748B",
+                            font: { family: "Outfit", size: isMobile ? 9 : 10 },
+                            maxTicksLimit: 4,
+                            callback: (val) => formatBillionOrMillion(val)
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    // 4. Render Chart 3: Fund Total AUM Bar Chart
+    const ctxAum = document.getElementById("fundFourMonthsAumChart")?.getContext("2d");
+    if (ctxAum) {
+        fundFourMonthsAumChartInstance = new Chart(ctxAum, {
+            type: "bar",
+            data: {
+                labels: analysis.map(m => m.label),
+                datasets: [{
+                    label: "Fon Büyüklüğü (AUM)",
+                    data: analysis.map(m => m.aum),
+                    backgroundColor: "rgba(56, 189, 248, 0.35)",
+                    borderColor: "#38BDF8",
+                    borderWidth: 1.5,
+                    borderRadius: 6,
+                    borderSkipped: false,
+                    hoverBackgroundColor: "rgba(56, 189, 248, 0.85)"
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: "rgba(10, 15, 26, 0.95)",
+                        titleColor: "#FFFFFF",
+                        borderColor: "rgba(56, 189, 248, 0.4)",
+                        borderWidth: 1,
+                        padding: 10,
+                        callbacks: {
+                            label: (ctx) => {
+                                const item = analysis[ctx.dataIndex];
+                                const aumStr = formatBillionOrMillion(ctx.parsed.y);
+                                const sign = item.aumDiffPct >= 0 ? '+' : '';
+                                return [
+                                    `Fon Büyüklüğü: ${aumStr}`,
+                                    `Ay İçi Büyüme: ${sign}%${item.aumDiffPct.toFixed(2)}`
+                                ];
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: { display: false },
+                        ticks: { color: "#94A3B8", font: { family: "Outfit", size: isMobile ? 10 : 11, weight: '600' } }
+                    },
+                    y: {
+                        grid: { color: "rgba(255, 255, 255, 0.04)" },
+                        ticks: {
+                            color: "#64748B",
+                            font: { family: "Outfit", size: isMobile ? 9 : 10 },
+                            maxTicksLimit: 4,
+                            callback: (val) => formatBillionOrMillion(val)
+                        }
+                    }
+                }
+            }
+        });
+    }
+}
+window.renderFundFourMonthsAnalysis = renderFundFourMonthsAnalysis;
 
 // Debounced window resize handler for smooth responsive chart recalculation
 let fundChartResizeDebounceTimer = null;
