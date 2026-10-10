@@ -3343,8 +3343,26 @@ function setAllocTableFilter(limit) {
 }
 window.setAllocTableFilter = setAllocTableFilter;
 
+function formatDateTR(dateStr) {
+    if (!dateStr) return '';
+    const parts = dateStr.split('-');
+    return parts.length === 3 ? `${parts[2]}.${parts[1]}.${parts[0]}` : dateStr;
+}
+
+function formatShortDateTR(dateStr) {
+    if (!dateStr) return '';
+    const parts = dateStr.split('-');
+    if (parts.length === 3) {
+        const mNames = ["Oca", "Şub", "Mar", "Nis", "May", "Haz", "Tem", "Ağu", "Eyl", "Eki", "Kas", "Ara"];
+        const mIdx = parseInt(parts[1], 10) - 1;
+        const mName = mNames[mIdx] || parts[1];
+        return `${parseInt(parts[2], 10)} ${mName}`;
+    }
+    return dateStr;
+}
+
 // Master Function: Load and Render Fund Analysis
-async function loadAndRenderFundAnalysis(fundCode, days = 30) {
+async function loadAndRenderFundAnalysis(fundCode, days = 30, customDateRange = null) {
     const fCode = (fundCode || appState.activeFundCode || "TI1").toUpperCase().trim();
     appState.activeFundCode = fCode;
     appState.activeFundPeriod = days;
@@ -3367,14 +3385,44 @@ async function loadAndRenderFundAnalysis(fundCode, days = 30) {
         }
     });
 
-    // Update active period button
-    document.querySelectorAll(".fund-period-pills .period-btn").forEach(btn => {
-        if (parseInt(btn.getAttribute("data-days")) === parseInt(days)) {
-            btn.classList.add("active");
-        } else {
-            btn.classList.remove("active");
-        }
-    });
+    const btnCustomDates = document.getElementById("btnFundCustomDates");
+    const customDateActiveBanner = document.getElementById("fundCustomDateActiveBanner");
+    const customDateActiveText = document.getElementById("fundCustomDateActiveText");
+    const customDateBar = document.getElementById("fundCustomDateBar");
+
+    if (customDateRange && customDateRange.startDate && customDateRange.endDate) {
+        appState.fundCustomDateRange = { ...customDateRange };
+        document.querySelectorAll(".fund-period-pills .period-btn").forEach(btn => btn.classList.remove("active"));
+        if (btnCustomDates) btnCustomDates.classList.add("active");
+        if (customDateBar) customDateBar.style.display = "block";
+
+        const inpS = document.getElementById("fundCustomStartDate");
+        const inpE = document.getElementById("fundCustomEndDate");
+        if (inpS) inpS.value = customDateRange.startDate;
+        if (inpE) inpE.value = customDateRange.endDate;
+
+        const sTR = formatDateTR(customDateRange.startDate);
+        const eTR = formatDateTR(customDateRange.endDate);
+        if (customDateActiveBanner) customDateActiveBanner.style.display = "flex";
+        if (customDateActiveText) customDateActiveText.innerText = `Özel Tarih Aralığı: ${sTR} - ${eTR} Değişimi`;
+
+        const diffMs = Date.now() - new Date(customDateRange.startDate).getTime();
+        const fetchDays = Math.max(30, Math.ceil(diffMs / 86400000) + 15);
+        days = Math.min(1095, fetchDays);
+    } else {
+        appState.fundCustomDateRange = null;
+        if (btnCustomDates) btnCustomDates.classList.remove("active");
+        if (customDateActiveBanner) customDateActiveBanner.style.display = "none";
+
+        // Update active period button
+        document.querySelectorAll(".fund-period-pills .period-btn").forEach(btn => {
+            if (parseInt(btn.getAttribute("data-days")) === parseInt(days)) {
+                btn.classList.add("active");
+            } else {
+                btn.classList.remove("active");
+            }
+        });
+    }
 
     if (loadingElem) loadingElem.style.display = "block";
     if (errorElem) errorElem.style.display = "none";
@@ -3398,37 +3446,37 @@ async function loadAndRenderFundAnalysis(fundCode, days = 30) {
         }
 
         // Sort data ascending by date
-        const data = [...rawData].sort((a, b) => (a.tarih || '').localeCompare(b.tarih || ''));
+        const fullSeries = [...rawData].sort((a, b) => (a.tarih || '').localeCompare(b.tarih || ''));
 
         // Compute daily metrics, Net Cash Flow & Per-Person Flow
-        for (let i = 0; i < data.length; i++) {
-            const curP = parseFloat(data[i].fiyat) || 0;
-            const curShares = parseFloat(data[i].tedPaySayisi) || 0;
-            const curInvestors = parseInt(data[i].kisiSayisi) || 0;
+        for (let i = 0; i < fullSeries.length; i++) {
+            const curP = parseFloat(fullSeries[i].fiyat) || 0;
+            const curShares = parseFloat(fullSeries[i].tedPaySayisi) || 0;
+            const curInvestors = parseInt(fullSeries[i].kisiSayisi) || 0;
 
             if (i === 0) {
-                data[i].cashFlow = 0;
-                data[i].deltaShares = 0;
-                data[i].deltaInvestors = 0;
-                data[i].priceChange = 0;
-                data[i].priceChangePct = 0;
-                data[i].perPersonFlow = 0;
-                data[i].perPersonType = "zero";
-                data[i].perPersonLabel = "—";
+                fullSeries[i].cashFlow = 0;
+                fullSeries[i].deltaShares = 0;
+                fullSeries[i].deltaInvestors = 0;
+                fullSeries[i].priceChange = 0;
+                fullSeries[i].priceChangePct = 0;
+                fullSeries[i].perPersonFlow = 0;
+                fullSeries[i].perPersonType = "zero";
+                fullSeries[i].perPersonLabel = "—";
             } else {
-                const prevP = parseFloat(data[i - 1].fiyat) || curP;
-                const prevShares = parseFloat(data[i - 1].tedPaySayisi) || curShares;
-                const prevInvestors = parseInt(data[i - 1].kisiSayisi) || curInvestors;
+                const prevP = parseFloat(fullSeries[i - 1].fiyat) || curP;
+                const prevShares = parseFloat(fullSeries[i - 1].tedPaySayisi) || curShares;
+                const prevInvestors = parseInt(fullSeries[i - 1].kisiSayisi) || curInvestors;
 
                 const deltaS = curShares - prevShares;
                 const flow = deltaS * curP; // Net cash flow = delta shares * current price
                 const deltaInv = curInvestors - prevInvestors;
 
-                data[i].deltaShares = deltaS;
-                data[i].cashFlow = flow;
-                data[i].deltaInvestors = deltaInv;
-                data[i].priceChange = curP - prevP;
-                data[i].priceChangePct = prevP > 0 ? ((curP - prevP) / prevP) * 100 : 0;
+                fullSeries[i].deltaShares = deltaS;
+                fullSeries[i].cashFlow = flow;
+                fullSeries[i].deltaInvestors = deltaInv;
+                fullSeries[i].priceChange = curP - prevP;
+                fullSeries[i].priceChangePct = prevP > 0 ? ((curP - prevP) / prevP) * 100 : 0;
 
                 // Per-person calculation: net cash flow divided by delta investors
                 if (deltaInv !== 0) {
@@ -3437,29 +3485,44 @@ async function loadAndRenderFundAnalysis(fundCode, days = 30) {
                     const avgVal = absFlow / absInv;
 
                     if (deltaInv > 0 && flow >= 0) {
-                        data[i].perPersonFlow = avgVal;
-                        data[i].perPersonType = "inflow";
-                        data[i].perPersonLabel = `+₺${formatPerPersonNumber(avgVal)} / kişi`;
+                        fullSeries[i].perPersonFlow = avgVal;
+                        fullSeries[i].perPersonType = "inflow";
+                        fullSeries[i].perPersonLabel = `+₺${formatPerPersonNumber(avgVal)} / kişi`;
                     } else if (deltaInv < 0 && flow <= 0) {
-                        data[i].perPersonFlow = -avgVal;
-                        data[i].perPersonType = "outflow";
-                        data[i].perPersonLabel = `-₺${formatPerPersonNumber(avgVal)} / kişi`;
+                        fullSeries[i].perPersonFlow = -avgVal;
+                        fullSeries[i].perPersonType = "outflow";
+                        fullSeries[i].perPersonLabel = `-₺${formatPerPersonNumber(avgVal)} / kişi`;
                     } else if (deltaInv > 0 && flow < 0) {
-                        data[i].perPersonFlow = -avgVal;
-                        data[i].perPersonType = "outflow";
-                        data[i].perPersonLabel = `-₺${formatPerPersonNumber(avgVal)} / kişi`;
+                        fullSeries[i].perPersonFlow = -avgVal;
+                        fullSeries[i].perPersonType = "outflow";
+                        fullSeries[i].perPersonLabel = `-₺${formatPerPersonNumber(avgVal)} / kişi`;
                     } else {
-                        data[i].perPersonFlow = avgVal;
-                        data[i].perPersonType = "inflow";
-                        data[i].perPersonLabel = `+₺${formatPerPersonNumber(avgVal)} / kişi`;
+                        fullSeries[i].perPersonFlow = avgVal;
+                        fullSeries[i].perPersonType = "inflow";
+                        fullSeries[i].perPersonLabel = `+₺${formatPerPersonNumber(avgVal)} / kişi`;
                     }
                 } else {
-                    data[i].perPersonFlow = 0;
-                    data[i].perPersonType = Math.abs(flow) > 100 ? "holding_change" : "zero";
-                    data[i].perPersonLabel = Math.abs(flow) > 100 ? (flow > 0 ? "+Pay Artışı" : "-Pay Azalışı") : "—";
+                    fullSeries[i].perPersonFlow = 0;
+                    fullSeries[i].perPersonType = Math.abs(flow) > 100 ? "holding_change" : "zero";
+                    fullSeries[i].perPersonLabel = Math.abs(flow) > 100 ? (flow > 0 ? "+Pay Artışı" : "-Pay Azalışı") : "—";
                 }
             }
         }
+
+        // Apply custom date range filtering if active
+        let data = fullSeries;
+        if (customDateRange && customDateRange.startDate && customDateRange.endDate) {
+            const filtered = fullSeries.filter(r => r.tarih >= customDateRange.startDate && r.tarih <= customDateRange.endDate);
+            if (filtered.length >= 2) {
+                data = filtered;
+            } else if (filtered.length === 1) {
+                const idx = fullSeries.indexOf(filtered[0]);
+                data = idx > 0 ? [fullSeries[idx - 1], filtered[0]] : filtered;
+            } else if (typeof showToast === 'function') {
+                showToast("Seçilen tarih aralığında TEFAS verisi bulunamadı, tüm veriler listelendi.", "warning");
+            }
+        }
+        lastFundDetailDataCache = data;
 
         const latest = data[data.length - 1];
         const oldest = data[0];
@@ -3475,9 +3538,13 @@ async function loadAndRenderFundAnalysis(fundCode, days = 30) {
         if (heroName) heroName.innerText = latest.fonUnvan || `${fCode} Portföy Fonu`;
         appState.activeFundTitle = latest.fonUnvan || '';
         if (heroDate) {
-            const dateParts = (latest.tarih || '').split('-');
-            const formattedDate = dateParts.length === 3 ? `${dateParts[2]}.${dateParts[1]}.${dateParts[0]}` : latest.tarih;
-            heroDate.innerHTML = `<i class="fa-solid fa-calendar"></i> ${formattedDate}`;
+            if (customDateRange) {
+                heroDate.innerHTML = `<i class="fa-solid fa-calendar-week"></i> ${formatDateTR(oldest.tarih)} - ${formatDateTR(latest.tarih)}`;
+            } else {
+                const dateParts = (latest.tarih || '').split('-');
+                const formattedDate = dateParts.length === 3 ? `${dateParts[2]}.${dateParts[1]}.${dateParts[0]}` : latest.tarih;
+                heroDate.innerHTML = `<i class="fa-solid fa-calendar"></i> ${formattedDate}`;
+            }
         }
         if (heroKind) {
             let catName = "Yatırım Fonu";
@@ -3543,7 +3610,13 @@ async function loadAndRenderFundAnalysis(fundCode, days = 30) {
         if (priceElem) priceElem.innerText = formatFundPriceDisplay(lastPrice);
         if (priceDiffElem) {
             const sign = dailyDiff >= 0 ? "+" : "";
-            priceDiffElem.innerHTML = `Günlük: <strong class="${dailyDiff >= 0 ? 'txt-neon-green' : 'txt-neon-red'}">${sign}${formatFundPriceDisplay(dailyDiff)} (%${dailyDiffPct.toFixed(2)})</strong>`;
+            if (customDateRange) {
+                const sTR = formatShortDateTR(oldest.tarih);
+                const eTR = formatShortDateTR(latest.tarih);
+                priceDiffElem.innerHTML = `${sTR} - ${eTR}: <strong class="${dailyDiff >= 0 ? 'txt-neon-green' : 'txt-neon-red'}">${sign}${formatFundPriceDisplay(dailyDiff)} (%${dailyDiffPct.toFixed(2)})</strong>`;
+            } else {
+                priceDiffElem.innerHTML = `Günlük: <strong class="${dailyDiff >= 0 ? 'txt-neon-green' : 'txt-neon-red'}">${sign}${formatFundPriceDisplay(dailyDiff)} (%${dailyDiffPct.toFixed(2)})</strong>`;
+            }
         }
         if (periodReturnElem) {
             const isPos = periodReturnPct >= 0;
@@ -3559,7 +3632,8 @@ async function loadAndRenderFundAnalysis(fundCode, days = 30) {
         if (invElem) invElem.innerText = `${formatFundCount(lastInvestors)} kişi`;
         if (invDiffElem) {
             const sign = investorDiff >= 0 ? "+" : "";
-            invDiffElem.innerText = `Dönemlik: ${sign}${formatFundCount(investorDiff)} kişi`;
+            const prefix = customDateRange ? `${formatShortDateTR(oldest.tarih)} - ${formatShortDateTR(latest.tarih)}` : "Dönemlik";
+            invDiffElem.innerText = `${prefix}: ${sign}${formatFundCount(investorDiff)} kişi`;
         }
         if (invPctElem) {
             const isPos = investorDiffPct >= 0;
@@ -3582,7 +3656,9 @@ async function loadAndRenderFundAnalysis(fundCode, days = 30) {
             flowTypeElem.innerText = totalCashFlow >= 0 ? "Net Giriş" : "Net Çıkış";
         }
         if (flowAvgElem) {
-            flowAvgElem.innerText = `Günlük Ort: ${formatBillionOrMillion(avgDailyFlow)}`;
+            flowAvgElem.innerText = customDateRange
+                ? `${data.length} Gün Toplamı (Ort: ${formatBillionOrMillion(avgDailyFlow)})`
+                : `Günlük Ort: ${formatBillionOrMillion(avgDailyFlow)}`;
         }
         if (flowDirElem) {
             const isPos = totalCashFlow >= 0;
@@ -3638,7 +3714,8 @@ async function loadAndRenderFundAnalysis(fundCode, days = 30) {
         if (sharesBadge) sharesBadge.innerText = "Toplam Pay";
         if (sharesDiffDesc) {
             const sign = sharesPeriodDiff >= 0 ? "+" : "";
-            sharesDiffDesc.innerText = `Dönemlik: ${sign}${formatFundCount(sharesPeriodDiff)}`;
+            const prefix = customDateRange ? `${formatShortDateTR(oldest.tarih)} - ${formatShortDateTR(latest.tarih)}` : "Dönemlik";
+            sharesDiffDesc.innerText = `${prefix}: ${sign}${formatFundCount(sharesPeriodDiff)}`;
         }
         if (sharesDiffElem) {
             const isPos = sharesPeriodDiff >= 0;
@@ -3660,8 +3737,12 @@ async function loadAndRenderFundAnalysis(fundCode, days = 30) {
 
         // 10. Fetch & Render Asset Allocation (Latest Donut Breakdown, Daily Trend, & Table)
         try {
-            const allocData = await fetchTefasFundAllocation(fCode, days);
+            let allocData = await fetchTefasFundAllocation(fCode, days);
             if (allocData && allocData.length > 0) {
+                if (customDateRange && customDateRange.startDate && customDateRange.endDate) {
+                    const filteredAlloc = allocData.filter(r => r.tarih >= customDateRange.startDate && r.tarih <= customDateRange.endDate);
+                    if (filteredAlloc.length > 0) allocData = filteredAlloc;
+                }
                 renderFundLatestAllocation(allocData, totalAUM);
                 renderFundPortfolioMoves(allocData, totalAUM);
                 renderFundHistoryAllocationChart(allocData);
@@ -4425,19 +4506,130 @@ function setTableFilter(limit) {
 // User Action Handlers
 function selectQuickFund(fundCode) {
     if (!fundCode) return;
-    loadAndRenderFundAnalysis(fundCode, appState.activeFundPeriod || 30);
+    loadAndRenderFundAnalysis(fundCode, appState.activeFundPeriod || 30, appState.fundCustomDateRange);
 }
 
 function setFundAnalysisPeriod(days) {
+    appState.fundCustomDateRange = null;
+    const bar = document.getElementById("fundCustomDateBar");
+    if (bar) bar.style.display = "none";
+    const banner = document.getElementById("fundCustomDateActiveBanner");
+    if (banner) banner.style.display = "none";
+    const btnCustom = document.getElementById("btnFundCustomDates");
+    if (btnCustom) btnCustom.classList.remove("active");
     loadAndRenderFundAnalysis(appState.activeFundCode || "TI1", days);
 }
+
+function toggleFundCustomDateFilter() {
+    const bar = document.getElementById("fundCustomDateBar");
+    if (!bar) return;
+    const isHidden = window.getComputedStyle(bar).display === "none";
+    if (isHidden) {
+        bar.style.display = "block";
+        const inpS = document.getElementById("fundCustomStartDate");
+        const inpE = document.getElementById("fundCustomEndDate");
+        if (inpS && !inpS.value) {
+            const d = new Date();
+            d.setDate(d.getDate() - 30);
+            inpS.value = d.toISOString().split("T")[0];
+        }
+        if (inpE && !inpE.value) {
+            inpE.value = new Date().toISOString().split("T")[0];
+        }
+    } else {
+        if (!appState.fundCustomDateRange) {
+            bar.style.display = "none";
+        }
+    }
+}
+window.toggleFundCustomDateFilter = toggleFundCustomDateFilter;
+
+function setFundCustomDatePreset(presetKey) {
+    const inpS = document.getElementById("fundCustomStartDate");
+    const inpE = document.getElementById("fundCustomEndDate");
+    if (!inpS || !inpE) return;
+
+    const today = new Date();
+    const endISO = today.toISOString().split("T")[0];
+    let startISO = endISO;
+
+    if (presetKey === 'this_month') {
+        const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+        startISO = firstDay.toISOString().split("T")[0];
+    } else if (presetKey === 'last_month') {
+        const firstDayPrev = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+        const lastDayPrev = new Date(today.getFullYear(), today.getMonth(), 0);
+        startISO = firstDayPrev.toISOString().split("T")[0];
+        inpE.value = lastDayPrev.toISOString().split("T")[0];
+        inpS.value = startISO;
+        applyFundCustomDateRange();
+        return;
+    } else if (presetKey === '3m') {
+        const d = new Date();
+        d.setDate(d.getDate() - 90);
+        startISO = d.toISOString().split("T")[0];
+    } else if (presetKey === 'ytd') {
+        const firstJan = new Date(today.getFullYear(), 0, 1);
+        startISO = firstJan.toISOString().split("T")[0];
+    }
+
+    inpS.value = startISO;
+    inpE.value = endISO;
+    applyFundCustomDateRange();
+}
+window.setFundCustomDatePreset = setFundCustomDatePreset;
+
+function applyFundCustomDateRange() {
+    const inpS = document.getElementById("fundCustomStartDate");
+    const inpE = document.getElementById("fundCustomEndDate");
+    if (!inpS || !inpE) return;
+
+    const startDate = inpS.value;
+    const endDate = inpE.value;
+
+    if (!startDate || !endDate) {
+        if (typeof showToast === 'function') {
+            showToast("Lütfen başlangıç ve bitiş tarihlerini belirleyin.", "warning");
+        }
+        return;
+    }
+
+    if (startDate > endDate) {
+        if (typeof showToast === 'function') {
+            showToast("Başlangıç tarihi bitiş tarihinden sonra olamaz.", "warning");
+        }
+        return;
+    }
+
+    loadAndRenderFundAnalysis(appState.activeFundCode || "TI1", null, { startDate, endDate });
+    if (typeof showToast === 'function') {
+        showToast("Özel tarih aralığı uygulandı.", "success");
+    }
+}
+window.applyFundCustomDateRange = applyFundCustomDateRange;
+
+function resetFundCustomDateRange() {
+    appState.fundCustomDateRange = null;
+    const bar = document.getElementById("fundCustomDateBar");
+    if (bar) bar.style.display = "none";
+    const banner = document.getElementById("fundCustomDateActiveBanner");
+    if (banner) banner.style.display = "none";
+    const btnCustom = document.getElementById("btnFundCustomDates");
+    if (btnCustom) btnCustom.classList.remove("active");
+
+    loadAndRenderFundAnalysis(appState.activeFundCode || "TI1", 30, null);
+    if (typeof showToast === 'function') {
+        showToast("Standart 30 günlük görünüme dönüldü.", "info");
+    }
+}
+window.resetFundCustomDateRange = resetFundCustomDateRange;
 
 function triggerFundAnalysisSearch() {
     const input = document.getElementById("tefasFundSearchInput");
     if (!input) return;
     const val = input.value.trim().toUpperCase();
     if (!val) return;
-    loadAndRenderFundAnalysis(val, appState.activeFundPeriod || 30);
+    loadAndRenderFundAnalysis(val, appState.activeFundPeriod || 30, appState.fundCustomDateRange);
 }
 
 function clearFundSearch() {
@@ -12302,6 +12494,8 @@ let currentFundStoryState = {
     showAllocChange: true,
     investorDiff: 0,
     investorDiffPct: 0,
+    customDateRange: null,
+    investorPeriodLabel: "Son 1 Ay Değişim",
     activePreset: "standard",
     blocksOrder: ['identity', 'returns', 'telemetry', 'specs', 'allocation', 'ranking', 'summary_badge', 'long_returns', 'my_holding', 'custom_note', 'author_tag'],
     blocksEnabled: {
@@ -12431,6 +12625,173 @@ function toggleStoryAllocChange(forceVal) {
     saveStoryLayout();
     updateFundStoryLivePreview();
 }
+
+async function setStoryCustomPeriod(periodKey) {
+    const p1m = document.getElementById("btnStoryPeriod1M");
+    const p3m = document.getElementById("btnStoryPeriod3M");
+    const pYtd = document.getElementById("btnStoryPeriodYTD");
+    const pCustom = document.getElementById("btnStoryPeriodCustom");
+    const dateInputsCont = document.getElementById("fStoryCustomDateInputs");
+    const labelElem = document.getElementById("fStoryPeriodLabel");
+    const today = new Date();
+    const endISO = today.toISOString().split("T")[0];
+
+    [p1m, p3m, pYtd, pCustom].forEach(p => p && p.classList.remove("active"));
+
+    if (periodKey === '1M') {
+        if (p1m) p1m.classList.add("active");
+        if (dateInputsCont) dateInputsCont.style.display = "none";
+        if (labelElem) labelElem.innerText = "Son 1 Ay";
+        const d = new Date();
+        d.setDate(d.getDate() - 30);
+        currentFundStoryState.customDateRange = { startDate: d.toISOString().split("T")[0], endDate: endISO };
+        currentFundStoryState.investorPeriodLabel = "Son 1 Ay Değişim";
+    } else if (periodKey === '3M') {
+        if (p3m) p3m.classList.add("active");
+        if (dateInputsCont) dateInputsCont.style.display = "none";
+        if (labelElem) labelElem.innerText = "Son 3 Ay";
+        const d = new Date();
+        d.setDate(d.getDate() - 90);
+        currentFundStoryState.customDateRange = { startDate: d.toISOString().split("T")[0], endDate: endISO };
+        currentFundStoryState.investorPeriodLabel = "Son 3 Ay Değişim";
+    } else if (periodKey === 'YTD') {
+        if (pYtd) pYtd.classList.add("active");
+        if (dateInputsCont) dateInputsCont.style.display = "none";
+        if (labelElem) labelElem.innerText = "YTD (Yılbaşı)";
+        const d = new Date(today.getFullYear(), 0, 1);
+        currentFundStoryState.customDateRange = { startDate: d.toISOString().split("T")[0], endDate: endISO };
+        currentFundStoryState.investorPeriodLabel = "YTD Değişim";
+    } else if (periodKey === 'CUSTOM') {
+        if (pCustom) pCustom.classList.add("active");
+        if (dateInputsCont) dateInputsCont.style.display = "flex";
+        const inpS = document.getElementById("inputStoryStartDate");
+        const inpE = document.getElementById("inputStoryEndDate");
+        if (inpS && !inpS.value) {
+            const d = new Date();
+            d.setDate(d.getDate() - 30);
+            inpS.value = d.toISOString().split("T")[0];
+        }
+        if (inpE && !inpE.value) {
+            inpE.value = endISO;
+        }
+        if (inpS && inpE) {
+            currentFundStoryState.customDateRange = { startDate: inpS.value, endDate: inpE.value };
+            currentFundStoryState.investorPeriodLabel = `${formatShortDateTR(inpS.value)} - ${formatShortDateTR(inpE.value)} Değişim`;
+            if (labelElem) labelElem.innerText = `${formatShortDateTR(inpS.value)} - ${formatShortDateTR(inpE.value)}`;
+        }
+    }
+
+    await recalculateStoryDeltas();
+    updateFundStoryLivePreview();
+}
+window.setStoryCustomPeriod = setStoryCustomPeriod;
+
+async function applyStoryCustomDates() {
+    const inpS = document.getElementById("inputStoryStartDate");
+    const inpE = document.getElementById("inputStoryEndDate");
+    if (!inpS || !inpE) return;
+    const s = inpS.value;
+    const e = inpE.value;
+    if (!s || !e || s > e) return;
+
+    currentFundStoryState.customDateRange = { startDate: s, endDate: e };
+    currentFundStoryState.investorPeriodLabel = `${formatShortDateTR(s)} - ${formatShortDateTR(e)} Değişim`;
+    const labelElem = document.getElementById("fStoryPeriodLabel");
+    if (labelElem) labelElem.innerText = `${formatShortDateTR(s)} - ${formatShortDateTR(e)}`;
+
+    await recalculateStoryDeltas();
+    updateFundStoryLivePreview();
+}
+window.applyStoryCustomDates = applyStoryCustomDates;
+
+async function recalculateStoryDeltas() {
+    const fCode = currentFundStoryState.fundCode || "TI1";
+    const range = currentFundStoryState.customDateRange;
+    if (!range || !range.startDate || !range.endDate) return;
+
+    // 1. Investor Diff
+    try {
+        let histData = (typeof lastFundDetailDataCache !== 'undefined' && Array.isArray(lastFundDetailDataCache) && lastFundDetailDataCache.length > 0 && lastFundDetailDataCache[0].fonKodu === fCode)
+            ? lastFundDetailDataCache
+            : null;
+        if (!histData || histData.length < 2) {
+            const diffMs = Date.now() - new Date(range.startDate).getTime();
+            const fetchDays = Math.min(1095, Math.max(30, Math.ceil(diffMs / 86400000) + 15));
+            histData = await fetchTefasFundData(fCode, fetchDays);
+        }
+        if (Array.isArray(histData) && histData.length >= 2) {
+            const sorted = [...histData].sort((a, b) => (a.tarih || '').localeCompare(b.tarih || ''));
+            const filtered = sorted.filter(r => r.tarih >= range.startDate && r.tarih <= range.endDate);
+            if (filtered.length >= 2) {
+                const oldestRow = filtered[0];
+                const latestRow = filtered[filtered.length - 1];
+                const lastInv = parseInt(latestRow.kisiSayisi) || 0;
+                const firstInv = parseInt(oldestRow.kisiSayisi) || lastInv;
+                const diff = lastInv - firstInv;
+                const diffPct = firstInv > 0 ? ((diff / firstInv) * 100) : 0;
+                currentFundStoryState.investorDiff = diff;
+                currentFundStoryState.investorDiffPct = diffPct;
+            }
+        }
+    } catch (e) {
+        console.warn("recalculateStoryDeltas investor error:", e);
+    }
+
+    // 2. Allocation Diff & Rotation
+    try {
+        let allocData = (typeof lastFundAllocDataCache !== 'undefined' && Array.isArray(lastFundAllocDataCache) && lastFundAllocDataCache.length > 0)
+            ? lastFundAllocDataCache
+            : null;
+        if (!allocData || allocData.length < 2) {
+            const diffMs = Date.now() - new Date(range.startDate).getTime();
+            const fetchDays = Math.min(1095, Math.max(30, Math.ceil(diffMs / 86400000) + 15));
+            allocData = await fetchTefasFundAllocation(fCode, fetchDays);
+        }
+        if (Array.isArray(allocData) && allocData.length >= 2) {
+            const sortedAlloc = [...allocData].sort((a, b) => (a.tarih || '').localeCompare(b.tarih || ''));
+            const filteredAlloc = sortedAlloc.filter(r => r.tarih >= range.startDate && r.tarih <= range.endDate);
+            if (filteredAlloc.length >= 2) {
+                const firstRow = filteredAlloc[0];
+                const lastRow = filteredAlloc[filteredAlloc.length - 1];
+                if (Array.isArray(currentFundStoryState.allocItems)) {
+                    currentFundStoryState.allocItems.forEach(item => {
+                        for (const [key, meta] of Object.entries(TEFAS_ASSET_MAP || {})) {
+                            if (meta.label === item.label) {
+                                const endVal = parseFloat(lastRow[key]) || 0;
+                                const startVal = parseFloat(firstRow[key]) || 0;
+                                if (endVal > 0) item.pct = endVal;
+                                item.diff = parseFloat((endVal - startVal).toFixed(2));
+                                break;
+                            }
+                        }
+                    });
+
+                    // Rebuild allocShiftSummary
+                    const movers = [...currentFundStoryState.allocItems].filter(it => it.diff !== undefined && Math.abs(it.diff) >= 0.1);
+                    if (movers.length > 0) {
+                        const topUp = movers.filter(m => m.diff > 0).sort((a, b) => b.diff - a.diff)[0];
+                        const topDown = movers.filter(m => m.diff < 0).sort((a, b) => a.diff - b.diff)[0];
+                        const parts = [];
+                        if (topUp) {
+                            const shortUp = topUp.label.length > 15 ? topUp.label.substring(0, 13) + ".." : topUp.label;
+                            parts.push(`<span style="color: #10B981; font-weight: 700;">${shortUp} (+%${topUp.diff.toFixed(1).replace('.', ',')} ▲)</span>`);
+                        }
+                        if (topDown) {
+                            const shortDown = topDown.label.length > 15 ? topDown.label.substring(0, 13) + ".." : topDown.label;
+                            parts.push(`<span style="color: #F43F5E; font-weight: 700;">${shortDown} (-%${Math.abs(topDown.diff).toFixed(1).replace('.', ',')} ▼)</span>`);
+                        }
+                        currentFundStoryState.allocShiftSummary = parts.join(' <span style="color: #64748B;">•</span> ');
+                    } else {
+                        currentFundStoryState.allocShiftSummary = `<span style="color: #94A3B8;">Dağılım dengeli (değişim &lt; %0.1)</span>`;
+                    }
+                }
+            }
+        }
+    } catch (e) {
+        console.warn("recalculateStoryDeltas alloc error:", e);
+    }
+}
+window.recalculateStoryDeltas = recalculateStoryDeltas;
 
 function loadSavedStoryLayout() {
     try {
@@ -12648,6 +13009,15 @@ function applyBlocksOrderToLiveCard() {
 async function openFundStoryCard(fundCode) {
     const fCode = (fundCode || (typeof appState !== 'undefined' ? appState.activeFundCode : "") || "TI1").toUpperCase().trim();
     currentFundStoryState.fundCode = fCode;
+
+    // Sync active customDateRange from appState if set in Fund Detail Modal
+    if (typeof appState !== 'undefined' && appState.fundCustomDateRange && appState.fundCustomDateRange.startDate && appState.fundCustomDateRange.endDate) {
+        currentFundStoryState.customDateRange = { ...appState.fundCustomDateRange };
+        currentFundStoryState.investorPeriodLabel = `${formatShortDateTR(appState.fundCustomDateRange.startDate)} - ${formatShortDateTR(appState.fundCustomDateRange.endDate)} Değişim`;
+    } else {
+        currentFundStoryState.customDateRange = null;
+        currentFundStoryState.investorPeriodLabel = "Son 1 Ay Değişim";
+    }
 
     // 1. Resolve Fund Metadata & Title
     let fundObj = null;
@@ -13233,6 +13603,30 @@ async function openFundStoryCard(fundCode) {
     const pBtn = document.getElementById(`btnPreset_${currentFundStoryState.activePreset || 'standard'}`);
     if (pBtn) pBtn.classList.add("active");
 
+    // Sync Studio Date Period Controls UI
+    const p1m = document.getElementById("btnStoryPeriod1M");
+    const p3m = document.getElementById("btnStoryPeriod3M");
+    const pYtd = document.getElementById("btnStoryPeriodYTD");
+    const pCustom = document.getElementById("btnStoryPeriodCustom");
+    const dateInputsCont = document.getElementById("fStoryCustomDateInputs");
+    const periodLabelElem = document.getElementById("fStoryPeriodLabel");
+    const inpS = document.getElementById("inputStoryStartDate");
+    const inpE = document.getElementById("inputStoryEndDate");
+
+    [p1m, p3m, pYtd, pCustom].forEach(p => p && p.classList.remove("active"));
+
+    if (currentFundStoryState.customDateRange) {
+        if (pCustom) pCustom.classList.add("active");
+        if (dateInputsCont) dateInputsCont.style.display = "flex";
+        if (inpS) inpS.value = currentFundStoryState.customDateRange.startDate;
+        if (inpE) inpE.value = currentFundStoryState.customDateRange.endDate;
+        if (periodLabelElem) periodLabelElem.innerText = `${formatShortDateTR(currentFundStoryState.customDateRange.startDate)} - ${formatShortDateTR(currentFundStoryState.customDateRange.endDate)}`;
+    } else {
+        if (p1m) p1m.classList.add("active");
+        if (dateInputsCont) dateInputsCont.style.display = "none";
+        if (periodLabelElem) periodLabelElem.innerText = "Son 1 Ay";
+    }
+
     updateFundStoryLivePreview();
 
     // 13. Reveal Studio Modal
@@ -13307,7 +13701,7 @@ function updateFundStoryLivePreview() {
             }
             const countStr = typeof formatFundCount === 'function' ? formatFundCount(Math.abs(iDiff)) : Math.abs(iDiff).toLocaleString('tr-TR');
             invDiffText.innerText = `${sign}${countStr} (%${sign}${Math.abs(iPct).toFixed(1).replace('.', ',')})`;
-            if (invLabel) invLabel.innerText = "Son 1 Ay Değişim";
+            if (invLabel) invLabel.innerText = currentFundStoryState.investorPeriodLabel || "Son 1 Ay Değişim";
         } else {
             invDiffCont.style.display = "none";
             if (invLabel) invLabel.innerText = "Aktif Ortak";
@@ -13608,6 +14002,13 @@ window.setStoryCardFormat = setStoryCardFormat;
 window.toggleStoryPrivacyMask = toggleStoryPrivacyMask;
 window.toggleStoryInvestorChange = toggleStoryInvestorChange;
 window.toggleStoryAllocChange = toggleStoryAllocChange;
+window.setStoryCustomPeriod = setStoryCustomPeriod;
+window.applyStoryCustomDates = applyStoryCustomDates;
+window.recalculateStoryDeltas = recalculateStoryDeltas;
+window.toggleFundCustomDateFilter = toggleFundCustomDateFilter;
+window.setFundCustomDatePreset = setFundCustomDatePreset;
+window.applyFundCustomDateRange = applyFundCustomDateRange;
+window.resetFundCustomDateRange = resetFundCustomDateRange;
 
 /* ==========================================================================
    News & KAP Radar

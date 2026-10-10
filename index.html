@@ -27,7 +27,7 @@
     <script src="https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js"></script>
     <!-- jsPDF for High-Resolution Multi-Page PDF Export -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <link rel="stylesheet" href="style.css?v=128">    <style>
+    <link rel="stylesheet" href="style.css?v=129">    <style>
         /* Refresh Button Loading Animation */
         .icon-btn.loading i {
             animation: spin 1s linear infinite;
@@ -1056,6 +1056,9 @@
                                     <button class="period-btn" data-days="90" onclick="setFundAnalysisPeriod(90)">3A</button>
                                     <button class="period-btn" data-days="180" onclick="setFundAnalysisPeriod(180)">6A</button>
                                     <button class="period-btn" data-days="365" onclick="setFundAnalysisPeriod(365)">1Y</button>
+                                    <button class="period-btn" id="btnFundCustomDates" onclick="toggleFundCustomDateFilter()" title="Kendi belirlediğiniz iki tarih arasındaki değişimi inceleyin">
+                                        <i class="fa-solid fa-calendar-days"></i> Özel Tarih
+                                    </button>
                                 </div>
                                 <button type="button" class="btn-quick-story-fund" onclick="openFundStoryCard(appState.activeFundCode)" title="Fon Karnesini Instagram / Story neon kartı olarak indir ve paylaş">
                                     <i class="fa-brands fa-instagram"></i>
@@ -1065,6 +1068,49 @@
                                     <i class="fa-solid fa-cart-plus"></i>
                                     <span>Portföye Ekle</span>
                                 </button>
+                            </div>
+                        </div>
+
+                        <!-- Özel Tarih Aralığı Analiz Paneli (Yatırımcı Değişimi & Fon Giriş/Çıkışı) -->
+                        <div id="fundCustomDateBar" class="fund-custom-date-bar" style="display: none;">
+                            <div class="fcd-header">
+                                <div class="fcd-title">
+                                    <i class="fa-solid fa-calendar-week" style="color: #00F5FF;"></i>
+                                    <span>Özel Tarih Aralığı Analizi (Yatırımcı Değişimi & Fon Giriş/Çıkışı)</span>
+                                </div>
+                                <div class="fcd-quick-shortcuts">
+                                    <button type="button" class="fcd-shortcut-btn" onclick="setFundCustomDatePreset('this_month')">Bu Ay</button>
+                                    <button type="button" class="fcd-shortcut-btn" onclick="setFundCustomDatePreset('last_month')">Geçen Ay</button>
+                                    <button type="button" class="fcd-shortcut-btn" onclick="setFundCustomDatePreset('3_months')">Son 3 Ay</button>
+                                    <button type="button" class="fcd-shortcut-btn" onclick="setFundCustomDatePreset('ytd')">Yılbaşı (YTD)</button>
+                                </div>
+                            </div>
+                            <div class="fcd-inputs-row">
+                                <div class="fcd-field">
+                                    <label for="fundCustomStartDate"><i class="fa-solid fa-calendar-day" style="color: #10B981;"></i> Başlangıç Tarihi</label>
+                                    <input type="date" id="fundCustomStartDate" class="fcd-date-input" />
+                                </div>
+                                <div class="fcd-field">
+                                    <label for="fundCustomEndDate"><i class="fa-solid fa-calendar-check" style="color: #F43F5E;"></i> Bitiş Tarihi</label>
+                                    <input type="date" id="fundCustomEndDate" class="fcd-date-input" />
+                                </div>
+                                <div class="fcd-actions">
+                                    <button type="button" class="btn primary fcd-btn-apply" onclick="applyFundCustomDateRange()">
+                                        <i class="fa-solid fa-calculator"></i>
+                                        <span>Değişimi Hesapla</span>
+                                    </button>
+                                    <button type="button" class="btn outline fcd-btn-reset" onclick="resetFundCustomDateRange()" title="Varsayılan periyoda dön">
+                                        <i class="fa-solid fa-rotate-left"></i>
+                                        <span>Sıfırla</span>
+                                    </button>
+                                </div>
+                            </div>
+                            <div id="fundCustomDateActiveBanner" class="fcd-active-banner" style="display: none;">
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <i class="fa-solid fa-circle-check" style="color: #10B981;"></i>
+                                    <span id="fundCustomDateActiveText">Özel Tarih Aralığı Aktif</span>
+                                </div>
+                                <button type="button" class="fcd-banner-close" onclick="resetFundCustomDateRange()" title="Filtreyi kaldır">✕</button>
                             </div>
                         </div>
 
@@ -2833,6 +2879,26 @@
                                     <span class="studio-slider"></span>
                                 </label>
                             </div>
+
+                            <!-- Story Trend Tarih Aralığı Seçici -->
+                            <div class="studio-date-range-box" style="margin-top: 4px; padding: 8px 10px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px;">
+                                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+                                    <span style="font-size: 0.68rem; color: #94A3B8; font-weight: 700; display: flex; align-items: center; gap: 5px;">
+                                        <i class="fa-solid fa-calendar-days" style="color: #00F5FF;"></i> Trend Aralığı:
+                                    </span>
+                                    <span id="fStoryPeriodLabel" style="font-size: 0.65rem; color: #38BDF8; font-weight: 700;">Son 1 Ay</span>
+                                </div>
+                                <div style="display: flex; gap: 4px; margin-bottom: 6px;">
+                                    <button type="button" class="studio-sub-pill active" id="btnStoryPeriod1M" onclick="setStoryCustomPeriod('1M')">1 Ay</button>
+                                    <button type="button" class="studio-sub-pill" id="btnStoryPeriod3M" onclick="setStoryCustomPeriod('3M')">3 Ay</button>
+                                    <button type="button" class="studio-sub-pill" id="btnStoryPeriodYTD" onclick="setStoryCustomPeriod('YTD')">YTD</button>
+                                    <button type="button" class="studio-sub-pill" id="btnStoryPeriodCustom" onclick="setStoryCustomPeriod('CUSTOM')">Özel</button>
+                                </div>
+                                <div id="fStoryCustomDateInputs" style="display: none; gap: 6px; margin-top: 6px;">
+                                    <input type="date" id="inputStoryStartDate" class="studio-date-mini" onchange="applyStoryCustomDates()" />
+                                    <input type="date" id="inputStoryEndDate" class="studio-date-mini" onchange="applyStoryCustomDates()" />
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -3763,6 +3829,6 @@
         </div>
     </div>
 
-    <script src="app.js?v=128"></script>
+    <script src="app.js?v=129"></script>
 </body>
 </html>
