@@ -8801,6 +8801,30 @@ body.theme-neo-brutalism .sort-option.active {
     transform: translateY(-1px);
 }
 
+.btn-quick-story-fund {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 18px;
+    height: 40px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, rgba(225, 48, 108, 0.15) 0%, rgba(131, 58, 180, 0.2) 100%);
+    border: 1px solid rgba(225, 48, 108, 0.45);
+    color: #FB7185;
+    font-size: 0.86rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    white-space: nowrap;
+}
+
+.btn-quick-story-fund:hover {
+    background: linear-gradient(135deg, #E1306C 0%, #833AB4 100%);
+    color: #FFFFFF;
+    box-shadow: 0 4px 18px rgba(225, 48, 108, 0.45);
+    transform: translateY(-1px);
+}
+
 /* 6 KPI Grid - Symmetrical 3x2 on Desktop, 2x3 on Mobile */
 .fund-kpi-grid {
     display: grid;
@@ -9737,7 +9761,8 @@ body.theme-neo-brutalism .sort-option.active {
         flex: 1;
         justify-content: space-between;
     }
-    .btn-quick-add-fund {
+    .btn-quick-add-fund,
+    .btn-quick-story-fund {
         flex-shrink: 0;
     }
     .fund-kpi-grid {
@@ -9791,7 +9816,8 @@ body.theme-neo-brutalism .sort-option.active {
         width: 100%;
         justify-content: space-between;
     }
-    .btn-quick-add-fund {
+    .btn-quick-add-fund,
+    .btn-quick-story-fund {
         width: 100%;
         justify-content: center;
     }
@@ -10317,6 +10343,26 @@ body.theme-neo-brutalism .sort-option.active {
     background: #10B981 !important;
     color: #022C22 !important;
     box-shadow: 0 6px 26px rgba(0, 255, 136, 0.7) !important;
+    transform: translateY(-2px);
+}
+
+.fund-layout-bento .btn-quick-story-fund {
+    background: linear-gradient(135deg, rgba(244, 63, 94, 0.25) 0%, rgba(168, 85, 247, 0.3) 100%) !important;
+    border: 1.5px solid rgba(244, 63, 94, 0.55) !important;
+    color: #FDA4AF !important;
+    border-radius: 9999px !important;
+    padding: 9px 20px !important;
+    font-size: 0.84rem !important;
+    font-weight: 800 !important;
+    box-shadow: 0 4px 18px rgba(244, 63, 94, 0.3) !important;
+    transition: all 0.25s ease !important;
+    font-family: 'Space Grotesk', sans-serif !important;
+}
+
+.fund-layout-bento .btn-quick-story-fund:hover {
+    background: linear-gradient(135deg, #F43F5E 0%, #A855F7 100%) !important;
+    color: #FFFFFF !important;
+    box-shadow: 0 6px 26px rgba(244, 63, 94, 0.7) !important;
     transform: translateY(-2px);
 }
 
@@ -13951,6 +13997,29 @@ body.theme-neo-brutalism .sort-option.active {
     background: #38BDF8;
     color: #0F172A;
     box-shadow: 0 0 10px rgba(56, 189, 248, 0.4);
+}
+
+.btn-share-fund-row {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    background: rgba(225, 48, 108, 0.12);
+    border: 1px solid rgba(225, 48, 108, 0.35);
+    color: #FB7185;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.18s ease;
+    flex-shrink: 0;
+}
+
+.btn-share-fund-row:hover {
+    background: linear-gradient(135deg, #E1306C, #833AB4);
+    color: #FFFFFF;
+    box-shadow: 0 0 12px rgba(225, 48, 108, 0.45);
+    transform: scale(1.08);
 }
 
 /* Media Queries for Categories View */

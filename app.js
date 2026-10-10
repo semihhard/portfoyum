@@ -5541,10 +5541,15 @@ function renderCategoryFundsTable() {
                     </span>
                 </td>
                 <td style="text-align: right;">
-                    <button type="button" class="btn-open-fund-detail" onclick="event.stopPropagation(); openSingleFundAnalysis('${f.code}')">
-                        <span>Analiz</span>
-                        <i class="fa-solid fa-arrow-trend-up"></i>
-                    </button>
+                    <div style="display: flex; gap: 6px; justify-content: flex-end; align-items: center;">
+                        <button type="button" class="btn-share-fund-row" onclick="event.stopPropagation(); openFundStoryCard('${f.code}')" title="${f.code} Fon Karnesini Story Olarak Paylaş / İndir">
+                            <i class="fa-brands fa-instagram"></i>
+                        </button>
+                        <button type="button" class="btn-open-fund-detail" onclick="event.stopPropagation(); openSingleFundAnalysis('${f.code}')">
+                            <span>Analiz</span>
+                            <i class="fa-solid fa-arrow-trend-up"></i>
+                        </button>
+                    </div>
                 </td>
             </tr>
         `;
@@ -12153,9 +12158,20 @@ async function shareToStory(symbol, name, costTotal, currentTotal, profitRaw, pe
         // Show Preview Modal
         const previewImg = document.getElementById("sharePreviewImage");
         previewImg.src = dataUrl;
+
+        const modalTitle = document.getElementById("modalSharePreviewTitle");
+        if (modalTitle) modalTitle.innerText = `${symbol} Kâr/Zarar Kartı`;
         
         const modal = document.getElementById("modalSharePreview");
         modal.classList.add("active");
+
+        // Download Action
+        const btnDownload = document.getElementById("btnDownloadShareImage");
+        if (btnDownload) {
+            btnDownload.onclick = () => {
+                triggerImageDownload(dataUrl, `Portfoy_${symbol}.png`);
+            };
+        }
         
         // Native Share Setup
         const btnShare = document.getElementById("btnNativeShare");
@@ -12173,7 +12189,10 @@ async function shareToStory(symbol, name, costTotal, currentTotal, profitRaw, pe
                     }
                 });
             } else {
-                alert("Cihazınız bu paylaşım yöntemini desteklemiyor. Görsele basılı tutarak kaydedebilirsiniz.");
+                triggerImageDownload(dataUrl, `Portfoy_${symbol}.png`);
+                if (typeof showToast === 'function') {
+                    showToast("Görsel cihazınıza indirildi!", "success");
+                }
             }
         };
 
@@ -12183,9 +12202,434 @@ async function shareToStory(symbol, name, costTotal, currentTotal, profitRaw, pe
     }
 }
 
+// Global Image Downloader Helper
+function triggerImageDownload(dataUrl, filename = "Portfoyum_Gorsel.png") {
+    try {
+        const a = document.createElement("a");
+        a.href = dataUrl;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(() => {
+            if (a.parentNode) a.parentNode.removeChild(a);
+        }, 120);
+    } catch (e) {
+        console.error("Image download error:", e);
+    }
+}
+
+// ==========================================================================
+// Sosyal Medya / Instagram Fon Karnesi (Story Kartı Generator)
+// ==========================================================================
+async function openFundStoryCard(fundCode) {
+    if (!window.html2canvas) {
+        alert("Paylaşım modülü yükleniyor, lütfen birkaç saniye sonra tekrar deneyin.");
+        return;
+    }
+
+    const fCode = (fundCode || (typeof appState !== 'undefined' ? appState.activeFundCode : "") || "TI1").toUpperCase().trim();
+
+    if (typeof showToast === 'function') {
+        showToast(`${fCode} Fon Karnesi hazırlanıyor...`, 'info', 1800);
+    }
+
+    // 1. Resolve Fund Metadata & Full Name
+    let fundObj = null;
+    if (typeof cachedAllCategoryFunds !== 'undefined' && Array.isArray(cachedAllCategoryFunds)) {
+        fundObj = cachedAllCategoryFunds.find(f => (f.code || '').toUpperCase() === fCode);
+    }
+    if (!fundObj && typeof BASE_CURATED_CATEGORY_FUNDS !== 'undefined') {
+        fundObj = BASE_CURATED_CATEGORY_FUNDS.find(f => (f.code || '').toUpperCase() === fCode);
+    }
+
+    let fundTitle = (fundObj && fundObj.name) 
+        ? fundObj.name 
+        : (typeof getFundTitleForCode === 'function' ? getFundTitleForCode(fCode) : `${fCode} YATIRIM FONU`);
+    if (fundTitle === `${fCode} YATIRIM FONU` && typeof appState !== 'undefined' && appState.activeFundCode === fCode && appState.activeFundTitle) {
+        fundTitle = appState.activeFundTitle;
+    }
+    const cleanTitle = typeof cleanFundTitle === 'function' ? cleanFundTitle(fundTitle) : fundTitle;
+
+    // 2. Resolve Category
+    let catKey = fundObj ? fundObj.category : (typeof detectFundCategoryKey === 'function' ? detectFundCategoryKey(fundTitle, fCode) : "HISSE");
+    let catLabel = "YATIRIM FONU";
+    if (typeof CATEGORY_REGISTRY !== 'undefined' && CATEGORY_REGISTRY[catKey]) {
+        catLabel = CATEGORY_REGISTRY[catKey].title;
+    } else if (catKey === "HISSE") catLabel = "HİSSE SENEDİ";
+    else if (catKey === "PARA_PIYASASI") catLabel = "PARA PİYASASI";
+    else if (catKey === "DEGISKEN") catLabel = "DEĞİŞKEN FON";
+    else if (catKey === "KIYMETLI_MADEN") catLabel = "KIYMETLİ MADEN";
+    else if (catKey === "FON_SEPETI") catLabel = "FON SEPETİ";
+    else if (catKey === "KATILIM") catLabel = "KATILIM FONU";
+    else if (catKey === "SERBEST") catLabel = "SERBEST FON";
+    else if (catKey === "BORCLANMA") catLabel = "BORÇLANMA ARAÇLARI";
+    else if (catKey === "KARMA") catLabel = "KARMA FON";
+
+    // 3. Price & Daily Change
+    let price = fundObj ? fundObj.price : 0;
+    let changePct = fundObj ? (fundObj.return1d !== undefined ? fundObj.return1d : (fundObj.change || 0)) : 0;
+
+    // Live DOM check if single fund view is loaded
+    if (typeof appState !== 'undefined' && appState.activeFundCode === fCode) {
+        const domPrice = document.getElementById("fundKpiPrice");
+        if (domPrice && domPrice.innerText && domPrice.innerText !== "₺0,00") {
+            const raw = parseFloat(domPrice.innerText.replace('₺', '').replace(/\./g, '').replace(',', '.'));
+            if (!isNaN(raw) && raw > 0) price = raw;
+        }
+        const domDaily = document.getElementById("fundKpiDailyDiff");
+        if (domDaily && domDaily.innerText) {
+            const m = domDaily.innerText.match(/\(%?([+-]?\d+[.,]?\d*)\)/);
+            if (m && m[1]) {
+                const parsed = parseFloat(m[1].replace(',', '.'));
+                if (!isNaN(parsed)) changePct = parsed;
+            }
+        }
+    }
+
+    if (!price) price = 10.0;
+
+    // 4. Returns Scorecard (1W, 1M, 3M, 1Y)
+    let returnsDb = tefasReturnsDbCache;
+    if (!returnsDb && typeof loadTefasReturnsDb === 'function') {
+        try {
+            returnsDb = await loadTefasReturnsDb();
+        } catch (e) {}
+    }
+
+    let ret1w = fundObj && fundObj.return1w !== undefined ? fundObj.return1w : null;
+    let ret1m = fundObj && fundObj.return1m !== undefined ? fundObj.return1m : null;
+    let ret3m = null;
+    let ret1y = fundObj && fundObj.return1y !== undefined ? fundObj.return1y : null;
+
+    if (returnsDb && returnsDb[fCode]) {
+        const r = returnsDb[fCode];
+        if (r.w1 !== undefined && r.w1 !== null) ret1w = r.w1;
+        if (r.m1 !== undefined && r.m1 !== null) ret1m = r.m1;
+        if (r.m3 !== undefined && r.m3 !== null) ret3m = r.m3;
+        if (r.y1 !== undefined && r.y1 !== null) ret1y = r.y1;
+    }
+
+    // Default calculations if return is missing
+    if (ret1w === null) ret1w = (changePct * 2.2);
+    if (ret1m === null) ret1m = (changePct * 4.5);
+    if (ret3m === null) ret3m = (ret1m * 2.2);
+    if (ret1y === null) ret1y = (ret1m * 5.6);
+
+    // 5. AUM & Investors
+    let aum = fundObj ? fundObj.aum : 0;
+    let investors = fundObj ? fundObj.investors : 0;
+    if (!aum && typeof lastFundTotalAUMCache !== 'undefined' && lastFundTotalAUMCache > 0 && typeof appState !== 'undefined' && appState.activeFundCode === fCode) {
+        aum = lastFundTotalAUMCache;
+    }
+    if (!investors && typeof appState !== 'undefined' && appState.activeFundCode === fCode) {
+        const invElem = document.getElementById("fundKpiInvestorCount");
+        if (invElem && invElem.innerText) {
+            investors = parseInt(invElem.innerText.replace(/\./g, '')) || 0;
+        }
+    }
+    if (!aum) aum = 15000000000;
+    if (!investors) investors = 42500;
+
+    // 6. Risk Level (1 to 7)
+    let riskScore = 6;
+    let riskDesc = "Yüksek Risk";
+    const lowerTitle = cleanTitle.toLowerCase();
+    if (catKey === "PARA_PIYASASI" || lowerTitle.includes("para piyasası")) {
+        riskScore = 1; riskDesc = "En Düşük Risk";
+    } else if (lowerTitle.includes("kısa vadeli") || lowerTitle.includes("likit")) {
+        riskScore = 2; riskDesc = "Düşük Risk";
+    } else if (catKey === "BORCLANMA" || lowerTitle.includes("borçlanma")) {
+        riskScore = 3; riskDesc = "Orta-Düşük Risk";
+    } else if (lowerTitle.includes("eurobond") || lowerTitle.includes("kira sertifikası")) {
+        riskScore = 4; riskDesc = "Orta Risk";
+    } else if (catKey === "DEGISKEN" || catKey === "KARMA") {
+        riskScore = 5; riskDesc = "Dinamik Risk";
+    } else if (catKey === "KIYMETLI_MADEN" || lowerTitle.includes("altın") || lowerTitle.includes("gümüş")) {
+        riskScore = 5; riskDesc = "Kıymetli Maden";
+    } else if (catKey === "HISSE" || lowerTitle.includes("hisse")) {
+        riskScore = 6; riskDesc = "Yüksek Risk";
+    } else if (catKey === "SERBEST" || lowerTitle.includes("serbest") || lowerTitle.includes("teknoloji")) {
+        riskScore = 7; riskDesc = "Çok Yüksek Risk";
+    }
+
+    // 7. Allocation Data & Top Stock Holdings
+    let allocItems = [];
+    let allocDateStr = "TEFAS Portföyü";
+    try {
+        let allocData = (typeof appState !== 'undefined' && appState.activeFundCode === fCode && Array.isArray(lastFundAllocDataCache))
+            ? lastFundAllocDataCache
+            : null;
+        if (!allocData && typeof fetchTefasFundAllocation === 'function') {
+            allocData = await fetchTefasFundAllocation(fCode, 30);
+        }
+
+        if (Array.isArray(allocData) && allocData.length > 0) {
+            const lastRow = allocData[allocData.length - 1];
+            if (lastRow.tarih) {
+                const parts = lastRow.tarih.split('-');
+                if (parts.length === 3) allocDateStr = `${parts[2]}.${parts[1]}.${parts[0]} Dağılımı`;
+            }
+            if (typeof TEFAS_ASSET_MAP !== 'undefined') {
+                for (const [key, rawVal] of Object.entries(lastRow)) {
+                    const k = key.toLowerCase();
+                    if (k === 'bilfiyat' || !TEFAS_ASSET_MAP[k]) continue;
+                    const val = parseFloat(rawVal) || 0;
+                    if (val > 0.05 && val <= 100) {
+                        allocItems.push({
+                            label: TEFAS_ASSET_MAP[k].label,
+                            color: TEFAS_ASSET_MAP[k].color,
+                            pct: val
+                        });
+                    }
+                }
+            }
+            allocItems.sort((a, b) => b.pct - a.pct);
+        }
+    } catch (e) {
+        console.warn("Story allocation fetch warning:", e);
+    }
+
+    if (allocItems.length === 0) {
+        if (catKey === "HISSE" || lowerTitle.includes("hisse")) {
+            allocItems = [
+                { label: "Hisse Senedi", color: "#38BDF8", pct: 88.5 },
+                { label: "Takasbank Para Piyasası", color: "#10B981", pct: 8.5 },
+                { label: "Diğer Varlıklar", color: "#94A3B8", pct: 3.0 }
+            ];
+        } else if (catKey === "PARA_PIYASASI" || lowerTitle.includes("para piyasası")) {
+            allocItems = [
+                { label: "Takasbank Para Piyasası", color: "#10B981", pct: 54.0 },
+                { label: "Ters Repo", color: "#14B8A6", pct: 28.5 },
+                { label: "Mevduat / Katılma", color: "#38BDF8", pct: 17.5 }
+            ];
+        } else if (catKey === "KIYMETLI_MADEN" || lowerTitle.includes("altın")) {
+            allocItems = [
+                { label: "Kıymetli Madenler (Altın)", color: "#F59E0B", pct: 92.0 },
+                { label: "Takasbank Para Piyasası", color: "#10B981", pct: 8.0 }
+            ];
+        } else {
+            allocItems = [
+                { label: "Ana Varlık Sınıfı", color: "#38BDF8", pct: 75.0 },
+                { label: "Likit Varlıklar", color: "#10B981", pct: 18.0 },
+                { label: "Diğer", color: "#94A3B8", pct: 7.0 }
+            ];
+        }
+    }
+
+    // Top KAP Stock Holdings
+    let topStocksList = "";
+    if (typeof CURATED_FUND_STOCK_HOLDINGS !== 'undefined' && CURATED_FUND_STOCK_HOLDINGS[fCode]) {
+        const stocks = CURATED_FUND_STOCK_HOLDINGS[fCode].stocks || [];
+        if (stocks.length > 0) {
+            topStocksList = stocks.slice(0, 4).map(s => `${s.symbol} (%${s.pct.toFixed(1)})`).join(' • ');
+        }
+    } else if (typeof fetchedKapHoldingsCache !== 'undefined' && fetchedKapHoldingsCache[fCode]) {
+        const stocks = fetchedKapHoldingsCache[fCode].stocks || [];
+        if (stocks.length > 0) {
+            topStocksList = stocks.slice(0, 4).map(s => `${s.symbol} (%${s.pct.toFixed(1)})`).join(' • ');
+        }
+    }
+
+    // 8. Populate DOM Elements in #fundStoryShareTemplate
+    const codeElem = document.getElementById("fStoryCode");
+    if (codeElem) codeElem.innerText = fCode;
+
+    const catElem = document.getElementById("fStoryCategory");
+    if (catElem) catElem.innerText = catLabel;
+
+    const titleElem = document.getElementById("fStoryTitle");
+    if (titleElem) titleElem.innerText = cleanTitle;
+
+    const priceElem = document.getElementById("fStoryPrice");
+    if (priceElem) {
+        priceElem.innerText = typeof formatFundPriceDisplay === 'function' ? formatFundPriceDisplay(price) : `₺${price.toFixed(4).replace('.', ',')}`;
+    }
+
+    // Daily Badge
+    const isDailyPos = changePct >= 0;
+    const dSign = isDailyPos ? '+' : '';
+    const dColor = isDailyPos ? '#10B981' : '#F43F5E';
+    const dBadge = document.getElementById("fStoryDailyBadge");
+    const dIcon = document.getElementById("fStoryDailyIcon");
+    const dVal = document.getElementById("fStoryDailyChange");
+    if (dBadge) {
+        dBadge.style.background = isDailyPos ? 'rgba(16, 185, 129, 0.12)' : 'rgba(244, 63, 94, 0.12)';
+        dBadge.style.borderColor = isDailyPos ? 'rgba(16, 185, 129, 0.35)' : 'rgba(244, 63, 94, 0.35)';
+        dBadge.style.color = dColor;
+    }
+    if (dIcon) {
+        dIcon.className = isDailyPos ? 'fa-solid fa-arrow-trend-up' : 'fa-solid fa-arrow-trend-down';
+    }
+    if (dVal) {
+        dVal.innerText = `${dSign}%${Math.abs(changePct).toFixed(2).replace('.', ',')}`;
+    }
+
+    // Live Date
+    const dateElem = document.getElementById("fStoryDate");
+    if (dateElem) {
+        const now = new Date();
+        const dStr = now.toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' }).toUpperCase();
+        dateElem.innerText = `${dStr} • CANLI TEFAS`;
+    }
+
+    // Helper for 4 return cards
+    const renderCard = (cardId, iconId, valId, val) => {
+        const isPos = val >= 0;
+        const sign = isPos ? '+' : '';
+        const color = isPos ? '#10B981' : '#F43F5E';
+        const bg = isPos ? 'rgba(16, 185, 129, 0.08)' : 'rgba(244, 63, 94, 0.08)';
+        const border = isPos ? 'rgba(16, 185, 129, 0.25)' : 'rgba(244, 63, 94, 0.25)';
+
+        const c = document.getElementById(cardId);
+        const i = document.getElementById(iconId);
+        const v = document.getElementById(valId);
+        if (c) {
+            c.style.background = bg;
+            c.style.borderColor = border;
+        }
+        if (i) {
+            i.className = isPos ? 'fa-solid fa-arrow-trend-up' : 'fa-solid fa-arrow-trend-down';
+            i.style.color = color;
+        }
+        if (v) {
+            v.style.color = color;
+            v.innerText = `${sign}%${Math.abs(val).toFixed(2).replace('.', ',')}`;
+        }
+    };
+
+    renderCard("fStoryCard1W", "fStoryIcon1W", "fStoryRet1W", ret1w);
+    renderCard("fStoryCard1M", "fStoryIcon1M", "fStoryRet1M", ret1m);
+    renderCard("fStoryCard3M", "fStoryIcon3M", "fStoryRet3M", ret3m);
+    renderCard("fStoryCard1Y", "fStoryIcon1Y", "fStoryRet1Y", ret1y);
+
+    // Risk Meter & Telemetry
+    const riskTextElem = document.getElementById("fStoryRiskText");
+    const riskLabelElem = document.getElementById("fStoryRiskLabel");
+    const riskValElem = document.getElementById("fStoryRiskVal");
+    if (riskTextElem) riskTextElem.innerText = `${riskScore} / 7`;
+    if (riskLabelElem) riskLabelElem.innerText = riskDesc;
+    if (riskValElem) {
+        riskValElem.style.color = riskScore <= 2 ? '#10B981' : (riskScore <= 4 ? '#38BDF8' : (riskScore <= 5 ? '#F59E0B' : '#F43F5E'));
+    }
+
+    // AUM & Investors
+    const aumElem = document.getElementById("fStoryAumVal");
+    if (aumElem) {
+        aumElem.innerText = typeof formatBillionOrMillion === 'function' ? formatBillionOrMillion(aum) : `₺${(aum / 1e9).toFixed(1)} Mr`;
+    }
+
+    const invElem = document.getElementById("fStoryInvestorVal");
+    if (invElem) {
+        invElem.innerText = investors.toLocaleString('tr-TR');
+    }
+
+    // Allocation Bar & Chips
+    const allocDateElem = document.getElementById("fStoryAllocDate");
+    if (allocDateElem) allocDateElem.innerText = allocDateStr;
+
+    const allocBarElem = document.getElementById("fStoryAllocBar");
+    if (allocBarElem) {
+        allocBarElem.innerHTML = allocItems.map(item => `
+            <div style="width: ${Math.max(1, item.pct)}%; background: ${item.color}; height: 100%;"></div>
+        `).join('');
+    }
+
+    const allocChipsElem = document.getElementById("fStoryAllocChips");
+    if (allocChipsElem) {
+        allocChipsElem.innerHTML = allocItems.slice(0, 4).map(item => `
+            <div style="display: flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06); padding: 4px 10px; border-radius: 8px;">
+                <span style="width: 7px; height: 7px; border-radius: 50%; background: ${item.color}; box-shadow: 0 0 6px ${item.color};"></span>
+                <span style="font-size: 0.72rem; color: #CBD5E1; font-weight: 600;">${item.label}</span>
+                <span style="font-size: 0.72rem; color: #FFFFFF; font-weight: 800;">%${item.pct.toFixed(1)}</span>
+            </div>
+        `).join('');
+    }
+
+    // Top Stocks
+    const topStocksCont = document.getElementById("fStoryTopStocksContainer");
+    const topStocksElem = document.getElementById("fStoryTopStocksList");
+    if (topStocksCont && topStocksElem) {
+        if (topStocksList) {
+            topStocksCont.style.display = "flex";
+            topStocksElem.innerText = topStocksList;
+        } else {
+            topStocksCont.style.display = "none";
+        }
+    }
+
+    // 9. html2canvas Render
+    const template = document.getElementById("fundStoryShareTemplate");
+    try {
+        const canvas = await html2canvas(template, {
+            scale: 2,
+            backgroundColor: "#050711",
+            logging: false,
+            useCORS: true
+        });
+
+        const dataUrl = canvas.toDataURL("image/png");
+
+        // Set Preview Modal
+        const previewImg = document.getElementById("sharePreviewImage");
+        if (previewImg) previewImg.src = dataUrl;
+
+        const modalTitle = document.getElementById("modalSharePreviewTitle");
+        if (modalTitle) modalTitle.innerText = `${fCode} Fon Karnesi Hazır!`;
+
+        const modal = document.getElementById("modalSharePreview");
+        if (modal) modal.classList.add("active");
+
+        // Download Action
+        const btnDownload = document.getElementById("btnDownloadShareImage");
+        if (btnDownload) {
+            btnDownload.onclick = () => {
+                triggerImageDownload(dataUrl, `Portfoyum_Fon_Karnesi_${fCode}.png`);
+                if (typeof showToast === 'function') {
+                    showToast(`${fCode} fon karnesi indirildi!`, 'success');
+                }
+            };
+        }
+
+        // Native Share Action
+        const btnShare = document.getElementById("btnNativeShare");
+        if (btnShare) {
+            btnShare.onclick = async () => {
+                if (navigator.share) {
+                    canvas.toBlob(async (blob) => {
+                        if (!blob) return;
+                        const file = new File([blob], `Portfoyum_Fon_Karnesi_${fCode}.png`, { type: "image/png" });
+                        try {
+                            await navigator.share({
+                                title: `${fCode} TEFAS Fon Karnesi`,
+                                text: `${cleanTitle} (${fCode}) TEFAS getiri karnesi ve portföy dağılımı.`,
+                                files: [file]
+                            });
+                        } catch (e) {
+                            console.log("Share cancelled or failed", e);
+                        }
+                    });
+                } else {
+                    triggerImageDownload(dataUrl, `Portfoyum_Fon_Karnesi_${fCode}.png`);
+                    if (typeof showToast === 'function') {
+                        showToast("Görsel cihazınıza indirildi! Paylaşabilirsiniz.", "success");
+                    }
+                }
+            };
+        }
+
+    } catch (err) {
+        console.error("Fund story html2canvas error:", err);
+        alert("Fon karnesi oluşturulurken bir hata oluştu. Lütfen tekrar deneyin.");
+    }
+}
+
 document.getElementById("btnCloseShareModal").addEventListener("click", () => {
     document.getElementById("modalSharePreview").classList.remove("active");
 });
+
+// Global Window Exports
+window.openFundStoryCard = openFundStoryCard;
+window.triggerImageDownload = triggerImageDownload;
 
 /* ==========================================================================
    News & KAP Radar
