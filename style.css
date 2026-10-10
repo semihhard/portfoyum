@@ -24488,16 +24488,33 @@ body.theme-neo-brutalism .sort-option.active {
 .fstory-blocks-container {
     display: flex;
     flex-direction: column;
-    gap: 7px;
+    gap: 8px;
     flex: 1;
     overflow: hidden;
     margin: 8px 0;
-    justify-content: flex-start;
+    justify-content: space-between;
 }
 
 .fstory-block {
     position: relative;
     transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+/* Sparse layout: When fewer blocks are chosen in 9:16 story, cards breathe and fill the canvas */
+.fund-story-card-root.sparse-layout #fStoryIdentityCard {
+    padding: 18px 20px !important;
+}
+.fund-story-card-root.sparse-layout #fStoryBlock_returns [id^="fStoryCard"] {
+    padding: 13px 15px !important;
+}
+.fund-story-card-root.sparse-layout #fStorySectionAlloc {
+    padding: 15px 16px !important;
+}
+.fund-story-card-root.sparse-layout #fStoryBlock_telemetry {
+    padding: 13px 14px !important;
+}
+.fund-story-card-root.sparse-layout #fStoryBlock_specs {
+    padding: 13px 12px !important;
 }
 
 /* Theme specifics for new blocks */
@@ -24508,6 +24525,10 @@ body.theme-neo-brutalism .sort-option.active {
 .fund-story-card-root.theme-emerald #fStoryAuthorText {
     color: #10B981 !important;
 }
+.fund-story-card-root.theme-emerald #fStoryBlock_summary_badge {
+    background: rgba(16, 185, 129, 0.12) !important;
+    border-color: rgba(16, 185, 129, 0.35) !important;
+}
 
 .fund-story-card-root.theme-sunset #fStoryBlock_author_tag {
     background: rgba(244, 63, 94, 0.08) !important;
@@ -24515,6 +24536,13 @@ body.theme-neo-brutalism .sort-option.active {
 }
 .fund-story-card-root.theme-sunset #fStoryAuthorText {
     color: #FB923C !important;
+}
+.fund-story-card-root.theme-sunset #fStoryBlock_summary_badge {
+    background: rgba(244, 63, 94, 0.1) !important;
+    border-color: rgba(244, 63, 94, 0.35) !important;
+}
+.fund-story-card-root.theme-sunset #fStoryBlock_summary_badge i {
+    color: #F43F5E !important;
 }
 
 /* Story Presets Row */
@@ -24600,6 +24628,40 @@ body.theme-neo-brutalism .sort-option.active {
 .fund-story-preview-viewport.format-square {
     width: 314px !important;
     height: 314px !important;
+}
+
+/* Compact Auto-Fit Format (No empty void) */
+.fund-story-card-root.format-compact {
+    width: 540px !important;
+    height: auto !important;
+    min-height: 360px !important;
+    transform: scale(0.5815) !important;
+    padding: 22px 24px !important;
+    justify-content: flex-start !important;
+    gap: 12px !important;
+}
+
+.fund-story-card-root.format-compact #fStoryContentWrap {
+    height: auto !important;
+    min-height: 0 !important;
+    justify-content: flex-start !important;
+    gap: 12px !important;
+}
+
+.fund-story-card-root.format-compact .fstory-blocks-container {
+    flex: none !important;
+    height: auto !important;
+    justify-content: flex-start !important;
+    gap: 8px !important;
+    margin: 4px 0 !important;
+}
+
+.fund-story-preview-viewport.format-compact {
+    width: 314px !important;
+    height: auto !important;
+    min-height: 220px !important;
+    overflow: hidden !important;
+    transition: height 0.2s ease;
 }
 
 /* Privacy Masking Row */

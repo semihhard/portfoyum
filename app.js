@@ -12227,7 +12227,8 @@ const STORY_STUDIO_BLOCKS_DEF = [
     { id: 'telemetry', title: 'Risk, Büyüklük & Yatırımcı', desc: 'SPK Risk Derecesi, Toplam Portföy (AUM), Yatırımcı Sayısı', icon: 'fa-chart-simple', color: '#38BDF8', defaultEnabled: true },
     { id: 'specs', title: 'Fon Künyesi & Valör Bilgileri', desc: 'PYŞ Kurucusu, Alış/Satış Valörü, Yönetim Ücreti, Stopaj', icon: 'fa-file-invoice-dollar', color: '#10B981', defaultEnabled: true },
     { id: 'allocation', title: 'Portföy Varlık Dağılımı & Hisseler', desc: 'Varlık yüzdeleri ve en çok taşınan KAP hisseleri', icon: 'fa-chart-pie', color: '#A855F7', defaultEnabled: true },
-    { id: 'ranking', title: 'Kategori Sıralaması & Başarı', desc: 'Kategorisindeki getiri derecesi ve başarı rozeti', icon: 'fa-medal', color: '#F59E0B', defaultEnabled: false },
+    { id: 'ranking', title: 'Kategori Sıralaması & Başarı', desc: 'Kategorisindeki getiri derecesi ve başarı rozeti', icon: 'fa-medal', color: '#F59E0B', defaultEnabled: true },
+    { id: 'summary_badge', title: 'TEFAS & Güvence Rozeti', desc: 'Resmi Takasbank saklama ve SPK güvence bandı', icon: 'fa-building-columns', color: '#10B981', defaultEnabled: false },
     { id: 'long_returns', title: 'Uzun Vadeli Getiriler (6A, YBG, 3Y, 5Y)', desc: 'Orta ve uzun vadeli bileşik getiri karnesi', icon: 'fa-arrow-trend-up', color: '#10B981', defaultEnabled: false },
     { id: 'my_holding', title: 'Kişisel Portföy Pozisyonum', desc: 'Kendi pay adedim, yatırım değerim ve kâr oranım', icon: 'fa-wallet', color: '#00F5FF', defaultEnabled: false },
     { id: 'custom_note', title: 'Özel Not / Analiz Yorumu', desc: 'Kişisel analiz notunuz ve strateji mesajınız', icon: 'fa-comment-dots', color: '#EC4899', defaultEnabled: false },
@@ -12237,28 +12238,28 @@ const STORY_STUDIO_BLOCKS_DEF = [
 const STORY_PRESETS = {
     standard: {
         name: "Standart Pro",
-        order: ['identity', 'returns', 'telemetry', 'specs', 'allocation', 'ranking', 'long_returns', 'my_holding', 'custom_note', 'author_tag'],
-        enabled: { identity: true, returns: true, telemetry: true, specs: true, allocation: true, ranking: false, long_returns: false, my_holding: false, custom_note: false, author_tag: false }
+        order: ['identity', 'returns', 'telemetry', 'specs', 'allocation', 'ranking', 'summary_badge', 'long_returns', 'my_holding', 'custom_note', 'author_tag'],
+        enabled: { identity: true, returns: true, telemetry: true, specs: true, allocation: true, ranking: true, summary_badge: false, long_returns: false, my_holding: false, custom_note: false, author_tag: false }
     },
     returns_alpha: {
         name: "Getiri & Alfa",
-        order: ['identity', 'returns', 'long_returns', 'ranking', 'telemetry', 'specs', 'allocation', 'my_holding', 'custom_note', 'author_tag'],
-        enabled: { identity: true, returns: true, long_returns: true, ranking: true, telemetry: true, specs: false, allocation: false, my_holding: false, custom_note: false, author_tag: false }
+        order: ['identity', 'returns', 'long_returns', 'ranking', 'telemetry', 'specs', 'allocation', 'summary_badge', 'my_holding', 'custom_note', 'author_tag'],
+        enabled: { identity: true, returns: true, long_returns: true, ranking: true, telemetry: true, specs: false, allocation: false, summary_badge: false, my_holding: false, custom_note: false, author_tag: false }
     },
     my_holding: {
         name: "Kâr Karnem",
-        order: ['identity', 'my_holding', 'returns', 'allocation', 'telemetry', 'specs', 'ranking', 'long_returns', 'custom_note', 'author_tag'],
-        enabled: { identity: true, my_holding: true, returns: true, allocation: true, telemetry: false, specs: false, ranking: false, long_returns: false, custom_note: true, author_tag: true }
+        order: ['identity', 'my_holding', 'returns', 'allocation', 'telemetry', 'specs', 'ranking', 'summary_badge', 'long_returns', 'custom_note', 'author_tag'],
+        enabled: { identity: true, my_holding: true, returns: true, allocation: true, telemetry: false, specs: false, ranking: false, summary_badge: false, long_returns: false, custom_note: true, author_tag: true }
     },
     specs_deep: {
         name: "Fon Künyesi",
-        order: ['identity', 'specs', 'telemetry', 'allocation', 'returns', 'ranking', 'long_returns', 'my_holding', 'custom_note', 'author_tag'],
-        enabled: { identity: true, specs: true, telemetry: true, allocation: true, returns: true, ranking: false, long_returns: false, my_holding: false, custom_note: false, author_tag: false }
+        order: ['identity', 'specs', 'telemetry', 'summary_badge', 'allocation', 'returns', 'ranking', 'long_returns', 'my_holding', 'custom_note', 'author_tag'],
+        enabled: { identity: true, specs: true, telemetry: true, summary_badge: true, allocation: true, returns: true, ranking: false, long_returns: false, my_holding: false, custom_note: false, author_tag: false }
     },
     minimal: {
         name: "Sade Hikaye",
-        order: ['identity', 'returns', 'custom_note', 'author_tag', 'telemetry', 'specs', 'allocation', 'ranking', 'long_returns', 'my_holding'],
-        enabled: { identity: true, returns: true, custom_note: true, author_tag: true, telemetry: false, specs: false, allocation: false, ranking: false, long_returns: false, my_holding: false }
+        order: ['identity', 'returns', 'custom_note', 'author_tag', 'telemetry', 'specs', 'allocation', 'ranking', 'summary_badge', 'long_returns', 'my_holding'],
+        enabled: { identity: true, returns: true, custom_note: true, author_tag: true, telemetry: false, specs: false, allocation: false, ranking: false, summary_badge: false, long_returns: false, my_holding: false }
     }
 };
 
@@ -12297,14 +12298,15 @@ let currentFundStoryState = {
     format: "story",
     isPrivacyMasked: false,
     activePreset: "standard",
-    blocksOrder: ['identity', 'returns', 'telemetry', 'specs', 'allocation', 'ranking', 'long_returns', 'my_holding', 'custom_note', 'author_tag'],
+    blocksOrder: ['identity', 'returns', 'telemetry', 'specs', 'allocation', 'ranking', 'summary_badge', 'long_returns', 'my_holding', 'custom_note', 'author_tag'],
     blocksEnabled: {
         identity: true,
         returns: true,
         telemetry: true,
         specs: true,
         allocation: true,
-        ranking: false,
+        ranking: true,
+        summary_badge: false,
         long_returns: false,
         my_holding: false,
         custom_note: false,
@@ -12356,26 +12358,37 @@ function setStoryCardFormat(format = "story") {
     const viewport = document.querySelector(".fund-story-preview-viewport");
     const btnStory = document.getElementById("btnFormatStory");
     const btnSquare = document.getElementById("btnFormatSquare");
+    const btnCompact = document.getElementById("btnFormatCompact");
 
-    if (btnStory && btnSquare) {
-        if (format === "square") {
-            btnSquare.classList.add("active");
-            btnStory.classList.remove("active");
-        } else {
-            btnStory.classList.add("active");
-            btnSquare.classList.remove("active");
-        }
-    }
+    [btnStory, btnSquare, btnCompact].forEach(b => {
+        if (b) b.classList.remove("active");
+    });
 
     if (card && viewport) {
+        card.classList.remove("format-square", "format-compact");
+        viewport.classList.remove("format-square", "format-compact");
+
         if (format === "square") {
+            if (btnSquare) btnSquare.classList.add("active");
             card.classList.add("format-square");
             viewport.classList.add("format-square");
+            viewport.style.height = "";
+        } else if (format === "compact") {
+            if (btnCompact) btnCompact.classList.add("active");
+            card.classList.add("format-compact");
+            viewport.classList.add("format-compact");
+            setTimeout(() => {
+                if (card && viewport && currentFundStoryState.format === "compact") {
+                    const scaledH = Math.ceil(card.offsetHeight * 0.5815);
+                    viewport.style.height = `${scaledH}px`;
+                }
+            }, 30);
         } else {
-            card.classList.remove("format-square");
-            viewport.classList.remove("format-square");
+            if (btnStory) btnStory.classList.add("active");
+            viewport.style.height = "";
         }
     }
+    updateFundStoryLivePreview();
 }
 
 function toggleStoryPrivacyMask(forceVal) {
@@ -13167,6 +13180,54 @@ function updateFundStoryLivePreview() {
     });
     const chip = document.getElementById("fStudioActiveBlockCount");
     if (chip) chip.innerText = `${activeCount} Kutu Aktif`;
+
+    // Dynamic Vertical Layout & Gap Balancing (Eliminates awkward bottom void)
+    const blocksContainer = document.getElementById("fStoryBlocksContainer");
+    const cardRoot = document.getElementById("fundStoryLiveCard");
+    const viewport = document.querySelector(".fund-story-preview-viewport");
+
+    if (currentFundStoryState.format === "compact") {
+        if (blocksContainer) {
+            blocksContainer.style.justifyContent = "flex-start";
+            blocksContainer.style.gap = "8px";
+        }
+        if (cardRoot) cardRoot.classList.remove("sparse-layout");
+        setTimeout(() => {
+            if (cardRoot && viewport && currentFundStoryState.format === "compact") {
+                const scaledH = Math.ceil(cardRoot.offsetHeight * 0.5815);
+                viewport.style.height = `${scaledH}px`;
+            }
+        }, 30);
+    } else if (currentFundStoryState.format === "square") {
+        if (blocksContainer) {
+            blocksContainer.style.justifyContent = activeCount <= 4 ? "space-around" : "space-between";
+            blocksContainer.style.gap = "6px";
+        }
+        if (cardRoot) cardRoot.classList.remove("sparse-layout");
+        if (viewport) viewport.style.height = "";
+    } else {
+        // Standard 9:16 Story
+        if (viewport) viewport.style.height = "";
+        if (activeCount <= 3) {
+            if (blocksContainer) {
+                blocksContainer.style.justifyContent = "center";
+                blocksContainer.style.gap = "22px";
+            }
+            if (cardRoot) cardRoot.classList.add("sparse-layout");
+        } else if (activeCount <= 5) {
+            if (blocksContainer) {
+                blocksContainer.style.justifyContent = "space-between";
+                blocksContainer.style.gap = "14px";
+            }
+            if (cardRoot) cardRoot.classList.add("sparse-layout");
+        } else {
+            if (blocksContainer) {
+                blocksContainer.style.justifyContent = "space-between";
+                blocksContainer.style.gap = "8px";
+            }
+            if (cardRoot) cardRoot.classList.remove("sparse-layout");
+        }
+    }
 }
 
 function setStudioQuickNote(note) {
@@ -13217,9 +13278,10 @@ async function exportFundStoryCard(mode = "download") {
         };
         const bgColor = bgColors[currentFundStoryState.theme] || "#050711";
 
+        const isCompact = currentFundStoryState.format === 'compact';
         const isSquare = currentFundStoryState.format === 'square';
         const captureWidth = isSquare ? 600 : 540;
-        const captureHeight = isSquare ? 600 : 960;
+        const captureHeight = isCompact ? card.offsetHeight : (isSquare ? 600 : 960);
 
         const canvas = await html2canvas(card, {
             scale: 2,

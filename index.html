@@ -27,7 +27,7 @@
     <script src="https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js"></script>
     <!-- jsPDF for High-Resolution Multi-Page PDF Export -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <link rel="stylesheet" href="style.css?v=126">    <style>
+    <link rel="stylesheet" href="style.css?v=127">    <style>
         /* Refresh Button Loading Animation */
         .icon-btn.loading i {
             animation: spin 1s linear infinite;
@@ -2852,6 +2852,9 @@
                             <button type="button" id="btnFormatSquare" class="studio-format-btn" onclick="setStoryCardFormat('square')">
                                 <i class="fa-solid fa-square"></i> 1:1 Kare
                             </button>
+                            <button type="button" id="btnFormatCompact" class="studio-format-btn" onclick="setStoryCardFormat('compact')" title="İçeriğe Göre Boyutla (Boşluksuz)">
+                                <i class="fa-solid fa-compress"></i> Kompakt
+                            </button>
                         </div>
                     </div>
 
@@ -2863,7 +2866,7 @@
                             <div id="fStoryGlowBottom" style="position: absolute; bottom: 80px; left: -80px; width: 340px; height: 340px; pointer-events: none; z-index: 0;"></div>
 
                             <!-- Content Container -->
-                            <div style="position: relative; z-index: 1; display: flex; flex-direction: column; height: 100%; justify-content: space-between;">
+                            <div id="fStoryContentWrap" style="position: relative; z-index: 1; display: flex; flex-direction: column; height: 100%; justify-content: space-between;">
                                 
                                 <!-- 1. Header Bar: Brand + Live Date -->
                                 <div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.08); flex-shrink: 0;">
@@ -3156,6 +3159,27 @@
                                         <i class="fa-solid fa-feather-pointed" style="color: #00F5FF; font-size: 0.8rem;"></i>
                                         <span style="font-size: 0.74rem; color: #CBD5E1; font-weight: 600;">Hazırlayan:</span>
                                         <span id="fStoryAuthorText" style="font-size: 0.8rem; font-weight: 800; color: #00F5FF;">@semih</span>
+                                    </div>
+
+                                    <!-- BLOCK: summary_badge -->
+                                    <div id="fStoryBlock_summary_badge" class="fstory-block" data-block-id="summary_badge" data-display-type="flex" style="display: none; background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 14px; padding: 10px 14px; align-items: center; justify-content: space-between;">
+                                        <div class="fstory-block-toolbar" data-html2canvas-ignore="true">
+                                            <button type="button" class="btn-card-tool" onclick="event.stopPropagation(); moveStudioBlock('summary_badge', -1)" title="Yukarı Taşı">▲</button>
+                                            <button type="button" class="btn-card-tool" onclick="event.stopPropagation(); moveStudioBlock('summary_badge', 1)" title="Aşağı Taşı">▼</button>
+                                            <button type="button" class="btn-card-tool remove" onclick="event.stopPropagation(); toggleStudioBlock('summary_badge', false)" title="Kaldır">✕</button>
+                                        </div>
+                                        <div style="display: flex; align-items: center; gap: 10px;">
+                                            <div style="width: 32px; height: 32px; border-radius: 9px; background: rgba(16, 185, 129, 0.2); display: flex; align-items: center; justify-content: center; color: #10B981; font-size: 1rem;">
+                                                <i class="fa-solid fa-building-columns"></i>
+                                            </div>
+                                            <div>
+                                                <div style="font-size: 0.74rem; font-weight: 800; color: #E2E8F0; letter-spacing: 0.5px;">TEFAS & TAKASBANK GÜVENCESİ</div>
+                                                <div style="font-size: 0.62rem; color: #94A3B8; font-weight: 500;">Varlıklar Takasbank saklamasında, SPK güvencesindedir</div>
+                                            </div>
+                                        </div>
+                                        <div style="padding: 4px 9px; border-radius: 6px; font-weight: 800; font-size: 0.7rem; background: rgba(16, 185, 129, 0.2); color: #34D399; border: 1px solid rgba(16, 185, 129, 0.4);">
+                                            %100 ŞEFFAF
+                                        </div>
                                     </div>
 
                                 </div> <!-- /fStoryBlocksContainer -->
@@ -3697,6 +3721,6 @@
         </div>
     </div>
 
-    <script src="app.js?v=126"></script>
+    <script src="app.js?v=127"></script>
 </body>
 </html>
