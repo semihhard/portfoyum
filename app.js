@@ -12234,6 +12234,34 @@ const STORY_STUDIO_BLOCKS_DEF = [
     { id: 'author_tag', title: 'Paylaşan / Analist İmzası', desc: 'Kartta görünen @kullaniciadi veya imza', icon: 'fa-signature', color: '#C084FC', defaultEnabled: false }
 ];
 
+const STORY_PRESETS = {
+    standard: {
+        name: "Standart Pro",
+        order: ['identity', 'returns', 'telemetry', 'specs', 'allocation', 'ranking', 'long_returns', 'my_holding', 'custom_note', 'author_tag'],
+        enabled: { identity: true, returns: true, telemetry: true, specs: true, allocation: true, ranking: false, long_returns: false, my_holding: false, custom_note: false, author_tag: false }
+    },
+    returns_alpha: {
+        name: "Getiri & Alfa",
+        order: ['identity', 'returns', 'long_returns', 'ranking', 'telemetry', 'specs', 'allocation', 'my_holding', 'custom_note', 'author_tag'],
+        enabled: { identity: true, returns: true, long_returns: true, ranking: true, telemetry: true, specs: false, allocation: false, my_holding: false, custom_note: false, author_tag: false }
+    },
+    my_holding: {
+        name: "Kâr Karnem",
+        order: ['identity', 'my_holding', 'returns', 'allocation', 'telemetry', 'specs', 'ranking', 'long_returns', 'custom_note', 'author_tag'],
+        enabled: { identity: true, my_holding: true, returns: true, allocation: true, telemetry: false, specs: false, ranking: false, long_returns: false, custom_note: true, author_tag: true }
+    },
+    specs_deep: {
+        name: "Fon Künyesi",
+        order: ['identity', 'specs', 'telemetry', 'allocation', 'returns', 'ranking', 'long_returns', 'my_holding', 'custom_note', 'author_tag'],
+        enabled: { identity: true, specs: true, telemetry: true, allocation: true, returns: true, ranking: false, long_returns: false, my_holding: false, custom_note: false, author_tag: false }
+    },
+    minimal: {
+        name: "Sade Hikaye",
+        order: ['identity', 'returns', 'custom_note', 'author_tag', 'telemetry', 'specs', 'allocation', 'ranking', 'long_returns', 'my_holding'],
+        enabled: { identity: true, returns: true, custom_note: true, author_tag: true, telemetry: false, specs: false, allocation: false, ranking: false, long_returns: false, my_holding: false }
+    }
+};
+
 let currentFundStoryState = {
     fundCode: "TI1",
     fundTitle: "",
@@ -12266,6 +12294,9 @@ let currentFundStoryState = {
     topStocksList: "",
     myHolding: null,
     theme: "cyber",
+    format: "story",
+    isPrivacyMasked: false,
+    activePreset: "standard",
     blocksOrder: ['identity', 'returns', 'telemetry', 'specs', 'allocation', 'ranking', 'long_returns', 'my_holding', 'custom_note', 'author_tag'],
     blocksEnabled: {
         identity: true,
@@ -12282,6 +12313,82 @@ let currentFundStoryState = {
 };
 
 let draggedStudioBlockId = null;
+
+function applyStoryPreset(presetKey) {
+    const preset = STORY_PRESETS[presetKey];
+    if (!preset) return;
+
+    currentFundStoryState.activePreset = presetKey;
+    currentFundStoryState.blocksOrder = [...preset.order];
+    currentFundStoryState.blocksEnabled = { ...preset.enabled };
+
+    if (presetKey === 'my_holding' && !currentFundStoryState.myHolding) {
+        if (typeof showToast === 'function') {
+            showToast("Bu fon portföyünüzde bulunmadığı için pozisyon kutusu kapalı tutuldu.", "info");
+        }
+        currentFundStoryState.blocksEnabled.my_holding = false;
+    }
+
+    const inputNote = document.getElementById("inputStoryCustomNote");
+    if (currentFundStoryState.blocksEnabled.custom_note && (!inputNote || !inputNote.value.trim())) {
+        if (inputNote) inputNote.value = "Portföyümün amiral gemisi 🚀";
+    }
+
+    document.querySelectorAll(".studio-preset-pill").forEach(pill => {
+        pill.classList.remove("active");
+    });
+    const activeBtn = document.getElementById(`btnPreset_${presetKey}`);
+    if (activeBtn) activeBtn.classList.add("active");
+
+    saveStoryLayout();
+    renderStudioBlocksControls();
+    applyBlocksOrderToLiveCard();
+    updateFundStoryLivePreview();
+
+    if (typeof showToast === 'function') {
+        showToast(`"${preset.name}" şablonu uygulandı`, "success");
+    }
+}
+
+function setStoryCardFormat(format = "story") {
+    currentFundStoryState.format = format;
+    const card = document.getElementById("fundStoryLiveCard");
+    const viewport = document.querySelector(".fund-story-preview-viewport");
+    const btnStory = document.getElementById("btnFormatStory");
+    const btnSquare = document.getElementById("btnFormatSquare");
+
+    if (btnStory && btnSquare) {
+        if (format === "square") {
+            btnSquare.classList.add("active");
+            btnStory.classList.remove("active");
+        } else {
+            btnStory.classList.add("active");
+            btnSquare.classList.remove("active");
+        }
+    }
+
+    if (card && viewport) {
+        if (format === "square") {
+            card.classList.add("format-square");
+            viewport.classList.add("format-square");
+        } else {
+            card.classList.remove("format-square");
+            viewport.classList.remove("format-square");
+        }
+    }
+}
+
+function toggleStoryPrivacyMask(forceVal) {
+    if (typeof forceVal === 'boolean') {
+        currentFundStoryState.isPrivacyMasked = forceVal;
+    } else {
+        currentFundStoryState.isPrivacyMasked = !currentFundStoryState.isPrivacyMasked;
+    }
+    const chk = document.getElementById("chkStoryPrivacy");
+    if (chk) chk.checked = currentFundStoryState.isPrivacyMasked;
+
+    updateFundStoryLivePreview();
+}
 
 function loadSavedStoryLayout() {
     try {
@@ -12302,6 +12409,9 @@ function loadSavedStoryLayout() {
                     }
                 });
             }
+            if (parsed.format) {
+                currentFundStoryState.format = parsed.format;
+            }
         }
     } catch (e) {}
 }
@@ -12310,7 +12420,8 @@ function saveStoryLayout() {
     try {
         localStorage.setItem("portfoyum_story_layout_v3", JSON.stringify({
             order: currentFundStoryState.blocksOrder,
-            enabled: currentFundStoryState.blocksEnabled
+            enabled: currentFundStoryState.blocksEnabled,
+            format: currentFundStoryState.format || "story"
         }));
     } catch (e) {}
 }
@@ -12332,6 +12443,11 @@ function resetStoryBlocksLayout() {
     if (inputAuthor && inputAuthor.value.trim()) {
         currentFundStoryState.blocksEnabled.author_tag = true;
     }
+
+    document.querySelectorAll(".studio-preset-pill").forEach(p => p.classList.remove("active"));
+    const defPresetBtn = document.getElementById("btnPreset_standard");
+    if (defPresetBtn) defPresetBtn.classList.add("active");
+
     saveStoryLayout();
     renderStudioBlocksControls();
     applyBlocksOrderToLiveCard();
@@ -12962,6 +13078,15 @@ async function openFundStoryCard(fundCode) {
     renderStudioBlocksControls();
     applyBlocksOrderToLiveCard();
     setFundStoryTheme(currentFundStoryState.theme || "cyber");
+    setStoryCardFormat(currentFundStoryState.format || "story");
+
+    const privChk = document.getElementById("chkStoryPrivacy");
+    if (privChk) privChk.checked = !!currentFundStoryState.isPrivacyMasked;
+
+    document.querySelectorAll(".studio-preset-pill").forEach(p => p.classList.remove("active"));
+    const pBtn = document.getElementById(`btnPreset_${currentFundStoryState.activePreset || 'standard'}`);
+    if (pBtn) pBtn.classList.add("active");
+
     updateFundStoryLivePreview();
 
     // 13. Reveal Studio Modal
@@ -12999,6 +13124,21 @@ function updateFundStoryLivePreview() {
     const authVal = inputAuthor ? inputAuthor.value.trim() : "";
     const textAuthor = document.getElementById("fStoryAuthorText");
     if (textAuthor) textAuthor.innerText = authVal;
+
+    // Handle Privacy Masking for Holding
+    const holdingSummary = document.getElementById("fStoryMyHoldingSummary");
+    if (holdingSummary && currentFundStoryState.myHolding) {
+        const uH = currentFundStoryState.myHolding;
+        const price = currentFundStoryState.price || 1;
+        const curVal = uH.shares * price;
+        if (currentFundStoryState.isPrivacyMasked) {
+            holdingSummary.innerText = "•••••• Adet • ₺••••••";
+        } else {
+            const sharesStr = uH.shares.toLocaleString('tr-TR');
+            const valStr = typeof formatFundPriceDisplay === 'function' ? formatFundPriceDisplay(curVal) : curVal.toFixed(2);
+            holdingSummary.innerText = `${sharesStr} Adet • ₺${valStr}`;
+        }
+    }
 
     currentFundStoryState.blocksOrder.forEach(blockId => {
         const el = document.getElementById(`fStoryBlock_${blockId}`);
@@ -13055,7 +13195,11 @@ async function exportFundStoryCard(mode = "download") {
     const fCode = currentFundStoryState.fundCode || "FON";
     const filename = `Portfoyum_Fon_Karnesi_${fCode}.png`;
 
-    const exportBtn = mode === "download" ? document.getElementById("btnStudioDownload") : document.getElementById("btnStudioShare");
+    let exportBtn = null;
+    if (mode === "download") exportBtn = document.getElementById("btnStudioDownload");
+    else if (mode === "copy") exportBtn = document.getElementById("btnStudioCopy");
+    else if (mode === "share") exportBtn = document.getElementById("btnStudioShare");
+
     const originalText = exportBtn ? exportBtn.innerHTML : "";
     if (exportBtn) {
         exportBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> <span>Hazırlanıyor...</span>`;
@@ -13073,10 +13217,14 @@ async function exportFundStoryCard(mode = "download") {
         };
         const bgColor = bgColors[currentFundStoryState.theme] || "#050711";
 
+        const isSquare = currentFundStoryState.format === 'square';
+        const captureWidth = isSquare ? 600 : 540;
+        const captureHeight = isSquare ? 600 : 960;
+
         const canvas = await html2canvas(card, {
             scale: 2,
-            width: 540,
-            height: 960,
+            width: captureWidth,
+            height: captureHeight,
             backgroundColor: bgColor,
             logging: false,
             useCORS: true
@@ -13088,6 +13236,31 @@ async function exportFundStoryCard(mode = "download") {
             triggerImageDownload(dataUrl, filename);
             if (typeof showToast === 'function') {
                 showToast(`${fCode} fon karnesi başarıyla indirildi!`, 'success');
+            }
+        } else if (mode === "copy") {
+            if (navigator.clipboard && window.ClipboardItem) {
+                canvas.toBlob(async (blob) => {
+                    if (!blob) return;
+                    try {
+                        await navigator.clipboard.write([
+                            new ClipboardItem({ 'image/png': blob })
+                        ]);
+                        if (typeof showToast === 'function') {
+                            showToast("Fon karnesi panoya kopyalandı! (Ctrl+V ile yapıştırabilirsiniz)", "success");
+                        }
+                    } catch (clipErr) {
+                        console.warn("Clipboard write failed, downloading instead:", clipErr);
+                        triggerImageDownload(dataUrl, filename);
+                        if (typeof showToast === 'function') {
+                            showToast("Görsel cihazınıza indirildi!", "success");
+                        }
+                    }
+                });
+            } else {
+                triggerImageDownload(dataUrl, filename);
+                if (typeof showToast === 'function') {
+                    showToast("Görsel cihazınıza indirildi! (Panoya kopyalama bu tarayıcıda desteklenmiyor)", "info");
+                }
             }
         } else if (mode === "share") {
             if (navigator.share) {
@@ -13179,6 +13352,9 @@ window.handleBlockDragOver = handleBlockDragOver;
 window.handleBlockDragEnd = handleBlockDragEnd;
 window.handleBlockDrop = handleBlockDrop;
 window.toggleStudioBlockFromRow = toggleStudioBlockFromRow;
+window.applyStoryPreset = applyStoryPreset;
+window.setStoryCardFormat = setStoryCardFormat;
+window.toggleStoryPrivacyMask = toggleStoryPrivacyMask;
 
 /* ==========================================================================
    News & KAP Radar
