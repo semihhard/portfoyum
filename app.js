@@ -1579,7 +1579,7 @@ async function fetchTefasFundAllocation(fundCode, days = 30) {
         const toRemove = [];
         for (let i = 0; i < localStorage.length; i++) {
             const k = localStorage.key(i);
-            if (k && k.startsWith("tefas_alloc_") && !k.startsWith("tefas_alloc_v4_")) {
+            if (k && k.startsWith("tefas_alloc_") && !k.startsWith("tefas_alloc_v5_")) {
                 toRemove.push(k);
             }
         }
@@ -1592,7 +1592,7 @@ async function fetchTefasFundAllocation(fundCode, days = 30) {
     }
 
     // Check localStorage cache (< 30 mins)
-    const localKey = `tefas_alloc_v4_${cacheKey}`;
+    const localKey = `tefas_alloc_v5_${cacheKey}`;
     try {
         const cachedStr = localStorage.getItem(localKey);
         if (cachedStr) {
@@ -1692,7 +1692,7 @@ async function fetchTefasFundAllocation(fundCode, days = 30) {
 
     // Tier 3: Older cached version
     try {
-        const fallbackKeys = Object.keys(localStorage).filter(k => k.startsWith(`tefas_alloc_v4_${fCode}_`));
+        const fallbackKeys = Object.keys(localStorage).filter(k => k.startsWith(`tefas_alloc_v5_${fCode}_`));
         if (fallbackKeys.length > 0) {
             const lastCache = JSON.parse(localStorage.getItem(fallbackKeys[0]));
             if (lastCache && lastCache.data && lastCache.data.length > 0) {
@@ -1701,73 +1701,34 @@ async function fetchTefasFundAllocation(fundCode, days = 30) {
         }
     } catch(e) {}
 
-    // Tier 4: Calibrated realistic fallback based on fund nature
-    return generateFallbackFundAllocation(fCode, days);
+    // Tier 4: No fake data - return empty array
+    return [];
 }
 
-// Generates calibrated realistic daily allocation rows
-function generateFallbackFundAllocation(fundCode, days = 30) {
-    const fCode = (fundCode || "").toUpperCase().trim();
-    let profile = { hs: 88.0, tpp: 8.0, vint: 4.0 }; // Default equity fund profile
 
-    if (fCode === "TI1" || fCode.includes("PP") || fCode.includes("PARA")) {
-        profile = { vmtl: 42.5, tr: 38.0, dt: 11.8, khtl: 5.5, fb: 1.5, ost: 0.7 };
-    } else if (fCode === "AFT" || fCode.includes("YABANCI") || fCode.includes("TEKNO")) {
-        profile = { yhs: 94.5, yyf: 3.2, tpp: 1.5, tr: 0.8 };
-    } else if (fCode === "GTA" || fCode === "KZL" || fCode.includes("ALTIN") || fCode.includes("GLD")) {
-        profile = { km: 94.0, tr: 3.5, tpp: 2.5 };
-    } else if (fCode === "TCD" || fCode.includes("DEGISKEN")) {
-        profile = { hs: 54.0, dt: 22.0, tr: 14.0, vm: 10.0 };
-    } else if (fCode.includes("BORC") || fCode.includes("TAHVIL")) {
-        profile = { dt: 55.0, ost: 25.0, tr: 12.0, tpp: 8.0 };
-    }
-
-    const now = new Date();
-    const result = [];
-    const numPoints = Math.min(days, 30);
-
-    for (let i = numPoints; i >= 0; i--) {
-        const d = new Date(now.getTime() - (i * 86400000));
-        if (d.getDay() === 0 || d.getDay() === 6) continue;
-
-        const pad = n => String(n).padStart(2, '0');
-        const dStr = `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
-
-        const row = {
-            tarih: dStr,
-            fonKodu: fCode
-        };
-
-        let sum = 0;
-        const keys = Object.keys(profile);
-        keys.forEach((k, kIdx) => {
-            const drift = (Math.sin(i * 0.4 + kIdx) * 0.6);
-            const val = Math.max(0.1, profile[k] + drift);
-            row[k] = val;
-            sum += val;
-        });
-
-        keys.forEach(k => {
-            row[k] = parseFloat(((row[k] / sum) * 100).toFixed(2));
-        });
-
-        result.push(row);
-    }
-    return result;
-}
-
-// Render Latest Asset Allocation (Donut Chart + Symmetrical Breakdown Cards)
 function renderFundLatestAllocation(allocData, totalAUM = 0) {
-    if (!allocData || allocData.length === 0) return;
-
     if (fundLatestAllocDonutChartInstance) {
         fundLatestAllocDonutChartInstance.destroy();
         fundLatestAllocDonutChartInstance = null;
     }
 
+    const centerPctElem = document.getElementById("fundAllocTopPct");
+    const centerLblElem = document.getElementById("fundAllocTopName");
+    const listElem = document.getElementById("fundLatestAllocList");
+    const dateBadge = document.getElementById("fundLatestAllocDateBadge");
+
+    if (!allocData || allocData.length === 0) {
+        if (dateBadge) dateBadge.innerHTML = `<i class="fa-regular fa-calendar-xmark"></i> Veri Yok`;
+        if (centerPctElem) centerPctElem.innerText = "%0";
+        if (centerLblElem) centerLblElem.innerText = "-";
+        if (listElem) {
+            listElem.innerHTML = '<div style="padding: 24px 12px; text-align: center; color: #94A3B8; font-size: 0.85rem;"><i class="fa-solid fa-circle-info" style="color: #38BDF8; margin-bottom: 6px; display: block; font-size: 1.2rem;"></i>Bu fon için TEFAS varlık dağılımı verisi henüz yayınlanmamış veya bulunamadı.</div>';
+        }
+        return;
+    }
+
     const latestRow = allocData[allocData.length - 1];
 
-    const dateBadge = document.getElementById("fundLatestAllocDateBadge");
     if (dateBadge && latestRow.tarih) {
         const parts = latestRow.tarih.split('-');
         const dateStr = parts.length === 3 ? `${parts[2]}.${parts[1]}.${parts[0]}` : latestRow.tarih;
@@ -1798,15 +1759,12 @@ function renderFundLatestAllocation(allocData, totalAUM = 0) {
     }
 
     const topItem = items[0];
-    const centerPctElem = document.getElementById("fundAllocTopPct");
-    const centerLblElem = document.getElementById("fundAllocTopName");
     if (centerPctElem) centerPctElem.innerText = `%${topItem.pct.toFixed(1)}`;
     if (centerLblElem) {
         centerLblElem.innerText = topItem.label;
         centerLblElem.title = topItem.label;
     }
 
-    const listElem = document.getElementById("fundLatestAllocList");
     if (listElem) {
         listElem.innerHTML = items.map(item => {
             const estVal = totalAUM > 0 ? (totalAUM * item.pct / 100) : 0;
@@ -2205,28 +2163,6 @@ const CURATED_FUND_STOCK_HOLDINGS = {
             { symbol: "SAHOL", pct: 4.30, prevPct: 4.50 }
         ]
     },
-    "TI1": {
-        date: "Son KAP Portföy Raporu",
-        reportPeriod: "Son Bildirilen Dönem",
-        stocks: [
-            { symbol: "THYAO", pct: 8.85, prevPct: 7.10 },
-            { symbol: "TUPRS", pct: 7.90, prevPct: 8.50 },
-            { symbol: "BIMAS", pct: 7.40, prevPct: 6.80 },
-            { symbol: "AKBNK", pct: 6.95, prevPct: 6.20 },
-            { symbol: "ASELS", pct: 6.40, prevPct: 5.10 },
-            { symbol: "KCHOL", pct: 5.80, prevPct: 6.30 },
-            { symbol: "SISE",  pct: 5.20, prevPct: 6.70 },
-            { symbol: "FROTO", pct: 4.80, prevPct: 4.20 },
-            { symbol: "SAHOL", pct: 4.40, prevPct: 4.60 },
-            { symbol: "MGROS", pct: 3.90, prevPct: 3.10 },
-            { symbol: "TCELL", pct: 3.60, prevPct: 3.40 },
-            { symbol: "ENKAI", pct: 3.10, prevPct: 0.00 },
-            { symbol: "PGSUS", pct: 2.80, prevPct: 3.30 },
-            { symbol: "ALARK", pct: 2.50, prevPct: 2.10 },
-            { symbol: "EREGL", pct: 2.10, prevPct: 3.60 },
-            { symbol: "PETKM", pct: 0.00, prevPct: 2.40 }
-        ]
-    },
     "THF": {
         date: "Son KAP Portföy Raporu (Ağustos)",
         reportPeriod: "2 Eylül Bildirimi",
@@ -2334,43 +2270,7 @@ const CURATED_FUND_STOCK_HOLDINGS = {
     }
 };
 
-// Thematic Stock Pools for Uncurated Funds
-const THEME_STOCK_POOLS = {
-    BANK: ["AKBNK", "YKBNK", "ISCTR", "GARAN", "HALKB", "VAKBN", "SKBNK", "TSKB", "ALBRK"],
-    KOC: ["KCHOL", "FROTO", "TUPRS", "TOASO", "YKBNK", "ARCLK", "AYGAZ", "TTRAK", "TATGD"],
-    SABANCI: ["SAHOL", "AKBNK", "ENJSA", "KORDS", "BRISA", "TKNSA", "AKSEN"],
-    TECH_TR: ["ASELS", "LOGO", "MIATK", "ARDYZ", "REEDR", "SDTTR", "KFEIN", "NETAS", "FONET", "PATEK"],
-    DIVIDEND: ["TUPRS", "FROTO", "EREGL", "TOASO", "BIMAS", "SISE", "DOAS", "TTKOM", "CCOLA", "ENKAI"],
-    ENERGY: ["ASTOR", "KONTR", "ENJSA", "YEOTK", "CWENE", "EUPWR", "GESAN", "AKSEN", "TUPRS", "ALARK"],
-    KATILIM: ["BIMAS", "ASELS", "THYAO", "TUPRS", "SISE", "ENKAI", "FROTO", "ALARK", "MGROS", "KONTR"],
-    FOREIGN: ["NVDA", "MSFT", "AAPL", "AMZN", "GOOGL", "META", "TSLA", "AVGO", "ASML", "AMD", "QCOM"],
-    BIST_CORE: ["THYAO", "TUPRS", "BIMAS", "AKBNK", "ASELS", "KCHOL", "YKBNK", "FROTO", "SISE", "SAHOL", "MGROS", "ENKAI", "TCELL", "PGSUS", "ALARK", "EREGL", "TOASO", "ASTOR"]
-};
 
-function detectFundStockTheme(fundCode = '', fundTitle = '') {
-    const code = (fundCode || '').toUpperCase().trim();
-    const title = (fundTitle || '').toLocaleUpperCase('tr-TR');
-
-    // 1. Explicit code overrides
-    if (code === 'TAU' || code === 'ADP' || code === 'IKB' || code === 'HSB' || code === 'KZL' || code === 'TLZ') return 'BANK';
-    if (code === 'YAS') return 'KOC';
-    if (code === 'SAS') return 'SABANCI';
-    if (code === 'ICZ' || code === 'TTE') return 'TECH_TR';
-    if (code === 'AFT' || code === 'YAY') return 'FOREIGN';
-    if (code === 'TI2') return 'DIVIDEND';
-
-    // 2. Keyword matching on fund title
-    if (title.includes('BANKA') || title.includes('BANK')) return 'BANK';
-    if (title.includes('KOÇ') || title.includes('KOC')) return 'KOC';
-    if (title.includes('SABANCI') || title.includes('SABAN')) return 'SABANCI';
-    if (title.includes('YABANCI') || title.includes('NASDAQ') || title.includes('AMERİKA') || title.includes('GLOBAL') || title.includes('YURTDIŞI')) return 'FOREIGN';
-    if (title.includes('TEKNOLOJİ') || title.includes('BİLİŞİM') || title.includes('YAZILIM') || title.includes('DİJİTAL')) return 'TECH_TR';
-    if (title.includes('TEMETTÜ') || title.includes('DİVİDEND')) return 'DIVIDEND';
-    if (title.includes('ENERJİ') || title.includes('YEŞİL') || title.includes('TEMİZ ENERJİ') || title.includes('SÜRDÜRÜLEBİLİR')) return 'ENERGY';
-    if (title.includes('KATILIM')) return 'KATILIM';
-
-    return 'BIST_CORE';
-}
 
 function getFundTitleForCode(fundCode) {
     if (!fundCode) return "";
@@ -2427,146 +2327,184 @@ function switchMovesDisplayMode(mode) {
 }
 window.switchMovesDisplayMode = switchMovesDisplayMode;
 
-function getFundStockHoldings(fundCode, totalAUM = 0, fundNameOverride = '') {
-    const code = (fundCode || "TI1").toUpperCase().trim();
-    
-    // 1. Check curated list
-    if (CURATED_FUND_STOCK_HOLDINGS[code]) {
-        const item = CURATED_FUND_STOCK_HOLDINGS[code];
-        const isForeign = !!item.isForeign;
-        const profileMap = isForeign ? FOREIGN_STOCK_PROFILES : BIST_STOCK_PROFILES;
-        const stocks = item.stocks.map(s => {
-            const prof = profileMap[s.symbol] || { name: s.symbol, sector: (isForeign ? "Yabancı Hisse" : "BIST"), color: "#38BDF8" };
-            const diff = parseFloat((s.pct - s.prevPct).toFixed(2));
-            const estVal = totalAUM > 0 ? (totalAUM * s.pct / 100) : 0;
-            const estDiffVal = totalAUM > 0 ? (totalAUM * Math.abs(diff) / 100) : 0;
-            return {
-                symbol: s.symbol,
-                name: prof.name,
-                sector: prof.sector,
-                color: prof.color,
-                pct: s.pct,
-                prevPct: s.prevPct,
-                diff,
-                estVal,
-                estDiffVal,
-                isNew: s.prevPct <= 0.01 && s.pct > 0,
-                isExited: s.prevPct > 0.01 && s.pct <= 0.01
-            };
-        });
-        return {
-            date: item.date || "Son Portföy Raporu",
-            reportPeriod: item.reportPeriod || "Son Bildirim Dönemi",
-            isForeign,
-            stocks
-        };
+const fetchedKapHoldingsCache = {};
+
+function checkIfFundIsNonEquity(fundCode) {
+    const code = (fundCode || "").toUpperCase().trim();
+    if (!code) return false;
+
+    // 1. Check TEFAS macro allocation cache if available
+    if (Array.isArray(lastFundAllocDataCache) && lastFundAllocDataCache.length > 0) {
+        const lastRow = lastFundAllocDataCache[lastFundAllocDataCache.length - 1];
+        if (lastRow) {
+            const stockPct = (Number(lastRow.hs) || 0) + (Number(lastRow.yhs) || 0);
+            if (stockPct < 5) return true;
+        }
     }
 
-    // 2. Thematic fallback generator for uncurated funds
-    const fundTitle = fundNameOverride || getFundTitleForCode(code);
-    const theme = detectFundStockTheme(code, fundTitle);
-    const isForeign = theme === 'FOREIGN';
-    const poolSymbols = THEME_STOCK_POOLS[theme] || THEME_STOCK_POOLS.BIST_CORE;
+    // 2. Check fund title keywords
+    const title = (getFundTitleForCode(code) || "").toUpperCase();
+    if (title) {
+        const isDebtOrMoneyMarket = title.includes("PARA PİYASASI") ||
+            title.includes("BORÇLANMA") ||
+            title.includes("BORCLANMA") ||
+            title.includes("KİRA SERTİFİKASI") ||
+            title.includes("KIRA SERTIFIKASI") ||
+            title.includes("LİKİT") ||
+            title.includes("LIKIT") ||
+            title.includes("MEVDUAT") ||
+            title.includes("ALTIN") ||
+            title.includes("GÜMÜŞ") ||
+            title.includes("GUMUS") ||
+            title.includes("KIYMETLİ MADEN") ||
+            title.includes("KIYMETLI MADEN");
+        const hasEquityKeyword = title.includes("HİSSE") || title.includes("HISSE") || title.includes("FON SEPETİ") || title.includes("DEĞİŞKEN") || title.includes("DEGISKEN");
+        if (isDebtOrMoneyMarket && !hasEquityKeyword) return true;
+    }
+
+    // Specific well-known non-equity funds
+    const nonEquityCodes = ["TI1", "KZL", "KRC", "NRC", "ZPE", "PAL", "HPT", "RPD", "MJB", "NVB"];
+    if (nonEquityCodes.includes(code)) return true;
+
+    return false;
+}
+
+function formatStockHoldingsData(code, rawItem, totalAUM = 0) {
+    const isForeign = !!rawItem.isForeign;
     const profileMap = isForeign ? FOREIGN_STOCK_PROFILES : BIST_STOCK_PROFILES;
-
-    let hash = 0;
-    for (let i = 0; i < code.length; i++) {
-        hash = (hash * 31 + code.charCodeAt(i)) & 0xFFFFFFFF;
-    }
-    const absHash = Math.abs(hash);
-
-    const numStocks = Math.min(poolSymbols.length, 8 + (absHash % 4));
-    const chosen = [];
-    const used = new Set();
-
-    for (let i = 0; i < numStocks; i++) {
-        const idx = (absHash + i * 3) % poolSymbols.length;
-        const sym = poolSymbols[idx];
-        if (!used.has(sym)) {
-            used.add(sym);
-            chosen.push(sym);
-        }
-    }
-    if (chosen.length < Math.min(poolSymbols.length, 6)) {
-        for (const sym of poolSymbols) {
-            if (!used.has(sym)) {
-                used.add(sym);
-                chosen.push(sym);
-                if (chosen.length >= Math.min(poolSymbols.length, 8)) break;
-            }
-        }
-    }
-
-    const targetSum = 85 + (absHash % 10);
-    const rawWeights = chosen.map((_, i) => Math.max(1, 20 - i * 1.5 + ((absHash + i * 11) % 5)));
-    const rawSum = rawWeights.reduce((a, b) => a + b, 0);
-
-    const stocks = chosen.map((sym, i) => {
-        const prof = profileMap[sym] || { name: sym, sector: (isForeign ? "Yabancı Hisse" : "BIST"), color: "#38BDF8" };
-        const pct = parseFloat(((rawWeights[i] / rawSum) * targetSum).toFixed(2));
-        
-        let diff = 0;
-        let prevPct = pct;
-        if (i === 0 || i === 3) {
-            diff = parseFloat((0.4 + ((absHash + i) % 12) / 10).toFixed(2));
-            prevPct = parseFloat(Math.max(0.1, pct - diff).toFixed(2));
-        } else if (i === 1 || i === 4) {
-            diff = -parseFloat((0.4 + ((absHash + i) % 11) / 10).toFixed(2));
-            prevPct = parseFloat((pct - diff).toFixed(2));
-        } else if (i === chosen.length - 1 && absHash % 3 === 0) {
-            diff = pct;
-            prevPct = 0;
-        } else {
-            diff = parseFloat((((absHash + i) % 7 - 3) * 0.15).toFixed(2));
-            prevPct = parseFloat(Math.max(0.1, pct - diff).toFixed(2));
-        }
-
-        const estVal = totalAUM > 0 ? (totalAUM * pct / 100) : 0;
+    const stocks = (rawItem.stocks || []).map(s => {
+        const prof = profileMap[s.symbol] || { name: s.symbol, sector: (isForeign ? "Yabancı Hisse" : "BIST"), color: "#38BDF8" };
+        const diff = parseFloat(((s.pct || 0) - (s.prevPct || 0)).toFixed(2));
+        const estVal = totalAUM > 0 ? (totalAUM * s.pct / 100) : 0;
         const estDiffVal = totalAUM > 0 ? (totalAUM * Math.abs(diff) / 100) : 0;
-
         return {
-            symbol: sym,
+            symbol: s.symbol,
             name: prof.name,
             sector: prof.sector,
             color: prof.color,
-            pct,
-            prevPct,
+            pct: s.pct,
+            prevPct: s.prevPct,
             diff,
             estVal,
             estDiffVal,
-            isNew: prevPct <= 0.01 && pct > 0,
-            isExited: prevPct > 0.01 && pct <= 0.01
+            isNew: s.prevPct <= 0.01 && s.pct > 0,
+            isExited: s.prevPct > 0.01 && s.pct <= 0.01
         };
     });
-
-    const exitedSym = poolSymbols.find(s => !used.has(s));
-    if (exitedSym) {
-        const prof = profileMap[exitedSym] || { name: exitedSym, sector: (isForeign ? "Yabancı Hisse" : "BIST"), color: "#38BDF8" };
-        stocks.push({
-            symbol: exitedSym,
-            name: prof.name,
-            sector: prof.sector,
-            color: prof.color,
-            pct: 0,
-            prevPct: 1.80,
-            diff: -1.80,
-            estVal: 0,
-            estDiffVal: totalAUM > 0 ? (totalAUM * 1.8 / 100) : 0,
-            isNew: false,
-            isExited: true
-        });
-    }
-
     return {
-        date: "Son KAP Portföy Raporu",
-        reportPeriod: "Son Bildirilen Dönem",
+        hasRealData: true,
+        isNonEquity: false,
+        date: rawItem.date || "Son KAP Portföy Raporu",
+        reportPeriod: rawItem.reportPeriod || "Son Bildirim Dönemi",
         isForeign,
         stocks
     };
 }
 
+function getFundStockHoldings(fundCode, totalAUM = 0, fundNameOverride = '') {
+    const code = (fundCode || "").toUpperCase().trim();
+    if (!code) return { hasRealData: false, isNonEquity: false, stocks: [] };
+
+    // 1. Check curated list & memory cache
+    const item = CURATED_FUND_STOCK_HOLDINGS[code] || fetchedKapHoldingsCache[code];
+    if (item && Array.isArray(item.stocks) && item.stocks.length > 0) {
+        return formatStockHoldingsData(code, item, totalAUM);
+    }
+
+    // 2. Check non-equity
+    const isNonEquity = checkIfFundIsNonEquity(code);
+
+    return {
+        hasRealData: false,
+        isNonEquity,
+        date: isNonEquity ? "Hisse Senedi Bulunmuyor" : "KAP Bildirimi Bekleniyor",
+        reportPeriod: isNonEquity ? "Para Piyasası / Borçlanma / Emtia" : "Rapor Henüz Eklenmedi",
+        isForeign: false,
+        stocks: []
+    };
+}
+
+async function fetchFundStockHoldings(fundCode, totalAUM = 0, fundNameOverride = '') {
+    const code = (fundCode || "").toUpperCase().trim();
+    if (!code) return { hasRealData: false, isNonEquity: false, stocks: [] };
+
+    // 1. In-memory check
+    let rawItem = CURATED_FUND_STOCK_HOLDINGS[code] || fetchedKapHoldingsCache[code] || null;
+
+    // 2. LocalStorage cache check (< 24h)
+    if (!rawItem && typeof localStorage !== 'undefined') {
+        try {
+            const cachedStr = localStorage.getItem(`tefas_holdings_v2_${code}`);
+            if (cachedStr) {
+                const parsed = JSON.parse(cachedStr);
+                if (parsed && parsed.savedAt && (Date.now() - parsed.savedAt < 86400000)) {
+                    rawItem = parsed.data;
+                    fetchedKapHoldingsCache[code] = rawItem;
+                }
+            }
+        } catch (e) {
+            console.warn("Storage read error for holdings:", e);
+        }
+    }
+
+    // 3. Worker fetch (?fon=CODE&holdings=1)
+    if (!rawItem) {
+        try {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 3500);
+            const workerUrl = `${IS_YATIRIM_WORKER_URL}?fon=${encodeURIComponent(code)}&holdings=1`;
+            const resp = await fetch(workerUrl, { signal: controller.signal });
+            clearTimeout(timeoutId);
+            if (resp.ok) {
+                const json = await resp.json();
+                if (json && json.ok && json.found && json.data) {
+                    rawItem = json.data;
+                    fetchedKapHoldingsCache[code] = rawItem;
+                    try {
+                        localStorage.setItem(`tefas_holdings_v2_${code}`, JSON.stringify({ savedAt: Date.now(), data: rawItem }));
+                    } catch (e) {}
+                }
+            }
+        } catch (err) {
+            console.warn(`Worker holdings fetch failed for ${code}:`, err);
+        }
+    }
+
+    // 4. Local kap.json fallback
+    if (!rawItem && typeof window !== 'undefined' && window.fetch) {
+        try {
+            if (!window._kapJsonAllFundsPromise) {
+                window._kapJsonAllFundsPromise = fetch('./kap.json')
+                    .then(r => r.ok ? r.json() : null)
+                    .catch(() => null);
+            }
+            const kapData = await window._kapJsonAllFundsPromise;
+            if (kapData && kapData.funds && kapData.funds[code]) {
+                rawItem = kapData.funds[code];
+                fetchedKapHoldingsCache[code] = rawItem;
+            }
+        } catch (err) {
+            console.warn(`Local kap.json fetch failed for ${code}:`, err);
+        }
+    }
+
+    if (rawItem && Array.isArray(rawItem.stocks) && rawItem.stocks.length > 0) {
+        return formatStockHoldingsData(code, rawItem, totalAUM);
+    }
+
+    const isNonEquity = checkIfFundIsNonEquity(code);
+    return {
+        hasRealData: false,
+        isNonEquity,
+        date: isNonEquity ? "Hisse Senedi Bulunmuyor" : "KAP Bildirimi Bekleniyor",
+        reportPeriod: isNonEquity ? "Para Piyasası / Borçlanma / Emtia" : "Rapor Henüz Eklenmedi",
+        isForeign: false,
+        stocks: []
+    };
+}
+
 // Render Stock-Level Holdings & Movements (THYAO, TUPRS, BIMAS, ASELS...)
-function renderFundStockMoves(fundCode, totalAUM = 0) {
+async function renderFundStockMoves(fundCode, totalAUM = 0) {
     const chipsContainer = document.getElementById("fundMovesCurrentAssetChips");
     const assetCountBadge = document.getElementById("fundMovesAssetCountBadge");
     const boughtList = document.getElementById("fundMovesBoughtList");
@@ -2585,8 +2523,13 @@ function renderFundStockMoves(fundCode, totalAUM = 0) {
 
     if (!chipsContainer) return;
 
-    const fTitle = (typeof appState !== 'undefined' && appState.activeFundTitle) ? appState.activeFundTitle : getFundTitleForCode(fundCode);
-    const data = getFundStockHoldings(fundCode, totalAUM, fTitle);
+    const fCode = (fundCode || (typeof appState !== 'undefined' ? appState.activeFundCode : "") || "").toUpperCase().trim();
+    const fTitle = (typeof appState !== 'undefined' && appState.activeFundTitle) ? appState.activeFundTitle : getFundTitleForCode(fCode);
+
+    let data = getFundStockHoldings(fCode, totalAUM, fTitle);
+    if (!data.hasRealData && !data.isNonEquity) {
+        data = await fetchFundStockHoldings(fCode, totalAUM, fTitle);
+    }
     const stocks = data.stocks;
 
     if (headerTitle) headerTitle.innerText = "Portföy Hisse Dağılımı & Hareketleri (KAP)";
@@ -2600,7 +2543,61 @@ function renderFundStockMoves(fundCode, totalAUM = 0) {
         dateBadge.innerHTML = `<i class="fa-solid fa-file-contract"></i> ${data.date} (${data.reportPeriod})`;
     }
 
+    if (data.isNonEquity) {
+        if (assetCountBadge) assetCountBadge.innerText = "0 Hisse";
+        if (dateBadge) dateBadge.innerHTML = `<i class="fa-solid fa-coins"></i> Hisse Senedi Bulunmuyor`;
+        if (rotationPill) rotationPill.innerHTML = `<i class="fa-solid fa-shield-halved"></i> Hisse Dışı Fon`;
+        chipsContainer.innerHTML = `
+            <div class="moves-empty-state" style="grid-column: 1 / -1; padding: 32px 16px; text-align: center;">
+                <div style="width: 48px; height: 48px; border-radius: 50%; background: rgba(16, 185, 129, 0.1); display: flex; align-items: center; justify-content: center; margin: 0 auto 12px auto;">
+                    <i class="fa-solid fa-coins" style="font-size: 1.4rem; color: #10B981;"></i>
+                </div>
+                <h4 style="color: #F8FAFC; margin: 0 0 6px 0; font-size: 1rem;">Hisse Senedi İçermeyen Fon</h4>
+                <p style="color: #94A3B8; font-size: 0.85rem; max-width: 460px; margin: 0 auto 16px auto;">
+                    Bu fon portföyünde hisse senedi bulundurmamaktadır (Para Piyasası, Borçlanma Araçları veya Kıymetli Madenler fonu). Fonun tüm varlık dağılımı resmi TEFAS varlık sınıflarından izlenmektedir.
+                </p>
+                <button type="button" class="btn-sm primary" onclick="switchMovesDisplayMode('macro')" style="margin: 0 auto; display: inline-flex; align-items: center; gap: 6px;">
+                    <i class="fa-solid fa-chart-pie"></i>
+                    <span>Canlı TEFAS Varlık Sınıflarını Göster</span>
+                </button>
+            </div>
+        `;
+        if (boughtList) boughtList.innerHTML = '<div class="moves-empty-state"><span>Hisse senedi hareketi yok</span></div>';
+        if (soldList) soldList.innerHTML = '<div class="moves-empty-state"><span>Hisse senedi hareketi yok</span></div>';
+        if (boughtCountBadge) boughtCountBadge.innerText = "0 Alım";
+        if (soldCountBadge) soldCountBadge.innerText = "0 Satış";
+        if (summaryFooter) summaryFooter.innerHTML = '';
+        return;
+    }
+
     const activeStocks = stocks.filter(s => s.pct > 0).sort((a, b) => b.pct - a.pct);
+
+    if (!data.hasRealData || activeStocks.length === 0) {
+        if (assetCountBadge) assetCountBadge.innerText = "0 Hisse";
+        if (dateBadge) dateBadge.innerHTML = `<i class="fa-solid fa-file-circle-question"></i> KAP Raporu Bekleniyor`;
+        if (rotationPill) rotationPill.innerHTML = `<i class="fa-solid fa-circle-info"></i> Hisse Verisi Yok`;
+        chipsContainer.innerHTML = `
+            <div class="moves-empty-state" style="grid-column: 1 / -1; padding: 32px 16px; text-align: center;">
+                <div style="width: 48px; height: 48px; border-radius: 50%; background: rgba(56, 189, 248, 0.1); display: flex; align-items: center; justify-content: center; margin: 0 auto 12px auto;">
+                    <i class="fa-solid fa-file-contract" style="font-size: 1.4rem; color: #38BDF8;"></i>
+                </div>
+                <h4 style="color: #F8FAFC; margin: 0 0 6px 0; font-size: 1rem;">KAP Portföy Dağılım Raporu Bekleniyor</h4>
+                <p style="color: #94A3B8; font-size: 0.85rem; max-width: 440px; margin: 0 auto 16px auto;">
+                    Bu fon için resmi KAP Portföy Dağılım Raporu (PDR) henüz sisteme eklenmedi. Güncel portföy kompozisyonunu TEFAS varlık sınıflarından inceleyebilirsiniz.
+                </p>
+                <button type="button" class="btn-sm primary" onclick="switchMovesDisplayMode('macro')" style="margin: 0 auto; display: inline-flex; align-items: center; gap: 6px;">
+                    <i class="fa-solid fa-chart-pie"></i>
+                    <span>Canlı TEFAS Varlık Sınıflarını Göster</span>
+                </button>
+            </div>
+        `;
+        if (boughtList) boughtList.innerHTML = '<div class="moves-empty-state"><span>KAP hisse verisi yok</span></div>';
+        if (soldList) soldList.innerHTML = '<div class="moves-empty-state"><span>KAP hisse verisi yok</span></div>';
+        if (boughtCountBadge) boughtCountBadge.innerText = "0 Alım";
+        if (soldCountBadge) soldCountBadge.innerText = "0 Satış";
+        if (summaryFooter) summaryFooter.innerHTML = '';
+        return;
+    }
 
     if (assetCountBadge) {
         assetCountBadge.innerText = `${activeStocks.length} Hisse Senedi`;
@@ -2982,6 +2979,20 @@ function renderFundPortfolioMoves(allocData, totalAUM = 0) {
     lastFundAllocDataCache = allocData;
     lastFundTotalAUMCache = totalAUM;
 
+    const fCode = (appState.activeFundCode || "").toUpperCase().trim();
+    const hasCuratedStocks = !!(CURATED_FUND_STOCK_HOLDINGS && CURATED_FUND_STOCK_HOLDINGS[fCode]) || !!(fetchedKapHoldingsCache && fetchedKapHoldingsCache[fCode]);
+
+    // If the fund does NOT have verified curated KAP stock holdings, default to 'macro' (TEFAS varlık sınıfları)
+    if (!hasCuratedStocks && currentMovesDisplayMode === 'stocks') {
+        currentMovesDisplayMode = 'macro';
+        const btnStocks = document.getElementById("btnMovesModeStocks");
+        const btnMacro = document.getElementById("btnMovesModeMacro");
+        if (btnStocks && btnMacro) {
+            btnMacro.classList.add("active");
+            btnStocks.classList.remove("active");
+        }
+    }
+
     if (currentMovesDisplayMode === 'macro') {
         renderFundMacroAllocMoves(allocData, totalAUM);
     } else {
@@ -2991,11 +3002,15 @@ function renderFundPortfolioMoves(allocData, totalAUM = 0) {
 
 // Render Daily Asset Allocation Trend (Stacked Area Chart)
 function renderFundHistoryAllocationChart(allocData) {
-    if (!allocData || allocData.length === 0) return;
-
     if (fundHistoryAllocChartInstance) {
         fundHistoryAllocChartInstance.destroy();
         fundHistoryAllocChartInstance = null;
+    }
+
+    const legendElem = document.getElementById("fundAllocHistoryLegend");
+    if (!allocData || allocData.length === 0) {
+        if (legendElem) legendElem.innerHTML = '<span class="txt-muted" style="font-size: 0.8rem;">Trend verisi yok</span>';
+        return;
     }
 
     const isMobile = window.innerWidth <= 768;
@@ -3049,7 +3064,6 @@ function renderFundHistoryAllocationChart(allocData) {
         };
     });
 
-    const legendElem = document.getElementById("fundAllocHistoryLegend");
     if (legendElem) {
         legendElem.innerHTML = datasets.map((ds, idx) => {
             return `<span class="leg-item" data-dataset-idx="${idx}" onclick="toggleAllocDataset(${idx}, this)" title="Grafikte gizle/göster"><span class="leg-dot" style="background: ${ds.borderColor}; box-shadow: 0 0 5px ${ds.borderColor};"></span> ${ds.label}</span>`;
@@ -3132,15 +3146,19 @@ function toggleAllocDataset(idx, elem) {
 }
 window.toggleAllocDataset = toggleAllocDataset;
 
-// Render Daily Asset Allocation Breakdown & Daily Change Table
 function renderFundAllocTable(allocData) {
-    if (!allocData || allocData.length === 0) return;
-    currentAllocFullData = allocData;
-
     const thead = document.getElementById("fundAllocTableHead");
     const tbody = document.getElementById("fundAllocTableBody");
     const countBadge = document.getElementById("fundAllocTableCountBadge");
     if (!thead || !tbody) return;
+
+    if (!allocData || allocData.length === 0) {
+        thead.innerHTML = '';
+        tbody.innerHTML = '<tr><td colspan="10" style="text-align: center; color: #94A3B8; padding: 24px;">Günlük varlık dağılım tablosu verisi bulunamadı.</td></tr>';
+        if (countBadge) countBadge.innerText = "0 Gün";
+        return;
+    }
+    currentAllocFullData = allocData;
 
     // Clean rows and sort chronologically
     const clean = allocData.map(r => {
@@ -14096,16 +14114,71 @@ async function openSlideFundDetail(fundCode, originSlideIndex = null) {
     });
 }
 
-function showSlideKapHoldingsView(fundCode, activeFilter = 'all') {
+async function showSlideKapHoldingsView(fundCode, activeFilter = 'all') {
     const panel = document.getElementById("slideDetailAllocPanel");
     if (!panel) return;
 
     const fCode = (fundCode || currentSlideFundCode || 'AFT').toUpperCase();
     currentSlideKapFilter = activeFilter;
 
-    // Retrieve stock holdings using existing TEFAS/KAP data engine
-    const holdingsData = getFundStockHoldings(fCode, currentSlideFundAUM, currentSlideFundTitle);
+    // Retrieve stock holdings using multi-tier TEFAS/KAP data engine
+    let holdingsData = getFundStockHoldings(fCode, currentSlideFundAUM, currentSlideFundTitle);
+    if (!holdingsData.hasRealData && !holdingsData.isNonEquity) {
+        holdingsData = await fetchFundStockHoldings(fCode, currentSlideFundAUM, currentSlideFundTitle);
+    }
     const stocks = holdingsData.stocks || [];
+
+    if (holdingsData.isNonEquity) {
+        panel.innerHTML = `
+            <div class="slide-detail-panel-hdr">
+                <div class="slide-detail-panel-title">
+                    <span class="slide-detail-panel-icon emerald"><i class="fa-solid fa-coins"></i></span>
+                    <div>
+                        <div class="slide-detail-panel-main">Portföy Varlık Dağılımı</div>
+                        <div class="slide-detail-panel-desc">Hisse Senedi İçermeyen Fon</div>
+                    </div>
+                </div>
+                <button type="button" class="btn-slide-back-macro" onclick="showSlideMacroAllocView()" title="Genel varlık dağılımı görünümüne dön">
+                    <i class="fa-solid fa-chart-pie"></i>
+                    <span>Varlık Dağılımı</span>
+                </button>
+            </div>
+            <div style="padding: 32px 16px; text-align: center; color: #94A3B8;">
+                <p style="margin: 0 0 14px 0; font-size: 0.9rem;">Bu fon (Para Piyasası / Borçlanma / Altın) portföyünde hisse senedi içermemektedir.</p>
+                <button type="button" class="btn-sm primary" onclick="showSlideMacroAllocView()" style="margin: 0 auto; display: inline-flex; align-items: center; gap: 6px;">
+                    <i class="fa-solid fa-chart-pie"></i>
+                    <span>TEFAS Varlık Sınıflarını Göster</span>
+                </button>
+            </div>
+        `;
+        return;
+    }
+
+    if (!holdingsData.hasRealData || stocks.length === 0) {
+        panel.innerHTML = `
+            <div class="slide-detail-panel-hdr">
+                <div class="slide-detail-panel-title">
+                    <span class="slide-detail-panel-icon cyan"><i class="fa-solid fa-file-contract"></i></span>
+                    <div>
+                        <div class="slide-detail-panel-main">Portföy Hisse Dağılımı (KAP)</div>
+                        <div class="slide-detail-panel-desc">KAP Portföy Dağılım Raporu Bekleniyor</div>
+                    </div>
+                </div>
+                <button type="button" class="btn-slide-back-macro" onclick="showSlideMacroAllocView()" title="Genel varlık dağılımı görünümüne dön">
+                    <i class="fa-solid fa-chart-pie"></i>
+                    <span>Varlık Dağılımı</span>
+                </button>
+            </div>
+            <div style="padding: 32px 16px; text-align: center; color: #94A3B8;">
+                <p style="margin: 0 0 14px 0; font-size: 0.9rem;">Bu fon için resmi KAP Portföy Dağılım Raporu henüz sisteme eklenmedi.</p>
+                <button type="button" class="btn-sm primary" onclick="showSlideMacroAllocView()" style="margin: 0 auto; display: inline-flex; align-items: center; gap: 6px;">
+                    <i class="fa-solid fa-chart-pie"></i>
+                    <span>TEFAS Varlık Sınıflarını Göster</span>
+                </button>
+            </div>
+        `;
+        return;
+    }
 
     // Summary counts
     const boughtStocks = stocks.filter(s => s.diff > 0.05 && !s.isNew);

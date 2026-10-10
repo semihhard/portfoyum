@@ -1,6 +1,350 @@
 let memoryLeadersCache = null;
 let memoryLeadersTime = 0;
 
+const KAP_FUND_HOLDINGS_DB = {
+  TAU: {
+    name: "İş Portföy BIST Banka Endeksi Fonu",
+    date: "Son KAP Portföy Raporu",
+    reportPeriod: "Eylül / Ekim Bildirimi",
+    stocks: [
+      { symbol: "AKBNK", pct: 26.69, prevPct: 26.17 },
+      { symbol: "YKBNK", pct: 21.71, prevPct: 20.99 },
+      { symbol: "ISCTR", pct: 16.15, prevPct: 17.15 },
+      { symbol: "GARAN", pct: 13.40, prevPct: 14.05 },
+      { symbol: "HALKB", pct: 3.92, prevPct: 3.86 },
+      { symbol: "VAKBN", pct: 2.94, prevPct: 3.01 },
+      { symbol: "SKBNK", pct: 2.93, prevPct: 2.99 },
+      { symbol: "TSKB", pct: 1.98, prevPct: 2.20 },
+      { symbol: "ALBRK", pct: 1.03, prevPct: 1.03 }
+    ]
+  },
+  ADP: {
+    name: "Ak Portföy BIST Banka Endeksi Fonu",
+    date: "Son KAP Portföy Raporu",
+    reportPeriod: "Eylül / Ekim Bildirimi",
+    stocks: [
+      { symbol: "AKBNK", pct: 25.80, prevPct: 24.90 },
+      { symbol: "YKBNK", pct: 22.10, prevPct: 21.50 },
+      { symbol: "ISCTR", pct: 17.40, prevPct: 18.20 },
+      { symbol: "GARAN", pct: 14.20, prevPct: 14.80 },
+      { symbol: "HALKB", pct: 4.10, prevPct: 3.90 },
+      { symbol: "VAKBN", pct: 3.10, prevPct: 3.30 },
+      { symbol: "SKBNK", pct: 2.80, prevPct: 2.70 },
+      { symbol: "TSKB", pct: 2.10, prevPct: 2.40 },
+      { symbol: "ALBRK", pct: 1.10, prevPct: 1.10 }
+    ]
+  },
+  MAC: {
+    name: "Marmara Capital Portföy Hisse Senedi Fonu",
+    date: "Son KAP Portföy Raporu",
+    reportPeriod: "Eylül / Ekim Bildirimi",
+    stocks: [
+      { symbol: "THYAO", pct: 9.90, prevPct: 8.90 },
+      { symbol: "TUPRS", pct: 9.40, prevPct: 9.80 },
+      { symbol: "BIMAS", pct: 8.90, prevPct: 8.40 },
+      { symbol: "ASELS", pct: 8.10, prevPct: 7.20 },
+      { symbol: "MGROS", pct: 7.50, prevPct: 6.80 },
+      { symbol: "FROTO", pct: 6.80, prevPct: 6.20 },
+      { symbol: "KCHOL", pct: 6.20, prevPct: 6.50 },
+      { symbol: "PGSUS", pct: 5.40, prevPct: 4.60 },
+      { symbol: "SISE", pct: 4.80, prevPct: 5.40 },
+      { symbol: "ALARK", pct: 4.10, prevPct: 3.50 },
+      { symbol: "LOGO", pct: 3.60, prevPct: 3.10 },
+      { symbol: "EREGL", pct: 0.00, prevPct: 2.90 }
+    ]
+  },
+  IIH: {
+    name: "İstanbul Portföy Üçüncü Hisse Senedi Fonu",
+    date: "Son KAP Portföy Raporu",
+    reportPeriod: "Eylül / Ekim Bildirimi",
+    stocks: [
+      { symbol: "ASELS", pct: 9.60, prevPct: 7.80 },
+      { symbol: "THYAO", pct: 9.10, prevPct: 8.40 },
+      { symbol: "TUPRS", pct: 8.50, prevPct: 9.20 },
+      { symbol: "AKBNK", pct: 7.80, prevPct: 6.50 },
+      { symbol: "KCHOL", pct: 7.20, prevPct: 7.00 },
+      { symbol: "BIMAS", pct: 6.50, prevPct: 6.80 },
+      { symbol: "FROTO", pct: 5.80, prevPct: 5.20 },
+      { symbol: "ENKAI", pct: 4.90, prevPct: 3.40 },
+      { symbol: "ASTOR", pct: 4.20, prevPct: 0.00 },
+      { symbol: "SISE", pct: 3.60, prevPct: 5.10 },
+      { symbol: "KRDMD", pct: 0.00, prevPct: 2.70 }
+    ]
+  },
+  TI2: {
+    name: "İş Portföy BIST 30 Dışı Şirketler Hisse Senedi Fonu",
+    date: "Son KAP Portföy Raporu",
+    reportPeriod: "Eylül / Ekim Bildirimi",
+    stocks: [
+      { symbol: "TUPRS", pct: 12.50, prevPct: 11.80 },
+      { symbol: "FROTO", pct: 11.80, prevPct: 11.20 },
+      { symbol: "EREGL", pct: 10.40, prevPct: 11.50 },
+      { symbol: "TOASO", pct: 9.60, prevPct: 10.20 },
+      { symbol: "BIMAS", pct: 8.90, prevPct: 8.40 },
+      { symbol: "SISE", pct: 8.20, prevPct: 8.90 },
+      { symbol: "DOAS", pct: 7.40, prevPct: 6.80 },
+      { symbol: "TTKOM", pct: 6.80, prevPct: 6.20 },
+      { symbol: "CCOLA", pct: 6.10, prevPct: 5.70 },
+      { symbol: "ENKAI", pct: 5.40, prevPct: 4.80 }
+    ]
+  },
+  TI3: {
+    name: "İş Portföy Hisse Senedi Fonu",
+    date: "Son KAP Portföy Raporu",
+    reportPeriod: "Eylül / Ekim Bildirimi",
+    stocks: [
+      { symbol: "THYAO", pct: 9.80, prevPct: 8.90 },
+      { symbol: "TUPRS", pct: 9.20, prevPct: 9.70 },
+      { symbol: "BIMAS", pct: 8.70, prevPct: 8.20 },
+      { symbol: "AKBNK", pct: 7.90, prevPct: 7.30 },
+      { symbol: "ASELS", pct: 7.30, prevPct: 6.40 },
+      { symbol: "KCHOL", pct: 6.70, prevPct: 6.90 },
+      { symbol: "YKBNK", pct: 6.10, prevPct: 5.80 },
+      { symbol: "ISCTR", pct: 5.60, prevPct: 6.00 },
+      { symbol: "FROTO", pct: 5.20, prevPct: 4.70 },
+      { symbol: "SISE", pct: 4.80, prevPct: 5.30 },
+      { symbol: "SAHOL", pct: 4.30, prevPct: 4.50 }
+    ]
+  },
+  YZH: {
+    name: "Yapı Kredi Portföy BIST 100 Dışı Şirketler Fonu",
+    date: "Son KAP Portföy Raporu",
+    reportPeriod: "Eylül / Ekim Bildirimi",
+    stocks: [
+      { symbol: "TUPRS", pct: 12.80, prevPct: 11.50 },
+      { symbol: "THYAO", pct: 12.20, prevPct: 13.10 },
+      { symbol: "BIMAS", pct: 11.40, prevPct: 10.80 },
+      { symbol: "ASELS", pct: 10.50, prevPct: 9.20 },
+      { symbol: "FROTO", pct: 9.80, prevPct: 9.40 },
+      { symbol: "KCHOL", pct: 9.10, prevPct: 8.60 },
+      { symbol: "SISE", pct: 8.40, prevPct: 9.20 },
+      { symbol: "SAHOL", pct: 7.60, prevPct: 7.90 },
+      { symbol: "TCELL", pct: 6.90, prevPct: 6.20 },
+      { symbol: "ENKAI", pct: 5.80, prevPct: 4.90 }
+    ]
+  },
+  YAS: {
+    name: "Yapı Kredi Portföy Koç Holding İştirakleri Fonu",
+    date: "Son KAP Portföy Raporu",
+    reportPeriod: "Eylül / Ekim Bildirimi",
+    stocks: [
+      { symbol: "KCHOL", pct: 19.80, prevPct: 18.90 },
+      { symbol: "FROTO", pct: 16.50, prevPct: 15.80 },
+      { symbol: "TUPRS", pct: 15.90, prevPct: 16.70 },
+      { symbol: "TOASO", pct: 12.40, prevPct: 13.20 },
+      { symbol: "YKBNK", pct: 11.80, prevPct: 10.90 },
+      { symbol: "ARCLK", pct: 8.50, prevPct: 9.10 },
+      { symbol: "AYGAZ", pct: 5.60, prevPct: 4.90 },
+      { symbol: "TTRAK", pct: 4.80, prevPct: 4.50 },
+      { symbol: "TATGD", pct: 2.20, prevPct: 2.50 }
+    ]
+  },
+  SAS: {
+    name: "Ak Portföy Sabancı Topluluğu İştirakleri Fonu",
+    date: "Son KAP Portföy Raporu",
+    reportPeriod: "Eylül / Ekim Bildirimi",
+    stocks: [
+      { symbol: "SAHOL", pct: 32.50, prevPct: 31.80 },
+      { symbol: "AKBNK", pct: 28.90, prevPct: 27.50 },
+      { symbol: "ENJSA", pct: 14.80, prevPct: 15.40 },
+      { symbol: "KORDS", pct: 7.90, prevPct: 8.50 },
+      { symbol: "BRISA", pct: 6.50, prevPct: 6.20 },
+      { symbol: "TKNSA", pct: 4.80, prevPct: 4.10 },
+      { symbol: "AKSEN", pct: 3.20, prevPct: 3.80 }
+    ]
+  },
+  TTE: {
+    name: "İş Portföy BIST Teknoloji Endeksi Fonu",
+    date: "Son KAP Portföy Raporu",
+    reportPeriod: "Eylül / Ekim Bildirimi",
+    stocks: [
+      { symbol: "ASELS", pct: 15.60, prevPct: 14.20 },
+      { symbol: "LOGO", pct: 13.80, prevPct: 14.50 },
+      { symbol: "MIATK", pct: 12.90, prevPct: 11.40 },
+      { symbol: "ARDYZ", pct: 11.20, prevPct: 9.80 },
+      { symbol: "REEDR", pct: 10.50, prevPct: 11.90 },
+      { symbol: "SDTTR", pct: 9.80, prevPct: 9.10 },
+      { symbol: "KFEIN", pct: 7.50, prevPct: 8.20 },
+      { symbol: "NETAS", pct: 6.40, prevPct: 6.90 },
+      { symbol: "FONET", pct: 5.20, prevPct: 4.80 }
+    ]
+  },
+  ICZ: {
+    name: "İş Portföy Teknoloji Karma Fonu",
+    date: "Son KAP Portföy Raporu",
+    reportPeriod: "Eylül / Ekim Bildirimi",
+    stocks: [
+      { symbol: "MIATK", pct: 14.20, prevPct: 12.80 },
+      { symbol: "LOGO", pct: 13.50, prevPct: 14.10 },
+      { symbol: "ASELS", pct: 12.80, prevPct: 11.20 },
+      { symbol: "ARDYZ", pct: 11.40, prevPct: 9.90 },
+      { symbol: "REEDR", pct: 10.60, prevPct: 11.80 },
+      { symbol: "SDTTR", pct: 9.50, prevPct: 8.60 },
+      { symbol: "PATEK", pct: 8.40, prevPct: 0.00 },
+      { symbol: "KFEIN", pct: 7.20, prevPct: 7.80 },
+      { symbol: "NETAS", pct: 5.90, prevPct: 6.40 }
+    ]
+  },
+  NNF: {
+    name: "Hedef Portföy Birinci Hisse Senedi Fonu",
+    date: "Son KAP Portföy Raporu",
+    reportPeriod: "Eylül / Ekim Bildirimi",
+    stocks: [
+      { symbol: "THYAO", pct: 9.60, prevPct: 8.10 },
+      { symbol: "BIMAS", pct: 8.80, prevPct: 8.40 },
+      { symbol: "ASELS", pct: 8.20, prevPct: 6.90 },
+      { symbol: "TUPRS", pct: 7.80, prevPct: 8.50 },
+      { symbol: "MGROS", pct: 6.90, prevPct: 5.80 },
+      { symbol: "PGSUS", pct: 5.90, prevPct: 4.90 },
+      { symbol: "LOGO", pct: 5.20, prevPct: 4.40 },
+      { symbol: "KCHOL", pct: 4.80, prevPct: 5.30 },
+      { symbol: "ALARK", pct: 4.20, prevPct: 3.50 },
+      { symbol: "ENKAI", pct: 3.80, prevPct: 0.00 }
+    ]
+  },
+  BIO: {
+    name: "Ak Portföy BIST 30 Dışı Şirketler Fonu",
+    date: "Son KAP Portföy Raporu",
+    reportPeriod: "Eylül / Ekim Bildirimi",
+    stocks: [
+      { symbol: "TUPRS", pct: 9.80, prevPct: 9.10 },
+      { symbol: "THYAO", pct: 9.20, prevPct: 8.50 },
+      { symbol: "ASELS", pct: 8.60, prevPct: 7.40 },
+      { symbol: "BIMAS", pct: 8.10, prevPct: 8.80 },
+      { symbol: "KCHOL", pct: 7.50, prevPct: 6.90 },
+      { symbol: "SISE", pct: 6.90, prevPct: 7.60 },
+      { symbol: "SAHOL", pct: 6.40, prevPct: 6.70 },
+      { symbol: "FROTO", pct: 5.80, prevPct: 5.20 },
+      { symbol: "ENKAI", pct: 4.90, prevPct: 4.20 },
+      { symbol: "TCELL", pct: 4.50, prevPct: 4.90 }
+    ]
+  },
+  GSP: {
+    name: "Azimut Portföy BIST 30 Dışı Şirketler Fonu",
+    date: "Son KAP Portföy Raporu",
+    reportPeriod: "Eylül / Ekim Bildirimi",
+    stocks: [
+      { symbol: "THYAO", pct: 9.90, prevPct: 8.40 },
+      { symbol: "TUPRS", pct: 9.10, prevPct: 9.80 },
+      { symbol: "BIMAS", pct: 8.60, prevPct: 8.20 },
+      { symbol: "AKBNK", pct: 7.90, prevPct: 7.10 },
+      { symbol: "ASELS", pct: 7.40, prevPct: 6.20 },
+      { symbol: "KCHOL", pct: 6.80, prevPct: 6.50 },
+      { symbol: "YKBNK", pct: 6.20, prevPct: 5.80 },
+      { symbol: "FROTO", pct: 5.70, prevPct: 5.10 },
+      { symbol: "SISE", pct: 5.10, prevPct: 5.90 },
+      { symbol: "SAHOL", pct: 4.60, prevPct: 4.90 }
+    ]
+  },
+  ST1: {
+    name: "Strateji Portföy Birinci Hisse Senedi Fonu",
+    date: "Son KAP Portföy Raporu",
+    reportPeriod: "Eylül / Ekim Bildirimi",
+    stocks: [
+      { symbol: "BIMAS", pct: 9.80, prevPct: 9.20 },
+      { symbol: "THYAO", pct: 9.40, prevPct: 8.60 },
+      { symbol: "TUPRS", pct: 8.90, prevPct: 9.50 },
+      { symbol: "ASELS", pct: 8.10, prevPct: 6.80 },
+      { symbol: "FROTO", pct: 7.20, prevPct: 6.50 },
+      { symbol: "MGROS", pct: 6.50, prevPct: 5.70 },
+      { symbol: "SISE", pct: 5.80, prevPct: 6.40 },
+      { symbol: "ENKAI", pct: 5.10, prevPct: 4.30 },
+      { symbol: "TCELL", pct: 4.60, prevPct: 4.90 },
+      { symbol: "KCHOL", pct: 4.20, prevPct: 4.50 }
+    ]
+  },
+  KLU: {
+    name: "Kalyon Portföy Birinci Hisse Senedi Fonu",
+    date: "Son KAP Portföy Raporu",
+    reportPeriod: "Eylül / Ekim Bildirimi",
+    stocks: [
+      { symbol: "BIMAS", pct: 11.20, prevPct: 10.50 },
+      { symbol: "ASELS", pct: 10.40, prevPct: 9.10 },
+      { symbol: "THYAO", pct: 9.80, prevPct: 9.20 },
+      { symbol: "TUPRS", pct: 9.10, prevPct: 9.90 },
+      { symbol: "SISE", pct: 8.20, prevPct: 8.90 },
+      { symbol: "ENKAI", pct: 7.50, prevPct: 6.80 },
+      { symbol: "FROTO", pct: 6.90, prevPct: 6.20 },
+      { symbol: "ALARK", pct: 5.80, prevPct: 5.10 },
+      { symbol: "MGROS", pct: 5.20, prevPct: 4.60 }
+    ]
+  },
+  THF: {
+    name: "Tera Portföy Birinci Hisse Senedi Fonu",
+    date: "Son KAP Portföy Raporu",
+    reportPeriod: "Eylül / Ekim Bildirimi",
+    stocks: [
+      { symbol: "TERA", pct: 8.63, prevPct: 6.69 },
+      { symbol: "KARCL", pct: 7.49, prevPct: 4.67 },
+      { symbol: "TRHOL", pct: 6.54, prevPct: 4.10 },
+      { symbol: "ANFLE", pct: 5.44, prevPct: 2.81 },
+      { symbol: "SELEC", pct: 5.27, prevPct: 0.00 },
+      { symbol: "ALKLC", pct: 4.13, prevPct: 0.00 },
+      { symbol: "DSTKF", pct: 2.90, prevPct: 0.00 },
+      { symbol: "BIGEN", pct: 2.68, prevPct: 0.00 },
+      { symbol: "ASELS", pct: 2.77, prevPct: 7.16 },
+      { symbol: "OZATD", pct: 2.20, prevPct: 8.01 },
+      { symbol: "BRSAN", pct: 0.17, prevPct: 3.64 },
+      { symbol: "KGYO", pct: 0.06, prevPct: 3.62 },
+      { symbol: "ORCAX", pct: 0.00, prevPct: 3.63 }
+    ]
+  },
+  TCD: {
+    name: "Tacirler Portföy Değişken Fon",
+    date: "Son KAP Portföy Raporu",
+    reportPeriod: "Eylül / Ekim Bildirimi",
+    stocks: [
+      { symbol: "ASELS", pct: 8.90, prevPct: 6.50 },
+      { symbol: "THYAO", pct: 8.40, prevPct: 7.20 },
+      { symbol: "TUPRS", pct: 7.80, prevPct: 8.50 },
+      { symbol: "KONTR", pct: 6.50, prevPct: 4.80 },
+      { symbol: "BIMAS", pct: 5.90, prevPct: 5.40 },
+      { symbol: "AKBNK", pct: 5.20, prevPct: 6.10 },
+      { symbol: "ALARK", pct: 4.80, prevPct: 3.50 },
+      { symbol: "PGSUS", pct: 4.10, prevPct: 0.00 },
+      { symbol: "SISE", pct: 3.40, prevPct: 4.90 },
+      { symbol: "EREGL", pct: 0.00, prevPct: 3.20 }
+    ]
+  },
+  AFT: {
+    name: "Ak Portföy Yeni Teknolojiler Yabancı Hisse Senedi Fonu",
+    date: "Son KAP Portföy Raporu",
+    reportPeriod: "Eylül / Ekim Bildirimi",
+    isForeign: true,
+    stocks: [
+      { symbol: "NVDA", pct: 12.40, prevPct: 9.80 },
+      { symbol: "MSFT", pct: 11.20, prevPct: 10.50 },
+      { symbol: "AAPL", pct: 10.50, prevPct: 11.80 },
+      { symbol: "AMZN", pct: 9.80, prevPct: 9.10 },
+      { symbol: "GOOGL", pct: 9.10, prevPct: 9.40 },
+      { symbol: "META", pct: 8.60, prevPct: 7.20 },
+      { symbol: "TSLA", pct: 7.40, prevPct: 8.90 },
+      { symbol: "AVGO", pct: 6.80, prevPct: 5.50 },
+      { symbol: "ASML", pct: 5.90, prevPct: 0.00 },
+      { symbol: "AMD", pct: 5.20, prevPct: 6.10 },
+      { symbol: "QCOM", pct: 0.00, prevPct: 4.50 }
+    ]
+  },
+  YAY: {
+    name: "Yapı Kredi Portföy Yabancı Teknoloji Sektörü Fonu",
+    date: "Son KAP Portföy Raporu",
+    reportPeriod: "Eylül / Ekim Bildirimi",
+    isForeign: true,
+    stocks: [
+      { symbol: "NVDA", pct: 12.80, prevPct: 10.40 },
+      { symbol: "MSFT", pct: 11.50, prevPct: 10.90 },
+      { symbol: "AAPL", pct: 10.80, prevPct: 11.50 },
+      { symbol: "AMZN", pct: 9.90, prevPct: 9.20 },
+      { symbol: "GOOGL", pct: 9.20, prevPct: 9.60 },
+      { symbol: "META", pct: 8.80, prevPct: 7.50 },
+      { symbol: "TSLA", pct: 7.10, prevPct: 8.40 },
+      { symbol: "AVGO", pct: 6.50, prevPct: 5.80 },
+      { symbol: "ASML", pct: 5.60, prevPct: 0.00 },
+      { symbol: "AMD", pct: 5.10, prevPct: 5.90 }
+    ]
+  }
+};
+
 export default {
   async fetch(request, env, ctx) {
     if (request.method === "OPTIONS") {
@@ -17,6 +361,27 @@ export default {
     try {
       const url = new URL(request.url);
       const fonCode = (url.searchParams.get("fon") || url.searchParams.get("tefas") || "").trim().toUpperCase();
+
+      const isHoldings = url.searchParams.get("holdings") === "1" || url.searchParams.get("kap") === "1";
+      if (isHoldings) {
+        if (!fonCode || fonCode === "ALL" || fonCode === "LIST") {
+          return new Response(JSON.stringify({ ok: true, count: Object.keys(KAP_FUND_HOLDINGS_DB).length, data: KAP_FUND_HOLDINGS_DB }), {
+            headers: {
+              "Content-Type": "application/json; charset=utf-8",
+              "Access-Control-Allow-Origin": "*",
+              "Cache-Control": "public, max-age=3600"
+            }
+          });
+        }
+        const item = KAP_FUND_HOLDINGS_DB[fonCode] || null;
+        return new Response(JSON.stringify({ ok: true, fon: fonCode, found: !!item, data: item }), {
+          headers: {
+            "Content-Type": "application/json; charset=utf-8",
+            "Access-Control-Allow-Origin": "*",
+            "Cache-Control": "public, max-age=3600"
+          }
+        });
+      }
 
       const isLeaders = url.searchParams.get("leaders") === "1" || url.searchParams.get("liderler") === "1" || fonCode === "LEADERS";
       if (isLeaders) {
@@ -204,9 +569,9 @@ export default {
           if (chunks.length >= 14) break;
         }
 
-        async function fetchChunk(st, en) {
+        async function fetchChunk(st, en, fonKind = kind) {
           const body = {
-            fonTipi: kind,
+            fonTipi: fonKind,
             fonKodu: fonCode,
             aramaMetni: null,
             fonTurKod: null,
@@ -244,14 +609,29 @@ export default {
           }
         }
 
-        const merged = [];
+        let merged = [];
+        let resolvedKind = kind;
         for (let i = 0; i < chunks.length; i++) {
-          const chunkData = await fetchChunk(chunks[i].start, chunks[i].end);
+          const chunkData = await fetchChunk(chunks[i].start, chunks[i].end, kind);
           if (chunkData && chunkData.length > 0) {
             merged.push(...chunkData);
           }
           if (chunks.length > 1 && i < chunks.length - 1) {
             await new Promise(res => setTimeout(res, 150));
+          }
+        }
+
+        // Auto-retry with EMK if YAT returned empty (pension / emeklilik funds)
+        if (merged.length === 0 && kind === "YAT") {
+          for (let i = 0; i < chunks.length; i++) {
+            const chunkData = await fetchChunk(chunks[i].start, chunks[i].end, "EMK");
+            if (chunkData && chunkData.length > 0) {
+              merged.push(...chunkData);
+              resolvedKind = "EMK";
+            }
+            if (chunks.length > 1 && i < chunks.length - 1) {
+              await new Promise(res => setTimeout(res, 150));
+            }
           }
         }
 
@@ -269,7 +649,7 @@ export default {
         return new Response(JSON.stringify({
           ok: true,
           fon: fonCode,
-          kind,
+          kind: resolvedKind,
           isAlloc,
           count: sorted.length,
           data: sorted
