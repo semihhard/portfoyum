@@ -23854,3 +23854,497 @@ body.theme-neo-brutalism .sort-option.active {
     }
 }
 
+/* ==========================================================================
+   Fon Karnesi Stüdyosu (Story Studio & Customizer Modal)
+   ========================================================================== */
+.fund-studio-modal-sheet {
+    max-width: 960px !important;
+    width: 95% !important;
+    max-height: 92vh !important;
+    display: flex !important;
+    flex-direction: column !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+    border-radius: 24px !important;
+    background: rgba(10, 14, 26, 0.96) !important;
+    border: 1px solid rgba(56, 189, 248, 0.3) !important;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8), 0 0 40px rgba(0, 245, 255, 0.15) !important;
+}
+
+.fund-studio-modal-sheet .modal-header {
+    padding: 16px 24px !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+    background: rgba(15, 23, 42, 0.6) !important;
+}
+
+.fund-studio-header-icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, rgba(0, 245, 255, 0.2) 0%, rgba(139, 92, 246, 0.25) 100%);
+    border: 1px solid rgba(0, 245, 255, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #00F5FF;
+    font-size: 1.15rem;
+    box-shadow: 0 0 15px rgba(0, 245, 255, 0.3);
+}
+
+.fund-studio-tag {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 800;
+    font-size: 0.8rem;
+    color: #38BDF8;
+    background: rgba(56, 189, 248, 0.15);
+    border: 1px solid rgba(56, 189, 248, 0.35);
+    padding: 2px 10px;
+    border-radius: 8px;
+    letter-spacing: 0.8px;
+}
+
+.fund-studio-body {
+    display: flex;
+    gap: 28px;
+    padding: 20px 24px;
+    overflow-y: auto;
+    flex: 1;
+    align-items: flex-start;
+}
+
+.fund-studio-controls-col {
+    flex: 1.1;
+    min-width: 320px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.fund-studio-panel-section {
+    background: rgba(15, 23, 42, 0.65);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: 16px;
+    padding: 14px 16px;
+}
+
+.fund-studio-sec-title {
+    font-size: 0.8rem;
+    font-weight: 800;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    color: #94A3B8;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+/* Theme Picker */
+.fund-studio-theme-pills {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+}
+
+.fund-studio-theme-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 9px 12px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #CBD5E1;
+    font-size: 0.78rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.fund-studio-theme-btn:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.fund-studio-theme-btn.active {
+    background: rgba(56, 189, 248, 0.15);
+    border-color: #38BDF8;
+    color: #FFFFFF;
+    box-shadow: 0 0 12px rgba(56, 189, 248, 0.25);
+}
+
+.theme-circle {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    display: inline-block;
+}
+.theme-circle.cyber {
+    background: linear-gradient(135deg, #00F5FF, #8B5CF6);
+    box-shadow: 0 0 6px #00F5FF;
+}
+.theme-circle.emerald {
+    background: linear-gradient(135deg, #10B981, #34D399);
+    box-shadow: 0 0 6px #10B981;
+}
+.theme-circle.sunset {
+    background: linear-gradient(135deg, #FF5E62, #FFD166);
+    box-shadow: 0 0 6px #FF5E62;
+}
+
+/* Toggles List */
+.fund-studio-toggles-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.fund-studio-toggle-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 12px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    cursor: pointer;
+    transition: all 0.18s ease;
+}
+
+.fund-studio-toggle-row:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+.toggle-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.toggle-title {
+    font-size: 0.84rem;
+    font-weight: 700;
+    color: #F1F5F9;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+}
+
+.toggle-desc {
+    font-size: 0.72rem;
+    color: #64748B;
+}
+
+/* iOS / Cyber Toggle Switch */
+.studio-switch {
+    position: relative;
+    display: inline-block;
+    width: 44px;
+    height: 24px;
+    flex-shrink: 0;
+}
+
+.studio-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.studio-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: rgba(255, 255, 255, 0.12);
+    transition: 0.24s cubic-bezier(0.16, 1, 0.3, 1);
+    border-radius: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.studio-slider:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 2px;
+    bottom: 2px;
+    background-color: #CBD5E1;
+    transition: 0.24s cubic-bezier(0.16, 1, 0.3, 1);
+    border-radius: 50%;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+}
+
+.studio-switch input:checked + .studio-slider {
+    background: linear-gradient(135deg, #00F5FF, #38BDF8);
+    border-color: #00F5FF;
+    box-shadow: 0 0 10px rgba(0, 245, 255, 0.4);
+}
+
+.studio-switch input:checked + .studio-slider:before {
+    transform: translateX(20px);
+    background-color: #050711;
+}
+
+/* Custom Note Box */
+.fund-studio-note-box {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.fund-studio-note-input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 10px 14px;
+    border-radius: 12px;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: #F8FAFC;
+    font-size: 0.86rem;
+    font-family: inherit;
+    outline: none;
+    transition: border-color 0.2s ease;
+}
+
+.fund-studio-note-input:focus {
+    border-color: #00F5FF;
+    box-shadow: 0 0 12px rgba(0, 245, 255, 0.25);
+}
+
+.fund-studio-quick-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.studio-tag-pill {
+    padding: 4px 10px;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: #94A3B8;
+    font-size: 0.72rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.18s ease;
+}
+
+.studio-tag-pill:hover {
+    background: rgba(0, 245, 255, 0.12);
+    border-color: rgba(0, 245, 255, 0.3);
+    color: #00F5FF;
+}
+
+/* Action Buttons */
+.fund-studio-actions-row {
+    display: flex;
+    gap: 12px;
+    margin-top: 6px;
+}
+
+.studio-btn-export {
+    flex: 1.2;
+    padding: 13px 18px !important;
+    border-radius: 14px !important;
+    font-size: 0.95rem !important;
+    font-weight: 800 !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: linear-gradient(135deg, #0284C7 0%, #00F5FF 100%) !important;
+    border: none !important;
+    color: #020617 !important;
+    box-shadow: 0 6px 20px rgba(0, 245, 255, 0.35) !important;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.studio-btn-export:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 245, 255, 0.5) !important;
+}
+
+.studio-btn-share {
+    flex: 1;
+    padding: 13px 18px !important;
+    border-radius: 14px !important;
+    font-size: 0.95rem !important;
+    font-weight: 800 !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: linear-gradient(135deg, rgba(225, 48, 108, 0.2) 0%, rgba(131, 58, 180, 0.25) 100%) !important;
+    border: 1px solid rgba(225, 48, 108, 0.5) !important;
+    color: #FDA4AF !important;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.studio-btn-share:hover {
+    background: linear-gradient(135deg, #E1306C, #833AB4) !important;
+    color: #FFFFFF !important;
+    box-shadow: 0 6px 22px rgba(225, 48, 108, 0.5) !important;
+    transform: translateY(-2px);
+}
+
+/* Right Column: Live Preview Viewport */
+.fund-studio-preview-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+    position: sticky;
+    top: 0;
+}
+
+.fund-studio-preview-header {
+    width: 314px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 4px;
+}
+
+.preview-ratio-badge {
+    font-size: 0.68rem;
+    font-weight: 800;
+    color: #38BDF8;
+    background: rgba(56, 189, 248, 0.12);
+    border: 1px solid rgba(56, 189, 248, 0.3);
+    padding: 3px 8px;
+    border-radius: 6px;
+    letter-spacing: 0.5px;
+}
+
+.fund-story-preview-viewport {
+    width: 314px;
+    height: 558px;
+    overflow: hidden;
+    border-radius: 20px;
+    box-shadow: 0 16px 45px rgba(0, 0, 0, 0.75), 0 0 25px rgba(0, 245, 255, 0.1);
+    border: 1.5px solid rgba(255, 255, 255, 0.12);
+    background: #050711;
+    position: relative;
+    flex-shrink: 0;
+}
+
+.fund-story-card-root {
+    width: 540px;
+    height: 960px;
+    transform-origin: top left;
+    transform: scale(0.5815);
+    box-sizing: border-box;
+    overflow: hidden;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    display: flex;
+    flex-direction: column;
+    padding: 26px 24px;
+    justify-content: space-between;
+    color: #F8FAFC;
+    transition: background 0.3s ease;
+}
+
+/* Theme Variations */
+.fund-story-card-root.theme-cyber {
+    background: #050711 !important;
+    border: 1px solid rgba(0, 245, 255, 0.25) !important;
+}
+.fund-story-card-root.theme-cyber #fStoryGlowTop {
+    background: radial-gradient(circle, rgba(0, 245, 255, 0.18) 0%, rgba(0, 245, 255, 0) 70%) !important;
+}
+.fund-story-card-root.theme-cyber #fStoryGlowBottom {
+    background: radial-gradient(circle, rgba(139, 92, 246, 0.15) 0%, rgba(139, 92, 246, 0) 70%) !important;
+}
+.fund-story-card-root.theme-cyber #fStoryHeroStripe {
+    background: linear-gradient(90deg, #00F5FF 0%, #8B5CF6 50%, #10B981 100%) !important;
+}
+.fund-story-card-root.theme-cyber #fStoryCode {
+    color: #FFFFFF !important;
+    text-shadow: 0 0 20px rgba(0, 245, 255, 0.45) !important;
+}
+
+.fund-story-card-root.theme-emerald {
+    background: #030E08 !important;
+    border: 1px solid rgba(16, 185, 129, 0.35) !important;
+}
+.fund-story-card-root.theme-emerald #fStoryGlowTop {
+    background: radial-gradient(circle, rgba(16, 185, 129, 0.24) 0%, rgba(16, 185, 129, 0) 70%) !important;
+}
+.fund-story-card-root.theme-emerald #fStoryGlowBottom {
+    background: radial-gradient(circle, rgba(52, 211, 153, 0.18) 0%, rgba(52, 211, 153, 0) 70%) !important;
+}
+.fund-story-card-root.theme-emerald #fStoryHeroStripe {
+    background: linear-gradient(90deg, #10B981 0%, #34D399 50%, #F59E0B 100%) !important;
+}
+.fund-story-card-root.theme-emerald #fStoryCode {
+    color: #10B981 !important;
+    text-shadow: 0 0 20px rgba(16, 185, 129, 0.5) !important;
+}
+.fund-story-card-root.theme-emerald #fStoryIdentityCard {
+    border-color: rgba(16, 185, 129, 0.35) !important;
+}
+
+.fund-story-card-root.theme-sunset {
+    background: #0C0509 !important;
+    border: 1px solid rgba(244, 63, 94, 0.35) !important;
+}
+.fund-story-card-root.theme-sunset #fStoryGlowTop {
+    background: radial-gradient(circle, rgba(244, 63, 94, 0.24) 0%, rgba(244, 63, 94, 0) 70%) !important;
+}
+.fund-story-card-root.theme-sunset #fStoryGlowBottom {
+    background: radial-gradient(circle, rgba(251, 146, 60, 0.18) 0%, rgba(251, 146, 60, 0) 70%) !important;
+}
+.fund-story-card-root.theme-sunset #fStoryHeroStripe {
+    background: linear-gradient(90deg, #F43F5E 0%, #FB923C 50%, #FACC15 100%) !important;
+}
+.fund-story-card-root.theme-sunset #fStoryCode {
+    color: #FDA4AF !important;
+    text-shadow: 0 0 20px rgba(244, 63, 94, 0.55) !important;
+}
+.fund-story-card-root.theme-sunset #fStoryIdentityCard {
+    border-color: rgba(244, 63, 94, 0.35) !important;
+}
+
+/* Responsive Studio Rules */
+@media (max-width: 860px) {
+    .fund-studio-body {
+        flex-direction: column-reverse;
+        align-items: stretch;
+        gap: 20px;
+        padding: 16px;
+    }
+    .fund-studio-preview-col {
+        position: static;
+        width: 100%;
+        margin-bottom: 8px;
+    }
+    .fund-studio-preview-header {
+        width: 270px;
+    }
+    .fund-story-preview-viewport {
+        width: 270px;
+        height: 480px;
+        margin: 0 auto;
+    }
+    .fund-story-card-root {
+        transform: scale(0.5);
+    }
+    .fund-studio-controls-col {
+        min-width: 0;
+        width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .fund-studio-theme-pills {
+        grid-template-columns: 1fr;
+    }
+    .fund-studio-actions-row {
+        flex-direction: column;
+    }
+}
+

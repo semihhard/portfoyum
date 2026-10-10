@@ -12219,21 +12219,35 @@ function triggerImageDownload(dataUrl, filename = "Portfoyum_Gorsel.png") {
 }
 
 // ==========================================================================
-// Sosyal Medya / Instagram Fon Karnesi (Story Kartı Generator)
+// Sosyal Medya / Instagram Fon Karnesi Stüdyosu (Story Studio & Customizer)
 // ==========================================================================
+let currentFundStoryState = {
+    fundCode: "TI1",
+    fundTitle: "",
+    cleanTitle: "",
+    category: "HISSE",
+    price: 0,
+    changePct: 0,
+    ret1w: 0,
+    ret1m: 0,
+    ret3m: 0,
+    ret1y: 0,
+    aum: 0,
+    investors: 0,
+    riskScore: 1,
+    riskDesc: "",
+    allocItems: [],
+    hasStocks: false,
+    topStocksList: "",
+    myHolding: null,
+    theme: "cyber"
+};
+
 async function openFundStoryCard(fundCode) {
-    if (!window.html2canvas) {
-        alert("Paylaşım modülü yükleniyor, lütfen birkaç saniye sonra tekrar deneyin.");
-        return;
-    }
-
     const fCode = (fundCode || (typeof appState !== 'undefined' ? appState.activeFundCode : "") || "TI1").toUpperCase().trim();
+    currentFundStoryState.fundCode = fCode;
 
-    if (typeof showToast === 'function') {
-        showToast(`${fCode} Fon Karnesi hazırlanıyor...`, 'info', 1800);
-    }
-
-    // 1. Resolve Fund Metadata & Full Name
+    // 1. Resolve Fund Metadata & Title
     let fundObj = null;
     if (typeof cachedAllCategoryFunds !== 'undefined' && Array.isArray(cachedAllCategoryFunds)) {
         fundObj = cachedAllCategoryFunds.find(f => (f.code || '').toUpperCase() === fCode);
@@ -12249,6 +12263,8 @@ async function openFundStoryCard(fundCode) {
         fundTitle = appState.activeFundTitle;
     }
     const cleanTitle = typeof cleanFundTitle === 'function' ? cleanFundTitle(fundTitle) : fundTitle;
+    currentFundStoryState.fundTitle = fundTitle;
+    currentFundStoryState.cleanTitle = cleanTitle;
 
     // 2. Resolve Category
     let catKey = fundObj ? fundObj.category : (typeof detectFundCategoryKey === 'function' ? detectFundCategoryKey(fundTitle, fCode) : "HISSE");
@@ -12264,12 +12280,12 @@ async function openFundStoryCard(fundCode) {
     else if (catKey === "SERBEST") catLabel = "SERBEST FON";
     else if (catKey === "BORCLANMA") catLabel = "BORÇLANMA ARAÇLARI";
     else if (catKey === "KARMA") catLabel = "KARMA FON";
+    currentFundStoryState.category = catLabel;
 
     // 3. Price & Daily Change
     let price = fundObj ? fundObj.price : 0;
     let changePct = fundObj ? (fundObj.return1d !== undefined ? fundObj.return1d : (fundObj.change || 0)) : 0;
 
-    // Live DOM check if single fund view is loaded
     if (typeof appState !== 'undefined' && appState.activeFundCode === fCode) {
         const domPrice = document.getElementById("fundKpiPrice");
         if (domPrice && domPrice.innerText && domPrice.innerText !== "₺0,00") {
@@ -12285,10 +12301,11 @@ async function openFundStoryCard(fundCode) {
             }
         }
     }
-
     if (!price) price = 10.0;
+    currentFundStoryState.price = price;
+    currentFundStoryState.changePct = changePct;
 
-    // 4. Returns Scorecard (1W, 1M, 3M, 1Y)
+    // 4. Returns: 1W, 1M, 3M, 1Y
     let returnsDb = tefasReturnsDbCache;
     if (!returnsDb && typeof loadTefasReturnsDb === 'function') {
         try {
@@ -12309,11 +12326,15 @@ async function openFundStoryCard(fundCode) {
         if (r.y1 !== undefined && r.y1 !== null) ret1y = r.y1;
     }
 
-    // Default calculations if return is missing
     if (ret1w === null) ret1w = (changePct * 2.2);
     if (ret1m === null) ret1m = (changePct * 4.5);
     if (ret3m === null) ret3m = (ret1m * 2.2);
     if (ret1y === null) ret1y = (ret1m * 5.6);
+
+    currentFundStoryState.ret1w = ret1w;
+    currentFundStoryState.ret1m = ret1m;
+    currentFundStoryState.ret3m = ret3m;
+    currentFundStoryState.ret1y = ret1y;
 
     // 5. AUM & Investors
     let aum = fundObj ? fundObj.aum : 0;
@@ -12329,8 +12350,10 @@ async function openFundStoryCard(fundCode) {
     }
     if (!aum) aum = 15000000000;
     if (!investors) investors = 42500;
+    currentFundStoryState.aum = aum;
+    currentFundStoryState.investors = investors;
 
-    // 6. Risk Level (1 to 7)
+    // 6. Risk Level
     let riskScore = 6;
     let riskDesc = "Yüksek Risk";
     const lowerTitle = cleanTitle.toLowerCase();
@@ -12351,6 +12374,8 @@ async function openFundStoryCard(fundCode) {
     } else if (catKey === "SERBEST" || lowerTitle.includes("serbest") || lowerTitle.includes("teknoloji")) {
         riskScore = 7; riskDesc = "Çok Yüksek Risk";
     }
+    currentFundStoryState.riskScore = riskScore;
+    currentFundStoryState.riskDesc = riskDesc;
 
     // 7. Allocation Data & Top Stock Holdings
     let allocItems = [];
@@ -12415,6 +12440,7 @@ async function openFundStoryCard(fundCode) {
             ];
         }
     }
+    currentFundStoryState.allocItems = allocItems;
 
     // Top KAP Stock Holdings
     let topStocksList = "";
@@ -12429,8 +12455,76 @@ async function openFundStoryCard(fundCode) {
             topStocksList = stocks.slice(0, 4).map(s => `${s.symbol} (%${s.pct.toFixed(1)})`).join(' • ');
         }
     }
+    currentFundStoryState.hasStocks = topStocksList.length > 0;
+    currentFundStoryState.topStocksList = topStocksList;
 
-    // 8. Populate DOM Elements in #fundStoryShareTemplate
+    // 8. Check User's Personal Holding in Portfolio
+    const userHolding = (typeof appState !== 'undefined' && Array.isArray(appState.holdings))
+        ? appState.holdings.find(h => (h.symbol || '').toUpperCase() === fCode)
+        : null;
+
+    const rowHoldingToggle = document.getElementById("rowStoryMyHoldingToggle");
+    const chkMyHolding = document.getElementById("chkStoryMyHolding");
+    const holdingBlock = document.getElementById("fStoryMyHoldingBlock");
+    const holdingSummary = document.getElementById("fStoryMyHoldingSummary");
+    const holdingBadge = document.getElementById("fStoryMyHoldingProfitBadge");
+
+    if (userHolding && userHolding.shares > 0) {
+        currentFundStoryState.myHolding = userHolding;
+        if (rowHoldingToggle) rowHoldingToggle.style.display = "flex";
+        if (chkMyHolding) chkMyHolding.checked = true;
+
+        const sharesStr = userHolding.shares.toLocaleString('tr-TR');
+        const curVal = userHolding.shares * price;
+        const cost = (userHolding.costPrice || price) * userHolding.shares;
+        const profit = curVal - cost;
+        const profitPct = cost > 0 ? (profit / cost) * 100 : 0;
+        const isProfPos = profitPct >= 0;
+        const sign = isProfPos ? '+' : '';
+
+        if (holdingSummary) {
+            holdingSummary.innerText = `${sharesStr} Adet • ₺${typeof formatFundPriceDisplay === 'function' ? formatFundPriceDisplay(curVal) : curVal.toFixed(2)}`;
+        }
+        if (holdingBadge) {
+            holdingBadge.style.color = isProfPos ? '#10B981' : '#F43F5E';
+            holdingBadge.style.background = isProfPos ? 'rgba(16,185,129,0.15)' : 'rgba(244,63,94,0.15)';
+            holdingBadge.style.borderColor = isProfPos ? 'rgba(16,185,129,0.4)' : 'rgba(244,63,94,0.4)';
+            holdingBadge.innerText = `${sign}%${Math.abs(profitPct).toFixed(2).replace('.', ',')} Kâr/Zarar`;
+        }
+    } else {
+        currentFundStoryState.myHolding = null;
+        if (rowHoldingToggle) rowHoldingToggle.style.display = "none";
+        if (chkMyHolding) chkMyHolding.checked = false;
+        if (holdingBlock) holdingBlock.style.display = "none";
+    }
+
+    // 9. Reset Control Switches & Tags
+    const rowStocksToggle = document.getElementById("rowStoryStocksToggle");
+    if (rowStocksToggle) {
+        rowStocksToggle.style.display = currentFundStoryState.hasStocks ? "flex" : "none";
+    }
+    const chkStocks = document.getElementById("chkStoryStocks");
+    if (chkStocks) chkStocks.checked = currentFundStoryState.hasStocks;
+
+    const chkReturns = document.getElementById("chkStoryReturns");
+    if (chkReturns) chkReturns.checked = true;
+
+    const chkAlloc = document.getElementById("chkStoryAlloc");
+    if (chkAlloc) chkAlloc.checked = true;
+
+    const chkScale = document.getElementById("chkStoryScale");
+    if (chkScale) chkScale.checked = true;
+
+    const chkRisk = document.getElementById("chkStoryRisk");
+    if (chkRisk) chkRisk.checked = true;
+
+    const inputNote = document.getElementById("inputStoryCustomNote");
+    if (inputNote) inputNote.value = "";
+
+    // 10. Populate Live Preview Card DOM
+    const headerTag = document.getElementById("fStudioHeaderTag");
+    if (headerTag) headerTag.innerText = fCode;
+
     const codeElem = document.getElementById("fStoryCode");
     if (codeElem) codeElem.innerText = fCode;
 
@@ -12445,7 +12539,6 @@ async function openFundStoryCard(fundCode) {
         priceElem.innerText = typeof formatFundPriceDisplay === 'function' ? formatFundPriceDisplay(price) : `₺${price.toFixed(4).replace('.', ',')}`;
     }
 
-    // Daily Badge
     const isDailyPos = changePct >= 0;
     const dSign = isDailyPos ? '+' : '';
     const dColor = isDailyPos ? '#10B981' : '#F43F5E';
@@ -12464,7 +12557,6 @@ async function openFundStoryCard(fundCode) {
         dVal.innerText = `${dSign}%${Math.abs(changePct).toFixed(2).replace('.', ',')}`;
     }
 
-    // Live Date
     const dateElem = document.getElementById("fStoryDate");
     if (dateElem) {
         const now = new Date();
@@ -12472,7 +12564,6 @@ async function openFundStoryCard(fundCode) {
         dateElem.innerText = `${dStr} • CANLI TEFAS`;
     }
 
-    // Helper for 4 return cards
     const renderCard = (cardId, iconId, valId, val) => {
         const isPos = val >= 0;
         const sign = isPos ? '+' : '';
@@ -12502,7 +12593,6 @@ async function openFundStoryCard(fundCode) {
     renderCard("fStoryCard3M", "fStoryIcon3M", "fStoryRet3M", ret3m);
     renderCard("fStoryCard1Y", "fStoryIcon1Y", "fStoryRet1Y", ret1y);
 
-    // Risk Meter & Telemetry
     const riskTextElem = document.getElementById("fStoryRiskText");
     const riskLabelElem = document.getElementById("fStoryRiskLabel");
     const riskValElem = document.getElementById("fStoryRiskVal");
@@ -12512,7 +12602,6 @@ async function openFundStoryCard(fundCode) {
         riskValElem.style.color = riskScore <= 2 ? '#10B981' : (riskScore <= 4 ? '#38BDF8' : (riskScore <= 5 ? '#F59E0B' : '#F43F5E'));
     }
 
-    // AUM & Investors
     const aumElem = document.getElementById("fStoryAumVal");
     if (aumElem) {
         aumElem.innerText = typeof formatBillionOrMillion === 'function' ? formatBillionOrMillion(aum) : `₺${(aum / 1e9).toFixed(1)} Mr`;
@@ -12523,7 +12612,6 @@ async function openFundStoryCard(fundCode) {
         invElem.innerText = investors.toLocaleString('tr-TR');
     }
 
-    // Allocation Bar & Chips
     const allocDateElem = document.getElementById("fStoryAllocDate");
     if (allocDateElem) allocDateElem.innerText = allocDateStr;
 
@@ -12545,82 +12633,220 @@ async function openFundStoryCard(fundCode) {
         `).join('');
     }
 
-    // Top Stocks
     const topStocksCont = document.getElementById("fStoryTopStocksContainer");
     const topStocksElem = document.getElementById("fStoryTopStocksList");
     if (topStocksCont && topStocksElem) {
-        if (topStocksList) {
+        if (currentFundStoryState.hasStocks) {
             topStocksCont.style.display = "flex";
-            topStocksElem.innerText = topStocksList;
+            topStocksElem.innerText = currentFundStoryState.topStocksList;
         } else {
             topStocksCont.style.display = "none";
         }
     }
 
-    // 9. html2canvas Render
-    const template = document.getElementById("fundStoryShareTemplate");
+    // 11. Reset Theme & Apply Preview States
+    setFundStoryTheme("cyber");
+    updateFundStoryLivePreview();
+
+    // 12. Reveal Studio Modal
+    const modal = document.getElementById("modalFundStoryStudio");
+    if (modal) {
+        modal.classList.add("active");
+    }
+}
+
+function setFundStoryTheme(themeName) {
+    currentFundStoryState.theme = themeName;
+
+    document.querySelectorAll(".fund-studio-theme-btn").forEach(btn => {
+        if (btn.getAttribute("data-theme") === themeName) {
+            btn.classList.add("active");
+        } else {
+            btn.classList.remove("active");
+        }
+    });
+
+    const card = document.getElementById("fundStoryLiveCard");
+    if (card) {
+        card.classList.remove("theme-cyber", "theme-emerald", "theme-sunset");
+        card.classList.add(`theme-${themeName}`);
+    }
+}
+
+function updateFundStoryLivePreview() {
+    const chkReturns = document.getElementById("chkStoryReturns");
+    const chkAlloc = document.getElementById("chkStoryAlloc");
+    const chkStocks = document.getElementById("chkStoryStocks");
+    const chkScale = document.getElementById("chkStoryScale");
+    const chkRisk = document.getElementById("chkStoryRisk");
+    const chkMyHolding = document.getElementById("chkStoryMyHolding");
+    const inputNote = document.getElementById("inputStoryCustomNote");
+
+    // 1. Returns Section
+    const secReturns = document.getElementById("fStorySectionReturns");
+    const secReturnsHeader = document.getElementById("fStorySectionReturnsHeader");
+    const showReturns = chkReturns ? chkReturns.checked : true;
+    if (secReturns) secReturns.style.display = showReturns ? "grid" : "none";
+    if (secReturnsHeader) secReturnsHeader.style.display = showReturns ? "flex" : "none";
+
+    // 2. Asset Allocation Section
+    const secAlloc = document.getElementById("fStorySectionAlloc");
+    const showAlloc = chkAlloc ? chkAlloc.checked : true;
+    if (secAlloc) secAlloc.style.display = showAlloc ? "block" : "none";
+
+    // 3. Top Stocks
+    const secStocks = document.getElementById("fStoryTopStocksContainer");
+    if (secStocks) {
+        const showStocks = chkStocks ? chkStocks.checked : true;
+        if (showStocks && currentFundStoryState.hasStocks && showAlloc) {
+            secStocks.style.display = "flex";
+        } else {
+            secStocks.style.display = "none";
+        }
+    }
+
+    // 4. Scale Telemetry & Risk
+    const secTelemetry = document.getElementById("fStorySectionTelemetry");
+    const colRisk = document.getElementById("fStoryColRisk");
+    const colAum = document.getElementById("fStoryColAum");
+    const colInv = document.getElementById("fStoryColInv");
+
+    const showScale = chkScale ? chkScale.checked : true;
+    const showRisk = chkRisk ? chkRisk.checked : true;
+
+    if (colRisk) colRisk.style.display = showRisk ? "block" : "none";
+    if (colAum) colAum.style.display = showScale ? "block" : "none";
+    if (colInv) colInv.style.display = showScale ? "block" : "none";
+
+    if (secTelemetry) {
+        if (!showScale && !showRisk) {
+            secTelemetry.style.display = "none";
+        } else {
+            secTelemetry.style.display = "grid";
+            const visibleCols = (showRisk ? 1 : 0) + (showScale ? 2 : 0);
+            secTelemetry.style.gridTemplateColumns = `repeat(${Math.max(1, visibleCols)}, 1fr)`;
+        }
+    }
+
+    // 5. Personal Holding Block
+    const secMyHolding = document.getElementById("fStoryMyHoldingBlock");
+    if (secMyHolding) {
+        const showMyHolding = chkMyHolding ? chkMyHolding.checked : false;
+        secMyHolding.style.display = (showMyHolding && currentFundStoryState.myHolding) ? "flex" : "none";
+    }
+
+    // 6. Custom Note Block
+    const secNote = document.getElementById("fStoryCustomNoteBlock");
+    const textNote = document.getElementById("fStoryCustomNoteText");
+    const noteVal = inputNote ? inputNote.value.trim() : "";
+    if (secNote && textNote) {
+        if (noteVal) {
+            secNote.style.display = "flex";
+            textNote.innerText = noteVal;
+        } else {
+            secNote.style.display = "none";
+        }
+    }
+}
+
+function setStudioQuickNote(note) {
+    const inp = document.getElementById("inputStoryCustomNote");
+    if (!inp) return;
+    if (inp.value === note) {
+        inp.value = "";
+    } else {
+        inp.value = note;
+    }
+    updateFundStoryLivePreview();
+}
+
+async function exportFundStoryCard(mode = "download") {
+    if (!window.html2canvas) {
+        alert("Paylaşım modülü yükleniyor, lütfen birkaç saniye sonra tekrar deneyin.");
+        return;
+    }
+
+    const card = document.getElementById("fundStoryLiveCard");
+    if (!card) return;
+
+    const fCode = currentFundStoryState.fundCode || "FON";
+    const filename = `Portfoyum_Fon_Karnesi_${fCode}.png`;
+
+    const exportBtn = mode === "download" ? document.getElementById("btnStudioDownload") : document.getElementById("btnStudioShare");
+    const originalText = exportBtn ? exportBtn.innerHTML : "";
+    if (exportBtn) {
+        exportBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> <span>Hazırlanıyor...</span>`;
+        exportBtn.disabled = true;
+    }
+
+    const prevTransform = card.style.transform;
+    card.style.transform = "none";
+
     try {
-        const canvas = await html2canvas(template, {
+        const bgColors = {
+            cyber: "#050711",
+            emerald: "#030E08",
+            sunset: "#0C0509"
+        };
+        const bgColor = bgColors[currentFundStoryState.theme] || "#050711";
+
+        const canvas = await html2canvas(card, {
             scale: 2,
-            backgroundColor: "#050711",
+            width: 540,
+            height: 960,
+            backgroundColor: bgColor,
             logging: false,
             useCORS: true
         });
 
         const dataUrl = canvas.toDataURL("image/png");
 
-        // Set Preview Modal
-        const previewImg = document.getElementById("sharePreviewImage");
-        if (previewImg) previewImg.src = dataUrl;
-
-        const modalTitle = document.getElementById("modalSharePreviewTitle");
-        if (modalTitle) modalTitle.innerText = `${fCode} Fon Karnesi Hazır!`;
-
-        const modal = document.getElementById("modalSharePreview");
-        if (modal) modal.classList.add("active");
-
-        // Download Action
-        const btnDownload = document.getElementById("btnDownloadShareImage");
-        if (btnDownload) {
-            btnDownload.onclick = () => {
-                triggerImageDownload(dataUrl, `Portfoyum_Fon_Karnesi_${fCode}.png`);
-                if (typeof showToast === 'function') {
-                    showToast(`${fCode} fon karnesi indirildi!`, 'success');
-                }
-            };
-        }
-
-        // Native Share Action
-        const btnShare = document.getElementById("btnNativeShare");
-        if (btnShare) {
-            btnShare.onclick = async () => {
-                if (navigator.share) {
-                    canvas.toBlob(async (blob) => {
-                        if (!blob) return;
-                        const file = new File([blob], `Portfoyum_Fon_Karnesi_${fCode}.png`, { type: "image/png" });
-                        try {
-                            await navigator.share({
-                                title: `${fCode} TEFAS Fon Karnesi`,
-                                text: `${cleanTitle} (${fCode}) TEFAS getiri karnesi ve portföy dağılımı.`,
-                                files: [file]
-                            });
-                        } catch (e) {
-                            console.log("Share cancelled or failed", e);
-                        }
-                    });
-                } else {
-                    triggerImageDownload(dataUrl, `Portfoyum_Fon_Karnesi_${fCode}.png`);
-                    if (typeof showToast === 'function') {
-                        showToast("Görsel cihazınıza indirildi! Paylaşabilirsiniz.", "success");
+        if (mode === "download") {
+            triggerImageDownload(dataUrl, filename);
+            if (typeof showToast === 'function') {
+                showToast(`${fCode} fon karnesi başarıyla indirildi!`, 'success');
+            }
+        } else if (mode === "share") {
+            if (navigator.share) {
+                canvas.toBlob(async (blob) => {
+                    if (!blob) return;
+                    const file = new File([blob], filename, { type: "image/png" });
+                    try {
+                        await navigator.share({
+                            title: `${fCode} TEFAS Fon Karnesi`,
+                            text: `${currentFundStoryState.cleanTitle} (${fCode}) performans ve varlık dağılım karnesi.`,
+                            files: [file]
+                        });
+                    } catch (e) {
+                        console.log("Share cancelled or failed", e);
                     }
+                });
+            } else {
+                triggerImageDownload(dataUrl, filename);
+                if (typeof showToast === 'function') {
+                    showToast("Görsel cihazınıza indirildi! Paylaşabilirsiniz.", "success");
                 }
-            };
+            }
         }
-
     } catch (err) {
-        console.error("Fund story html2canvas error:", err);
-        alert("Fon karnesi oluşturulurken bir hata oluştu. Lütfen tekrar deneyin.");
+        console.error("Story Studio export error:", err);
+        alert("Görsel oluşturulurken bir hata oluştu.");
+    } finally {
+        card.style.transform = prevTransform;
+        if (exportBtn) {
+            exportBtn.innerHTML = originalText;
+            exportBtn.disabled = false;
+        }
     }
+}
+
+// Studio Modal Close Buttons
+const btnCloseStudioModal = document.getElementById("btnCloseFundStudioModal");
+if (btnCloseStudioModal) {
+    btnCloseStudioModal.addEventListener("click", () => {
+        const studioModal = document.getElementById("modalFundStoryStudio");
+        if (studioModal) studioModal.classList.remove("active");
+    });
 }
 
 document.getElementById("btnCloseShareModal").addEventListener("click", () => {
@@ -12629,6 +12855,10 @@ document.getElementById("btnCloseShareModal").addEventListener("click", () => {
 
 // Global Window Exports
 window.openFundStoryCard = openFundStoryCard;
+window.setFundStoryTheme = setFundStoryTheme;
+window.updateFundStoryLivePreview = updateFundStoryLivePreview;
+window.setStudioQuickNote = setStudioQuickNote;
+window.exportFundStoryCard = exportFundStoryCard;
 window.triggerImageDownload = triggerImageDownload;
 
 /* ==========================================================================
