@@ -24044,17 +24044,20 @@ body.theme-neo-brutalism .sort-option.active {
     width: 44px;
     height: 24px;
     flex-shrink: 0;
+    cursor: pointer;
 }
 
 .studio-switch input {
     opacity: 0;
     width: 0;
     height: 0;
+    position: absolute;
+    pointer-events: none;
 }
 
 .studio-slider {
     position: absolute;
-    cursor: pointer;
+    pointer-events: none;
     top: 0; left: 0; right: 0; bottom: 0;
     background-color: rgba(255, 255, 255, 0.12);
     transition: 0.24s cubic-bezier(0.16, 1, 0.3, 1);

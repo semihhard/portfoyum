@@ -12359,19 +12359,20 @@ function renderStudioBlocksControls() {
         const isLast = idx === currentFundStoryState.blocksOrder.length - 1;
 
         return `
-            <div class="studio-block-item" data-block-id="${def.id}" draggable="true"
-                 ondragstart="handleBlockDragStart(event, '${def.id}')"
-                 ondragover="handleBlockDragOver(event)"
-                 ondragend="handleBlockDragEnd(event)"
-                 ondrop="handleBlockDrop(event, '${def.id}')">
-                <div class="studio-block-drag-handle" title="Sürükleyip Sırasını Değiştirin">
+            <div class="studio-block-item" data-block-id="${def.id}" onclick="toggleStudioBlockFromRow('${def.id}')" style="cursor: pointer;">
+                <div class="studio-block-drag-handle" title="Sürükleyip Sırasını Değiştirin" draggable="true"
+                     onclick="event.stopPropagation();"
+                     ondragstart="handleBlockDragStart(event, '${def.id}')"
+                     ondragover="handleBlockDragOver(event)"
+                     ondragend="handleBlockDragEnd(event)"
+                     ondrop="handleBlockDrop(event, '${def.id}')">
                     <i class="fa-solid fa-grip-vertical"></i>
                 </div>
-                <div class="studio-block-move-btns">
-                    <button type="button" class="btn-block-move" ${isFirst ? 'disabled style="opacity: 0.3; cursor: default;"' : ''} onclick="moveStudioBlock('${def.id}', -1)" title="Yukarı Taşı">
+                <div class="studio-block-move-btns" onclick="event.stopPropagation();">
+                    <button type="button" class="btn-block-move" ${isFirst ? 'disabled style="opacity: 0.25; cursor: default;"' : ''} onclick="event.stopPropagation(); moveStudioBlock('${def.id}', -1)" title="Yukarı Taşı">
                         <i class="fa-solid fa-chevron-up"></i>
                     </button>
-                    <button type="button" class="btn-block-move" ${isLast ? 'disabled style="opacity: 0.3; cursor: default;"' : ''} onclick="moveStudioBlock('${def.id}', 1)" title="Aşağı Taşı">
+                    <button type="button" class="btn-block-move" ${isLast ? 'disabled style="opacity: 0.25; cursor: default;"' : ''} onclick="event.stopPropagation(); moveStudioBlock('${def.id}', 1)" title="Aşağı Taşı">
                         <i class="fa-solid fa-chevron-down"></i>
                     </button>
                 </div>
@@ -12382,10 +12383,10 @@ function renderStudioBlocksControls() {
                     </div>
                     <div class="studio-block-desc">${subNote}</div>
                 </div>
-                <span class="studio-switch">
+                <label class="studio-switch" for="chkBlock_${def.id}" onclick="event.stopPropagation();">
                     <input type="checkbox" id="chkBlock_${def.id}" ${isChecked ? 'checked' : ''} ${isHolding && !hasHolding ? 'disabled' : ''} onchange="toggleStudioBlock('${def.id}', this.checked)">
                     <span class="studio-slider"></span>
-                </span>
+                </label>
             </div>
         `;
     }).join('');
@@ -12405,10 +12406,26 @@ function moveStudioBlock(blockId, direction) {
     saveStoryLayout();
     renderStudioBlocksControls();
     applyBlocksOrderToLiveCard();
+    updateFundStoryLivePreview();
 }
 
 function toggleStudioBlock(blockId, isChecked) {
-    currentFundStoryState.blocksEnabled[blockId] = isChecked;
+    currentFundStoryState.blocksEnabled[blockId] = !!isChecked;
+    saveStoryLayout();
+    updateFundStoryLivePreview();
+}
+
+function toggleStudioBlockFromRow(blockId) {
+    if (blockId === 'my_holding' && !currentFundStoryState.myHolding) {
+        if (typeof showToast === 'function') {
+            showToast("Bu fon portföyünüzde bulunmadığı için aktif edilemez.", "info");
+        }
+        return;
+    }
+    const next = !currentFundStoryState.blocksEnabled[blockId];
+    currentFundStoryState.blocksEnabled[blockId] = next;
+    const chk = document.getElementById(`chkBlock_${blockId}`);
+    if (chk) chk.checked = next;
     saveStoryLayout();
     updateFundStoryLivePreview();
 }
@@ -12417,7 +12434,8 @@ function handleBlockDragStart(e, blockId) {
     draggedStudioBlockId = blockId;
     e.dataTransfer.effectAllowed = 'move';
     e.dataTransfer.setData('text/plain', blockId);
-    e.currentTarget.classList.add('dragging');
+    const item = e.target.closest('.studio-block-item');
+    if (item) item.classList.add('dragging');
 }
 
 function handleBlockDragOver(e) {
@@ -12426,12 +12444,13 @@ function handleBlockDragOver(e) {
 }
 
 function handleBlockDragEnd(e) {
-    e.currentTarget.classList.remove('dragging');
+    document.querySelectorAll('.studio-block-item.dragging').forEach(el => el.classList.remove('dragging'));
     draggedStudioBlockId = null;
 }
 
 function handleBlockDrop(e, targetBlockId) {
     e.preventDefault();
+    e.stopPropagation();
     if (!draggedStudioBlockId || draggedStudioBlockId === targetBlockId) return;
 
     const arr = currentFundStoryState.blocksOrder;
@@ -12442,9 +12461,11 @@ function handleBlockDrop(e, targetBlockId) {
     const item = arr.splice(fromIdx, 1)[0];
     arr.splice(toIdx, 0, item);
 
+    draggedStudioBlockId = null;
     saveStoryLayout();
     renderStudioBlocksControls();
     applyBlocksOrderToLiveCard();
+    updateFundStoryLivePreview();
 }
 
 function applyBlocksOrderToLiveCard() {
@@ -13157,6 +13178,7 @@ window.handleBlockDragStart = handleBlockDragStart;
 window.handleBlockDragOver = handleBlockDragOver;
 window.handleBlockDragEnd = handleBlockDragEnd;
 window.handleBlockDrop = handleBlockDrop;
+window.toggleStudioBlockFromRow = toggleStudioBlockFromRow;
 
 /* ==========================================================================
    News & KAP Radar
