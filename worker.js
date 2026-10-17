@@ -1,5 +1,5 @@
-let memoryLeadersCache = null;
-let memoryLeadersTime = 0;
+let memoryLeadersMap = {};
+let memoryLeadersTimes = {};
 let memoryReturnsCache = null;
 let memoryReturnsTime = 0;
 
@@ -517,12 +517,16 @@ export default {
 
       const isLeaders = url.searchParams.get("leaders") === "1" || url.searchParams.get("liderler") === "1" || fonCode === "LEADERS";
       if (isLeaders) {
-        // Return memory cache if fresh (< 5 mins) and not explicitly bypassed
+        const period = (url.searchParams.get("period") || "1d").toLowerCase().trim();
+        const reqStart = (url.searchParams.get("startDate") || url.searchParams.get("start") || "").trim();
+        const reqEnd = (url.searchParams.get("endDate") || url.searchParams.get("end") || "").trim();
+        const cacheKey = `${period}_${reqStart}_${reqEnd}`;
+
         const nowMs = Date.now();
         const wantsAll = url.searchParams.get("all") === "1";
         const hasNoCache = url.searchParams.has("_t") || url.searchParams.has("nocache");
-        if (memoryLeadersCache && (nowMs - memoryLeadersTime < 300000) && !hasNoCache) {
-          return new Response(JSON.stringify(memoryLeadersCache), {
+        if (memoryLeadersMap[cacheKey] && (nowMs - (memoryLeadersTimes[cacheKey] || 0) < 300000) && !hasNoCache) {
+          return new Response(JSON.stringify(memoryLeadersMap[cacheKey]), {
             headers: {
               "Content-Type": "application/json; charset=utf-8",
               "Access-Control-Allow-Origin": "*",
@@ -534,85 +538,191 @@ export default {
         const TEFAS_URL = "https://www.tefas.gov.tr/api/funds/fonGnlBlgSiraliGetir";
         const pad = n => String(n).padStart(2, '0');
         const dStr = d => '' + d.getFullYear() + pad(d.getMonth()+1) + pad(d.getDate());
-        const now = new Date();
-        const startDt = new Date(now.getTime() - (6 * 86400000));
-
-        const body = {
-          fonTipi: 'YAT',
-          fonKodu: null,
-          aramaMetni: null,
-          fonTurKod: null,
-          fonGrubu: null,
-          sfonTurKod: null,
-          fonTurAciklama: null,
-          kurucuKod: null,
-          basTarih: dStr(startDt),
-          bitTarih: dStr(now),
-          basSira: 1,
-          bitSira: 100000,
-          dil: 'TR',
-          sFonTurKod: '',
-          fonKod: '',
-          fonGrup: '',
-          fonUnvanTip: ''
+        const parseDateInput = (str, fallback) => {
+          if (!str) return fallback;
+          const clean = str.replace(/[^0-9]/g, '');
+          if (clean.length === 8) {
+            return new Date(parseInt(clean.slice(0,4),10), parseInt(clean.slice(4,6),10)-1, parseInt(clean.slice(6,8),10));
+          }
+          return fallback;
         };
 
-        try {
-          const res = await fetch(TEFAS_URL, {
-            method: "POST",
-            headers: {
-              "Accept": "*/*",
-              "Content-Type": "application/json",
-              "Origin": "https://www.tefas.gov.tr",
-              "Referer": "https://www.tefas.gov.tr/tr/fon-verileri",
-              "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
-            },
-            body: JSON.stringify(body)
-          });
+        const now = new Date();
 
-          if (res.ok) {
+        async function fetchRange(fonKind, st, en) {
+          const body = {
+            fonTipi: fonKind,
+            fonKodu: null,
+            aramaMetni: null,
+            fonTurKod: null,
+            fonGrubu: null,
+            sfonTurKod: null,
+            fonTurAciklama: null,
+            kurucuKod: null,
+            basTarih: st,
+            bitTarih: en,
+            basSira: 1,
+            bitSira: 100000,
+            dil: 'TR',
+            sFonTurKod: '',
+            fonKod: '',
+            fonGrup: '',
+            fonUnvanTip: ''
+          };
+          try {
+            const res = await fetch(TEFAS_URL, {
+              method: "POST",
+              headers: {
+                "Accept": "*/*",
+                "Content-Type": "application/json",
+                "Origin": "https://www.tefas.gov.tr",
+                "Referer": "https://www.tefas.gov.tr/tr/fon-verileri",
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+              },
+              body: JSON.stringify(body)
+            });
+            if (!res.ok) return [];
             const j = await res.json();
-            const list = j.resultList || [];
-            const byFund = {};
-            for (const row of list) {
-              if (!row.fonKodu) continue;
-              if (!byFund[row.fonKodu]) byFund[row.fonKodu] = [];
-              byFund[row.fonKodu].push(row);
+            return j.resultList || [];
+          } catch (e) {
+            return [];
+          }
+        }
+
+        try {
+          let diffs = [];
+          let latestDate = `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}`;
+
+          if (period === '1d') {
+            // Daily single window (6 days back to today)
+            const startDt = new Date(now.getTime() - (6 * 86400000));
+            const [yatList, emkList] = await Promise.all([
+              fetchRange('YAT', dStr(startDt), dStr(now)),
+              fetchRange('EMK', dStr(startDt), dStr(now))
+            ]);
+            const list = [...yatList, ...emkList];
+            if (list.length > 0) {
+              const byFund = {};
+              for (const row of list) {
+                if (!row.fonKodu) continue;
+                const code = row.fonKodu.trim().toUpperCase();
+                if (!byFund[code]) byFund[code] = [];
+                byFund[code].push(row);
+              }
+              for (const code of Object.keys(byFund)) {
+                const rows = byFund[code].sort((a,b) => (a.tarih||'').localeCompare(b.tarih||''));
+                if (rows.length === 0) continue;
+                const cur = rows[rows.length - 1];
+                const prev = rows.length >= 2 ? rows[rows.length - 2] : cur;
+                const curPrice = parseFloat(cur.fiyat) || 0;
+                const prevPrice = parseFloat(prev.fiyat) || curPrice;
+                const curShares = parseFloat(cur.tedPaySayisi) || 0;
+                const prevShares = parseFloat(prev.tedPaySayisi) || curShares;
+                const curInv = parseInt(cur.kisiSayisi) || 0;
+                const prevInv = parseInt(prev.kisiSayisi) || curInv;
+                const dInv = curInv - prevInv;
+                const dShares = curShares - prevShares;
+                const flow = dShares * curPrice;
+                const aum = cur.portfoyBuyukluk || (curPrice * curShares);
+                const change = (rows.length >= 2 && prevPrice > 0) ? Number((((curPrice - prevPrice) / prevPrice) * 100).toFixed(4)) : 0;
+                diffs.push({
+                  code,
+                  name: cur.fonUnvan || `${code} YATIRIM FONU`,
+                  date: cur.tarih,
+                  price: curPrice,
+                  prevPrice,
+                  change,
+                  aum,
+                  investors: curInv,
+                  prevInvestors: prevInv,
+                  deltaInvestors: dInv,
+                  deltaShares: dShares,
+                  cashFlow: flow,
+                  perPerson: Math.abs(dInv) > 0 ? Math.round(Math.abs(flow) / Math.abs(dInv)) : 0,
+                  isNew: rows.length < 2
+                });
+              }
             }
-            const diffs = [];
-            for (const code of Object.keys(byFund)) {
-              const rows = byFund[code].sort((a,b) => (a.tarih||'').localeCompare(b.tarih||''));
-              if (rows.length < 2) continue;
-              const cur = rows[rows.length - 1];
-              const prev = rows[rows.length - 2];
-              const curPrice = parseFloat(cur.fiyat) || 0;
-              const prevPrice = parseFloat(prev.fiyat) || 0;
-              const curShares = parseFloat(cur.tedPaySayisi) || 0;
-              const prevShares = parseFloat(prev.tedPaySayisi) || 0;
-              const curInv = parseInt(cur.kisiSayisi) || 0;
-              const prevInv = parseInt(prev.kisiSayisi) || 0;
-              const dInv = curInv - prevInv;
-              const dShares = curShares - prevShares;
-              const flow = dShares * curPrice;
-              const aum = cur.portfoyBuyukluk || (curPrice * curShares);
-              const change = prevPrice > 0 ? Number((((curPrice - prevPrice) / prevPrice) * 100).toFixed(4)) : 0;
-              diffs.push({
-                code,
-                name: cur.fonUnvan || `${code} YATIRIM FONU`,
-                date: cur.tarih,
-                price: curPrice,
-                prevPrice,
-                change,
-                aum,
-                investors: curInv,
-                prevInvestors: prevInv,
-                deltaInvestors: dInv,
-                deltaShares: dShares,
-                cashFlow: flow,
-                perPerson: Math.abs(dInv) > 0 ? Math.round(Math.abs(flow) / Math.abs(dInv)) : 0
-              });
+          } else {
+            // Multi-day / 2-Snapshot mode (1w, 1m, 1y, custom)
+            let startDt, endDt;
+            if (period === '1w') {
+              endDt = now;
+              startDt = new Date(now.getTime() - (7 * 86400000));
+            } else if (period === '1m') {
+              endDt = now;
+              startDt = new Date(now.getTime() - (30 * 86400000));
+            } else if (period === '1y') {
+              endDt = now;
+              startDt = new Date(now.getTime() - (365 * 86400000));
+            } else {
+              // Custom date range
+              endDt = parseDateInput(reqEnd, now);
+              startDt = parseDateInput(reqStart, new Date(now.getTime() - (30 * 86400000)));
             }
 
+            const s1Start = new Date(startDt.getTime() - (3 * 86400000));
+            const s2Start = new Date(endDt.getTime() - (3 * 86400000));
+
+            const [s1Yat, s1Emk, s2Yat, s2Emk] = await Promise.all([
+              fetchRange('YAT', dStr(s1Start), dStr(startDt)),
+              fetchRange('EMK', dStr(s1Start), dStr(startDt)),
+              fetchRange('YAT', dStr(s2Start), dStr(endDt)),
+              fetchRange('EMK', dStr(s2Start), dStr(endDt))
+            ]);
+
+            const s1List = [...s1Yat, ...s1Emk];
+            const s2List = [...s2Yat, ...s2Emk];
+
+            if (s2List.length > 0) {
+              const mapS1 = {};
+              for (const r of s1List) {
+                if (!r.fonKodu) continue;
+                const c = r.fonKodu.trim().toUpperCase();
+                if (!mapS1[c] || (r.tarih || '') > (mapS1[c].tarih || '')) mapS1[c] = r;
+              }
+              const mapS2 = {};
+              for (const r of s2List) {
+                if (!r.fonKodu) continue;
+                const c = r.fonKodu.trim().toUpperCase();
+                if (!mapS2[c] || (r.tarih || '') > (mapS2[c].tarih || '')) mapS2[c] = r;
+              }
+
+              for (const code of Object.keys(mapS2)) {
+                const cur = mapS2[code];
+                const prev = mapS1[code] || cur;
+                const curPrice = parseFloat(cur.fiyat) || 0;
+                const prevPrice = parseFloat(prev.fiyat) || curPrice;
+                const curShares = parseFloat(cur.tedPaySayisi) || 0;
+                const prevShares = parseFloat(prev.tedPaySayisi) || curShares;
+                const curInv = parseInt(cur.kisiSayisi) || 0;
+                const prevInv = parseInt(prev.kisiSayisi) || curInv;
+                const dInv = curInv - prevInv;
+                const dShares = curShares - prevShares;
+                const flow = dShares * curPrice;
+                const aum = cur.portfoyBuyukluk || (curPrice * curShares);
+                const change = (prev && prevPrice > 0) ? Number((((curPrice - prevPrice) / prevPrice) * 100).toFixed(4)) : 0;
+                diffs.push({
+                  code,
+                  name: cur.fonUnvan || `${code} YATIRIM FONU`,
+                  date: cur.tarih,
+                  price: curPrice,
+                  prevPrice,
+                  change,
+                  aum,
+                  investors: curInv,
+                  prevInvestors: prevInv,
+                  deltaInvestors: dInv,
+                  deltaShares: dShares,
+                  cashFlow: flow,
+                  perPerson: Math.abs(dInv) > 0 ? Math.round(Math.abs(flow) / Math.abs(dInv)) : 0,
+                  isNew: !mapS1[code]
+                });
+              }
+            }
+          }
+
+          if (diffs.length > 0) {
             const limit = Math.min(100, Math.max(3, parseInt(url.searchParams.get("limit") || "50", 10)));
             const valid = diffs.filter(d => d.price > 0 && d.aum > 0);
 
@@ -624,9 +734,13 @@ export default {
             const topLosers = [...valid].filter(d => (d.aum || 0) > 1000000 && typeof d.change === 'number' && d.change < 0).sort((a,b) => (a.change || 0) - (b.change || 0)).slice(0, limit);
 
             const dates = diffs.map(d => d.date).filter(Boolean).sort().reverse();
-            const latestDate = dates[0] || `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}`;
+            if (dates[0]) latestDate = dates[0];
+
             const payload = {
               ok: true,
+              period,
+              startDate: reqStart || undefined,
+              endDate: reqEnd || undefined,
               date: latestDate,
               totalAnalyzed: diffs.length,
               categories: {
@@ -639,8 +753,9 @@ export default {
               },
               allFunds: wantsAll ? diffs : undefined
             };
-            memoryLeadersCache = payload;
-            memoryLeadersTime = Date.now();
+
+            memoryLeadersMap[cacheKey] = payload;
+            memoryLeadersTimes[cacheKey] = Date.now();
 
             return new Response(JSON.stringify(payload), {
               headers: {
@@ -650,12 +765,12 @@ export default {
               },
             });
           } else {
-            if (memoryLeadersCache) {
-              return new Response(JSON.stringify({ ...memoryLeadersCache, isStale: true }), {
+            if (memoryLeadersMap[cacheKey]) {
+              return new Response(JSON.stringify({ ...memoryLeadersMap[cacheKey], isStale: true }), {
                 headers: { "Content-Type": "application/json; charset=utf-8", "Access-Control-Allow-Origin": "*" }
               });
             }
-            return new Response(JSON.stringify({ ok: false, error: `TEFAS API HTTP ${res.status}` }), {
+            return new Response(JSON.stringify({ ok: false, error: `TEFAS API empty response for period ${period}` }), {
               status: 502,
               headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" }
             });
@@ -743,26 +858,18 @@ export default {
 
         let merged = [];
         let resolvedKind = kind;
-        for (let i = 0; i < chunks.length; i++) {
-          const chunkData = await fetchChunk(chunks[i].start, chunks[i].end, kind);
-          if (chunkData && chunkData.length > 0) {
-            merged.push(...chunkData);
-          }
-          if (chunks.length > 1 && i < chunks.length - 1) {
-            await new Promise(res => setTimeout(res, 150));
-          }
+        const chunkResults = await Promise.all(chunks.map(c => fetchChunk(c.start, c.end, kind)));
+        for (const chunkData of chunkResults) {
+          if (chunkData && chunkData.length > 0) merged.push(...chunkData);
         }
 
         // Auto-retry with EMK if YAT returned empty (pension / emeklilik funds)
         if (merged.length === 0 && kind === "YAT") {
-          for (let i = 0; i < chunks.length; i++) {
-            const chunkData = await fetchChunk(chunks[i].start, chunks[i].end, "EMK");
+          const emkResults = await Promise.all(chunks.map(c => fetchChunk(c.start, c.end, "EMK")));
+          for (const chunkData of emkResults) {
             if (chunkData && chunkData.length > 0) {
               merged.push(...chunkData);
               resolvedKind = "EMK";
-            }
-            if (chunks.length > 1 && i < chunks.length - 1) {
-              await new Promise(res => setTimeout(res, 150));
             }
           }
         }

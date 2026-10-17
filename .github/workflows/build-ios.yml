@@ -10,27 +10,28 @@ jobs:
     runs-on: macos-latest
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Create Payload Directory Structure
         run: |
           rm -rf Payload Portfoyum.ipa
           mkdir -p Payload/Portfoyum.app
 
-      - name: Copy Web Assets
+      - name: Copy App Assets & Info.plist
         run: |
-          cp index.html style.css app.js Payload/Portfoyum.app/
-          cp -r ios Payload/Portfoyum.app/
-
-      - name: Create Info.plist
-        run: |
-          printf '<?xml version="1.0" encoding="UTF-8"?>\n<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">\n<plist version="1.0">\n<dict>\n<key>CFBundleDevelopmentRegion</key>\n<string>en</string>\n<key>CFBundleDisplayName</key>\n<string>Portfoyum</string>\n<key>CFBundleExecutable</key>\n<string>Portfoyum</string>\n<key>CFBundleIdentifier</key>\n<string>com.portfoyum.app</string>\n<key>CFBundleInfoDictionaryVersion</key>\n<string>6.0</string>\n<key>CFBundleName</key>\n<string>Portfoyum</string>\n<key>CFBundlePackageType</key>\n<string>APPL</string>\n<key>CFBundleShortVersionString</key>\n<string>1.0</string>\n<key>CFBundleVersion</key>\n<string>1.0</string>\n<key>CFBundleSupportedPlatforms</key>\n<array>\n<string>iPhoneOS</string>\n</array>\n<key>MinimumOSVersion</key>\n<string>14.0</string>\n<key>LSRequiresIPhoneOS</key>\n<true/>\n</dict>\n</plist>\n' > Payload/Portfoyum.app/Info.plist
+          cp Info.plist Payload/Portfoyum.app/Info.plist
+          cp index.html style.css app.js Payload/Portfoyum.app/ 2>/dev/null || true
 
       - name: Compile Executable Binary
         run: |
-          xcrun -sdk iphoneos swiftc -target arm64-apple-ios14.0 -parse-as-library ios/PortfolioModels.swift ios/PortfolioCalculator.swift ios/Views.swift -o Payload/Portfoyum.app/Portfoyum || touch Payload/Portfoyum.app/Portfoyum
+          xcrun -sdk iphoneos swiftc -target arm64-apple-ios16.0 \
+            Sources/Portfoyum/PortfolioModels.swift \
+            Sources/Portfoyum/PortfolioCalculator.swift \
+            Sources/Portfoyum/Views.swift \
+            Sources/Portfoyum/PortfoyumApp.swift \
+            -o Payload/Portfoyum.app/Portfoyum
 
-      - name: Package IPA Zip
+      - name: Package IPA
         run: |
           zip -r Portfoyum.ipa Payload
 

@@ -950,7 +950,7 @@
                                 <span>Fon Karnesi</span>
                                 <span class="slide-export-badge" style="background: linear-gradient(135deg, #E1306C, #833AB4); color: #FFF;">STORY</span>
                             </button>
-                            <button type="button" class="btn-slide-export-pill" style="background: linear-gradient(135deg, rgba(56, 189, 248, 0.2) 0%, rgba(37, 99, 235, 0.2) 100%); border-color: rgba(56, 189, 248, 0.4); color: #38BDF8;" onclick="startLiveFundMarketScan({ autoOpenSlide: true })" title="Tüm 2.041 fonu ekranda canlı tara, analiz et ve liderlik slaytlarını hazırla">
+                            <button type="button" class="btn-slide-export-pill" style="background: linear-gradient(135deg, rgba(56, 189, 248, 0.2) 0%, rgba(37, 99, 235, 0.2) 100%); border-color: rgba(56, 189, 248, 0.4); color: #38BDF8;" onclick="openFundScanPeriodModal()" title="Taramayı başlatmadan önce dönemi (günlük, haftalık, aylık, yıllık veya özel tarih) seçin ve slayt sunumunu hazırlayın">
                                 <i class="fa-solid fa-satellite-dish"></i>
                                 <span>Canlı Analiz</span>
                                 <span class="slide-export-badge" style="background: #38BDF8; color: #020617;">CANLI</span>
@@ -998,6 +998,7 @@
                                 <button type="button" class="fund-input-clear-btn" id="btnClearFundSearch" onclick="clearFundSearch()" style="display: none;">
                                     <i class="fa-solid fa-xmark"></i>
                                 </button>
+                                <div id="tefasFundSearchSuggestions" class="symbol-suggestions-dropdown"></div>
                             </div>
                             <button class="btn primary neon-glow fund-search-submit-btn" onclick="triggerFundAnalysisSearch()" id="btnSubmitFundSearch">
                                 <span>Analiz Et</span>
@@ -3471,6 +3472,31 @@
                         <span class="slide-topbar-sub" id="slideReportDateSub">Canlı TEFAS Verileri</span>
                     </div>
                 </div>
+                <!-- Slide Period Selector Toolbar in Topbar -->
+                <div class="slide-period-selector-bar">
+                    <div class="slide-period-selector-label">
+                        <i class="fa-solid fa-clock-rotate-left"></i>
+                        <span>Dönem:</span>
+                    </div>
+                    <div class="slide-period-pills">
+                        <button type="button" class="slide-period-pill-btn active" data-period="1d" onclick="switchSlidePeriod('1d')" title="Günlük Seans">
+                            <span>Günlük</span>
+                        </button>
+                        <button type="button" class="slide-period-pill-btn" data-period="1w" onclick="switchSlidePeriod('1w')" title="Son 1 Hafta (7 Gün)">
+                            <span>Haftalık</span>
+                        </button>
+                        <button type="button" class="slide-period-pill-btn" data-period="1m" onclick="switchSlidePeriod('1m')" title="Son 1 Ay (30 Gün)">
+                            <span>Aylık</span>
+                        </button>
+                        <button type="button" class="slide-period-pill-btn" data-period="1y" onclick="switchSlidePeriod('1y')" title="Son 1 Yıl (365 Gün)">
+                            <span>Yıllık</span>
+                        </button>
+                        <button type="button" class="slide-period-pill-btn" data-period="custom" onclick="openFundScanPeriodModal('custom')" title="Özel Tarih Aralığı Belirle">
+                            <span>📅 Özel Tarih</span>
+                        </button>
+                    </div>
+                </div>
+
                 <!-- Slide Theme Selector Toolbar in Topbar -->
                 <div class="slide-theme-selector-bar">
                     <div class="slide-theme-selector-label">
@@ -3498,7 +3524,7 @@
                 </div>
 
                 <div class="slide-topbar-actions">
-                    <button type="button" class="btn-slide-action refresh" id="btnSlideRefresh" onclick="startLiveFundMarketScan({ autoOpenSlide: true })" title="Tüm 2.041 Fonu Ekranda Canlı Tara & Slaytları Güncelle">
+                    <button type="button" class="btn-slide-action refresh" id="btnSlideRefresh" onclick="openFundScanPeriodModal()" title="Analiz Dönemini Değiştir veya Canlı Tara">
                         <i class="fa-solid fa-satellite-dish"></i>
                         <span>Piyasa Taraması & Yenile</span>
                     </button>
@@ -3604,6 +3630,7 @@
                         <div class="scanner-title-row">
                             <h3 class="scanner-main-title">TEFAS Canlı Piyasa Tarayıcısı</h3>
                             <span class="scanner-live-badge"><span class="scanner-pulse-dot"></span> CANLI AKIŞ</span>
+                            <span class="scanner-period-badge" id="scannerPeriodBadge">GÜNLÜK (1G)</span>
                         </div>
                         <p class="scanner-subtitle" id="scannerStatusSubtitle">Tüm TEFAS yatırım fonları tek tek taranıyor ve sermaye akışları hesaplanıyor...</p>
                     </div>
@@ -3751,6 +3778,101 @@
                         <span>Slayt Raporuna Git (Top 3 Analiz)</span>
                     </button>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==========================================================================
+         TEFAS TARAMA & SLAYT DÖNEM SEÇİM MODALI (Günlük / Haftalık / Aylık / Yıllık / Özel Tarih)
+         ========================================================================== -->
+    <div id="tefasScanPeriodModal" class="tefas-period-modal" style="display: none;">
+        <div class="tefas-period-backdrop" onclick="closeFundScanPeriodModal()"></div>
+        <div class="tefas-period-dialog">
+            <div class="tefas-period-header">
+                <div class="tefas-period-header-left">
+                    <div class="tefas-period-icon">
+                        <i class="fa-solid fa-clock-rotate-left"></i>
+                    </div>
+                    <div>
+                        <h3 class="tefas-period-title">TEFAS Slayt & Tarama Dönemi</h3>
+                        <p class="tefas-period-sub">Taramayı başlatmadan önce analiz dönemini veya özel tarih aralığını belirleyin</p>
+                    </div>
+                </div>
+                <button type="button" class="btn-period-close" onclick="closeFundScanPeriodModal()" title="Kapat (ESC)">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="tefas-period-body">
+                <div class="tefas-period-section-label">
+                    <i class="fa-solid fa-layer-group"></i> ANALİZ VE SLAYT DÖNEMİ SEÇİN
+                </div>
+                <div class="tefas-period-grid">
+                    <div class="period-option-card active" data-period="1d" onclick="selectScanPeriodOption('1d')">
+                        <div class="period-card-badge">1 GÜN</div>
+                        <div class="period-card-icon"><i class="fa-solid fa-sun"></i></div>
+                        <div class="period-card-title">Günlük</div>
+                        <div class="period-card-desc">Son seans net para girişi, çıkışı ve yatırımcı değişimi</div>
+                    </div>
+                    <div class="period-option-card" data-period="1w" onclick="selectScanPeriodOption('1w')">
+                        <div class="period-card-badge">1 HAFTA</div>
+                        <div class="period-card-icon"><i class="fa-solid fa-calendar-week"></i></div>
+                        <div class="period-card-title">Haftalık</div>
+                        <div class="period-card-desc">Son 7 günlük kümülatif getiri ve sermaye akışı şampiyonları</div>
+                    </div>
+                    <div class="period-option-card" data-period="1m" onclick="selectScanPeriodOption('1m')">
+                        <div class="period-card-badge">1 AY</div>
+                        <div class="period-card-icon"><i class="fa-solid fa-calendar-days"></i></div>
+                        <div class="period-card-title">Aylık</div>
+                        <div class="period-card-desc">Son 30 günlük getiri liderleri ve fon büyüme trendleri</div>
+                    </div>
+                    <div class="period-option-card" data-period="1y" onclick="selectScanPeriodOption('1y')">
+                        <div class="period-card-badge">1 YIL</div>
+                        <div class="period-card-icon"><i class="fa-solid fa-chart-line"></i></div>
+                        <div class="period-card-title">Yıllık</div>
+                        <div class="period-card-desc">Son 365 günlük uzun vadeli getiri ve sermaye çekimi</div>
+                    </div>
+                    <div class="period-option-card" data-period="custom" onclick="selectScanPeriodOption('custom')">
+                        <div class="period-card-badge">ÖZEL ARALIK</div>
+                        <div class="period-card-icon"><i class="fa-solid fa-sliders"></i></div>
+                        <div class="period-card-title">Özel Tarih</div>
+                        <div class="period-card-desc">Belirleyeceğiniz iki tarih arasındaki net değişim ve getiri</div>
+                    </div>
+                </div>
+
+                <!-- Custom Date Range Row (visible when "Özel Tarih" is active) -->
+                <div id="tefasCustomDateContainer" class="tefas-custom-date-container" style="display: none;">
+                    <div class="custom-date-box">
+                        <label for="scanCustomStartDate"><i class="fa-regular fa-calendar"></i> Başlangıç Tarihi</label>
+                        <input type="date" id="scanCustomStartDate" class="scan-date-input" />
+                    </div>
+                    <div class="custom-date-divider"><i class="fa-solid fa-arrow-right"></i></div>
+                    <div class="custom-date-box">
+                        <label for="scanCustomEndDate"><i class="fa-regular fa-calendar-check"></i> Bitiş Tarihi</label>
+                        <input type="date" id="scanCustomEndDate" class="scan-date-input" />
+                    </div>
+                </div>
+
+                <!-- Settings Row: Speed Selector -->
+                <div class="tefas-period-settings-row">
+                    <div class="period-setting-group">
+                        <span class="period-setting-label"><i class="fa-solid fa-gauge-high"></i> Tarama Hızı:</span>
+                        <div class="period-speed-pills">
+                            <button type="button" class="btn-period-speed" data-speed="slow" onclick="setPeriodModalSpeed('slow')">Yavaş (600s)</button>
+                            <button type="button" class="btn-period-speed active" data-speed="normal" onclick="setPeriodModalSpeed('normal')">Normal (60s)</button>
+                            <button type="button" class="btn-period-speed" data-speed="fast" onclick="setPeriodModalSpeed('fast')">Hızlı (30s)</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tefas-period-footer">
+                <button type="button" class="btn-period-secondary" onclick="executeScanPeriodAction(false)" title="Animasyonsuz doğrudan slaytları hazırla ve aç">
+                    <i class="fa-solid fa-bolt"></i> <span>Taramasız Slaytı Aç</span>
+                </button>
+                <button type="button" class="btn-period-primary" onclick="executeScanPeriodAction(true)" title="Tüm piyasayı ekranda canlı tara ve slaytlara geç">
+                    <i class="fa-solid fa-satellite-dish"></i> <span>Taramayı Başlat & Slayt Hazırla</span>
+                </button>
             </div>
         </div>
     </div>

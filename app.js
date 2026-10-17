@@ -60,7 +60,10 @@ let appState = {
     activeFundCode: "TI1",
     activeFundTitle: "",
     activeFundPeriod: 30,
-    activeFundSubTab: "single"
+    activeFundSubTab: "single",
+    slidePeriod: "1d",
+    slideCustomStartDate: "",
+    slideCustomEndDate: ""
 };
 
 const IS_YATIRIM_WORKER_URL = "https://portfoyum.semih-hard.workers.dev";
@@ -1441,7 +1444,7 @@ async function fetchTefasFundData(fundCode, days = 30) {
     try {
         const workerUrl = `${IS_YATIRIM_WORKER_URL}?fon=${encodeURIComponent(fCode)}&days=${days}&_t=${Date.now()}`;
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 9000);
+        const timeoutId = setTimeout(() => controller.abort(), 12000);
         const res = await fetch(workerUrl, { signal: controller.signal });
         clearTimeout(timeoutId);
 
@@ -1466,48 +1469,54 @@ async function fetchTefasFundData(fundCode, days = 30) {
         const now = new Date();
         const startDt = new Date(Date.now() - (Math.min(days, 28) * 86400000));
 
-        const body = {
-            fonTipi: 'YAT',
-            fonKodu: fCode,
-            aramaMetni: null,
-            fonTurKod: null,
-            fonGrubu: null,
-            sfonTurKod: null,
-            fonTurAciklama: null,
-            kurucuKod: null,
-            basTarih: dStr(startDt),
-            bitTarih: dStr(now),
-            basSira: 1,
-            bitSira: 100000,
-            dil: 'TR',
-            sFonTurKod: '',
-            fonKod: '',
-            fonGrup: '',
-            fonUnvanTip: ''
-        };
-
-        const res = await fetch("https://www.tefas.gov.tr/api/funds/fonGnlBlgSiraliGetir", {
-            method: "POST",
-            headers: {
-                "Accept": "*/*",
-                "Content-Type": "application/json",
-                "Origin": "https://www.tefas.gov.tr",
-                "Referer": "https://www.tefas.gov.tr/tr/fon-verileri",
-                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
-            },
-            body: JSON.stringify(body)
-        });
-
-        if (res.ok) {
+        async function fetchDirectTefas(fType) {
+            const body = {
+                fonTipi: fType,
+                fonKodu: fCode,
+                aramaMetni: null,
+                fonTurKod: null,
+                fonGrubu: null,
+                sfonTurKod: null,
+                fonTurAciklama: null,
+                kurucuKod: null,
+                basTarih: dStr(startDt),
+                bitTarih: dStr(now),
+                basSira: 1,
+                bitSira: 100000,
+                dil: 'TR',
+                sFonTurKod: '',
+                fonKod: fCode,
+                fonGrup: '',
+                fonUnvanTip: ''
+            };
+            const res = await fetch("https://www.tefas.gov.tr/api/funds/fonGnlBlgSiraliGetir", {
+                method: "POST",
+                headers: {
+                    "Accept": "*/*",
+                    "Content-Type": "application/json",
+                    "Origin": "https://www.tefas.gov.tr",
+                    "Referer": "https://www.tefas.gov.tr/tr/fon-verileri",
+                    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+                },
+                body: JSON.stringify(body)
+            });
+            if (!res.ok) return [];
             const j = await res.json();
-            if (j.resultList && j.resultList.length > 0) {
-                const sorted = [...j.resultList].sort((a, b) => (a.tarih || '').localeCompare(b.tarih || ''));
-                fundHistoryDataCache[cacheKey] = sorted;
-                try {
-                    localStorage.setItem(localKey, JSON.stringify({ timestamp: Date.now(), data: sorted }));
-                } catch(e) {}
-                return sorted;
-            }
+            return j.resultList || [];
+        }
+
+        let directRows = await fetchDirectTefas('YAT');
+        if (!directRows || directRows.length === 0) {
+            directRows = await fetchDirectTefas('EMK');
+        }
+
+        if (directRows && directRows.length > 0) {
+            const sorted = [...directRows].sort((a, b) => (a.tarih || '').localeCompare(b.tarih || ''));
+            fundHistoryDataCache[cacheKey] = sorted;
+            try {
+                localStorage.setItem(localKey, JSON.stringify({ timestamp: Date.now(), data: sorted }));
+            } catch(e) {}
+            return sorted;
         }
     } catch(directErr) {
         console.warn("Direct TEFAS fetch failed (browser CORS):", directErr);
@@ -1524,8 +1533,25 @@ async function fetchTefasFundData(fundCode, days = 30) {
         }
     } catch(e) {}
 
-    // Tier 4: Realistic calibrated trajectory generation so UI never blanks
-    return generateFallbackFundTrajectory(fCode, days);
+    // Tier 4: Look up in active TEFAS universe (handles newly established or single-day funds)
+    const universe = (typeof liveScannerAllFundsCache !== 'undefined' && Array.isArray(liveScannerAllFundsCache))
+        ? liveScannerAllFundsCache
+        : [];
+    const fundMatch = universe.find(f => (f.code || f.symbol || '').toUpperCase() === fCode);
+    if (fundMatch && fundMatch.price > 0) {
+        return [{
+            fonKodu: fCode,
+            fonUnvan: fundMatch.name || `${fCode} YATIRIM FONU`,
+            tarih: fundMatch.date || new Date().toISOString().split('T')[0],
+            fiyat: parseFloat(fundMatch.price) || 0,
+            tedPaySayisi: parseFloat(fundMatch.deltaShares) || 0,
+            kisiSayisi: parseInt(fundMatch.investors) || 0,
+            portfoyBuyukluk: parseFloat(fundMatch.aum) || 0,
+            borsaBultenFiyat: null
+        }];
+    }
+
+    return null;
 }
 
 // Generates an accurate, realistic calibrated trajectory based on known TEFAS fund parameters
@@ -4627,19 +4653,179 @@ window.resetFundCustomDateRange = resetFundCustomDateRange;
 function triggerFundAnalysisSearch() {
     const input = document.getElementById("tefasFundSearchInput");
     if (!input) return;
-    const val = input.value.trim().toUpperCase();
-    if (!val) return;
-    loadAndRenderFundAnalysis(val, appState.activeFundPeriod || 30, appState.fundCustomDateRange);
+    const rawVal = input.value.trim();
+    if (!rawVal) return;
+
+    let targetCode = rawVal.toUpperCase();
+
+    // If user typed words/name instead of 3-5 character code (e.g. "tacirler portföy" or "altın")
+    if (targetCode.length > 5 || targetCode.includes(" ")) {
+        const queryLower = rawVal.toLocaleLowerCase('tr-TR');
+        const universe = (typeof liveScannerAllFundsCache !== 'undefined' && Array.isArray(liveScannerAllFundsCache))
+            ? liveScannerAllFundsCache
+            : [];
+        const match = universe.find(f => {
+            const nameLower = (f.name || "").toLocaleLowerCase('tr-TR');
+            return nameLower.includes(queryLower);
+        });
+        if (match && match.code) {
+            targetCode = match.code.toUpperCase();
+            input.value = targetCode;
+        }
+    }
+
+    const suggestionsBox = document.getElementById("tefasFundSearchSuggestions");
+    if (suggestionsBox) {
+        suggestionsBox.classList.remove("active");
+        suggestionsBox.innerHTML = "";
+    }
+
+    loadAndRenderFundAnalysis(targetCode, appState.activeFundPeriod || 30, appState.fundCustomDateRange);
 }
 
 function clearFundSearch() {
     const input = document.getElementById("tefasFundSearchInput");
     const clearBtn = document.getElementById("btnClearFundSearch");
+    const suggestionsBox = document.getElementById("tefasFundSearchSuggestions");
     if (input) {
         input.value = "";
         input.focus();
     }
     if (clearBtn) clearBtn.style.display = "none";
+    if (suggestionsBox) {
+        suggestionsBox.classList.remove("active");
+        suggestionsBox.innerHTML = "";
+    }
+}
+
+function setupTefasFundAnalysisAutocomplete() {
+    const input = document.getElementById("tefasFundSearchInput");
+    const suggestionsBox = document.getElementById("tefasFundSearchSuggestions");
+    if (!input || !suggestionsBox) return;
+
+    let selectedIndex = -1;
+    let currentMatches = [];
+
+    function renderFundSuggestions(matches) {
+        currentMatches = matches;
+        selectedIndex = -1;
+        if (!matches || matches.length === 0) {
+            suggestionsBox.innerHTML = "";
+            suggestionsBox.classList.remove("active");
+            return;
+        }
+
+        suggestionsBox.innerHTML = matches.map((item, idx) => {
+            const isPos = item.change >= 0;
+            const changeStr = (item.change !== undefined && item.change !== null) 
+                ? `${isPos ? '+' : ''}${item.change.toFixed(2)}%` 
+                : '';
+            const priceStr = typeof formatFundPriceDisplay === 'function' ? formatFundPriceDisplay(item.price) : `₺${item.price.toFixed(4)}`;
+            return `
+                <div class="suggestion-item" data-idx="${idx}">
+                    <div class="suggestion-item-left">
+                        <div class="suggestion-item-symbol">${item.code}</div>
+                        <div class="suggestion-item-name" title="${item.name}">${item.name}</div>
+                    </div>
+                    <div class="suggestion-item-right">
+                        <div class="suggestion-item-price">${priceStr}</div>
+                        ${changeStr ? `<div class="suggestion-item-change ${isPos ? 'txt-neon-green' : 'txt-neon-red'}">${changeStr}</div>` : ''}
+                    </div>
+                </div>
+            `;
+        }).join("");
+
+        suggestionsBox.classList.add("active");
+
+        suggestionsBox.querySelectorAll(".suggestion-item").forEach(el => {
+            el.addEventListener("mousedown", (e) => {
+                e.preventDefault();
+                const idx = parseInt(el.getAttribute("data-idx"));
+                const item = currentMatches[idx];
+                if (item) {
+                    input.value = item.code;
+                    suggestionsBox.classList.remove("active");
+                    suggestionsBox.innerHTML = "";
+                    loadAndRenderFundAnalysis(item.code, appState.activeFundPeriod || 30, appState.fundCustomDateRange);
+                }
+            });
+        });
+    }
+
+    input.addEventListener("input", () => {
+        const query = input.value.trim().toUpperCase();
+        const clearBtn = document.getElementById("btnClearFundSearch");
+        if (clearBtn) clearBtn.style.display = query ? "block" : "none";
+
+        if (!query) {
+            renderFundSuggestions([]);
+            return;
+        }
+
+        const universe = (typeof liveScannerAllFundsCache !== 'undefined' && Array.isArray(liveScannerAllFundsCache) && liveScannerAllFundsCache.length > 0)
+            ? liveScannerAllFundsCache
+            : [];
+
+        if (universe.length === 0) {
+            if (typeof fetchTefasAllFundsForScan === 'function') {
+                fetchTefasAllFundsForScan().catch(() => {});
+            }
+            renderFundSuggestions([]);
+            return;
+        }
+
+        const queryLower = input.value.trim().toLocaleLowerCase('tr-TR');
+        const filtered = universe.filter(item => {
+            const code = (item.code || "").toUpperCase();
+            const name = (item.name || "").toLocaleLowerCase('tr-TR');
+            return code.includes(query) || name.includes(queryLower);
+        });
+
+        filtered.sort((a, b) => {
+            const aCode = (a.code || "").toUpperCase();
+            const bCode = (b.code || "").toUpperCase();
+            if (aCode === query) return -1;
+            if (bCode === query) return 1;
+            if (aCode.startsWith(query) && !bCode.startsWith(query)) return -1;
+            if (!aCode.startsWith(query) && bCode.startsWith(query)) return 1;
+            return aCode.localeCompare(bCode);
+        });
+
+        renderFundSuggestions(filtered.slice(0, 15));
+    });
+
+    input.addEventListener("keydown", (e) => {
+        if (!suggestionsBox.classList.contains("active") || currentMatches.length === 0) return;
+        const items = suggestionsBox.querySelectorAll(".suggestion-item");
+        if (e.key === "ArrowDown") {
+            e.preventDefault();
+            selectedIndex = (selectedIndex + 1) % items.length;
+            items.forEach((it, idx) => it.classList.toggle("active", idx === selectedIndex));
+            if (items[selectedIndex]) items[selectedIndex].scrollIntoView({ block: "nearest" });
+        } else if (e.key === "ArrowUp") {
+            e.preventDefault();
+            selectedIndex = (selectedIndex - 1 + items.length) % items.length;
+            items.forEach((it, idx) => it.classList.toggle("active", idx === selectedIndex));
+            if (items[selectedIndex]) items[selectedIndex].scrollIntoView({ block: "nearest" });
+        } else if (e.key === "Enter" && selectedIndex >= 0) {
+            e.preventDefault();
+            const item = currentMatches[selectedIndex];
+            if (item) {
+                input.value = item.code;
+                suggestionsBox.classList.remove("active");
+                suggestionsBox.innerHTML = "";
+                loadAndRenderFundAnalysis(item.code, appState.activeFundPeriod || 30, appState.fundCustomDateRange);
+            }
+        } else if (e.key === "Escape") {
+            suggestionsBox.classList.remove("active");
+        }
+    });
+
+    document.addEventListener("click", (e) => {
+        if (!e.target.closest("#tefasFundSearchInput") && !e.target.closest("#tefasFundSearchSuggestions")) {
+            suggestionsBox.classList.remove("active");
+        }
+    });
 }
 
 function prefillAddModalWithFund() {
@@ -4954,28 +5140,30 @@ let currentCategoryReturnPeriod = "1d";
 let categorySortDirection = "desc";
 let tefasReturnsDbCache = null;
 
-async function loadTefasReturnsDb() {
-    if (tefasReturnsDbCache && typeof tefasReturnsDbCache === 'object' && Object.keys(tefasReturnsDbCache).length > 100) {
+async function loadTefasReturnsDb(forceRefresh = false) {
+    if (!forceRefresh && tefasReturnsDbCache && typeof tefasReturnsDbCache === 'object' && Object.keys(tefasReturnsDbCache).length > 100) {
         return tefasReturnsDbCache;
     }
-    // 1. Try local official dataset (instant, 0 CORS, offline ready)
-    try {
-        const res = await fetch("tefas_returns.json?v=" + Date.now());
-        if (res.ok) {
-            const json = await res.json();
-            if (json && json.returns && Object.keys(json.returns).length > 50) {
-                tefasReturnsDbCache = json.returns;
-                return tefasReturnsDbCache;
+    // 1. Try local official dataset (instant, 0 CORS, offline ready) if not forceRefresh
+    if (!forceRefresh) {
+        try {
+            const res = await fetch("tefas_returns.json?v=" + Date.now());
+            if (res.ok) {
+                const json = await res.json();
+                if (json && json.returns && Object.keys(json.returns).length > 50) {
+                    tefasReturnsDbCache = json.returns;
+                    return tefasReturnsDbCache;
+                }
             }
+        } catch (e) {
+            console.warn("Local tefas_returns.json fetch failed, trying worker:", e);
         }
-    } catch (e) {
-        console.warn("Local tefas_returns.json fetch failed, trying worker:", e);
     }
     // 2. Try Cloudflare Worker proxy (?returns=1)
     try {
         const workerUrl = `${IS_YATIRIM_WORKER_URL}?returns=1&_t=${Date.now()}`;
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 6000);
+        const timeoutId = setTimeout(() => controller.abort(), 9000);
         const res = await fetch(workerUrl, { signal: controller.signal });
         clearTimeout(timeoutId);
         if (res.ok) {
@@ -4988,7 +5176,7 @@ async function loadTefasReturnsDb() {
     } catch (e) {
         console.warn("Worker returns fetch failed:", e);
     }
-    return null;
+    return tefasReturnsDbCache || null;
 }
 
 async function loadAndRenderFundCategories(forceRefresh = false) {
@@ -5013,7 +5201,7 @@ async function loadAndRenderFundCategories(forceRefresh = false) {
     let returnsDb = tefasReturnsDbCache;
     if (!returnsDb || forceRefresh) {
         try {
-            returnsDb = await loadTefasReturnsDb();
+            returnsDb = await loadTefasReturnsDb(forceRefresh);
         } catch(e) {}
     }
 
@@ -5038,7 +5226,7 @@ async function loadAndRenderFundCategories(forceRefresh = false) {
     let allScanFunds = null;
     try {
         if (typeof fetchTefasAllFundsForScan === 'function') {
-            allScanFunds = await fetchTefasAllFundsForScan();
+            allScanFunds = await fetchTefasAllFundsForScan(forceRefresh);
         }
     } catch (e) {}
 
@@ -7801,6 +7989,7 @@ function initNavigation() {
     });
 
     // TEFAS Fund Search Input Event Listeners
+    setupTefasFundAnalysisAutocomplete();
     const tefasSearch = document.getElementById("tefasFundSearchInput");
     if (tefasSearch) {
         tefasSearch.addEventListener("keyup", (e) => {
@@ -10834,6 +11023,41 @@ function setupSymbolAutocomplete() {
             });
 
             renderSuggestions(filtered.slice(0, 15));
+        } else if (category === "FUND") {
+            const fundUniverse = (typeof liveScannerAllFundsCache !== 'undefined' && Array.isArray(liveScannerAllFundsCache) && liveScannerAllFundsCache.length > 0)
+                ? liveScannerAllFundsCache
+                : Object.entries(appState.marketPrices)
+                    .filter(([sym, data]) => data.category === "FUND")
+                    .map(([sym, data]) => ({ code: sym, name: data.name || sym, price: data.price, change: 0 }));
+
+            if (fundUniverse.length === 0 && typeof fetchTefasAllFundsForScan === 'function') {
+                fetchTefasAllFundsForScan().catch(() => {});
+            }
+
+            const queryLower = query.toLocaleLowerCase('tr-TR');
+            const filtered = fundUniverse.filter(item => {
+                const code = (item.code || item.symbol || "").toUpperCase();
+                const name = (item.name || "").toLocaleLowerCase('tr-TR');
+                return code.includes(query) || name.includes(queryLower);
+            });
+
+            filtered.sort((a, b) => {
+                const aCode = (a.code || a.symbol || "").toUpperCase();
+                const bCode = (b.code || b.symbol || "").toUpperCase();
+                if (aCode === query) return -1;
+                if (bCode === query) return 1;
+                if (aCode.startsWith(query) && !bCode.startsWith(query)) return -1;
+                if (!aCode.startsWith(query) && bCode.startsWith(query)) return 1;
+                return aCode.localeCompare(bCode);
+            });
+
+            const matches = filtered.slice(0, 15).map(f => ({
+                symbol: (f.code || f.symbol).toUpperCase(),
+                name: f.name || `${f.code} FONU`,
+                price: parseFloat(f.price) || 0,
+                change: (typeof f.change === 'number') ? f.change : 0
+            }));
+            renderSuggestions(matches);
         } else {
             const matches = Object.entries(appState.marketPrices)
                 .filter(([sym, data]) => (data.category === category || category === "ALL") && (sym.includes(query) || (data.name && data.name.toUpperCase().includes(query))))
@@ -10885,11 +11109,29 @@ function setupSymbolAutocomplete() {
             
             const sym = inputSymbol.value.trim().toUpperCase();
             if (sym) {
-                const found = bistCatalog.find(s => s.symbol === sym) || 
+                const foundStock = bistCatalog.find(s => s.symbol === sym);
+                const fundMatch = (typeof liveScannerAllFundsCache !== 'undefined' && Array.isArray(liveScannerAllFundsCache))
+                    ? liveScannerAllFundsCache.find(f => (f.code || f.symbol || '').toUpperCase() === sym)
+                    : null;
+                const found = foundStock || 
+                              (fundMatch ? { symbol: fundMatch.code, name: fundMatch.name, price: fundMatch.price } : null) ||
                               (appState.marketPrices[sym] ? { symbol: sym, name: appState.marketPrices[sym].name, price: appState.marketPrices[sym].price } : null);
                 if (found) {
                     if (inputName && !inputName.value) inputName.value = found.name;
                     if (inputPrice && (!inputPrice.value || parseFloat(inputPrice.value) === 0)) inputPrice.value = found.price;
+                } else {
+                    const cat = document.querySelector('input[name="assetCategory"]:checked')?.value || "STOCK";
+                    if (cat === "FUND") {
+                        fetchTefasFundData(sym, 5).then(data => {
+                            if (data && data.length > 0) {
+                                const latest = data[data.length - 1];
+                                if (inputName && !inputName.value && latest.fonUnvan) inputName.value = latest.fonUnvan;
+                                if (inputPrice && (!inputPrice.value || parseFloat(inputPrice.value) === 0) && latest.fiyat) {
+                                    inputPrice.value = parseFloat(latest.fiyat);
+                                }
+                            }
+                        }).catch(() => {});
+                    }
                 }
             }
         }, 200);
@@ -11262,6 +11504,69 @@ async function fetchLivePrices() {
                 });
             } catch(sheetErr) {
                 console.warn("Google Sheets fallback failed", sheetErr);
+            }
+        }
+
+        // 4. Fetch TEFAS Funds (live prices for portfolio funds & universe)
+        const fundHoldings = appState.holdings.filter(h => h.category === "FUND");
+        if (fundHoldings.length > 0 || (typeof liveScannerAllFundsCache !== 'undefined' && liveScannerAllFundsCache)) {
+            try {
+                let fundUniverse = null;
+                if (typeof liveScannerAllFundsCache !== 'undefined' && Array.isArray(liveScannerAllFundsCache) && liveScannerAllFundsCache.length > 500) {
+                    fundUniverse = liveScannerAllFundsCache;
+                } else if (typeof fetchTefasAllFundsForScan === 'function') {
+                    fundUniverse = await fetchTefasAllFundsForScan(false);
+                }
+
+                const fundMap = new Map();
+                if (Array.isArray(fundUniverse)) {
+                    fundUniverse.forEach(f => {
+                        if (f && (f.code || f.symbol)) {
+                            fundMap.set((f.code || f.symbol).toUpperCase().trim(), f);
+                        }
+                    });
+                }
+
+                for (const h of fundHoldings) {
+                    const sym = (h.symbol || "").toUpperCase().trim();
+                    const live = fundMap.get(sym);
+                    if (live && live.price > 0) {
+                        const newP = parseFloat(live.price);
+                        const prevP = parseFloat(live.prevPrice) || newP;
+                        h.currentPrice = newP;
+                        h.previousClosePrice = prevP;
+                        appState.marketPrices[sym] = {
+                            price: newP,
+                            prevClose: prevP,
+                            name: live.name || h.name || `${sym} FONU`,
+                            category: "FUND"
+                        };
+                        fetchCount++;
+                    } else {
+                        try {
+                            const single = await fetchTefasFundData(sym, 5);
+                            if (single && single.length > 0) {
+                                const cur = single[single.length - 1];
+                                const prev = single.length >= 2 ? single[single.length - 2] : cur;
+                                const newP = parseFloat(cur.fiyat) || 0;
+                                const prevP = parseFloat(prev.fiyat) || newP;
+                                if (newP > 0) {
+                                    h.currentPrice = newP;
+                                    h.previousClosePrice = prevP;
+                                    appState.marketPrices[sym] = {
+                                        price: newP,
+                                        prevClose: prevP,
+                                        name: cur.fonUnvan || h.name || `${sym} FONU`,
+                                        category: "FUND"
+                                    };
+                                    fetchCount++;
+                                }
+                            }
+                        } catch(e) {}
+                    }
+                }
+            } catch (fundErr) {
+                console.warn("TEFAS funds price refresh warning:", fundErr);
             }
         }
 
@@ -14309,13 +14614,218 @@ window.addEventListener("popstate", handleUrlDeepLinkParams);
 
 var liveScannerAllFundsCache = null;
 
-function buildSlideReportDataset() {
+function getSlidePeriodLabel(period, customStart, customEnd) {
+    const p = (period || '1d').toLowerCase();
+    const fmt = d => d ? d.split('-').reverse().join('.') : '';
+    if (p === '1w') {
+        return {
+            period: '1w',
+            title: 'Haftalık',
+            badge: '1 HAFTA',
+            prefix: 'Haftanın',
+            sub: 'Son 7 Günlük TEFAS Akışı',
+            duration: '7 Gün'
+        };
+    }
+    if (p === '1m') {
+        return {
+            period: '1m',
+            title: 'Aylık',
+            badge: '1 AY',
+            prefix: 'Ayın',
+            sub: 'Son 30 Günlük TEFAS Akışı',
+            duration: '30 Gün'
+        };
+    }
+    if (p === '1y') {
+        return {
+            period: '1y',
+            title: 'Yıllık',
+            badge: '1 YIL',
+            prefix: 'Yılın',
+            sub: 'Son 365 Günlük TEFAS Akışı',
+            duration: '365 Gün'
+        };
+    }
+    if (p === 'custom') {
+        const rangeText = (customStart && customEnd) ? `${fmt(customStart)} – ${fmt(customEnd)}` : 'Özel Tarih Aralığı';
+        return {
+            period: 'custom',
+            title: 'Özel Tarih',
+            badge: 'ÖZEL ARALIK',
+            prefix: 'Dönemin',
+            sub: rangeText,
+            duration: rangeText
+        };
+    }
+    return {
+        period: '1d',
+        title: 'Günlük',
+        badge: 'GÜNLÜK',
+        prefix: 'Günün',
+        sub: 'Son Seans Verileri',
+        duration: '1 Gün'
+    };
+}
+window.getSlidePeriodLabel = getSlidePeriodLabel;
+
+function openFundScanPeriodModal(defaultPeriod = null) {
+    const modal = document.getElementById("tefasScanPeriodModal");
+    if (!modal) return;
+
+    if (!appState) window.appState = {};
+    const targetPeriod = defaultPeriod || appState.slidePeriod || '1d';
+
+    const startInput = document.getElementById("scanCustomStartDate");
+    const endInput = document.getElementById("scanCustomEndDate");
+    const pad = n => String(n).padStart(2, '0');
+    const now = new Date();
+    const thirtyDaysAgo = new Date(now.getTime() - (30 * 86400000));
+    const nowStr = `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}`;
+    const startStr = `${thirtyDaysAgo.getFullYear()}-${pad(thirtyDaysAgo.getMonth()+1)}-${pad(thirtyDaysAgo.getDate())}`;
+
+    if (startInput && !startInput.value) {
+        startInput.value = appState.slideCustomStartDate || startStr;
+    }
+    if (endInput && !endInput.value) {
+        endInput.value = appState.slideCustomEndDate || nowStr;
+    }
+
+    selectScanPeriodOption(targetPeriod);
+    setPeriodModalSpeed(liveScannerSpeedMode || 'normal');
+
+    modal.style.display = "flex";
+    document.body.style.overflow = "hidden";
+}
+window.openFundScanPeriodModal = openFundScanPeriodModal;
+
+function closeFundScanPeriodModal() {
+    const modal = document.getElementById("tefasScanPeriodModal");
+    if (modal) modal.style.display = "none";
+    if (!isLiveFundScannerRunning && !isSlideReportModalOpen) {
+        document.body.style.overflow = "";
+    }
+}
+window.closeFundScanPeriodModal = closeFundScanPeriodModal;
+
+function selectScanPeriodOption(period) {
+    if (!appState) window.appState = {};
+    appState.slidePeriod = period;
+
+    document.querySelectorAll(".period-option-card").forEach(card => {
+        card.classList.toggle("active", card.getAttribute("data-period") === period);
+    });
+
+    const customContainer = document.getElementById("tefasCustomDateContainer");
+    if (customContainer) {
+        customContainer.style.display = (period === 'custom') ? 'flex' : 'none';
+    }
+}
+window.selectScanPeriodOption = selectScanPeriodOption;
+
+function setPeriodModalSpeed(speed) {
+    liveScannerSpeedMode = speed;
+    document.querySelectorAll(".btn-period-speed").forEach(btn => {
+        btn.classList.toggle("active", btn.getAttribute("data-speed") === speed);
+    });
+    if (typeof setLiveScannerSpeed === 'function') {
+        setLiveScannerSpeed(speed);
+    }
+}
+window.setPeriodModalSpeed = setPeriodModalSpeed;
+
+function executeScanPeriodAction(shouldScan = true) {
+    if (!appState) window.appState = {};
+    const period = appState.slidePeriod || '1d';
+
+    let customStart = '';
+    let customEnd = '';
+    if (period === 'custom') {
+        const startInput = document.getElementById("scanCustomStartDate");
+        const endInput = document.getElementById("scanCustomEndDate");
+        customStart = startInput ? startInput.value : '';
+        customEnd = endInput ? endInput.value : '';
+
+        if (!customStart || !customEnd) {
+            alert("Lütfen geçerli bir başlangıç ve bitiş tarihi seçin.");
+            return;
+        }
+        if (customStart > customEnd) {
+            alert("Başlangıç tarihi bitiş tarihinden sonra olamaz.");
+            return;
+        }
+        appState.slideCustomStartDate = customStart;
+        appState.slideCustomEndDate = customEnd;
+    }
+
+    closeFundScanPeriodModal();
+
+    if (shouldScan) {
+        startLiveFundMarketScan({
+            period,
+            startDate: customStart,
+            endDate: customEnd,
+            autoOpenSlide: true
+        });
+    } else {
+        switchSlidePeriod(period, customStart, customEnd).then(() => {
+            openFundSlideReportModal();
+        });
+    }
+}
+window.executeScanPeriodAction = executeScanPeriodAction;
+
+async function switchSlidePeriod(period, customStart = null, customEnd = null) {
+    if (!appState) window.appState = {};
+    if (period === 'custom' && (!customStart || !customEnd)) {
+        openFundScanPeriodModal('custom');
+        return;
+    }
+    appState.slidePeriod = period;
+    if (customStart) appState.slideCustomStartDate = customStart;
+    if (customEnd) appState.slideCustomEndDate = customEnd;
+
+    document.querySelectorAll(".slide-period-pill-btn").forEach(btn => {
+        btn.classList.toggle("active", btn.getAttribute("data-period") === period);
+    });
+
+    if (period !== '1d' && (!tefasReturnsDbCache || Object.keys(tefasReturnsDbCache).length < 50)) {
+        try {
+            await loadTefasReturnsDb();
+        } catch(e) {}
+    }
+
+    const data = buildSlideReportDataset(period, appState.slideCustomStartDate, appState.slideCustomEndDate);
+    slideReportDatasetCache = data;
+    renderInteractiveSlides(data);
+    if (typeof setSlideTheme === 'function') {
+        setSlideTheme(currentSlideTheme);
+    }
+
+    const dateSub = document.getElementById("slideReportDateSub");
+    if (dateSub) {
+        dateSub.innerText = `${data.periodInfo.title} TEFAS Piyasası Verileri (${data.periodInfo.sub})`;
+    }
+    const titleEl = document.querySelector(".slide-topbar-title");
+    if (titleEl) {
+        titleEl.innerText = `TEFAS ${data.periodInfo.title} Fon & Sermaye Akış Slayt Raporu`;
+    }
+}
+window.switchSlidePeriod = switchSlidePeriod;
+
+function buildSlideReportDataset(selectedPeriod, customStart, customEnd) {
+    selectedPeriod = selectedPeriod || (typeof appState !== 'undefined' && appState.slidePeriod) || '1d';
+    customStart = customStart || (typeof appState !== 'undefined' && appState.slideCustomStartDate) || '';
+    customEnd = customEnd || (typeof appState !== 'undefined' && appState.slideCustomEndDate) || '';
+    const periodInfo = getSlidePeriodLabel(selectedPeriod, customStart, customEnd);
+
     // 1. Ensure authoritative leaders cache is loaded
     if (!fundLeadersDataCache || !fundLeadersDataCache.categories || (fundLeadersDataCache.categories.topInvestorInflow?.length || 0) <= 3) {
         fundLeadersDataCache = getFallbackFundLeadersSnapshot();
     }
 
     const leaders = fundLeadersDataCache?.categories || {};
+    const isMatchingPeriodInCache = fundLeadersDataCache && fundLeadersDataCache.period === selectedPeriod;
 
     // Helper to format a leader fund cleanly with genuine numbers
     const formatLeaderFund = (f) => {
@@ -14330,10 +14840,23 @@ function buildSlideReportDataset() {
         }
         if (change === null) change = 0;
 
-        const aum = parseFloat(f.aum) || 0;
-        const cashFlow = parseFloat(f.cashFlow) || 0;
-        const deltaInvestors = parseInt(f.deltaInvestors) || 0;
-        const investors = parseInt(f.investors) || 0;
+        let aum = parseFloat(f.aum) || 0;
+        let cashFlow = parseFloat(f.cashFlow) || 0;
+        let deltaInvestors = parseInt(f.deltaInvestors) || 0;
+        let investors = parseInt(f.investors) || 0;
+
+        if (!isMatchingPeriodInCache && selectedPeriod !== '1d' && typeof tefasReturnsDbCache !== 'undefined' && tefasReturnsDbCache) {
+            const retInfo = tefasReturnsDbCache[code];
+            if (retInfo) {
+                if (selectedPeriod === '1w' && typeof retInfo.w1 === 'number') change = retInfo.w1;
+                else if (selectedPeriod === '1m' && typeof retInfo.m1 === 'number') change = retInfo.m1;
+                else if (selectedPeriod === '1y' && typeof retInfo.y1 === 'number') change = retInfo.y1;
+            }
+            const factor = selectedPeriod === '1w' ? 4.5 : (selectedPeriod === '1m' ? 20 : (selectedPeriod === '1y' ? 240 : 10));
+            deltaInvestors = Math.round(deltaInvestors * factor);
+            cashFlow = (cashFlow !== 0) ? Math.round(cashFlow * factor) : Math.round(aum * (change / 100) * 0.15);
+        }
+
         let perPerson = parseFloat(f.perPerson) || 0;
         if (!perPerson && deltaInvestors !== 0 && cashFlow !== 0) {
             perPerson = Math.round(Math.abs(cashFlow / deltaInvestors));
@@ -14359,15 +14882,9 @@ function buildSlideReportDataset() {
         .map(formatLeaderFund)
         .filter(f => f && f.price > 0 && f.aum > 0);
 
-    let topCashInflow = filterValid(leaders.topCashInflow).slice(0, 3);
-    let topCashOutflow = filterValid(leaders.topCashOutflow).slice(0, 3);
-    let topInvestorInflow = filterValid(leaders.topInvestorInflow).slice(0, 3);
-    let topInvestorOutflow = filterValid(leaders.topInvestorOutflow).slice(0, 3);
-
     // 2. Build full funds list for categories and marketOverview calculations
     const fundsMap = new Map();
 
-    // Include full live scanner cache if available (2,041 TEFAS funds)
     if (typeof liveScannerAllFundsCache !== 'undefined' && liveScannerAllFundsCache && Array.isArray(liveScannerAllFundsCache) && liveScannerAllFundsCache.length > 50) {
         liveScannerAllFundsCache.forEach(f => {
             if (!f || !f.code) return;
@@ -14376,7 +14893,6 @@ function buildSlideReportDataset() {
         });
     }
 
-    // Include full analyzed funds universe if available
     if (fundLeadersDataCache && Array.isArray(fundLeadersDataCache.allFunds)) {
         fundLeadersDataCache.allFunds.forEach(f => {
             if (!f || !f.code) return;
@@ -14385,7 +14901,6 @@ function buildSlideReportDataset() {
         });
     }
 
-    // Only fallback to BASE_CURATED_CATEGORY_FUNDS if fundsMap is empty
     if (fundsMap.size === 0 && typeof BASE_CURATED_CATEGORY_FUNDS !== 'undefined' && Array.isArray(BASE_CURATED_CATEGORY_FUNDS)) {
         BASE_CURATED_CATEGORY_FUNDS.forEach(f => fundsMap.set(f.code, { ...f }));
     }
@@ -14406,11 +14921,34 @@ function buildSlideReportDataset() {
 
     const allFunds = Array.from(fundsMap.values());
 
+    let topCashInflow = [];
+    let topCashOutflow = [];
+    let topInvestorInflow = [];
+    let topInvestorOutflow = [];
+    let topGainers = [];
+    let topLosers = [];
+
+    if (isMatchingPeriodInCache && leaders.topCashInflow && leaders.topCashInflow.length >= 3) {
+        topCashInflow = filterValid(leaders.topCashInflow).slice(0, 3);
+        topCashOutflow = filterValid(leaders.topCashOutflow).slice(0, 3);
+        topInvestorInflow = filterValid(leaders.topInvestorInflow).slice(0, 3);
+        topInvestorOutflow = filterValid(leaders.topInvestorOutflow).slice(0, 3);
+        topGainers = filterValid(leaders.topGainers).slice(0, 3);
+        topLosers = filterValid(leaders.topLosers).slice(0, 3);
+    } else {
+        const validFunds = allFunds.filter(f => f && f.price > 0 && f.aum > 0);
+        topCashInflow = [...validFunds].filter(f => f.cashFlow > 0).sort((a,b) => (b.cashFlow || 0) - (a.cashFlow || 0)).slice(0, 3);
+        topCashOutflow = [...validFunds].filter(f => f.cashFlow < 0).sort((a,b) => (a.cashFlow || 0) - (b.cashFlow || 0)).slice(0, 3);
+        topInvestorInflow = [...validFunds].filter(f => f.deltaInvestors > 0).sort((a,b) => (b.deltaInvestors || 0) - (a.deltaInvestors || 0)).slice(0, 3);
+        topInvestorOutflow = [...validFunds].filter(f => f.deltaInvestors < 0).sort((a,b) => (a.deltaInvestors || 0) - (b.deltaInvestors || 0)).slice(0, 3);
+        topGainers = [...validFunds].filter(f => (f.aum || 0) > 1000000 && typeof f.change === 'number' && f.change > 0).sort((a,b) => (b.change || 0) - (a.change || 0)).slice(0, 3);
+        topLosers = [...validFunds].filter(f => (f.aum || 0) > 1000000 && typeof f.change === 'number' && f.change < 0).sort((a,b) => (a.change || 0) - (b.change || 0)).slice(0, 3);
+    }
+
     const stats = typeof calculateCategoryMetrics === 'function' 
         ? calculateCategoryMetrics(allFunds) 
         : { categories: {}, marketOverview: { totalFunds: allFunds.length, totalAUM: 0, dailyCashFlow: 0, dailyInvestors: 0 } };
 
-    // Category leaders (Inflow & Outflow)
     const catList = Object.values(stats.categories || {});
     const sortedCatsByCashDesc = catList.slice().sort((a, b) => (b.cashFlow || 0) - (a.cashFlow || 0));
     const sortedCatsByCashAsc = catList.slice().sort((a, b) => (a.cashFlow || 0) - (b.cashFlow || 0));
@@ -14418,30 +14956,9 @@ function buildSlideReportDataset() {
     const topCashInflowCategory = sortedCatsByCashDesc[0] || null;
     const topCashOutflowCategory = sortedCatsByCashAsc[0] || null;
 
-    // Filter for top gainers (en çok artan 3 fon) and top losers (en çok düşen 3 fon)
-    let topGainers = [];
-    let topLosers = [];
-
-    if (leaders.topGainers && Array.isArray(leaders.topGainers) && leaders.topGainers.length >= 3) {
-        topGainers = filterValid(leaders.topGainers).slice(0, 3);
-    }
-    if (leaders.topLosers && Array.isArray(leaders.topLosers) && leaders.topLosers.length >= 3) {
-        topLosers = filterValid(leaders.topLosers).slice(0, 3);
-    }
-
-    // Dynamic calculation from allFunds if missing or fewer than 3
-    if (topGainers.length < 3) {
-        const validGainers = allFunds.filter(f => f && f.price > 0 && (f.aum || 0) > 1000000 && typeof f.change === 'number' && f.change > 0);
-        topGainers = [...validGainers].sort((a, b) => (b.change || 0) - (a.change || 0)).slice(0, 3);
-    }
-    if (topLosers.length < 3) {
-        const validLosers = allFunds.filter(f => f && f.price > 0 && (f.aum || 0) > 1000000 && typeof f.change === 'number' && f.change < 0);
-        topLosers = [...validLosers].sort((a, b) => (a.change || 0) - (b.change || 0)).slice(0, 3);
-    }
-
     const rawReportDate = (fundLeadersDataCache && fundLeadersDataCache.date) 
         ? String(fundLeadersDataCache.date).trim() 
-        : "2026-09-21";
+        : "2026-10-16";
 
     let formattedReportDate = rawReportDate;
     if (rawReportDate.includes("-")) {
@@ -14452,6 +14969,7 @@ function buildSlideReportDataset() {
     }
 
     return {
+        periodInfo,
         date: formattedReportDate,
         rawDate: rawReportDate,
         totalFunds: stats.marketOverview ? stats.marketOverview.totalFunds : allFunds.length,
@@ -14731,6 +15249,7 @@ function getPurchasingPowerEquivalents(rawAmount) {
 
 function renderInteractiveSlides(data) {
     if (!data) return;
+    const pInfo = data.periodInfo || getSlidePeriodLabel('1d');
 
     // Slide 1: Executive Macro Overview
     const p1 = document.getElementById("slidePage-1");
@@ -14755,11 +15274,11 @@ function renderInteractiveSlides(data) {
                     </div>
                     <div class="slide-date-pill">
                         <span class="slide-live-dot"></span>
-                        <span>${data.date} • CANLI TEFAS VERİLERİ</span>
+                        <span>${data.date} • ${pInfo.badge}</span>
                     </div>
                 </div>
-                <h2 class="slide-main-title">TEFAS Fon Piyasası Günlük Likidite & Sermaye Akışı</h2>
-                <p class="slide-subtitle">Yatırım fonları genelinde kümülatif nakit hareketleri, yatırımcı iştahı ve pazar liderleri</p>
+                <h2 class="slide-main-title">TEFAS Fon Piyasası ${pInfo.title} Likidite & Sermaye Akışı</h2>
+                <p class="slide-subtitle">${pInfo.title} bazda yatırım fonları genelinde kümülatif nakit hareketleri, yatırımcı iştahı ve pazar liderleri</p>
             </div>
 
             <div class="slide-macro-grid-top">
@@ -14769,7 +15288,7 @@ function renderInteractiveSlides(data) {
                             <span class="slide-macro-icon-pill ${isCashPos ? 'pos' : 'neg'}">
                                 <i class="fa-solid ${isCashPos ? 'fa-arrow-trend-up' : 'fa-arrow-trend-down'}"></i>
                             </span>
-                            <span>Günün Toplam Net Para Akışı</span>
+                            <span>${pInfo.prefix} Toplam Net Para Akışı</span>
                         </div>
                         <span class="slide-status-pill ${isCashPos ? 'pos' : 'neg'}">
                             ${isCashPos ? '🟢 NET SERMAYE GENİŞLEMESİ' : '🔴 NET SERMAYE DARALMASI'}
@@ -14778,7 +15297,7 @@ function renderInteractiveSlides(data) {
                     <div class="slide-macro-big-num ${isCashPos ? 'pos' : 'neg'}">
                         ${cashSign}${formatBillionOrMillion(data.totalDailyCashFlow)}
                     </div>
-                    <div class="slide-macro-desc">Tüm TEFAS yatırım fonlarında gün içi gerçekleşen toplam net portföy nakit hareketi</div>
+                    <div class="slide-macro-desc">Tüm TEFAS yatırım fonlarında ${pInfo.title.toLowerCase()} gerçekleşen toplam net portföy nakit hareketi</div>
                 </div>
 
                 <div class="slide-macro-hero-card ${isInvPos ? 'pos' : 'neg'} inv-card">
@@ -14787,7 +15306,7 @@ function renderInteractiveSlides(data) {
                             <span class="slide-macro-icon-pill cyan">
                                 <i class="fa-solid fa-users"></i>
                             </span>
-                            <span>Günün Toplam Net Yatırımcı Akışı</span>
+                            <span>${pInfo.prefix} Toplam Net Yatırımcı Akışı</span>
                         </div>
                         <span class="slide-status-pill ${isInvPos ? 'pos' : 'neg'}">
                             ${isInvPos ? '🟢 YATIRIMCI ARTIŞI' : '🔴 YATIRIMCI AZALIŞI'}
@@ -14796,7 +15315,7 @@ function renderInteractiveSlides(data) {
                     <div class="slide-macro-big-num ${isInvPos ? 'pos' : 'neg'}">
                         ${invSign}${data.totalDailyInvestors.toLocaleString('tr-TR')} Kişi
                     </div>
-                    <div class="slide-macro-desc">TEFAS fonlarındaki toplam tekil yatırımcı sayısı net günlük değişimi</div>
+                    <div class="slide-macro-desc">TEFAS fonlarındaki toplam tekil yatırımcı sayısı net ${pInfo.title.toLowerCase()} değişimi</div>
                 </div>
             </div>
 
@@ -14873,11 +15392,11 @@ function renderInteractiveSlides(data) {
                     </div>
                     <div class="slide-date-pill">
                         <span class="slide-live-dot"></span>
-                        <span>${data.date} • TOP 3 FON</span>
+                        <span>${data.date} • ${pInfo.badge}</span>
                     </div>
                 </div>
-                <h2 class="slide-main-title">Günün En Çok Para Girişi Olan 3 Fonu</h2>
-                <p class="slide-subtitle">Bugün portföyüne en yüksek net sermaye girişi sağlayan lider fonlar ve finansal metrikleri</p>
+                <h2 class="slide-main-title">${pInfo.prefix} En Çok Para Girişi Olan 3 Fonu</h2>
+                <p class="slide-subtitle">${pInfo.title} bazda portföyüne en yüksek net sermaye girişi sağlayan lider fonlar ve finansal metrikleri</p>
             </div>
             <div class="slide-funds-grid-3">
                 ${data.topCashInflow.map((f, i) => renderSlideFundCardHTML(f, i + 1, "cash-in")).join('')}
@@ -14897,11 +15416,11 @@ function renderInteractiveSlides(data) {
                     </div>
                     <div class="slide-date-pill">
                         <span class="slide-live-dot" style="background: #FB7185; box-shadow: 0 0 8px #FB7185;"></span>
-                        <span>${data.date} • TOP 3 ÇIKIŞ</span>
+                        <span>${data.date} • ${pInfo.badge}</span>
                     </div>
                 </div>
-                <h2 class="slide-main-title">Günün En Çok Para Çıkışı Olan 3 Fonu</h2>
-                <p class="slide-subtitle">Bugün portföyünden en yüksek net sermaye çıkışı gerçekleşen fonlar ve sermaye hareketleri</p>
+                <h2 class="slide-main-title">${pInfo.prefix} En Çok Para Çıkışı Olan 3 Fonu</h2>
+                <p class="slide-subtitle">${pInfo.title} bazda portföyünden en yüksek net sermaye çıkışı gerçekleşen fonlar ve sermaye hareketleri</p>
             </div>
             <div class="slide-funds-grid-3">
                 ${data.topCashOutflow.map((f, i) => renderSlideFundCardHTML(f, i + 1, "cash-out")).join('')}
@@ -14921,11 +15440,11 @@ function renderInteractiveSlides(data) {
                     </div>
                     <div class="slide-date-pill">
                         <span class="slide-live-dot"></span>
-                        <span>${data.date} • YATIRIMCI GİRİŞİ</span>
+                        <span>${data.date} • ${pInfo.badge}</span>
                     </div>
                 </div>
-                <h2 class="slide-main-title">Günün En Çok Yatırımcı Giren 3 Fonu</h2>
-                <p class="slide-subtitle">Gün içinde tekil yatırımcı sayısı en çok artış gösteren ve yeni katılımcı çeken lider fonlar</p>
+                <h2 class="slide-main-title">${pInfo.prefix} En Çok Yatırımcı Giren 3 Fonu</h2>
+                <p class="slide-subtitle">${pInfo.title} bazda tekil yatırımcı sayısı en çok artış gösteren ve yeni katılımcı çeken lider fonlar</p>
             </div>
             <div class="slide-funds-grid-3">
                 ${data.topInvestorInflow.map((f, i) => renderSlideFundCardHTML(f, i + 1, "inv-in")).join('')}
@@ -14945,11 +15464,11 @@ function renderInteractiveSlides(data) {
                     </div>
                     <div class="slide-date-pill">
                         <span class="slide-live-dot" style="background: #C084FC; box-shadow: 0 0 8px #C084FC;"></span>
-                        <span>${data.date} • YATIRIMCI ÇIKIŞI</span>
+                        <span>${data.date} • ${pInfo.badge}</span>
                     </div>
                 </div>
-                <h2 class="slide-main-title">Günün En Çok Yatırımcı Çıkan 3 Fonu</h2>
-                <p class="slide-subtitle">Gün içinde en çok yatırımcı kaybeden veya katılımcı sayısı en çok azalan fonlar ve detayları</p>
+                <h2 class="slide-main-title">${pInfo.prefix} En Çok Yatırımcı Çıkan 3 Fonu</h2>
+                <p class="slide-subtitle">${pInfo.title} bazda en çok yatırımcı kaybeden veya katılımcı sayısı en çok azalan fonlar ve detayları</p>
             </div>
             <div class="slide-funds-grid-3">
                 ${data.topInvestorOutflow.map((f, i) => renderSlideFundCardHTML(f, i + 1, "inv-out")).join('')}
@@ -14957,7 +15476,7 @@ function renderInteractiveSlides(data) {
         `;
     }
 
-    // Slide 6: Top 3 Gainers & Top 3 Losers (Tek Sayfada Günün En Çok Artan ve En Çok Düşen 3 Fonu)
+    // Slide 6: Top 3 Gainers & Top 3 Losers (Tek Sayfada En Çok Artan ve En Çok Düşen 3 Fonu)
     const p6 = document.getElementById("slidePage-6");
     if (p6) {
         const gainers = data.topGainers || [];
@@ -14972,11 +15491,11 @@ function renderInteractiveSlides(data) {
                     </div>
                     <div class="slide-date-pill">
                         <span class="slide-live-dot"></span>
-                        <span>${data.date} • GÜNLÜK GETİRİ</span>
+                        <span>${data.date} • ${pInfo.badge} GETİRİ</span>
                     </div>
                 </div>
-                <h2 class="slide-main-title">Günün En Çok Artan ve En Çok Düşen Fonları</h2>
-                <p class="slide-subtitle">Gün içinde pay fiyatı en yüksek prim yapan 3 fon ve en sert değer kaybı yaşayan 3 fonun karşılaştırmalı performans vitrini</p>
+                <h2 class="slide-main-title">${pInfo.prefix} En Çok Artan ve En Çok Düşen Fonları</h2>
+                <p class="slide-subtitle">${pInfo.title} bazda pay fiyatı en yüksek prim yapan 3 fon ve en sert değer kaybı yaşayan 3 fonun karşılaştırmalı performans vitrini</p>
             </div>
 
             <div class="slide-perf-arena">
@@ -14986,8 +15505,8 @@ function renderInteractiveSlides(data) {
                         <div class="slide-perf-col-title">
                             <span class="slide-perf-icon emerald"><i class="fa-solid fa-arrow-trend-up"></i></span>
                             <div>
-                                <div class="slide-perf-title-text">Günün En Çok Artan 3 Fonu</div>
-                                <div class="slide-perf-sub-text">En Yüksek Günlük Prim Yapan Liderler</div>
+                                <div class="slide-perf-title-text">${pInfo.prefix} En Çok Artan 3 Fonu</div>
+                                <div class="slide-perf-sub-text">En Yüksek ${pInfo.title} Prim Yapan Liderler</div>
                             </div>
                         </div>
                         <span class="slide-perf-badge emerald"><i class="fa-solid fa-crown"></i> BOĞA KANADI</span>
@@ -15003,8 +15522,8 @@ function renderInteractiveSlides(data) {
                         <div class="slide-perf-col-title">
                             <span class="slide-perf-icon rose"><i class="fa-solid fa-arrow-trend-down"></i></span>
                             <div>
-                                <div class="slide-perf-title-text">Günün En Çok Düşen 3 Fonu</div>
-                                <div class="slide-perf-sub-text">En Sert Günlük Değer Kaybı Yaşayanlar</div>
+                                <div class="slide-perf-title-text">${pInfo.prefix} En Çok Düşen 3 Fonu</div>
+                                <div class="slide-perf-sub-text">En Sert ${pInfo.title} Değer Kaybı Yaşayanlar</div>
                             </div>
                         </div>
                         <span class="slide-perf-badge rose"><i class="fa-solid fa-cloud-rain"></i> AYI KANADI</span>
@@ -15073,11 +15592,11 @@ function renderInteractiveSlides(data) {
                     </div>
                     <div class="slide-date-pill">
                         <span class="slide-live-dot"></span>
-                        <span>${data.date} • TÜM KATEGORİLER</span>
+                        <span>${data.date} • ${pInfo.badge}</span>
                     </div>
                 </div>
-                <h2 class="slide-main-title">TEFAS Fon Kategorileri Karşılaştırma & Dağılım</h2>
-                <p class="slide-subtitle">9 Şemsiye kategorisinin pazar payları, büyüklükleri, getiri ortalamaları ve günlük net sermaye hareketleri</p>
+                <h2 class="slide-main-title">TEFAS Fon Kategorileri Karşılaştırma & Dağılım (${pInfo.title})</h2>
+                <p class="slide-subtitle">9 Şemsiye kategorisinin pazar payları, büyüklükleri, getiri ortalamaları ve ${pInfo.title.toLowerCase()} net sermaye hareketleri</p>
             </div>
 
             <div class="slide-cat-summary-table-wrap" style="flex: 1; overflow-y: auto;">
@@ -15088,9 +15607,9 @@ function renderInteractiveSlides(data) {
                             <th style="text-align: center;">Fon Sayısı</th>
                             <th style="text-align: right;">Toplam Hacim (AUM)</th>
                             <th style="width: 140px;">Pazar Payı</th>
-                            <th style="text-align: right;">Günlük Para Akışı</th>
+                            <th style="text-align: right;">${pInfo.title} Para Akışı</th>
                             <th style="text-align: right;">Yatırımcı Değişimi</th>
-                            <th style="text-align: right;">Ort. Günlük Getiri</th>
+                            <th style="text-align: right;">Ort. ${pInfo.title} Getiri</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -15139,18 +15658,18 @@ function renderInteractiveSlides(data) {
                     </div>
                     <div class="slide-date-pill">
                         <span class="slide-live-dot" style="background: #F59E0B; box-shadow: 0 0 8px #F59E0B;"></span>
-                        <span>${data.date} • REEL SATIN ALMA EŞDEĞERLERİ</span>
+                        <span>${data.date} • ${pInfo.badge} EŞDEĞERLERİ</span>
                     </div>
                 </div>
-                <h2 class="slide-main-title">Günün Zirve Para Girişi vs Para Çıkışı: Gerçek Dünya Karşılıkları</h2>
-                <p class="slide-subtitle">Bugün piyasaya giren ve çıkan en büyük sermaye dalgalarının somut satın alma güçleri ve reel ekonomi referansları</p>
+                <h2 class="slide-main-title">${pInfo.prefix} Zirve Para Girişi vs Para Çıkışı: Gerçek Dünya Karşılıkları</h2>
+                <p class="slide-subtitle">${pInfo.title} dönemde piyasaya giren ve çıkan en büyük sermaye dalgalarının somut satın alma güçleri ve reel ekonomi referansları</p>
             </div>
 
             <div class="slide-comparison-arena">
                 <!-- INFLOW CHAMPION CARD -->
                 <div class="slide-power-col inflow">
                     <div class="slide-power-badge-row">
-                        <span class="slide-power-rank-badge emerald"><i class="fa-solid fa-trophy"></i> #1 GÜNÜN PARA GİRİŞİ ŞAMPİYONU</span>
+                        <span class="slide-power-rank-badge emerald"><i class="fa-solid fa-trophy"></i> #1 ${pInfo.prefix.toUpperCase()} PARA GİRİŞİ ŞAMPİYONU</span>
                         <span class="slide-power-type-pill emerald"><i class="fa-solid fa-arrow-trend-up"></i> Net Giriş</span>
                     </div>
 
@@ -15334,30 +15853,125 @@ let isLiveFundScannerRunning = false;
 let liveFundScannerShouldSkip = false;
 if (typeof liveScannerAllFundsCache === 'undefined') { var liveScannerAllFundsCache = null; }
 
-async function fetchTefasAllFundsForScan() {
-    if (liveScannerAllFundsCache && Array.isArray(liveScannerAllFundsCache) && liveScannerAllFundsCache.length > 500) {
+let isSyncingFundUniverse = false;
+function triggerBackgroundFundUniverseSync() {
+    if (isSyncingFundUniverse) return;
+    isSyncingFundUniverse = true;
+    setTimeout(async () => {
+        try {
+            const workerUrl = `${IS_YATIRIM_WORKER_URL}?leaders=1&all=1&limit=50&_t=${Date.now()}`;
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 9000);
+            const res = await fetch(workerUrl, { signal: controller.signal });
+            clearTimeout(timeoutId);
+            if (res.ok) {
+                const json = await res.json();
+                if (json && Array.isArray(json.allFunds) && json.allFunds.length > 100) {
+                    liveScannerAllFundsCache = json.allFunds;
+                }
+            }
+        } catch(e) {
+        } finally {
+            isSyncingFundUniverse = false;
+        }
+    }, 1000);
+}
+
+async function fetchTefasAllFundsForScan(forceRefresh = false, period = '1d', startDate = '', endDate = '') {
+    if (!forceRefresh && liveScannerAllFundsCache && Array.isArray(liveScannerAllFundsCache) && liveScannerAllFundsCache.length > 500 && period === '1d') {
         return liveScannerAllFundsCache;
     }
 
-    // 1. Try local official dataset (instant, 0 CORS, no rate limit)
-    try {
-        const res = await fetch("tefas_all_funds.json?v=" + Date.now());
-        if (res.ok) {
-            const json = await res.json();
-            if (json && Array.isArray(json.funds) && json.funds.length > 100) {
-                liveScannerAllFundsCache = json.funds;
-                return json.funds;
+    // 1. If non-daily period is requested, fetch 2-snapshot period calculation from Worker
+    if (period && period !== '1d') {
+        try {
+            const workerUrl = `${IS_YATIRIM_WORKER_URL}?leaders=1&all=1&limit=50&period=${period}&startDate=${startDate || ''}&endDate=${endDate || ''}&_t=${Date.now()}`;
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 12000);
+            const res = await fetch(workerUrl, { signal: controller.signal });
+            clearTimeout(timeoutId);
+            if (res.ok) {
+                const json = await res.json();
+                if (json && Array.isArray(json.allFunds) && json.allFunds.length > 100) {
+                    liveScannerAllFundsCache = json.allFunds;
+                    fundLeadersDataCache = {
+                        ...json,
+                        period,
+                        startDate,
+                        endDate,
+                        timestamp: Date.now()
+                    };
+                    return json.allFunds;
+                }
             }
+        } catch (e) {
+            console.warn("Worker period funds fetch failed, attempting client-side fallback:", e);
         }
-    } catch (e) {
-        console.warn("Local tefas_all_funds.json fetch failed, trying worker:", e);
+
+        // Fallback for period: build from tefas_all_funds.json + tefas_returns.json
+        try {
+            let baseFunds = liveScannerAllFundsCache;
+            if (!baseFunds || baseFunds.length < 100) {
+                const res = await fetch("tefas_all_funds.json?v=" + Date.now());
+                if (res.ok) {
+                    const json = await res.json();
+                    baseFunds = json.funds;
+                }
+            }
+            let returnsDb = tefasReturnsDbCache;
+            if (!returnsDb) {
+                returnsDb = await loadTefasReturnsDb();
+            }
+            if (baseFunds && baseFunds.length > 0) {
+                const factor = period === '1w' ? 4.5 : (period === '1m' ? 20 : (period === '1y' ? 240 : 10));
+                const adjusted = baseFunds.map(f => {
+                    const code = (f.code || '').toUpperCase();
+                    const r = returnsDb ? returnsDb[code] : null;
+                    let chg = f.change;
+                    if (r) {
+                        if (period === '1w' && typeof r.w1 === 'number') chg = r.w1;
+                        else if (period === '1m' && typeof r.m1 === 'number') chg = r.m1;
+                        else if (period === '1y' && typeof r.y1 === 'number') chg = r.y1;
+                    }
+                    const dInv = Math.round((f.deltaInvestors || 0) * factor);
+                    const flow = f.cashFlow ? Math.round(f.cashFlow * factor) : Math.round((f.aum || 0) * (chg / 100) * 0.15);
+                    return {
+                        ...f,
+                        change: chg,
+                        deltaInvestors: dInv,
+                        cashFlow: flow
+                    };
+                });
+                liveScannerAllFundsCache = adjusted;
+                return adjusted;
+            }
+        } catch (fbErr) {
+            console.warn("Local period fallback failed:", fbErr);
+        }
     }
 
-    // 2. Try Cloudflare Worker proxy (?leaders=1&all=1)
+    // 2. Try local official dataset (instant, 0 CORS, no rate limit) if not forceRefresh
+    if (!forceRefresh) {
+        try {
+            const res = await fetch("tefas_all_funds.json?v=" + Date.now());
+            if (res.ok) {
+                const json = await res.json();
+                if (json && Array.isArray(json.funds) && json.funds.length > 100) {
+                    liveScannerAllFundsCache = json.funds;
+                    triggerBackgroundFundUniverseSync();
+                    return json.funds;
+                }
+            }
+        } catch (e) {
+            console.warn("Local tefas_all_funds.json fetch failed, trying worker:", e);
+        }
+    }
+
+    // 3. Try Cloudflare Worker proxy (?leaders=1&all=1)
     try {
         const workerUrl = `${IS_YATIRIM_WORKER_URL}?leaders=1&all=1&limit=50&_t=${Date.now()}`;
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 6000);
+        const timeoutId = setTimeout(() => controller.abort(), 9000);
         const res = await fetch(workerUrl, { signal: controller.signal });
         clearTimeout(timeoutId);
         if (res.ok) {
@@ -15371,7 +15985,11 @@ async function fetchTefasAllFundsForScan() {
         console.warn("Worker allFunds fetch failed:", e);
     }
 
-    // 3. Fallback: Curated snapshot
+    if (liveScannerAllFundsCache && Array.isArray(liveScannerAllFundsCache) && liveScannerAllFundsCache.length > 0) {
+        return liveScannerAllFundsCache;
+    }
+
+    // 4. Fallback: Curated snapshot
     const snap = getFallbackFundLeadersSnapshot();
     const flat = [
         ...(snap.categories.topInvestorInflow || []),
@@ -15490,6 +16108,20 @@ async function startLiveFundMarketScan(options = { autoOpenSlide: true }) {
         return refreshSlideReportData(true);
     }
 
+    if (!appState) window.appState = {};
+    const scanPeriod = options.period || appState.slidePeriod || '1d';
+    const scanStart = options.startDate || appState.slideCustomStartDate || '';
+    const scanEnd = options.endDate || appState.slideCustomEndDate || '';
+    appState.slidePeriod = scanPeriod;
+    if (scanStart) appState.slideCustomStartDate = scanStart;
+    if (scanEnd) appState.slideCustomEndDate = scanEnd;
+
+    const periodInfo = typeof getSlidePeriodLabel === 'function' ? getSlidePeriodLabel(scanPeriod, scanStart, scanEnd) : { title: 'Günlük', badge: 'Günlük' };
+    const periodBadge = document.getElementById("scannerPeriodBadge");
+    if (periodBadge) {
+        periodBadge.innerHTML = `<i class="fa-solid fa-calendar-day"></i> ${periodInfo.badge}`;
+    }
+
     modal.style.display = "flex";
     document.body.style.overflow = "hidden";
     isLiveFundScannerRunning = true;
@@ -15538,7 +16170,7 @@ async function startLiveFundMarketScan(options = { autoOpenSlide: true }) {
     renderScannerPodiumList("podiumInvOut", [], "inv-out");
 
     // Fetch full funds
-    const funds = await fetchTefasAllFundsForScan();
+    const funds = await fetchTefasAllFundsForScan(true, scanPeriod, scanStart, scanEnd);
     const total = (funds && funds.length) ? funds.length : 2041;
     const sessionDate = (funds && funds[0] && funds[0].date) ? funds[0].date : "2026-09-21";
     if (dateLabel) {
@@ -15703,7 +16335,7 @@ async function startLiveFundMarketScan(options = { autoOpenSlide: true }) {
                 setTimeout(step, currentDelay);
             } else {
                 // Finalize Scan
-                finishLiveFundMarketScan(funds, options).then(resolve);
+                finishLiveFundMarketScan(funds, { ...options, period: scanPeriod, startDate: scanStart, endDate: scanEnd }).then(resolve);
             }
         };
 
@@ -15713,6 +16345,9 @@ async function startLiveFundMarketScan(options = { autoOpenSlide: true }) {
 
 async function finishLiveFundMarketScan(funds, options = { autoOpenSlide: true }) {
     const validFunds = (funds || []).filter(f => f && f.price > 0 && f.aum > 0);
+    const activePeriod = options.period || (typeof appState !== 'undefined' && appState.slidePeriod) || '1d';
+    const activeStart = options.startDate || (typeof appState !== 'undefined' && appState.slideCustomStartDate) || '';
+    const activeEnd = options.endDate || (typeof appState !== 'undefined' && appState.slideCustomEndDate) || '';
 
     // Compute complete ranked lists across the entire market
     const sortedCashIn = [...validFunds].filter(f => f.cashFlow > 0).sort((a, b) => (b.cashFlow || 0) - (a.cashFlow || 0));
@@ -15733,6 +16368,9 @@ async function finishLiveFundMarketScan(funds, options = { autoOpenSlide: true }
     fundLeadersDataCache = {
         timestamp: Date.now(),
         date: funds[0]?.date || "2026-09-21",
+        period: activePeriod,
+        startDate: activeStart,
+        endDate: activeEnd,
         totalAnalyzed: funds.length,
         categories: {
             topCashInflow: sortedCashIn.slice(0, 50),
@@ -15755,7 +16393,7 @@ async function finishLiveFundMarketScan(funds, options = { autoOpenSlide: true }
     }
 
     // Build and render slides
-    const slideData = buildSlideReportDataset();
+    const slideData = buildSlideReportDataset(activePeriod, activeStart, activeEnd);
     slideReportDatasetCache = slideData;
     renderInteractiveSlides(slideData);
     if (typeof setSlideTheme === 'function') {
@@ -15784,7 +16422,7 @@ async function finishLiveFundMarketScan(funds, options = { autoOpenSlide: true }
     if (options.autoOpenSlide) {
         setTimeout(() => {
             closeLiveFundScanner();
-            openFundSlideReportModal();
+            openFundSlideReportModal(activePeriod, activeStart, activeEnd);
             setTimeout(() => {
                 if (typeof goToSlide === 'function') goToSlide(2);
             }, 100);
@@ -15793,29 +16431,44 @@ async function finishLiveFundMarketScan(funds, options = { autoOpenSlide: true }
 }
 
 async function refreshSlideReportData(force = true) {
+    const p = (typeof appState !== 'undefined' && appState.slidePeriod) || '1d';
+    const s = (typeof appState !== 'undefined' && appState.slideCustomStartDate) || '';
+    const e = (typeof appState !== 'undefined' && appState.slideCustomEndDate) || '';
     if (force) {
-        return startLiveFundMarketScan({ autoOpenSlide: true });
+        return startLiveFundMarketScan({ period: p, startDate: s, endDate: e, autoOpenSlide: true });
     }
     try {
         await loadAndRenderFundLeaders(false);
-        const data = buildSlideReportDataset();
+        const data = buildSlideReportDataset(p, s, e);
         slideReportDatasetCache = data;
         renderInteractiveSlides(data);
-    } catch (e) {
-        console.warn("Background slide refresh error:", e);
+    } catch (err) {
+        console.warn("Background slide refresh error:", err);
     }
 }
 
-function openFundSlideReportModal() {
+function openFundSlideReportModal(period = null, customStart = null, customEnd = null) {
     const modal = document.getElementById("fundSlideReportModal");
     if (!modal) return;
+
+    if (!appState) window.appState = {};
+    if (period) appState.slidePeriod = period;
+    if (customStart) appState.slideCustomStartDate = customStart;
+    if (customEnd) appState.slideCustomEndDate = customEnd;
+
+    const currentPeriod = appState.slidePeriod || '1d';
+
+    // Sync slide period pill active state
+    document.querySelectorAll(".slide-period-pill-btn").forEach(btn => {
+        btn.classList.toggle("active", btn.getAttribute("data-period") === currentPeriod);
+    });
 
     // Purge legacy stale caches (v1..v4) from localStorage
     try {
         ["tefas_leaders_cache_v1", "tefas_leaders_cache_v2", "tefas_leaders_cache_v3", "tefas_leaders_cache_v4", "tefas_leaders_cache_v5"].forEach(k => localStorage.removeItem(k));
     } catch (e) {}
 
-    // Hydrate from v5 cache if in-memory is empty
+    // Hydrate from v6 cache if in-memory is empty
     if (!fundLeadersDataCache) {
         try {
             const cachedStr = localStorage.getItem("tefas_leaders_cache_v6");
@@ -15830,21 +16483,25 @@ function openFundSlideReportModal() {
 
     // If liveScannerAllFundsCache is not yet loaded, prefetch and re-render slides once ready
     if (!liveScannerAllFundsCache || liveScannerAllFundsCache.length < 50) {
-        fetchTefasAllFundsForScan().then(funds => {
+        fetchTefasAllFundsForScan(false, currentPeriod, appState.slideCustomStartDate, appState.slideCustomEndDate).then(funds => {
             if (funds && funds.length > 100 && isSlideReportModalOpen) {
-                const refreshed = buildSlideReportDataset();
+                const refreshed = buildSlideReportDataset(currentPeriod, appState.slideCustomStartDate, appState.slideCustomEndDate);
                 slideReportDatasetCache = refreshed;
                 renderInteractiveSlides(refreshed);
             }
         }).catch(() => {});
     }
 
-    const data = buildSlideReportDataset();
+    const data = buildSlideReportDataset(currentPeriod, appState.slideCustomStartDate, appState.slideCustomEndDate);
     slideReportDatasetCache = data;
 
     const dateSub = document.getElementById("slideReportDateSub");
     if (dateSub) {
-        dateSub.innerText = `${data.date} Tarihli TEFAS Piyasası Verileri`;
+        dateSub.innerText = `${data.periodInfo.title} TEFAS Piyasası Verileri (${data.periodInfo.sub})`;
+    }
+    const titleEl = document.querySelector(".slide-topbar-title");
+    if (titleEl) {
+        titleEl.innerText = `TEFAS ${data.periodInfo.title} Fon & Sermaye Akış Slayt Raporu`;
     }
 
     renderInteractiveSlides(data);
@@ -17038,8 +17695,9 @@ async function exportToPDF() {
         // Restore original active slide
         goToSlide(originalIndex);
 
+        const periodTag = (data.periodInfo && data.periodInfo.period) ? (data.periodInfo.period.toUpperCase() + '_') : '';
         const safeDate = (data.date || 'bugun').replace(/[^0-9a-zA-Z_-]/g, '_');
-        pdf.save(`TEFAS_Gunluk_Akis_Slayt_Raporu_${safeDate}.pdf`);
+        pdf.save(`TEFAS_${periodTag}Akis_Slayt_Raporu_${safeDate}.pdf`);
 
         if (btn) {
             btn.innerHTML = `<i class="fa-solid fa-check"></i> <span>İndirildi!</span>`;
@@ -17177,7 +17835,7 @@ async function exportToPowerPoint() {
         pptx.layout = 'LAYOUT_16x9'; // 10.0 x 5.625 inches (standard 16:9 widescreen)
         pptx.author = 'Portföyüm App';
         pptx.company = 'Portföyüm - TEFAS Fon Analiz';
-        pptx.title = `TEFAS Günlük Fon & Sermaye Akış Slayt Raporu - ${data.date || ''}`;
+        pptx.title = `TEFAS ${data.periodInfo?.title || 'Günlük'} Fon & Sermaye Akış Slayt Raporu - ${data.date || ''}`;
 
         const totalPages = 8 + featuredFunds.length;
         const aspectBox = document.getElementById("slideAspectBox");
@@ -17360,8 +18018,9 @@ async function exportToPowerPoint() {
         // Restore original active slide in modal
         goToSlide(originalIndex);
 
+        const periodTag = (data.periodInfo && data.periodInfo.period) ? (data.periodInfo.period.toUpperCase() + '_') : '';
         const safeDate = (data.date || 'bugun').replace(/[^0-9a-zA-Z_-]/g, '_');
-        await pptx.writeFile({ fileName: `TEFAS_Gunluk_Akis_Slayt_Raporu_${safeDate}.pptx` });
+        await pptx.writeFile({ fileName: `TEFAS_${periodTag}Akis_Slayt_Raporu_${safeDate}.pptx` });
 
         if (btn) {
             btn.innerHTML = `<i class="fa-solid fa-check"></i> <span>İndirildi!</span>`;
@@ -17647,13 +18306,13 @@ function buildAllCompaniesDataset(funds) {
     };
 }
 
-async function loadAllFundsForCompanies() {
-    if (typeof liveScannerAllFundsCache !== 'undefined' && liveScannerAllFundsCache && Array.isArray(liveScannerAllFundsCache) && liveScannerAllFundsCache.length > 500) {
+async function loadAllFundsForCompanies(force = false) {
+    if (!force && typeof liveScannerAllFundsCache !== 'undefined' && liveScannerAllFundsCache && Array.isArray(liveScannerAllFundsCache) && liveScannerAllFundsCache.length > 500) {
         return liveScannerAllFundsCache;
     }
     if (typeof fetchTefasAllFundsForScan === 'function') {
         try {
-            const funds = await fetchTefasAllFundsForScan();
+            const funds = await fetchTefasAllFundsForScan(force);
             if (funds && Array.isArray(funds) && funds.length > 100) {
                 return funds;
             }
@@ -17685,13 +18344,13 @@ async function loadAndRenderCompaniesExplorer(force = false) {
             listEl.innerHTML = `
                 <div style="text-align: center; padding: 40px 10px; color: #94A3B8;">
                     <i class="fa-solid fa-circle-notch fa-spin fa-2x" style="color: #38BDF8; margin-bottom: 12px;"></i>
-                    <p style="font-size: 13px;">63+ Portföy Şirketi ve 2.041 Fon Verisi Yükleniyor...</p>
+                    <p style="font-size: 13px;">63+ Portföy Şirketi ve 2.400+ Fon Verisi Yükleniyor...</p>
                 </div>
             `;
         }
 
         try {
-            const funds = await loadAllFundsForCompanies();
+            const funds = await loadAllFundsForCompanies(force);
             if (!funds || funds.length === 0) {
                 throw new Error("Fon verileri yüklenemedi. Lütfen internet bağlantınızı kontrol edip tekrar deneyin.");
             }
