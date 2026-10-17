@@ -449,11 +449,9 @@ export default {
         }
 
         try {
-          const [yatStd, yatWeek, emkStd, emkWeek] = await Promise.all([
+          const [yatStd, yatWeek] = await Promise.all([
             fetchTefasReturns('YAT', 2, null, null),
-            fetchTefasReturns('YAT', 1, dStart, dEnd),
-            fetchTefasReturns('EMK', 2, null, null),
-            fetchTefasReturns('EMK', 1, dStart, dEnd)
+            fetchTefasReturns('YAT', 1, dStart, dEnd)
           ]);
 
           const map = {};
@@ -594,13 +592,9 @@ export default {
           let latestDate = `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}`;
 
           if (period === '1d') {
-            // Daily single window (6 days back to today)
+            // Daily single window (6 days back to today) - TEFAS Only (No BEFAS/EMK)
             const startDt = new Date(now.getTime() - (6 * 86400000));
-            const [yatList, emkList] = await Promise.all([
-              fetchRange('YAT', dStr(startDt), dStr(now)),
-              fetchRange('EMK', dStr(startDt), dStr(now))
-            ]);
-            const list = [...yatList, ...emkList];
+            const list = await fetchRange('YAT', dStr(startDt), dStr(now));
             if (list.length > 0) {
               const byFund = {};
               for (const row of list) {
@@ -644,7 +638,7 @@ export default {
               }
             }
           } else {
-            // Multi-day / 2-Snapshot mode (1w, 1m, 1y, custom)
+            // Multi-day / 2-Snapshot mode (1w, 1m, 1y, custom) - TEFAS Only (No BEFAS/EMK)
             let startDt, endDt;
             if (period === '1w') {
               endDt = now;
@@ -664,15 +658,10 @@ export default {
             const s1Start = new Date(startDt.getTime() - (3 * 86400000));
             const s2Start = new Date(endDt.getTime() - (3 * 86400000));
 
-            const [s1Yat, s1Emk, s2Yat, s2Emk] = await Promise.all([
+            const [s1List, s2List] = await Promise.all([
               fetchRange('YAT', dStr(s1Start), dStr(startDt)),
-              fetchRange('EMK', dStr(s1Start), dStr(startDt)),
-              fetchRange('YAT', dStr(s2Start), dStr(endDt)),
-              fetchRange('EMK', dStr(s2Start), dStr(endDt))
+              fetchRange('YAT', dStr(s2Start), dStr(endDt))
             ]);
-
-            const s1List = [...s1Yat, ...s1Emk];
-            const s2List = [...s2Yat, ...s2Emk];
 
             if (s2List.length > 0) {
               const mapS1 = {};
@@ -724,6 +713,12 @@ export default {
 
           if (diffs.length > 0) {
             const limit = Math.min(100, Math.max(3, parseInt(url.searchParams.get("limit") || "50", 10)));
+            const isBefas = f => {
+              if (f.kind === 'EMK' || f.fonTipi === 'EMK') return true;
+              const n = (f.name || f.fonUnvan || '').toLocaleUpperCase('tr-TR');
+              return n.includes('EMEKLİLİK') || n.includes('BEFAS') || n.includes('EYF') || n.includes('OKS ') || n.includes('OTOMATİK KATILIM');
+            };
+            diffs = diffs.filter(d => !isBefas(d));
             const valid = diffs.filter(d => d.price > 0 && d.aum > 0);
 
             const topInvestorInflow = [...valid].filter(d => d.deltaInvestors > 0).sort((a,b) => b.deltaInvestors - a.deltaInvestors).slice(0, limit);

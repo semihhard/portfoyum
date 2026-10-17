@@ -14813,6 +14813,26 @@ async function switchSlidePeriod(period, customStart = null, customEnd = null) {
 }
 window.switchSlidePeriod = switchSlidePeriod;
 
+function isBefasFund(f) {
+    if (!f) return false;
+    if (f.kind === 'EMK' || f.fonTipi === 'EMK' || f.type === 'EMK') return true;
+    const name = (f.name || f.fonUnvan || '').toLocaleUpperCase('tr-TR');
+    if (name.includes('EMEKLİLİK') || 
+        name.includes('BEFAS') || 
+        name.includes('EYF') || 
+        name.includes('OKS ') ||
+        name.includes('OTOMATİK KATILIM') ||
+        name.endsWith('EMEKLİLİK FONU')) {
+        return true;
+    }
+    const cat = (f.category || f.fonTurAciklama || '').toLocaleUpperCase('tr-TR');
+    if (cat.includes('EMEKLİLİK') || cat.includes('BEFAS')) {
+        return true;
+    }
+    return false;
+}
+window.isBefasFund = isBefasFund;
+
 function buildSlideReportDataset(selectedPeriod, customStart, customEnd) {
     selectedPeriod = selectedPeriod || (typeof appState !== 'undefined' && appState.slidePeriod) || '1d';
     customStart = customStart || (typeof appState !== 'undefined' && appState.slideCustomStartDate) || '';
@@ -14827,9 +14847,9 @@ function buildSlideReportDataset(selectedPeriod, customStart, customEnd) {
     const leaders = fundLeadersDataCache?.categories || {};
     const isMatchingPeriodInCache = fundLeadersDataCache && fundLeadersDataCache.period === selectedPeriod;
 
-    // Helper to format a leader fund cleanly with genuine numbers
+    // Helper to format a leader fund cleanly with genuine numbers (strictly TEFAS Only)
     const formatLeaderFund = (f) => {
-        if (!f || !f.code) return null;
+        if (!f || !f.code || isBefasFund(f)) return null;
         const code = String(f.code).toUpperCase().trim();
         const cat = f.category || (typeof detectFundCategoryKey === 'function' ? detectFundCategoryKey(f.name, code) : "DİĞER");
         const price = parseFloat(f.price) || 0;
@@ -14877,10 +14897,11 @@ function buildSlideReportDataset(selectedPeriod, customStart, customEnd) {
         };
     };
 
-    // Filter for valid public funds with real price and AUM
+    // Filter for valid public funds with real price and AUM (Exclude BEFAS / Emeklilik)
     const filterValid = list => (list || [])
+        .filter(f => !isBefasFund(f))
         .map(formatLeaderFund)
-        .filter(f => f && f.price > 0 && f.aum > 0);
+        .filter(f => f && f.price > 0 && f.aum > 0 && !isBefasFund(f));
 
     // 2. Build full funds list for categories and marketOverview calculations
     const fundsMap = new Map();
@@ -15867,7 +15888,7 @@ function triggerBackgroundFundUniverseSync() {
             if (res.ok) {
                 const json = await res.json();
                 if (json && Array.isArray(json.allFunds) && json.allFunds.length > 100) {
-                    liveScannerAllFundsCache = json.allFunds;
+                    liveScannerAllFundsCache = json.allFunds.filter(f => !isBefasFund(f));
                 }
             }
         } catch(e) {
@@ -15879,7 +15900,7 @@ function triggerBackgroundFundUniverseSync() {
 
 async function fetchTefasAllFundsForScan(forceRefresh = false, period = '1d', startDate = '', endDate = '') {
     if (!forceRefresh && liveScannerAllFundsCache && Array.isArray(liveScannerAllFundsCache) && liveScannerAllFundsCache.length > 500 && period === '1d') {
-        return liveScannerAllFundsCache;
+        return liveScannerAllFundsCache.filter(f => !isBefasFund(f));
     }
 
     // 1. If non-daily period is requested, fetch 2-snapshot period calculation from Worker
@@ -15893,15 +15914,17 @@ async function fetchTefasAllFundsForScan(forceRefresh = false, period = '1d', st
             if (res.ok) {
                 const json = await res.json();
                 if (json && Array.isArray(json.allFunds) && json.allFunds.length > 100) {
-                    liveScannerAllFundsCache = json.allFunds;
+                    const cleanFunds = json.allFunds.filter(f => !isBefasFund(f));
+                    liveScannerAllFundsCache = cleanFunds;
                     fundLeadersDataCache = {
                         ...json,
                         period,
                         startDate,
                         endDate,
-                        timestamp: Date.now()
+                        timestamp: Date.now(),
+                        allFunds: cleanFunds
                     };
-                    return json.allFunds;
+                    return cleanFunds;
                 }
             }
         } catch (e) {
@@ -15915,7 +15938,7 @@ async function fetchTefasAllFundsForScan(forceRefresh = false, period = '1d', st
                 const res = await fetch("tefas_all_funds.json?v=" + Date.now());
                 if (res.ok) {
                     const json = await res.json();
-                    baseFunds = json.funds;
+                    baseFunds = (json.funds || []).filter(f => !isBefasFund(f));
                 }
             }
             let returnsDb = tefasReturnsDbCache;
@@ -15924,7 +15947,7 @@ async function fetchTefasAllFundsForScan(forceRefresh = false, period = '1d', st
             }
             if (baseFunds && baseFunds.length > 0) {
                 const factor = period === '1w' ? 4.5 : (period === '1m' ? 20 : (period === '1y' ? 240 : 10));
-                const adjusted = baseFunds.map(f => {
+                const adjusted = baseFunds.filter(f => !isBefasFund(f)).map(f => {
                     const code = (f.code || '').toUpperCase();
                     const r = returnsDb ? returnsDb[code] : null;
                     let chg = f.change;
@@ -15957,9 +15980,10 @@ async function fetchTefasAllFundsForScan(forceRefresh = false, period = '1d', st
             if (res.ok) {
                 const json = await res.json();
                 if (json && Array.isArray(json.funds) && json.funds.length > 100) {
-                    liveScannerAllFundsCache = json.funds;
+                    const clean = json.funds.filter(f => !isBefasFund(f));
+                    liveScannerAllFundsCache = clean;
                     triggerBackgroundFundUniverseSync();
-                    return json.funds;
+                    return clean;
                 }
             }
         } catch (e) {
@@ -15977,8 +16001,9 @@ async function fetchTefasAllFundsForScan(forceRefresh = false, period = '1d', st
         if (res.ok) {
             const json = await res.json();
             if (json && Array.isArray(json.allFunds) && json.allFunds.length > 100) {
-                liveScannerAllFundsCache = json.allFunds;
-                return json.allFunds;
+                const clean = json.allFunds.filter(f => !isBefasFund(f));
+                liveScannerAllFundsCache = clean;
+                return clean;
             }
         }
     } catch (e) {
@@ -15986,17 +16011,17 @@ async function fetchTefasAllFundsForScan(forceRefresh = false, period = '1d', st
     }
 
     if (liveScannerAllFundsCache && Array.isArray(liveScannerAllFundsCache) && liveScannerAllFundsCache.length > 0) {
-        return liveScannerAllFundsCache;
+        return liveScannerAllFundsCache.filter(f => !isBefasFund(f));
     }
 
-    // 4. Fallback: Curated snapshot
+    // 4. Fallback: Curated snapshot (strictly TEFAS)
     const snap = getFallbackFundLeadersSnapshot();
     const flat = [
         ...(snap.categories.topInvestorInflow || []),
         ...(snap.categories.topInvestorOutflow || []),
         ...(snap.categories.topCashInflow || []),
         ...(snap.categories.topCashOutflow || [])
-    ];
+    ].filter(f => !isBefasFund(f));
     return flat;
 }
 
@@ -16169,9 +16194,10 @@ async function startLiveFundMarketScan(options = { autoOpenSlide: true }) {
     renderScannerPodiumList("podiumInvIn", [], "inv-in");
     renderScannerPodiumList("podiumInvOut", [], "inv-out");
 
-    // Fetch full funds
-    const funds = await fetchTefasAllFundsForScan(true, scanPeriod, scanStart, scanEnd);
-    const total = (funds && funds.length) ? funds.length : 2041;
+    // Fetch full funds (TEFAS Only - strictly exclude BEFAS / Emeklilik)
+    const rawFunds = await fetchTefasAllFundsForScan(true, scanPeriod, scanStart, scanEnd);
+    const funds = (rawFunds || []).filter(f => !isBefasFund(f));
+    const total = (funds && funds.length) ? funds.length : 2021;
     const sessionDate = (funds && funds[0] && funds[0].date) ? funds[0].date : "2026-09-21";
     if (dateLabel) {
         let fmtDate = sessionDate;
@@ -16191,6 +16217,7 @@ async function startLiveFundMarketScan(options = { autoOpenSlide: true }) {
     let runningInvOut = [];
 
     const updateRunningLeaders = (f) => {
+        if (!f || isBefasFund(f)) return;
         const cash = f.cashFlow || 0;
         const inv = f.deltaInvestors || 0;
 
@@ -16344,18 +16371,18 @@ async function startLiveFundMarketScan(options = { autoOpenSlide: true }) {
 }
 
 async function finishLiveFundMarketScan(funds, options = { autoOpenSlide: true }) {
-    const validFunds = (funds || []).filter(f => f && f.price > 0 && f.aum > 0);
+    const validFunds = (funds || []).filter(f => f && f.price > 0 && f.aum > 0 && !isBefasFund(f));
     const activePeriod = options.period || (typeof appState !== 'undefined' && appState.slidePeriod) || '1d';
     const activeStart = options.startDate || (typeof appState !== 'undefined' && appState.slideCustomStartDate) || '';
     const activeEnd = options.endDate || (typeof appState !== 'undefined' && appState.slideCustomEndDate) || '';
 
-    // Compute complete ranked lists across the entire market
+    // Compute complete ranked lists across the entire market (TEFAS only)
     const sortedCashIn = [...validFunds].filter(f => f.cashFlow > 0).sort((a, b) => (b.cashFlow || 0) - (a.cashFlow || 0));
     const sortedCashOut = [...validFunds].filter(f => f.cashFlow < 0).sort((a, b) => (a.cashFlow || 0) - (b.cashFlow || 0));
     const sortedInvIn = [...validFunds].filter(f => f.deltaInvestors > 0).sort((a, b) => (b.deltaInvestors || 0) - (a.deltaInvestors || 0));
     const sortedInvOut = [...validFunds].filter(f => f.deltaInvestors < 0).sort((a, b) => (a.deltaInvestors || 0) - (b.deltaInvestors || 0));
 
-    // Compute top gainers and top losers across the entire market
+    // Compute top gainers and top losers across the entire market (TEFAS only)
     const sortedGainers = [...validFunds]
         .filter(f => (f.aum || 0) > 1000000 && typeof f.change === 'number' && f.change > 0)
         .sort((a, b) => (b.change || 0) - (a.change || 0));
@@ -16363,15 +16390,15 @@ async function finishLiveFundMarketScan(funds, options = { autoOpenSlide: true }
         .filter(f => (f.aum || 0) > 1000000 && typeof f.change === 'number' && f.change < 0)
         .sort((a, b) => (a.change || 0) - (b.change || 0));
 
-    // Save into fundLeadersDataCache & liveScannerAllFundsCache
-    liveScannerAllFundsCache = funds;
+    // Save into fundLeadersDataCache & liveScannerAllFundsCache (strictly clean TEFAS funds)
+    liveScannerAllFundsCache = validFunds;
     fundLeadersDataCache = {
         timestamp: Date.now(),
-        date: funds[0]?.date || "2026-09-21",
+        date: validFunds[0]?.date || "2026-09-21",
         period: activePeriod,
         startDate: activeStart,
         endDate: activeEnd,
-        totalAnalyzed: funds.length,
+        totalAnalyzed: validFunds.length,
         categories: {
             topCashInflow: sortedCashIn.slice(0, 50),
             topCashOutflow: sortedCashOut.slice(0, 50),
@@ -16380,7 +16407,7 @@ async function finishLiveFundMarketScan(funds, options = { autoOpenSlide: true }
             topGainers: sortedGainers.slice(0, 50),
             topLosers: sortedLosers.slice(0, 50)
         },
-        allFunds: funds
+        allFunds: validFunds
     };
 
     try {
